@@ -1,7 +1,9 @@
 # Week 00: GenAI Essentials  
 
 ## Overview  
+
 This week covers the **fundamentals of AI and Generative AI**, focusing on:  
+
 - The basics of **AI, ML, and DL**  
 - Understanding **Generative AI vs. Traditional AI**  
 - The **transformer architecture and tokenization**  
@@ -31,6 +33,7 @@ This week covers the **fundamentals of AI and Generative AI**, focusing on:
 ---
 
 ## 🔥 Key Learnings  
+
 - **AI vs. Generative AI**: Key differences in functionality and output.  
 - **How transformers revolutionized NLP** through self-attention.  
 - **Optimizing AI efficiency** with caching, quantization, and better architectures.  
