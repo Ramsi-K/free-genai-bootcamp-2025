@@ -12,7 +12,7 @@ This week covers the **fundamentals of AI and Generative AI**, focusing on:
 
 ---
 
-## 📂 Notes for This Week  
+## Notes for This Week  
 
 | **Topic** | **Description** |
 |-----------|----------------|
@@ -32,7 +32,7 @@ This week covers the **fundamentals of AI and Generative AI**, focusing on:
 
 ---
 
-## 🔥 Key Learnings  
+## Key Learnings  
 
 - **AI vs. Generative AI**: Key differences in functionality and output.  
 - **How transformers revolutionized NLP** through self-attention.  
