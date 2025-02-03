@@ -1,6 +1,15 @@
 # GenAI Bootcamp 2025 – Journal  
 
-## **Day 5: February 1, 2025**  
+## Day 6: February 3, 2025
+
+**Progress Today:**
+
+- Developed a detailed **business scenario** for the HagXwon AI-powered language learning platform.
+- Scoped out key **functional and business requirements**, ensuring alignment with real-world hagwon industry needs.
+- Researched **TOGAF and enterprise architecture** principles to understand structured methodologies for large-scale AI implementation.
+- Developed a **general understanding of TOGAF ADM framework** and how it applies to AI-powered education platforms.
+
+## Day 5: February 1, 2025
 
 - Expanded **BERT and fine-tuning** topics, covering **BERT, SBERT, and LoRA/RLHF techniques**.  
 - Completed **Data and Machine Learning** notes, refining **ML pipelines, knowledge mining, and evaluation metrics**.  
