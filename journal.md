@@ -1,8 +1,14 @@
 # GenAI Bootcamp 2025 – Journal  
 
-## Day 6: February 3, 2025
+## Day 7: February 4, 2025
 
-**Progress Today:**
+- Spent significant time researching **TOGAF** to gain a clearer understanding of enterprise architecture.
+- Attempted to read the **official TOGAF documentation**, but found it dense and difficult to navigate.
+- Engaged with **enterprise architecture professionals** on Discord and Reddit to seek advice on learning strategies.
+- Based on recommendations, enrolled in a **Coursera TOGAF course** (free audit option).
+- Completed **Module 1** of the course and took detailed notes in **Markdown format**.
+
+## Day 6: February 3, 2025
 
 - Developed a detailed **business scenario** for the HagXwon AI-powered language learning platform.
 - Scoped out key **functional and business requirements**, ensuring alignment with real-world hagwon industry needs.
