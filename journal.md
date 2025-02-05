@@ -1,5 +1,15 @@
 # GenAI Bootcamp 2025 – Journal  
 
+## Day 8: February 5, 2025
+
+- Completed **TOGAF Module 2 Notes**, breaking down **ADM phases** with **BIG Questions & Themes** for better clarity.
+- Ensured structured understanding with a **WHO → WHAT → WHY → HOW → WHEN → NOW** approach.
+- Improved readability and flow by refining transitions between phases.
+- Watched refresher videos on **High-Level Design (HLD)** and **Low-Level Design (LLD)** for System Design.
+- Worked on the **High-Level Architecture** as guided in the bootcamp tutorial.
+- Struggled with **Mid-Level & Low-Level Design**, currently researching best practices and structured learning resources.
+- Updated the **main README** to reflect **Korean Hagwon** instead of Japanese.
+
 ## Day 7: February 4, 2025
 
 - Spent significant time researching **TOGAF** to gain a clearer understanding of enterprise architecture.
