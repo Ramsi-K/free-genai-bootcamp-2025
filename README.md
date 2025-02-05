@@ -14,22 +14,23 @@ Each week, the difficulty level **increases**, requiring strong problem-solving 
 
 ## **Business Scenario**  
 
-I've been hired as an **AI Engineer** for a **Japanese Language Learning School** to:  
+I've been hired as an **AI Engineer** for a **Korean Hagwon (Language Learning Center)** to:
 
-- Expand **language learning** through AI-powered applications.  
-- Enhance **student engagement** between instructor-led classes.  
-- Leverage **AI for personalized language practice.**  
+- Expand **language learning** through AI-powered applications.
+- Enhance **student engagement** between instructor-led classes.
+- Leverage **AI for personalized English-Korean language practice.**
 
-Many students struggle with real-world Japanese fluency due to a lack of **interactive, personalized practice**. These AI-powered apps aim to **bridge that gap**.  
+Many students struggle with real-world English fluency due to a lack of **interactive, personalized practice**. These AI-powered apps aim to **bridge that gap**.
 
-## **Planned Learning Applications**  
+## **Planned Learning Applications**
 
-- **Daily Life Visual Novel Generator:** A town-based learning app where users engage in **daily routine conversations** with variation.  
-- **Japanese Text Adventure:** A **story-driven** language learning game that **gradually introduces vocabulary and grammar**.  
-- **Japanese Sentence Constructor:** Helps users **translate English sentences into Japanese** through guided AI feedback.  
-- **Sign to Speak:** An ASL learning app that uses a **webcam to recognize fingerspelling**.  
-- **Subtitles to Vocabulary:** Extracts **new vocabulary words from movie subtitle files** for efficient learning.  
-- **Speech to Learn:** Provides **real-time feedback** on pronunciation and fluency in a target language.  
+- **Daily Life Visual Novel Generator:** A town-based learning app where users engage in **daily routine conversations** with variation.
+- **Korean Text Adventure:** A **story-driven** language learning game that **gradually introduces vocabulary and grammar**.
+- **English-Korean Sentence Constructor:** Helps users **translate English sentences into Korean** through guided AI feedback.
+- **Sign to Speak:** A KSL (Korean Sign Language) learning app that uses a **webcam to recognize fingerspelling**.
+- **Subtitles to Vocabulary:** Extracts **new vocabulary words from movie subtitle files** for efficient learning.
+- **Speech to Learn:** Provides **real-time feedback** on pronunciation and fluency in a target language.
+ 
 
 ## **Technical Prerequisites**  
 
