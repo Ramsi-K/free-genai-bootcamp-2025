@@ -61,3 +61,7 @@ graph LR;
 - **Reference Models & Tools** – Supporting assets for architecture development.
 
 ---
+
+## Resources
+
+[TOGAF 10 Foundation - Course by Educba on Coursera](https://www.coursera.org/learn/togaf-10-foundation/home/welcome)
