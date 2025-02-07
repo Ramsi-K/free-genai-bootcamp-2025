@@ -1,5 +1,16 @@
 # GenAI Bootcamp 2025 – Journal  
 
+## Day 9: February 7, 2025
+
+- Completed **TOGAF Module 3 Notes**, covering **Governance, Risk, and Techniques**.
+- Refined understanding of **architecture compliance, risk management, and TOGAF techniques**.
+- Attempted to create a **TOGAF Mindmap**, but found it too time-consuming and abandoned the idea.
+- Went through the **ML Mini-Series by Rola Dali****, an instructor for the bootcamp. Created two sets of notes:
+  - **Introduction to GenAI** notes, summarizing fundamental concepts.
+  - **Architecting GenAI** notes, covering structured frameworks for designing AI-driven systems.
+- Continued studying **Mid-Level and Low-Level System Design**, but found it **very confusing**.
+- Tried different resources and explanations but still struggling to understand **LLD application and diagramming**.
+
 ## Day 8: February 5, 2025
 
 - Completed **TOGAF Module 2 Notes**, breaking down **ADM phases** with **BIG Questions & Themes** for better clarity.
