@@ -2,6 +2,23 @@
 
 This repository documents my journey through the **GenAI Bootcamp 2025** organized by [Andrew Brown](https://www.exampro.co/). I’ll be designing and developing **AI-powered learning applications**, focusing on real-world **GenAI solutions**, model selection, prompt engineering, and cloud deployment.  
 
+## Repository Structure
+
+```
+.
+├── README.md                # Main repo overview (Bootcamp journey)
+├── business-proposal.md     # Business proposal (HagXwon AI-powered learning platform)
+├── journal.md               # Daily bootcamp progress log
+├── roadmap.md               # Week-by-week learning plan
+├── notes/                   # All structured notes (TOGAF, ML, GenAI Essentials)
+│   ├── week-00-genai-essentials/    # AI fundamentals
+│   ├── week-00-miniMLseries/        # Machine Learning Mini Series
+│   ├── week-00-TOGAF/               # Enterprise architecture & TOGAF
+├── projects/                # Contains implementation details
+│   ├── genai-architecting/          # AI system architecture
+│   ├── sentence-constructor/        # NLP-based language learning app
+```
+
 ## **Bootcamp Overview**  
 
 The **GenAI Bootcamp 2025** is designed to help participants:  
@@ -22,6 +39,8 @@ I've been hired as an **AI Engineer** for a **Korean Hagwon (Language Learning C
 
 Many students struggle with real-world English fluency due to a lack of **interactive, personalized practice**. These AI-powered apps aim to **bridge that gap**.
 
+See full details in **[business-proposal.md](./business-proposal.md)**
+
 ## **Planned Learning Applications**
 
 - **Daily Life Visual Novel Generator:** A town-based learning app where users engage in **daily routine conversations** with variation.
@@ -30,7 +49,17 @@ Many students struggle with real-world English fluency due to a lack of **intera
 - **Sign to Speak:** A KSL (Korean Sign Language) learning app that uses a **webcam to recognize fingerspelling**.
 - **Subtitles to Vocabulary:** Extracts **new vocabulary words from movie subtitle files** for efficient learning.
 - **Speech to Learn:** Provides **real-time feedback** on pronunciation and fluency in a target language.
- 
+
+## 📝 Notes & Documentation
+
+- **TOGAF (Enterprise AI Architecture)**: [notes/week-00-TOGAF/](./notes/week-00-TOGAF/)
+- **Generative AI Essentials**: [notes/week-00-genai-essentials/](./notes/week-00-genai-essentials/)
+- **Machine Learning Mini Series**: [notes/week-00-miniMLseries/](./notes/week-00-miniMLseries/)
+- **Bootcamp Journal**: [journal.md](./journal.md)
+
+## Bootcamp Roadmap
+
+See full week-by-week learning plan in **[roadmap.md](./roadmap.md)**.
 
 ## **Technical Prerequisites**  
 
