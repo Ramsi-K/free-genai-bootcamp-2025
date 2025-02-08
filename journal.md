@@ -1,5 +1,18 @@
 # GenAI Bootcamp 2025 – Journal  
 
+## Day 10: February 8, 2025
+
+- **Updated Main Repository README** to include a structured **directory overview**.
+- **Added TOGAF Glossary** (`glossary.md`) documenting key TOGAF terms and definitions.
+- **Created TOGAF Artifacts Document** (`togaf-artifacts.md`) listing inputs, outputs, and deliverables for each ADM phase.
+- **Finalized TOGAF to AI Mapping Document** (`togaf-ai-mapping.md`) to align TOGAF enterprise architecture with AI workflows.
+- **Added a README for the Notes Directory** (`notes/README.md`) to provide structured navigation of TOGAF, AI, and ML notes.
+- **Worked on GenAI Architecting Project**, aligning AI architecture with **TOGAF principles**:
+  - Defined **business goals and system structure**.
+  - Outlined **requirements, risks, and assumptions**.
+  - Roughly established **data strategy, model selection, and governance considerations**.
+  - Structured key documentation for **technical architecture, implementation planning, and AI compliance**.
+
 ## Day 9: February 7, 2025
 
 - Completed **TOGAF Module 3 Notes**, covering **Governance, Risk, and Techniques**.
