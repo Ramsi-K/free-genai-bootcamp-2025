@@ -1,5 +1,16 @@
 # GenAI Bootcamp 2025 – Journal  
 
+## Day 11: February 9, 2025
+
+- **Finalized and committed the main repository README**, ensuring structured documentation across all projects.
+- **Created the "Project Requirements" document** to define technical constraints, architectural goals, and implementation considerations.
+- **Refined TOGAF compliance tracking and AI mapping**, ensuring enterprise architecture principles are integrated into the GenAI project.
+- **Developed conceptual and high-level system diagrams** using **Mermaid and eraser.io**, aligning with TOGAF's ADM framework.
+- **Structured and cleaned up business case and business proposal** for the AI-powered hagwon learning platform.
+- **Started working on "Sentence Constructor" project**, focusing on **NLP-based AI guidance** for structured language learning.
+- **Reviewed technical uncertainty and constraints for AI-powered assistants**, identifying key risks and prompting strategies.
+- **Prepared for upcoming logical and physical architecture diagrams**, ensuring alignment with bootcamp submission deadlines.
+
 ## Day 10: February 8, 2025
 
 - **Updated Main Repository README** to include a structured **directory overview**.
