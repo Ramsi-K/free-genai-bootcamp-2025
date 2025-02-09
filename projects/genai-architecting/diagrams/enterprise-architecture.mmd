@@ -1,0 +1,38 @@
+graph TD;
+    subgraph "User Roles"
+        A[👩‍🎓 Student] -->|Interacts with| B[Frontend - Web/App]
+        C[👨‍🏫 Teacher] -->|Provides Feedback| B
+        D[🔧 Admin] -->|Manages System| B
+    end
+
+    subgraph "Frontend Layer"
+        B -->|Sends Input| E[Backend - Processing & AI Orchestration]
+        B -->|Receives Output| A
+    end
+
+    subgraph "Backend Layer"
+        E -->|Routes Requests| F[AI Processing Engine]
+        E -->|Stores Data| G[Databases]
+    end
+
+    subgraph "AI Processing Engine"
+        F -->|LLM Query| H[LLM Model]
+        F -->|Retrieves Context| I[RAG Pipeline]
+        I -->|Fetches Data| J[Vector Database]
+    end
+
+    subgraph "Databases"
+        G -->|Stores Progress| K[User Database]
+        G -->|Stores Lessons & Grammar| L[Content Database]
+    end
+
+    subgraph "Guardrails & Optimization"
+        M[Guardrails] -->|Fact-Checking| F
+        M -->|Toxicity Filtering| F
+    end
+
+    %% Connections
+    J -->|Provides Context| H
+    H -->|Generates Response| F
+    F -->|Final Response| E
+    E -->|Delivers AI Response| B
