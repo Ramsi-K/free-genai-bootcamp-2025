@@ -1,3 +1,7 @@
 *.docx
 *.txt
 *.pdf
+*.zip
+
+lang-portal/
+assets/
