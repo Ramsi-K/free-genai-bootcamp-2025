@@ -1,5 +1,28 @@
 # HagXwon: AI-Powered English & Korean Learning for Korea’s Hagwon Industry
 
+## 📂 Project Directory Structure
+
+```
+📂 project-1-architecting-genai/
+│── 📜 README.md                 # High-level overview, links to details
+│── 📂 docs/                      # Documentation
+│   │── 📜 business-case.md       # Business case & background story
+│   │── 📜 business-proposal.md   # Business execution strategy
+│   │── 📜 project-requirements.md # Bootcamp project description & requirements
+│   │── 📜 togaf-compliance.md    # TOGAF compliance tracking
+│   │── 📜 togaf-ai-mapping.md    # TOGAF AI translation & system mapping
+│   │── 📜 architecture-strategy.md [TODO]  # Technical architecture & system design (planned)
+│   │── 📜 deployment-strategy.md [TODO]  # Deployment, CI/CD, risk management (planned)
+│   │── 📜 conceptual-design.md   # High-level conceptual system architecture
+│   │── 📜 system-design.md [TODO]  # Logical & Physical breakdown (planned)
+│── 📂 diagrams/                   # Architecture & system design diagrams
+│   │── 📜 enterprise-architecture.mmd  # Mermaid diagram (conceptual)
+│   │── 📜 system-design.png [TODO]  # High-level system architecture (planned)
+│   │── 📜 deployment-flow.mmd [TODO]  # Deployment pipeline (planned)
+│   │── 📜 business-architecture.png  # Business architecture diagram
+│   │── 📜 genai-architecture.png  # GenAI system architecture diagram
+```
+
 ## 1. Overview
 
 South Korea's **hagwon (학원)** system is the backbone of its private education sector, with parents collectively spending **over $20 billion USD annually** on after-school academies. The country has **over 70,000 hagwons**, enrolling millions of students each year. Despite this investment, many students spend **several hours daily in hagwons** yet struggle with **real-world English proficiency** due to traditional rote learning methods that emphasize test performance over practical application.
@@ -16,32 +39,15 @@ South Korea's **hagwon (학원)** system is the backbone of its private educatio
 
 ---
 
-## 2. Business Case
+## 2. Project Requirements
 
-### **The Korean Hagwon Industry: A $20B+ Market**
+This project follows the **GenAI Architecting Bootcamp** specifications. The goal is to create architectural diagrams that serve as **teaching aids** to help stakeholders understand key components of **GenAI workloads**. These diagrams aim to:
 
-- **$20.6 billion USD** spent annually on hagwon education in South Korea (2023).
-- **70,000+ hagwons** operate across the country, with millions of students enrolled.
-- Parents invest in hagwons **from elementary to university level** to give their children a competitive edge.
-- **English proficiency is a top priority**, yet traditional methods fail to produce confident, fluent speakers.
+- **Visualize technical paths** and uncertainties when adopting AI.
+- **Encourage discussions** around infrastructure choices, integration patterns, and system dependencies.
+- **Follow structured architecture methodologies**, such as **TOGAF, C4 Model, and conceptual/logical/physical design approaches**.
 
-### **The Global Demand for Learning Korean**
-
-- Korean is one of the fastest-growing languages worldwide, largely due to K-pop, K-dramas, and cultural exports.
-- **Over 15 million people worldwide** are learning Korean as a second language.
-- **Duolingo’s 2023 report** lists Korean as the **7th most learned language globally**, showing rapid adoption.
-- Unlike English, Korean is a **scientifically designed alphabet** (Hangul), making it **one of the easiest languages to learn**.
-
-### **The Need for AI-Driven Education**
-
-Traditional hagwons rely on **memorization-heavy** techniques that lack **adaptive learning** and **interactive practice**. AI offers:
-
-- **Personalized Learning Paths** – AI adjusts lessons based on student progress.
-- **Speaking & Writing Feedback** – AI analyzes fluency, pronunciation, and grammar.
-- **Scalability** – AI tutors can handle thousands of students at once.
-- **Cultural Nuance** – Fine-tuned AI models respect honorifics and linguistic structure.
-
-For a full breakdown, see **[docs/business-case.md](docs/business-case.md)**.
+For full details, see **[docs/project-requirements.md](docs/project-requirements.md)**.
 
 ---
 
@@ -59,7 +65,9 @@ The architecture follows **TOGAF’s ADM framework**, ensuring structured, enter
 - **Speech Recognition:** and pronunciation evaluation tools that enhance speaking practice
 - **Cloud & On-Prem Infrastructure:** balancing performance, cost, and security
 
-For full system details, refer to **[docs/system-design.md](docs/system-design.md)**.  
+For full system details, refer to **[docs/conceptual-design.md](docs/conceptual-design.md)**, which includes a **Mermaid-based architecture diagram**.
+
+[TODO] A more detailed **system-design.md** (Logical + Physical breakdown) will be added later.
 
 ---
 
@@ -71,50 +79,68 @@ For full system details, refer to **[docs/system-design.md](docs/system-design.m
 4. **AI Homework Evaluator** – Automated scoring with instructor oversight.  
 5. **Instructor Assistant (RAG-powered)** – AI-driven lesson planning and Q&A support.  
 
-For feature breakdown, see **[docs/system-design.md](docs/system-design.md)**.
+For feature breakdown, see **[docs/conceptual-design.md](docs/conceptual-design.md)**.
 
 ---
 
 ## 5. Implementation Strategy
 
-### **Deployment Phases**
+### **🚀 Deployment Phases**
 
-- **MVP (Weeks 1-6):** AI Speech Coach & Sentence Builder  
-- **Phase 2 (Weeks 7-12):** AI Live Conversations, Homework Evaluator  
-- **Phase 3 (Weeks 13+):** Full integration with hagwon learning platforms  
+- **MVP (Weeks 1-6):** AI Speech Coach & Sentence Builder.
+- **Phase 2 (Weeks 7-12):** AI Live Conversations, Homework Evaluator.
+- **Phase 3 (Weeks 13+):** Full **hagwon LMS integration**.
 
 ### **CI/CD & Infrastructure**
 
-- **Automated Testing & Deployment:** GitHub Actions  
-- **Infrastructure as Code:** Terraform + Kubernetes  
-- **Performance Monitoring:** CloudWatch, Prometheus  
+✔ **Automated Testing & Deployment:** CI/CD pipelines.
+✔ **Infrastructure as Code:** Terraform & Kubernetes.
+✔ **Performance Monitoring:** Real-time tracking with observability tools.
 
-For full deployment details, see **[docs/implementation.md](docs/implementation.md)**.
+[TODO] **More details to be added in [docs/deployment-strategy.md](docs/deployment-strategy.md).**
 
 ---
 
 ## 6. Security & Compliance
 
-- **Zero Trust Security Model**
-- **Korean PIPA Compliance** (Strict data anonymization & access control)
-- **Role-Based Access Control (RBAC) for AI Model Usage**
+🔒 **Zero Trust Security Model** – Strict access controls & role-based permissions.  
+📚 **PIPA Compliance** – Adhering to Korea’s data privacy regulations.  
+✅ **AI Ethics & Governance** – Bias mitigation, explainability, & fairness.
 
-More on security in **[docs/security-compliance.md](docs/security-compliance.md)**.
-
----
-
-## 7. Additional References
-
-- **[Bootcamp Project Description](references/bootcamp-project-desc.md)**  
-- **[Enterprise Architecture Diagrams](diagrams/)**  
-- **Duolingo Language Report 2023: Korean as the 7th most learned language globally**
-- **Korean Hagwon Market Statistics (2023): Over 70,000 hagwons in operation**
-- **South Korea’s Education Industry Spending (2023): Over $20B annually**
+[TODO] **More details to be added in [docs/security-governance.md](docs/security-governance.md).**
 
 ---
 
-## 8. Next Steps
+## 7. Enterprise Architecture & TOGAF Compliance
 
-- **[ ] Develop TOGAF-compliant system diagrams**
-- **[ ] Implement MVP (Speech Coach & Sentence Builder)**
-- **[ ] Fine-tune AI model for Korean-English accuracy**
+This project follows **TOGAF principles** for structured AI deployment.
+
+### **📊 Architecture Diagram Levels**
+
+1. **Conceptual** – High-level system overview for stakeholders.
+2. **Logical** – AI components, workflows, and dependencies.
+3. **Physical** – Deployment details (cloud resources, infrastructure).
+
+📀 **TOGAF tracking in [docs/togaf-compliance.md](docs/togaf-compliance.md).**
+
+---
+
+## 8. Next Steps & Roadmap
+
+✅ **Week 0 Submission:** Conceptual Architecture Diagram.  
+💚 **Week 1:** Logical Diagram & System Flow.  
+💚 **Week 2+:** Physical Diagram, Infrastructure, & Deployment.
+
+📀 **Live tracking in [roadmap.md](../../roadmap.md).**
+
+---
+
+## 9. References & Further Reading
+
+- **[Bootcamp Project Description](docs/project-requirements.md)**
+- **[Enterprise Architecture Diagrams](diagrams/)**
+- **Duolingo Language Report 2023** (Korean as 7th most learned language globally).
+- **Korean Hagwon Market Statistics 2023** ($20B+ industry, 70,000 hagwons).
+- **TOGAF & C4 Model** – Structured AI adoption methodologies.
+
+---
