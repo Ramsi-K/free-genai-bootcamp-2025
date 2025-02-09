@@ -7,7 +7,6 @@ This repository documents my journey through the **GenAI Bootcamp 2025** organiz
 ```
 .
 ├── README.md                # Main repo overview (Bootcamp journey)
-├── business-proposal.md     # Business proposal (HagXwon AI-powered learning platform)
 ├── journal.md               # Daily bootcamp progress log
 ├── roadmap.md               # Week-by-week learning plan
 ├── notes/                   # All structured notes (TOGAF, ML, GenAI Essentials)
@@ -39,7 +38,7 @@ I've been hired as an **AI Engineer** for a **Korean Hagwon (Language Learning C
 
 Many students struggle with real-world English fluency due to a lack of **interactive, personalized practice**. These AI-powered apps aim to **bridge that gap**.
 
-See full details in **[business-proposal.md](./business-proposal.md)**
+See full details in **[business-proposal.md](/projects/genai-architecting/docs/business-proposal.md)**
 
 ## **Planned Learning Applications**
 
