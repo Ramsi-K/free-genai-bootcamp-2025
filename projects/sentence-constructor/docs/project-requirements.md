@@ -3,9 +3,11 @@
 ## Difficulty: Level 100
 
 ## Business Goal
+
 A chat agent that acts as a teaching assistant to guide students in translating a target English sentence into Japanese. The teaching assistant is not there to provide the direct answer but only to offer guidance.
 
 ## Key Question
+
 Will AI-powered assistants replace real teachers?
 
 ## Technical Uncertainty
@@ -20,6 +22,7 @@ Will AI-powered assistants replace real teachers?
 - What were we able to achieve based on our AI-powered assistant choice, hardware, or budget limitations?
 
 ## Technical Restrictions
+
 An AI-powered assistant of the developer’s choice must be used. Some examples include:
 
 - [Meta AI](https://www.meta.ai/) (Free, cloud-based)
