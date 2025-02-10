@@ -196,11 +196,6 @@ This phase will involve **iterative testing** to see how each model responds to 
 
 ---
 
-## **Next Steps**
-
-📌 **Optimize final prompt design for deployment in my *HagXwon AI-powered learning assistant*.**  
-
----
 📍 *This document will be updated as testing continues.* 🚀
 
 ---
