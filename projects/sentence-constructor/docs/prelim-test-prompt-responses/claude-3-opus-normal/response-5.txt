@@ -1,0 +1,16 @@
+Convert this sentence to Korean.
+Did you see the raven this morning? They were looking at our garden.
+
+
+오늘 아침에 까마귀를 봤어요? 그들은 우리 정원을 보고 있었어요.
+
+Here's the breakdown:
+
+오늘 아침에 (oneul achime) - this morning
+까마귀를 (kkamaguireul) - raven (object marker)
+봤어요 (bwasseoyo) - saw (polite, past tense)
+그들은 (geudeureun) - they (topic marker)
+우리 (uri) - our
+정원을 (jeongwoneul) - garden (object marker)
+보고 있었어요 (bogo isseosseoyo) - were looking at (polite, past continuous tense)
+Note: In Korean, the plural marker is often omitted, so "they" is implied without a specific plural marker for "raven."

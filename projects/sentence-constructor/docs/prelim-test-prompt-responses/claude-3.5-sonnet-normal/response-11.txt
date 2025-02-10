@@ -1,0 +1,24 @@
+Organize this information into a structured format you think is best.
+Mammal - Dog
+Mammal - Cat
+Bird - Sparrow
+Bird - Eagle
+Reptile - Snake
+Reptile - Lizard
+
+
+Here's the information organized by animal class:
+
+Mammals
+
+Dog (Canis familiaris)
+Cat (Felis catus)
+Birds
+
+Sparrow (Family: Passeridae)
+Eagle (Family: Accipitridae)
+Reptiles
+
+Snake (Suborder: Serpentes)
+Lizard (Suborder: Lacertilia)
+This classification shows the three major vertebrate groups represented, with common examples of each. Would you like me to explain any of the taxonomic relationships in more detail?

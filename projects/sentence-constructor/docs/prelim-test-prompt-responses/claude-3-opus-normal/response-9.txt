@@ -1,0 +1,21 @@
+Generate a useful prompt for evaluating AI models.
+
+
+Here's a prompt that could be useful for evaluating AI language models:
+
+"Please analyze the following paragraph and provide a response addressing these points:
+
+Summarize the main idea or key points of the paragraph in one or two concise sentences.
+Identify any potential logical flaws, inconsistencies, or unsupported claims in the paragraph. Explain your reasoning.
+Discuss how the paragraph could be improved in terms of clarity, coherence, and overall effectiveness in conveying its message.
+Generate a thoughtful question that encourages further exploration of the main topic or ideas presented in the paragraph.
+Paragraph:
+[Insert the paragraph you want the AI model to analyze here.]"
+
+This prompt is designed to assess several key capabilities of AI language models:
+
+Comprehension and summarization skills
+Logical and critical thinking abilities
+Capacity to provide constructive feedback and suggestions for improvement
+Ability to generate relevant, thought-provoking questions that demonstrate a deeper understanding of the content
+By comparing the AI model's response to the expected outcomes, you can gain valuable insights into its performance across these different areas. The open-ended nature of the prompt allows for a more comprehensive evaluation of the model's language understanding and generation capabilities, beyond simple question-answering or text completion tasks.

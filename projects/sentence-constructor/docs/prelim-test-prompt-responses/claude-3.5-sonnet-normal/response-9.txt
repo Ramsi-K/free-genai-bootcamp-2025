@@ -1,0 +1,34 @@
+Generate a useful prompt for evaluating AI models.
+
+
+Here's a thorough prompt for evaluating AI models:
+
+"Please help me solve this complex problem: [Complex multi-step problem]
+
+Your response should include:
+
+Your step-by-step reasoning process
+Any assumptions you're making
+Areas where you're uncertain
+Alternative approaches you considered
+Potential limitations of your solution
+After providing your solution, explain how you would verify its accuracy and implementation.
+
+This problem has no single correct answer, so focus on demonstrating your:
+
+Analytical capabilities
+Problem-solving methodology
+Understanding of nuance and tradeoffs
+Ability to acknowledge uncertainty
+Communication clarity
+Safety considerations"
+This prompt is effective because it:
+
+Tests both reasoning and output quality
+Requires explaining thought processes
+Checks for awareness of limitations
+Evaluates transparency about uncertainty
+Assesses safety considerations
+Can reveal potential biases or blindspots
+Examines communication abilities
+Would you like me to suggest additional components or variations to test specific capabilities?
