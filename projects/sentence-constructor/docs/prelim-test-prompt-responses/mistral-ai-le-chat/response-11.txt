@@ -1,0 +1,31 @@
+Organize this information into a structured format you think is best.
+
+Mammal - Dog
+
+Mammal - Cat
+
+Bird - Sparrow
+
+Bird - Eagle
+
+Reptile - Snake
+
+Reptile - Lizard
+
+
+Here's the information organized into a structured format, categorizing animals by their type:
+
+Animals
+Mammals:
+
+Dog
+Cat
+Birds:
+
+Sparrow
+Eagle
+Reptiles:
+
+Snake
+Lizard
+This structure helps to clearly distinguish between different types of animals and their specific examples.

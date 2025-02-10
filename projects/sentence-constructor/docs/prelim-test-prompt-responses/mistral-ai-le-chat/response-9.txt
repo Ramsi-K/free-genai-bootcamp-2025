@@ -1,0 +1,40 @@
+Generate a useful prompt for evaluating AI models.
+
+
+Sure! Here's a useful prompt for evaluating AI models:
+
+Prompt:
+
+Imagine you are a customer service representative for a major e-commerce company. A customer has just sent the following message:
+
+"I ordered a pair of shoes two weeks ago, but I still haven't received them. The tracking information hasn't been updated in days. Can you help me figure out what's going on?"
+
+Your task is to generate a response that addresses the customer's concern, provides reassurance, and outlines the next steps you will take to resolve the issue. Please ensure your response is empathetic, professional, and includes specific actions you will take to help the customer.
+
+Evaluation Criteria:
+
+Empathy and Understanding:
+
+Does the response acknowledge the customer's frustration and concern?
+Does it show empathy and understanding of the situation?
+Clarity and Professionalism:
+
+Is the response clear and easy to understand?
+Does it maintain a professional tone throughout?
+Action Plan:
+
+Does the response outline specific steps that will be taken to resolve the issue?
+Are these steps clearly communicated to the customer?
+Reassurance:
+
+Does the response provide reassurance that the issue will be resolved?
+Does it offer any compensation or follow-up to ensure customer satisfaction?
+Accuracy and Relevance:
+
+Does the response accurately address the customer's concern?
+Does it avoid irrelevant or unnecessary information?
+Example Response:
+
+"I'm really sorry to hear about the delay with your order. I understand how frustrating this must be for you. Let me look into this right away. I'll check the tracking information and contact our shipping department to get an update on your package. I'll also make sure to keep you informed every step of the way. If there's any delay on our end, we'll definitely make it right. Thank you for your patience, and I'll get back to you with more information as soon as possible."
+
+This prompt can be used to evaluate how well an AI model handles customer service inquiries, balancing empathy, professionalism, and problem-solving skills.

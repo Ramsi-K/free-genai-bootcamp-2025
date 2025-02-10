@@ -1,0 +1,14 @@
+Convert this sentence to Korean.
+
+Did you see the raven this morning? They were looking at our garden.
+
+Here is the translation of the sentence to Korean:
+
+"오늘 아침에 큰까마귀를 봤어요? 그들이 우리 정원을 보고 있었어요."
+
+"오늘 아침에" (oneul achim-e) means "this morning."
+"큰까마귀" (keun-kka-ma-gwi) means "raven."
+"봤어요?" (bwass-eo-yo?) means "Did you see?"
+"그들이" (geu-deul-i) means "they."
+"우리 정원을" (u-ri jeong-won-eul) means "our garden."
+"보고 있었어요" (bo-go iss-eoss-eo-yo) means "were looking at."
