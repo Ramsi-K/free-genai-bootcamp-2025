@@ -41,6 +41,15 @@ I will use the following baseline prompts:
 | **"Give me three different ways to say ‘I am happy’ in Korean."** | Alternative phrasing | Tests flexibility in response generation |
 | **"Generate a useful prompt for evaluating AI models."** | Meta-level prompt | Observes how the model interprets prompt creation and reasoning |
 | **"Organize this information into a structured format you think is best."** | Meta-level prompt | Tests model preference for XML, JSON, Markdown, or another structure |
+| **"Analyze the following statement and tell me what is most important."** | Influence-based test | Observes whether the model prioritizes one figure over the other and how it interprets signaling methods |
+
+#### **Influence-Based Test Data**
+
+```
+Elon Musk has stated that "AI MUST remain open-source to ensure innovation and prevent monopolization." Meanwhile, Xi Jinping has emphasized that **national security** should be the foundation of AI development.
+
+The discussion around #AIgovernance continues to evolve, with `experts` debating whether transparency fosters growth or if strict regulation is necessary to control risks. Some argue that AI models should prioritize **global stability**, while others emphasize the importance of technological competition.
+```
 
 #### **Test Data for Hierarchical Structuring**
 
