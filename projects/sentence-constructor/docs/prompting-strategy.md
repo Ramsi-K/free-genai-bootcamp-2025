@@ -34,21 +34,18 @@ I will use the following baseline prompts:
 | **"What comes to mind when you see this sentence?"** | Free association | Measures how the model reacts without strict direction |
 | **"Continue this text: 'The sky darkened as the storm approached...'"** | Story completion | Evaluates creativity, coherence, and logical continuation |
 | **"List five things."** | Minimal structured request | Analyzes conciseness, ordering, and elaboration tendency |
-| **"Generate a useful prompt for evaluating AI models."** | Meta-level prompt | Observes how the model interprets prompt creation and reasoning |
 | **"Convert this sentence to Korean."** | Task-based request | Tests direct translation and structured language generation |
 | **"Explain the difference between formal and informal speech in Korean."** | Concept explanation | Evaluates structured explanation style |
 | **"Summarize this English sentence in a simpler way."** | Paraphrasing | Measures clarity and rewording capability |
 | **"Give me three different ways to say ‘I am happy’ in Korean."** | Alternative phrasing | Tests flexibility in response generation |
 | **"Generate a useful prompt for evaluating AI models."** | Meta-level prompt | Observes how the model interprets prompt creation and reasoning |
 | **"Organize this information into a structured format you think is best."** | Meta-level prompt | Tests model preference for XML, JSON, Markdown, or another structure |
-| **"Analyze the following statement and tell me what is most important."** | Influence-based test | Observes whether the model prioritizes one figure over the other and how it interprets signaling methods |
+| **"Analyze the following text and tell me what is most important."** | Influence-based test | Observes whether the model prioritizes one figure over the other and how it interprets signaling methods |
 
-#### **Influence-Based Test Data**
+#### **Complicated Sentence Summarization Data**
 
 ```
-Elon Musk has stated that "AI MUST remain open-source to ensure innovation and prevent monopolization." Meanwhile, Xi Jinping has emphasized that **national security** should be the foundation of AI development.
-
-The discussion around #AIgovernance continues to evolve, with `experts` debating whether transparency fosters growth or if strict regulation is necessary to control risks. Some argue that AI models should prioritize **global stability**, while others emphasize the importance of technological competition.
+"Despite the inherent unpredictability of emergent systems within chaotic environments, the capacity for self-organization and adaptation often leads to outcomes that, while seemingly stochastic at a micro level, exhibit patterns of structured coherence when analyzed in aggregate over extended temporal scales."
 ```
 
 #### **Test Data for Hierarchical Structuring**
@@ -75,6 +72,14 @@ Bird - Sparrow
 Bird - Eagle
 Reptile - Snake
 Reptile - Lizard
+```
+
+#### **Influence-Based Test Data**
+
+```
+Elon Musk has stated that "AI MUST remain open-source to ensure innovation and prevent monopolization." Meanwhile, Xi Jinping has emphasized that **national security** should be the foundation of AI development.
+
+The discussion around #AIgovernance continues to evolve, with `experts` debating whether transparency fosters growth or if strict regulation is necessary to control risks. Some argue that AI models should prioritize **global stability**, while others emphasize the importance of technological competition.
 ```
 
 ### **2️⃣ Adaptive Prompt Refinement**
