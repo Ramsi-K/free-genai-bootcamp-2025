@@ -1,0 +1,56 @@
+Organize this information into a structured format you think is best.
+
+Grandmother - 할머니
+
+Sibling - 형
+
+Aunt/Uncle - 삼촌
+
+Grandfather - 할아버지
+
+Father - 아빠
+
+Mother - 엄마
+
+Sibling - 누나
+
+Aunt/Uncle - 이모
+
+
+
+2.0 Pro Experimental. Lacks access to real-time info and some Gemini features.
+Here's the information organized into a structured format, optimized for clarity and understanding, along with explanations:
+
+Format:  Hierarchical Table with Categorization and Relationship Details
+
+I've chosen a table format because it's excellent for presenting structured data with clear relationships.  The hierarchy helps group related terms, and the additional details improve understanding.
+
+Category	Relationship	Korean Term (Hangul)	Romanization	Notes
+Grandparents	Grandmother	할머니	Halmeoni	
+Grandfather	할아버지	Harabeoji	
+Parents	Mother	엄마	Eomma	
+Father	아빠	Appa	
+Aunts/Uncles	Aunt (Maternal)	이모	Imo	Mother's sister
+Uncle (Generic)	삼촌	Samchon	Traditionally, father's unmarried brother. Can be used more generally, but context is important.
+Siblings	Older Sister (Female Speaker)	누나	Nuna	Used by a female to address her older sister.
+Older Brother (Male Speaker)	형	Hyeong	Used by a male to address his older brother
+
+Export to Sheets
+Explanation of Choices and Structure:
+
+Categories: Grouping by generation (Grandparents, Parents, Aunts/Uncles, Siblings) makes the relationships immediately clear. This is the most fundamental organizational principle.
+Relationship: Specifies the English term for the family member, providing a clear reference point. I've added clarifications where needed (e.g., "Aunt (Maternal)").
+Korean Term (Hangul): Provides the Korean word in its native script. This is essential for correct pronunciation and writing.
+Romanization: Offers a phonetic representation of the Korean word using the Roman alphabet. This helps with pronunciation for those unfamiliar with Hangul. I've used the Revised Romanization of Korean, the most common system.
+Notes: This is the most crucial addition. It provides essential context and clarifies potential ambiguities:
+Gendered Sibling Terms: Korean has different words for older siblings depending on the speaker's gender. The table explicitly states this.
+"Samchon" Nuance: The note about "삼촌" highlights the traditional usage and the importance of context.
+Maternal vs Paternal: The distinction between "이모" and "고모" helps clarify which side of the family the aunt belongs to.
+Why this format is superior to a simple list:
+
+Clarity: The table format immediately shows the relationships between the different terms. A list would require more reading and mental processing to understand the connections.
+Structure: The hierarchy (categories) provides a logical organization that a list lacks.
+Completeness: The "Notes" column allows for crucial contextual information that would be awkward to include in a simple list.
+Readability: The table is easy to scan and quickly find specific information.
+Learnability: This is layed out in a format that helps to visualize the relationships.
+This structured table format provides a comprehensive and user-friendly way to understand Korean family terms.

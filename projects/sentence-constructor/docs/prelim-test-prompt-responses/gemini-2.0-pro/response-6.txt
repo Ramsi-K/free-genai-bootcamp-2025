@@ -1,0 +1,68 @@
+Explain the difference between formal and informal speech in Korean.
+
+
+2.0 Pro Experimental. Lacks access to real-time info and some Gemini features.
+The difference between formal and informal speech in Korean (often called "speech levels" or "honorifics") is a fundamental aspect of the language and a crucial part of Korean culture. It goes far beyond simply choosing "polite" words; it affects verb endings, pronouns, and even some nouns. Here's a breakdown:
+
+1. The Core Concept: Hierarchy and Respect
+
+Korean speech levels reflect social hierarchy and the relationship between the speaker and the listener (and sometimes the person being talked about). This hierarchy is based on factors like:
+
+Age: Older people are generally spoken to more formally.
+Social Status: People in positions of authority (bosses, teachers, etc.) receive formal speech.
+Familiarity: Strangers and acquaintances are usually addressed formally, while close friends and family use informal speech.
+Relationship: Family relationships have their own specific honorific terms (e.g., different words for "older brother" depending on whether you're male or female).
+2. The Main Speech Levels (Simplified)
+
+While there are technically more levels and nuances, here are the main ones you need to understand:
+
+Informal (반말 - banmal):
+
+Used with: Close friends, siblings (usually younger or of similar age), children, and sometimes, animals.
+Characteristics: Shorter verb endings (often ending in -아/어/여 a/eo/yeo), use of "너" (neo) for "you," and a generally more casual tone.
+Example: 밥 먹었어? (Bap meogeosseo?) - "Did you eat?" (informal)
+Polite/Formal (존댓말 - jondaenmal): This has two main sub-levels:
+
+해요체 (haeyoche): This is the most common form of polite speech. It's used in everyday conversations with people you're not close to, older people, people in positions of authority, and in most public situations.
+Characteristics: Verb endings usually include -아요/어요/여요 (-ayo/-eoyo/-yeoyo), use of "당신" (dangsin) or a person's title + "님" (nim) for "you" (though often "you" is omitted entirely), and a more respectful tone.
+Example: 밥 먹었어요? (Bap meogeosseoyo?) - "Did you eat?" (polite)
+합쇼체 (hapsyoche): Very formal level, rarely used in every-day language.
+Used: public speaking, announcements, news broadcasts, very formal situations, talking to someone of very high status (though even this is becoming less common).
+Characteristics Verb endings including ㅂ니다/습니다.
+Example: 밥 먹었습니까? (Bap meogeoseumnikka)
+Honorifics (높임말 - nopimmal): This isn't a separate speech level per se, but rather a set of vocabulary and grammatical structures used to show respect to the subject of the sentence (the person you're talking about). This can be combined with both formal and informal speech.
+
+Characteristics:
+
+Special verbs: Instead of "있다" (itda - to be/have), you might use "계시다" (gyesida) when referring to someone you respect. Instead of "먹다" (meokda - to eat), you might use "드시다" (deusida) or "잡수시다" (japsusida).
+Special nouns: Instead of "집" (jip - house), you might use "댁" (daek) when referring to someone else's house respectfully.
+Subject marker "-시-" (-si-): This is added to the verb stem to show respect to the subject. This is extremely common.
+Particles: Using 께서 instead of 가/이
+Example (combining polite speech and honorifics):
+
+선생님께서 밥을 드셨어요. (Seonsaengnimkkeseo babeul deusyeosseoyo.) - "The teacher ate." (Notice the honorific verb "드시다" and the subject marker "-시-" in "드셨어요" and the honorific particle 께서.)
+3. Key Differences Summarized
+
+Feature	Informal (반말 - banmal)	Polite (존댓말 - jondaenmal - haeyoche)	Very formal (존댓말 -jondaenmal- hapsyoche)
+Verb Endings	-아/어/여, etc.	-아요/어요/여요, etc.	-ㅂ니다/습니다 etc.
+"You"	너 (neo)	당신 (dangsin), [Title] + 님, or often omitted	당신 (dangsin), [Title] + 님, or often omitted
+Tone	Casual, direct	Respectful, polite	Highly respectful, formal
+Usage	Close friends, family	Most everyday situations, strangers, elders	Public speaking, news, very formal situations
+
+Export to Sheets
+4. When to Use Which Level
+
+Default to Polite: When in doubt, use the polite form (haeyoche). It's much better to be overly polite than to accidentally offend someone.
+Listen and Observe: Pay attention to how Koreans interact with each other. You'll quickly pick up on the cues.
+Ask (Carefully): If you're unsure, you can politely ask someone you're comfortable with, "Is it okay if I speak informally to you?" (저한테 반말해도 돼요? Jeohante banmalhaedo dwaeyo?).
+Age is Key: In a group of strangers, older people are generally given a higher level of respect.
+Relationship, Not Just Age: A younger boss will be given a higher speech level.
+Switching Levels: Switching from formal to informal speech is a significant social step, indicating a closer relationship. It's usually initiated by the older or higher-status person. Never assume you can switch to informal speech.
+5. Why It Matters
+
+Using the correct speech level is essential for smooth communication and showing respect in Korean culture. Using the wrong level can be seen as rude, disrespectful, or even insulting, regardless of your intentions. Learning the nuances of Korean speech levels takes time and practice, but it's a worthwhile investment for anyone serious about learning the language and understanding Korean culture.
+
+
+
+
+

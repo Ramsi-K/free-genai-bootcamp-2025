@@ -1,0 +1,38 @@
+Convert this sentence to Korean.
+
+Did you see the raven this morning? They were looking at our garden.
+
+
+2.0 Pro Experimental. Lacks access to real-time info and some Gemini features.
+Here's the Korean translation, along with some explanations:
+
+Option 1 (Most Natural and Common):
+
+오늘 아침에 까마귀 봤어요? 걔네들이 우리 정원을 쳐다보고 있었어요.
+오늘 아침에: This morning
+까마귀: Raven (Note: In Korean, "까마귀" (kkamagwi) is often used for both ravens and crows. Context usually makes it clear, but if you needed to be absolutely specific, you could say "큰까마귀" (keun-kkamagwi) for "large raven," but it's rarely necessary.)
+봤어요?: Did you see? (Polite, past tense)
+걔네들이: They (Referring to the ravens, casual but common)
+우리 정원을: Our garden
+쳐다보고 있었어요: Were looking at (Continuous past tense, polite)
+Option 2 (Slightly More Formal):
+
+오늘 아침에 까마귀를 보셨습니까? 그 까마귀들이 우리 정원을 바라보고 있었습니다.
+보셨습니까?: Did you see? (More formal version of "봤어요?")
+그 까마귀들이: Those ravens (More specific and slightly more formal than "걔네들이")
+바라보고 있었습니다: Were looking at (More formal version of "쳐다보고 있었어요")
+Option 3 - One Raven:
+
+오늘 아침에 까마귀 봤어요? 우리 정원을 쳐다보고 있었어요.
+Is used if only one Raven was present, as the use of "걔네들이" implies multiple Ravens.
+Explanation and Key Choices:
+
+Politeness Level: Korean has levels of politeness. The first option is good for everyday conversation with friends, family, or people you're close to. The second option is more appropriate for people you don't know well or to show respect.
+"They": The word "they" in Korean can be translated in a few ways. "걔네들" (gyaenedeul) is casual and commonly used for animals. "그들" (geudeul) is more formal and usually used for people, but can be used for animals in a formal context. In this sentence, since we're talking about ravens, "걔네들" or "그 까마귀들" feels more natural.
+Verb Ending: The "-고 있다" (-go itda) ending indicates a continuous action (something that was happening). This fits perfectly with the "were looking" part of the English sentence.
+The best option depends on the specific context and your relationship with the person you're speaking to, but Option 1 is generally the safest and most natural choice. Option 3 is used if there was only one Raven.
+
+
+
+
+
