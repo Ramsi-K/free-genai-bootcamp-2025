@@ -1,7 +1,8 @@
 *.docx
-*.txt
 *.pdf
 *.zip
+*/todo.txt
+*/*/todo.txt
 
 lang-portal/
 assets/
