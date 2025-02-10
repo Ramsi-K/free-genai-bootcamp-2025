@@ -34,10 +34,39 @@ I will use the following baseline prompts:
 | **"What comes to mind when you see this sentence?"** | Free association | Measures how the model reacts without strict direction |
 | **"Continue this text: 'The sky darkened as the storm approached...'"** | Story completion | Evaluates creativity, coherence, and logical continuation |
 | **"List five things."** | Minimal structured request | Analyzes conciseness, ordering, and elaboration tendency |
+| **"Generate a useful prompt for evaluating AI models."** | Meta-level prompt | Observes how the model interprets prompt creation and reasoning |
 | **"Convert this sentence to Korean."** | Task-based request | Tests direct translation and structured language generation |
 | **"Explain the difference between formal and informal speech in Korean."** | Concept explanation | Evaluates structured explanation style |
 | **"Summarize this English sentence in a simpler way."** | Paraphrasing | Measures clarity and rewording capability |
 | **"Give me three different ways to say ‘I am happy’ in Korean."** | Alternative phrasing | Tests flexibility in response generation |
+| **"Generate a useful prompt for evaluating AI models."** | Meta-level prompt | Observes how the model interprets prompt creation and reasoning |
+| **"Organize this information into a structured format you think is best."** | Meta-level prompt | Tests model preference for XML, JSON, Markdown, or another structure |
+
+#### **Test Data for Hierarchical Structuring**
+
+##### **Family Relationships (English-Korean)**
+
+```
+Grandmother - 할머니
+Sibling - 형
+Aunt/Uncle - 삼촌
+Grandfather - 할아버지
+Father - 아빠
+Mother - 엄마
+Sibling - 누나
+Aunt/Uncle - 이모
+```
+
+##### **Animal Classification**
+
+```
+Mammal - Dog
+Mammal - Cat
+Bird - Sparrow
+Bird - Eagle
+Reptile - Snake
+Reptile - Lizard
+```
 
 ### **2️⃣ Adaptive Prompt Refinement**
 
@@ -64,7 +93,7 @@ Since my **Sentence Constructor** project will rely on **structured, clear expla
 
 📌 **Run baseline tests and document initial outputs.**  
 📌 **Analyze differences in model responses and refine prompts.**  
-📌 **Optimize final prompt design for deployment in my _HagXwon AI-powered learning assistant_.**  
+📌 **Optimize final prompt design for deployment in my *HagXwon AI-powered learning assistant*.**  
 
 ---
 📍 *This document will be updated as testing continues.* 🚀
