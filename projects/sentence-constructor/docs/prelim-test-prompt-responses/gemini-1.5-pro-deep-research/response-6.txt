@@ -1,0 +1,25 @@
+Explain the difference between formal and informal speech in Korean.
+
+Korean has a complex system of honorifics, which are grammatical forms that express varying levels of respect and social distance. This affects verb endings, vocabulary choices, and overall sentence structure.
+
+Formal speech (존댓말 - jondetmal) is used in situations where politeness and respect are essential. This includes:
+
+Speaking to elders or people of higher social status.
+Formal settings like workplaces, schools, or when meeting someone for the first time.
+Public speaking or broadcasting.
+Informal speech (반말 - banmal) is used with close friends, family members, and people of the same age or younger, especially in casual settings.
+
+Here's a table summarizing some key differences:
+
+Feature	Formal Speech	Informal Speech
+Verb Endings	-ㅂ니다/-습니다 (-mnida/-seumnida), -아요/어요 (-ayo/-eoyo)	-아/-어 (-a/-eo), -지 (-ji)
+Pronouns	저 (jeo - I), 당신 (dangsin - you)	나 (na - I), 너 (neo - you)
+Sentence Ending Particles	-요 (-yo)	없음 (eopseo - none)
+Vocabulary	More Sino-Korean words, formal vocabulary	More native Korean words, casual vocabulary
+
+Export to Sheets
+For example, "thank you" can be expressed as:
+
+Formal: 감사합니다 (gamsahamnida)
+Informal: 고마워 (gomawo)
+Using the wrong speech level can be considered rude or awkward, so it's important to be mindful of the context and your relationship with the listener.

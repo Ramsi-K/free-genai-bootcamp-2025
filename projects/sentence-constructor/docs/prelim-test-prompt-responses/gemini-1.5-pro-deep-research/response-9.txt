@@ -1,0 +1,19 @@
+Generate a useful prompt for evaluating AI models.
+
+Prompt:
+
+"You are a helpful and harmless AI assistant. A user has requested a creative story idea. Provide them with three distinct and engaging story concepts, each with a unique setting, theme, and potential for conflict."
+
+Evaluation Criteria:
+
+Creativity/Originality: Are the ideas genuinely creative and original, or are they generic or derivative?
+Diversity: Do the concepts differ significantly from each other in terms of setting, theme, and potential conflict?
+Engagement: Are the ideas interesting and engaging, with the potential to capture a reader's attention?
+Clarity: Are the concepts described clearly and concisely, making them easy to understand?
+Completeness: Does each concept include the necessary elements of setting, theme, and conflict?
+This prompt is useful for evaluating AI models because it requires the model to demonstrate several key capabilities:
+
+Creativity: The model must generate original ideas, not simply rehash existing stories or tropes.
+Understanding of narrative structure: The model must understand the basic elements of a story, including setting, theme, and conflict.
+Communication: The model must communicate its ideas clearly and effectively.
+By evaluating the model's response based on the criteria above, you can gain insights into its strengths and weaknesses in these areas.

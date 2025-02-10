@@ -1,0 +1,28 @@
+Organize this information into a structured format you think is best.
+
+Grandmother - 할머니
+
+Sibling - 형
+
+Aunt/Uncle - 삼촌
+
+Grandfather - 할아버지
+
+Father - 아빠
+
+Mother - 엄마
+
+Sibling - 누나
+
+Aunt/Uncle - 이모
+
+
+관계	한국어
+할아버지	할아버지
+할머니	할머니
+아빠	아빠
+엄마	엄마
+삼촌/이모	삼촌/이모
+형/누나	형/누나
+
+Export to Sheets

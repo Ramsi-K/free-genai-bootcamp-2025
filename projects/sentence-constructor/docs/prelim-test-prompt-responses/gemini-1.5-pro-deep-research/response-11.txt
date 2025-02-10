@@ -1,0 +1,26 @@
+Organize this information into a structured format you think is best.
+
+Mammal - Dog
+
+Mammal - Cat
+
+Bird - Sparrow
+
+Bird - Eagle
+
+Reptile - Snake
+
+Reptile - Lizard
+
+
+It seems like you're providing a list of animals and their classifications. Here's that information organized into a table:
+
+Class	Animal
+Mammal	Dog
+Mammal	Cat
+Bird	Sparrow
+Bird	Eagle
+Reptile	Snake
+Reptile	Lizard
+
+Export to Sheets
