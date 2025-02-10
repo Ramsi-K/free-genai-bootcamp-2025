@@ -1,0 +1,129 @@
+He reads a bookEditLet me help you construct this Korean sentence step by step.
+📌 Vocabulary Table:
+KoreanRomanizationEnglish Meaning그geuhe책chaekbook읽다ilkdato read
+📌 Sentence Structure:
+[Subject] [Object] [Verb]
+📌 Hints:
+
+Remember that objects in Korean need a particle to show their role in the sentence
+The verb needs to be conjugated to present tense
+Consider which politeness level you want to use (casual or polite)
+
+Try constructing the sentence using these words and hints! Let me know if you'd like to use casual or polite form. CopyRetryR그 책을 읽어요그는  읽어EditLet me help you evaluate these attempts.
+📌 Feedback on your attempts:
+
+"그 책을 읽어요"
+
+
+You've correctly used the object particle '을' with 책
+The verb conjugation '읽어요' is correct for polite form
+However, '그' here is being used as a demonstrative ("that book") rather than as "he"
+
+
+"그는 읽어"
+
+
+Good use of the topic particle '는' with 그
+The verb conjugation is correct for casual form
+However, you're missing the object (what is he reading?)
+
+📌 Hints for a complete sentence:
+
+Combine the good elements from both attempts
+Remember the basic structure: [Subject] [Object] [Verb]
+For "he", we use '그가' (subject particle) or '그는' (topic particle)
+
+Would you like to try combining these elements into one complete sentence? You can choose either casual (읽어) or polite (읽어요) form. CopyRetryRShe drinks waterEditLet me help you construct this Korean sentence step by step.
+📌 Vocabulary Table:
+KoreanRomanizationEnglish Meaning그녀geunyeoshe물mulwater마시다masidato drink
+📌 Sentence Structure:
+[Subject] [Object] [Verb]
+📌 Hints:
+
+The object (물) needs a particle to show its role in the sentence
+The verb (마시다) needs to be conjugated
+You can use either '그녀가' (subject particle) or '그녀는' (topic particle)
+Choose between casual form (마셔) or polite form (마셔요)
+
+Try constructing the sentence using these words and hints! Let me know which politeness level you'd prefer to use. CopyRetryR그녀는 물을 마셔요Edit📌 Feedback:
+Excellent! Your sentence is perfect! Let's break down why it's correct:
+
+You used the topic particle '는' with 그녀 (she)
+You correctly used the object particle '을' with 물 (water)
+The verb 마시다 is properly conjugated to 마셔요 in polite form
+Your word order follows the correct Korean SOV (Subject-Object-Verb) structure
+
+Would you like to try a new, slightly more challenging sentence? For example, we could add a time expression or location to make it more complex. CopyRetryRyesEditGreat! Let's try this sentence:
+"She drinks water at home"
+📌 Vocabulary Table:
+KoreanRomanizationEnglish Meaning그녀geunyeoshe물mulwater집jiphome마시다masidato drink
+📌 Sentence Structure:
+[Subject] [Location] [Object] [Verb]
+📌 Hints:
+
+You'll need to add a location particle to 집
+Keep the same structure you used before, but add the location
+Remember: locations typically come before the object in Korean
+You can maintain the same polite level you used in your previous sentence
+
+Try creating this new sentence with the location added! CopyRetryR그녀는 물을 마셔요EditI notice you've kept the same sentence without adding the location (집). Let's work on incorporating the new element.
+You've maintained:
+
+그녀는 (she + topic particle)
+물을 (water + object particle)
+마셔요 (drink in polite form)
+
+📌 Hints:
+
+The word 집 (home) needs the location particle '에'
+In Korean, the location usually comes before the object
+Try inserting 집에 (at home) before 물을
+
+Would you like to try again with the location included? CopyRetryR그녀는 물을 마셔요 집에Edit📌 Feedback:
+I notice you've added 집에 (at home) at the end of the sentence. In Korean, the word order is a bit different:
+
+The location (집에) typically comes before the object (물을)
+Remember the structure: [Subject] [Location] [Object] [Verb]
+
+📌 Hints:
+
+Move 집에 (at home) before 물을
+Keep everything else the same
+The correct order should be:
+[그녀는] [집에] [물을] [마셔요]
+
+Would you like to try rearranging the sentence with the correct word order? CopyRetryR그녀는 집에 물을마셔요Edit📌 Feedback:
+Almost perfect! Your word order is exactly right! There's just one tiny spacing issue:
+Your sentence: 그녀는 집에 물을마셔요
+
+The spacing between 물을 and 마셔요 is missing
+
+In Korean, spaces should be placed:
+
+Between subject and location (그녀는 집에)
+Between location and object (집에 물을)
+Between object and verb (물을 마셔요)
+
+The correct sentence is:
+그녀는 집에 물을 마셔요
+Would you like to try an even more challenging sentence? We could add a time expression like "every day" or "in the morning"! CopyRetryR그녀는 집에 물을 마셔요Edit📌 Feedback:
+Perfect! Your sentence is absolutely correct! Let's break down why it's perfect:
+
+Word order is correct: Subject + Location + Object + Verb
+All particles are correct:
+
+는 (topic particle)
+에 (location particle)
+을 (object particle)
+
+
+Proper spacing between all elements
+Polite form of the verb (마셔요)
+
+Let's try a new challenge with a time expression:
+"She drinks water at home every morning"
+📌 Vocabulary Table:
+KoreanRomanizationEnglish Meaning그녀geunyeoshe물mulwater집jiphome마시다masidato drink매일 아침maeil achimevery morning
+📌 Sentence Structure:
+[Subject] [Time] [Location] [Object] [Verb]
+Try creating this new sentence by adding 매일 아침 (every morning)!
