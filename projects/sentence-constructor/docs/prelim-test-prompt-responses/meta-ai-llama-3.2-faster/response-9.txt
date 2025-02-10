@@ -1,0 +1,23 @@
+Generate a useful prompt for evaluating AI models.
+
+Here's a prompt that can help evaluate an AI model's language understanding, reasoning, and generation capabilities:
+Prompt:
+"Imagine you are a travel agent specializing in sustainable tourism. A client is planning a 7-day trip to a destination of their choice (let's say, Costa Rica) and wants to minimize their carbon footprint. Provide a personalized itinerary that includes:
+Eco-friendly accommodations
+Transportation options with minimal environmental impact
+Activities that support local conservation efforts
+Recommendations for sustainable food options
+Please include a brief explanation for each recommendation and an estimated carbon footprint for the entire trip."
+Evaluation Criteria:
+Relevance: How well does the response align with the client's request and sustainable tourism principles?
+Coherence: How logical and well-structured is the itinerary?
+Creativity: How innovative and unique are the recommendations?
+Knowledge: How accurate and up-to-date is the information provided?
+Tone and Style: How well does the response convey a professional and friendly tone?
+This prompt requires the AI model to demonstrate its ability to:
+Understand the context and requirements of the task
+Generate relevant and coherent text
+Provide accurate and up-to-date information
+Showcase creativity and innovation
+Adopt a suitable tone and style for the task
+Feel free to modify the prompt to fit your specific evaluation needs!

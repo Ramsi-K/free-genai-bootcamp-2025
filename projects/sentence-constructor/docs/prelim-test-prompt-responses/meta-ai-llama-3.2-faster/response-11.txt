@@ -1,0 +1,26 @@
+Organize this information into a structured format you think is best.
+
+Mammal - Dog
+
+Mammal - Cat
+
+Bird - Sparrow
+
+Bird - Eagle
+
+Reptile - Snake
+
+Reptile - Lizard
+
+Here is the information organized into a structured format:
+Classification of Animals
+Mammals
+Dog
+Cat
+Birds
+Sparrow
+Eagle
+Reptiles
+Snake
+Lizard
+This format uses a hierarchical structure to categorize the animals by their class. Let me know if you have any further requests!
