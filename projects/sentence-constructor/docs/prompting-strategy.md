@@ -183,7 +183,16 @@ The discussion around #AIgovernance continues to evolve, with `experts` debating
 
 ## **Application to My Project**
 
-Since my **Sentence Constructor** project will rely on **structured, clear explanations for language learning**, I plan to update this section after testing to reflect the best strategies based on observed model behavior.
+I will be building on the foundational work provided by instructor Andrew, adapting his framework for Japanese learning into a system that effectively teaches Korean sentence construction. Now that I have a clear understanding of how different models respond to various prompt styles, I will create a **base prompt** and modify it according to the strengths and weaknesses of each model.
+
+Since **Adaptive Prompt Refinement** is time-intensive, I will focus on refining prompts for the **top three performing models** from the previous evaluations. The goal is to **optimize each model for structured language learning**, ensuring that:
+
+- The model **guides the student rather than giving away answers.**
+- The responses are **structured yet concise**, so learners are not overwhelmed.
+- The model **provides hints instead of full translations**, encouraging active learning.
+- The vocabulary and sentence structures align with beginner-level Korean learners.
+
+This phase will involve **iterative testing** to see how each model responds to minor modifications in prompt style, ensuring that the final approach is **engaging, interactive, and effective for language acquisition.**
 
 ---
 
