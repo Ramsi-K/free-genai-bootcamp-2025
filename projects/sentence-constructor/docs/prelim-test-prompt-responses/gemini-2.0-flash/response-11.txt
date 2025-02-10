@@ -1,0 +1,28 @@
+Organize this information into a structured format you think is best.
+
+Mammal - Dog
+
+Mammal - Cat
+
+Bird - Sparrow
+
+Bird - Eagle
+
+Reptile - Snake
+
+Reptile - Lizard
+
+
+
+Here's a structured format for the information you provided:
+
+Class	Animal
+Mammal	Dog
+Mammal	Cat
+Bird	Sparrow
+Bird	Eagle
+Reptile	Snake
+Reptile	Lizard
+
+Export to Sheets
+This table clearly shows the classification of each animal into its respective class.  It's concise and easy to read.

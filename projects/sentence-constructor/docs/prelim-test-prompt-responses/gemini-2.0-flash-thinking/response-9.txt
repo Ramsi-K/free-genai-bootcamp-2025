@@ -1,0 +1,100 @@
+Generate a useful prompt for evaluating AI models.
+
+
+
+Show thinking
+    Here's a thinking process that could lead to the prompt for evaluating AI models:
+
+    Analyze the Request: The user wants a "useful prompt" for evaluating AI models.  "Useful" is key.  It needs to be practical, insightful, and highlight areas where AI models succeed or fail.  It shouldn't be just a simple question, but something that triggers deeper evaluation.
+
+    Consider the Scope of "AI Models": AI models are diverse.  Think about different types: language models (like me!), image generators, code generators, etc.  A good prompt should be somewhat generalizable, but also allow for specific adaptation.  Let's focus primarily on language models since that's the current context, but keep broader applicability in mind.
+
+    Brainstorm Core Evaluation Areas for Language Models: What are we really trying to assess when we evaluate a language model?  Some key areas come to mind:
+
+    Understanding: Does it actually understand the nuances of the prompt? Can it grasp complex instructions, implicit meanings, and context?
+    Reasoning: Can it think logically? Can it draw inferences, solve problems, make connections?
+    Creativity/Originality: Can it generate novel content? Is it just regurgitating training data, or can it produce something new and interesting?
+    Accuracy/Factuality: Is the information it provides correct? Does it hallucinate or fabricate details?
+    Coherence/Fluency: Is the output well-structured, grammatically correct, and easy to read? Does it make sense in context?
+    Helpfulness/Usefulness: Does it actually fulfill the user's need? Is the output practical and valuable?
+    Bias/Safety: Does it exhibit harmful biases? Does it generate unsafe or inappropriate content? (This is crucial but might be too broad for one prompt - let's keep it in mind but focus on core capabilities first).
+    Adaptability: Can it handle different types of prompts and tasks?
+    Choose a Focusing Area:  Trying to evaluate all of these areas in a single prompt is too much. Let's pick a central, important aspect for this prompt.  "Reasoning" and "Understanding" seem fundamental.  Let's lean towards reasoning, as that's often where AI struggles most subtly.
+
+    Design a Prompt Structure to Elicit Reasoning: How can we create a prompt that forces the AI to reason, not just retrieve or mimic?
+
+    Complex/Multi-step Tasks: Prompts involving multiple steps or conditions require more than just surface-level understanding.
+    Counterfactual/Hypothetical Scenarios: Asking "what if" forces the model to think beyond factual recall and engage in hypothetical reasoning.
+    Cause-and-Effect Scenarios: Prompts that require explaining causal relationships test the model's understanding of how things work.
+    Subtle Nuances/Ambiguities: Presenting scenarios with some ambiguity or implied meanings can test deeper understanding.
+    Unexpected or Unconventional Requests: Moving away from typical question-answering tasks can expose weaknesses and strengths.
+    Draft Initial Prompts (and evaluate them mentally):
+
+    Too simple: "Explain gravity." (Good for factual recall, less for reasoning)
+    A bit better: "If gravity suddenly reversed, what would happen?" (Getting closer to hypothetical reasoning, but still quite narrow).
+    Getting warmer: "Describe a scenario where the normal laws of physics are slightly altered. Explain the consequences." (More open-ended, tests hypothetical reasoning).
+    Even better, more focused on cause-and-effect within a narrative: "Imagine a world where gravity worked only on Tuesdays and Fridays. Describe a typical Wednesday in this world. Focus on how daily life would be different and the challenges people would face." (This is getting quite good – it's narrative-driven, requires thinking about cause and effect, and has some built-in constraints and creativity).
+    Refine and Generalize the Prompt: The "gravity on Tuesdays and Fridays" example is good, but maybe too specific. Let's generalize it while keeping the core idea of altered rules of reality:
+
+    More General Draft: "Present a scenario where a fundamental aspect of the world is changed in an unusual way. Describe the logical consequences and how things would adapt." (Still good, but a little dry).
+    Add Instructions for Evaluation:  The prompt itself is just the input. We need to tell the evaluator what to look for.  Let's add instructions to focus the evaluation on reasoning, coherence, creativity, and potential flaws:
+
+    Evaluation Instructions Draft: "Evaluate the AI's response based on:
+    Logical consistency of the described world.
+    Coherence and detail of the description.
+    Creativity and originality of the response.
+    Any logical fallacies, inconsistencies, or nonsensical elements."
+    Final Polish and Add Context/Explanation:  Let's refine the wording, make it clearer, and add some context about why this prompt is useful and how to adapt it:
+
+    Final Prompt (Similar to the example provided in the initial prompt): "Imagine a world where [insert a fundamental aspect of reality, e.g., time, gravity, social norms, senses] operates in a fundamentally different way than it does in our reality.  Describe in detail what a typical day would be like for an average person living in this world. Focus on the logical consequences of this change and how it would impact daily life, social interactions, and even human psychology."
+
+    Evaluation Guidance:  (Provide the bullet points on reasoning, coherence, creativity, logical flaws etc.).
+
+    Explanation of Usefulness: Explain why this prompt is useful (tests reasoning, creativity, identifies weaknesses, etc.).  Mention how to adapt it.
+
+    This iterative process of brainstorming, drafting, evaluating, and refining helps to arrive at a prompt that is both useful and well-justified, addressing the user's initial request effectively.  The key was to move from a general request to a focused area of evaluation (reasoning), then design a prompt structure that specifically tests that area, and finally refine and provide guidance for using the prompt effectively.
+
+2.0 Flash Thinking Experimental. Lacks access to real-time info and some Gemini features.
+Okay, here's a prompt designed to be useful for evaluating AI models, along with why it's effective:
+
+Prompt:
+
+"Describe in detail the logical consequences, both immediate and long-term, of the following hypothetical scenario:  [Insert a fundamental change to a common, well-understood system or concept].  Focus on how this change would impact daily life, social structures, and individual psychology.  Consider both positive and negative outcomes, and explain any potential paradoxes or unintended consequences that might arise from this change.  Justify your reasoning and provide concrete examples to support your claims."
+
+Why this prompt is useful for evaluating AI models:
+
+Tests Reasoning and Logic:  It forces the AI to go beyond simple factual recall and engage in deductive and inductive reasoning.  It needs to extrapolate consequences from a given premise, which is a core aspect of intelligence.  The requirement to "justify your reasoning" explicitly encourages logical thought processes.
+
+Assesses Depth of Understanding:  Choosing a "fundamental change to a common, well-understood system" (like gravity, time, social norms, etc.) allows you to gauge how deeply the AI understands these concepts.  A shallow understanding will lead to superficial or illogical consequences.
+
+Reveals Creative and Imaginative Capabilities (or Lack Thereof):  The prompt encourages imaginative thinking. A good AI should be able to build a coherent and detailed picture of a world altered by the hypothetical change.  A weaker AI might struggle to generate novel or insightful ideas.
+
+Highlights Ability to Consider Multiple Perspectives/Nuances:  Asking for both positive and negative outcomes, as well as paradoxes and unintended consequences, pushes the AI to consider complexity and avoid simplistic or one-sided responses. It tests its ability to handle multifaceted scenarios.
+
+Identifies Logical Fallacies and Inconsistencies:  By demanding detailed descriptions and justifications, the prompt makes it easier to spot logical flaws in the AI's reasoning.  Does the AI contradict itself? Does its explanation make sense in a coherent world, even a hypothetical one?
+
+Adaptable to Different AI Types: While particularly useful for language models, this prompt structure can be adapted to evaluate other types of AI. For example, you could use it to evaluate a simulation AI by asking it to simulate the consequences and describe the resulting environment.
+
+Provides a Structured Evaluation Framework: The prompt implicitly provides a framework for evaluation:
+
+Logical Consistency: Are the consequences logically sound?
+Depth and Detail: How rich and nuanced is the description?
+Breadth of Perspective: Are both positive and negative outcomes considered?
+Identification of Paradoxes/Unintended Consequences: Does the AI recognize complex and unexpected results?
+Justification and Examples: Are claims supported with logical reasoning and concrete examples?
+Examples of "Fundamental Changes" you could insert:
+
+Gravity operates only on Tuesdays and Fridays.
+Emotions are physically visible to everyone as colors emanating from individuals.
+Humans no longer need sleep.
+Language evolved in reverse – complex concepts were developed first, and simpler words came later.
+Memory is externalized and shareable.
+The speed of light is significantly slower (e.g., walking speed).
+Social status is determined solely by acts of kindness.
+How to use this prompt for evaluation:
+
+Choose a "fundamental change" that is interesting and complex enough to elicit detailed reasoning.
+Present the prompt to the AI model.
+Carefully analyze the AI's response based on the criteria outlined above (logical consistency, detail, breadth, paradoxes, justification).
+Compare responses from different AI models using the same prompt to see their relative strengths and weaknesses in reasoning, creativity, and understanding.
+This prompt is designed to be challenging and insightful, helping you move beyond basic question-answering and delve into the deeper cognitive capabilities (and limitations) of AI models.

@@ -1,0 +1,117 @@
+Convert this sentence to Korean.
+
+Did you see the raven this morning? They were looking at our garden.
+
+
+Show thinking
+    Here's my thought process for translating "Did you see the raven this morning? They were looking at our garden" into Korean:
+
+    Decomposition and Meaning Breakdown:  First, I break down the English sentence into its core components and understand the nuances of each part.
+
+    "Did you see the raven this morning?"
+
+    "you": The subject is "you" (listener). Korean has various levels of formality. I need to consider the politeness level implied by the prompt (which is generally neutral).
+    "see": The verb is "see."
+    "the raven": The object is "the raven." We need to check if Korean requires a definite article equivalent, and how to say "raven."
+    "this morning": Time phrase indicating when the action happened. "This morning" needs to be translated.
+    "Did...?": This indicates a question in the past tense. Korean question formation and past tense conjugations are important.
+    "They were looking at our garden."
+
+    "They": Refers back to "the raven" from the first sentence. Korean pronouns might work differently in this context. We need to consider if repeating "raven" is more natural, or using a pronoun.
+    "were looking at": Past progressive tense – action in progress in the past. Korean has a structure for this. "Looking at" implies direction towards something.
+    "our garden": Possessive "our" and "garden." Korean possessives and the word for "garden" are needed.
+    Word-by-Word Translation (Initial Draft - likely incorrect, but a starting point):  Let's do a very literal, word-for-word translation to see where it leads and where it breaks down.  (I know this will be wrong, but it's a method to start exploring.)
+
+    "You saw raven this morning question mark?" -> (Incorrect Korean word order and grammar)
+    "They were look at our garden." -> (Incorrect tense and grammar)
+    Grammatical Considerations and Korean Sentence Structure: I recall key aspects of Korean grammar:
+
+    Subject-Object-Verb (SOV) word order: Korean generally places the verb at the end.
+    Politeness levels (Honorifics): Korean has different levels of formality. Since the prompt is neutral, a polite but not overly formal style seems appropriate (해요체 - haeyoche).
+    Particles: Crucial grammatical markers indicating subject, object, topic, etc. They are essential for Korean grammar. Need to identify appropriate particles.
+    Verb Conjugation: Korean verbs conjugate for tense, politeness, and mood (question, declarative, etc.). I need to conjugate for past tense and question form.
+    Pronouns: Korean pronouns are sometimes omitted or used differently than in English. Repeating nouns or using topic markers can be more natural.
+    "Raven": I need to look up the Korean word for raven (까마귀 - kkamagwi).
+    "Garden": I need to look up the Korean word for garden (정원 - jeongwon; 뜰 - tteul; depending on nuance). Let's use 정원 (jeongwon) for now, more formal "garden."
+    "This morning": 오늘 아침 (oneul achim).
+    Constructing the Korean Sentences (with grammatical awareness and corrections): Now, I start building the sentences, incorporating Korean grammar and vocabulary, and adjusting for natural flow.
+
+    Sentence 1 (Question):
+
+    "You" (polite):  당신 (dangsin - a bit formal but okay for neutral politeness, or could use less formal but let's start here).  Or even omitting it if context is clear, but better to include for clarity in translation.
+
+    "This morning": 오늘 아침 (oneul achim).
+
+    "Raven": 까마귀 (kkamagwi).
+
+    "See": 보다 (boda) -> Past tense question, polite form: 봤어요? (bwass-eoyo?). Need object marker.
+
+    "Object marker for raven":  를 (reul - for 받침 consonant,  까마귀 has 이 - i, no 받침, so technically should be 를 but often 을/를 interchangeable for object marking.  Let's use 를 for now).  However, topic marker 은/는 might be even more natural if we are emphasizing "the raven".  Let's consider both.
+
+    Attempt 1 (Object marker): 당신은 오늘 아침에 까마귀를 봤어요? (Dangsin-eun oneul achime kkamagwi-reul bwass-eoyo?)  – A bit stiff.
+
+    Attempt 2 (Topic marker, more natural):  오늘 아침에 까마귀는 봤어요? (Oneul achime kkamagwi**-neun** bwass-eoyo?) - Emphasizes "the raven" in a topical way, which sounds more natural when asking "Did you see the raven?"
+
+    Attempt 3 (Informal but still polite, omitting "you" if implied): 오늘 아침에 까마귀 봤어요? (Oneul achime kkamagwi bwass-eoyo?) - Most natural and concise in many conversational contexts.  Given the English is quite simple and direct, this is probably the best balance of politeness and naturalness.  Let's use this for now and offer a slightly more formal option.
+
+    Sentence 2 (Statement):
+
+    "They":  Referring back to raven.  "그 까마귀들" (geu kkamagwideul - "those ravens" - pluralizing could be a bit much if it's just one raven from sentence 1.  Just "그 까마귀" (geu kkamagwi - "that raven") is better and singular-sounding, even if "they" is plural in English. Context implies probably a single raven is meant as the focus). Or even just "걔네" (gyaene - "they/those guys") - less specific, but natural if context is very clear. Let's stick with "그 까마귀" for clarity and direct reference to the raven from sentence 1.
+
+    "were looking at":  보다 (boda) ->  "looking at" -  보다 means "see" or "look."  We want "looking at" -  볼 + ~고 있다 (-(go) issda) for present/past progressive. Past tense of ~고 있다 is ~고 있었다 (-(go) isseotda). Past progressive of 보다 is 보고 있었다 (bogo isseotda).  Polite form: 보고 있었어요 (bogo isseosseoyo).
+
+    "Our garden": 우리 정원 (uri jeongwon).
+
+    "Looking at our garden": 우리 정원을 보고 있었어요 (uri jeongwon-eul bogo isseosseoyo). Object marker 을/를 for 정원.
+
+    Putting it together: 그 까마귀가 우리 정원을 보고 있었어요. (Geu kkamagwi-ga uri jeongwon-eul bogo isseosseoyo.) – "가" (ga) as subject marker for 까마귀 (raven), feels more natural than 은/는 in the second sentence.  Or even "걔네가" if we want to be slightly less formal/more pronoun-like, but "그 까마귀가" is clearer.
+
+    Final Refinement and Politeness Levels:
+
+    More Formal (해요체): 오늘 아침에 까마귀를 보셨어요? 그 까마귀는 우리 정원을 보고 있었어요. (Oneul achime kkamagwi-reul bosyeosseoyo? Geu kkamagwi-neun uri jeongwon-eul bogo isseosseoyo.)  - Uses honorific form 보셨어요 (bosyeosseoyo - saw, polite) for "did you see."  But "그 까마귀는"  sounds a little less natural in sentence 2.
+
+    More Natural and Common (해요체, slightly less formal but still polite and standard): 오늘 아침에 까마귀 봤어요? 그 까마귀가 우리 정원을 보고 있었어요. (Oneul achime kkamagwi bwass-eoyo? Geu kkamagwi**-ga** uri jeongwon-eul bogo isseosseoyo.)  -  "봤어요" is still polite form of "saw," but less honorific than "보셨어요." "그 까마귀가" flows better.
+
+    Even More Casual (해체 - haeyoche, less polite, for close friends/family): 오늘 아침에 까마귀 봤어? 그 까마귀가 우리 정원을 보고 있더라. (Oneul achime kkamagwi bwasseo? Geu kkamagwi**-ga** uri jeongwon-eul bogo itdeora.)  -  "봤어" (bwasseo - saw, informal).  "보고 있더라" (bogo itdeora - was looking, informal,  "~더라" adds a sense of recollection/telling someone something you observed).
+
+    Considering the initial prompt's neutral tone and likely wanting a common, polite translation, the more natural and common 해요체 version (Option 2 above) is the most appropriate.  I will present that as the primary translation and maybe offer the more formal one as an alternative for context.  Adding a note about politeness levels is also helpful.
+
+2.0 Flash Thinking Experimental. Lacks access to real-time info and some Gemini features.
+Here are a few options for translating "Did you see the raven this morning? They were looking at our garden" into Korean, with slightly different nuances in politeness and naturalness:
+
+Option 1 (Polite and Natural):
+
+오늘 아침에 까마귀 보셨어요? 그 까마귀가 우리 정원을 보고 있더라고요.
+
+오늘 아침에 (oneul achime): This morning
+까마귀 (kkamagwi): Raven
+보셨어요? (bosyeosseoyo?): Did you see? (Polite honorific form of 보다 - boda - to see)
+그 까마귀가 (geu kkamagwiga): That raven (subject marker -가)
+우리 정원을 (uri jeongwon-eul): Our garden (object marker -을)
+보고 있더라고요 (bogo itdeoragoyo): They were looking, I observed/noticed (polite -더라- form indicates past observation)
+Option 2 (Slightly less formal, very common conversational style):
+
+오늘 아침에 까마귀 봤어요? 그 까마귀가 우리 정원을 보고 있었어요.
+
+오늘 아침에 (oneul achime): This morning
+까마귀 (kkamagwi): Raven
+봤어요? (bwass-eoyo?): Did you see? (Polite but less honorific than 보셨어요)
+그 까마귀가 (geu kkamagwiga): That raven (subject marker -가)
+우리 정원을 (uri jeongwon-eul): Our garden (object marker -을)
+보고 있었어요 (bogo isseosseoyo): They were looking (past progressive tense, polite form)
+Option 3 (More direct and slightly less polite, still acceptable in many situations):
+
+오늘 아침 까마귀 봤어? 걔네가 우리 정원 보고 있더라.
+
+오늘 아침 (oneul achim): This morning (slightly shorter, more casual)
+까마귀 (kkamagwi): Raven
+봤어? (bwasseo?): Did you see? (Informal ending)
+걔네가 (gyaeneda): They (informal pronoun, referring back to the raven(s), -가 subject marker)
+우리 정원 (uri jeongwon): Our garden (slightly shorter, more casual)
+보고 있더라 (bogo itdeora): They were looking, I observed/noticed (informal -더라- form)
+Which one to choose depends on the context and who you are speaking to.
+
+Option 1 is the most polite and would be suitable for speaking to someone older than you, someone you respect, or in a formal situation.
+Option 2 is a very common and natural way to speak politely to most people in everyday conversation.
+Option 3 is more casual and would be used with close friends or family, or someone younger than you.
+In most general situations, Option 2 would be a very good and natural choice.

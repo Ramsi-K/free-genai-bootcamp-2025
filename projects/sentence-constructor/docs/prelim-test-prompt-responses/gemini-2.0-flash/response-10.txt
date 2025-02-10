@@ -1,0 +1,45 @@
+Organize this information into a structured format you think is best.
+
+Grandmother - 할머니
+
+Sibling - 형
+
+Aunt/Uncle - 삼촌
+
+Grandfather - 할아버지
+
+Father - 아빠
+
+Mother - 엄마
+
+Sibling - 누나
+
+Aunt/Uncle - 이모
+
+
+
+It seems like you're providing a list of Korean family terms. Here's how I'd organize this information into a structured format:
+
+Family Member	Korean Term	Notes
+Grandmother	할머니 (halmeoni)	
+Grandfather	할아버지 (harabeoji)
+Mother	엄마 (eomma)
+Father	아빠 (appa)
+Aunt/Uncle	이모 (imo)	Mother's sister
+Aunt/Uncle	삼촌 (samchon)	Father's brother OR mother's brother
+Sibling	형 (hyeong)	Older brother (used by males)
+Sibling	누나 (nuna)	Older sister (used by males)
+
+Export to Sheets
+Things to note about Korean family terms:
+
+Gender matters: Korean has different terms depending on the gender of the speaker and the relative. For example, a male speaker uses "형" for older brother and "누나" for older sister.
+Paternal vs. Maternal: There are often distinct terms for relatives on the mother's side and the father's side.
+Age matters: Korean distinguishes between older and younger siblings.
+Politeness levels: Like other aspects of Korean, there are formal and informal ways to address family members.
+To make this even more complete, we could add:
+
+Terms for younger siblings (동생 - dongsaeng)
+Terms for cousins (사촌 - sachon)
+Honorific titles (-씨, -님) used with family names in formal situations
+Let me know if you'd like me to expand on any of these points!
