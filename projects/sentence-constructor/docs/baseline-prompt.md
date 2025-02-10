@@ -1,8 +1,4 @@
-# **Refined Prompt Document for AI-Powered Sentence Constructor**
-
-## Objective
-
-This prompt is designed to enable an AI assistant to guide students in constructing English-to-Korean sentences without directly providing translations. The AI will offer structured hints, feedback, and vocabulary support while ensuring consistency and adaptability to different language proficiency levels.
+# **Baseline Prompt Document for AI-Powered Sentence Constructor**
 
 ## 1. AI Role Definition
 
