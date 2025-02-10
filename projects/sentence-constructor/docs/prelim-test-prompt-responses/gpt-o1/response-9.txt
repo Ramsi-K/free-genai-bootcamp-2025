@@ -1,0 +1,49 @@
+Generate a useful prompt for evaluating AI models.
+
+
+Reasoned for a few seconds
+    Crafting a comprehensive prompt
+    I'm piecing together a thorough prompt to evaluate AI models in reasoning, summarizing, and creative writing. This approach ensures a balanced assessment of their diverse capabilities.
+
+Below is a multi-part prompt designed to evaluate various skills—reasoning, comprehension, creativity, and clarity—in an AI model’s responses. It provides a single scenario with multiple tasks that probe the model’s capabilities in different ways.
+
+Prompt for AI Model Evaluation
+Comprehension & Summarization
+
+Read the following passage:
+"Eleanor stepped onto the old wooden dock, the planks creaking under her boots. The lake was still, reflecting the early morning sun as if it were a mirror. She hesitated, remembering the stories her grandfather used to tell about hidden creatures beneath the surface. But curiosity prevailed, and she inched closer to the water, feeling the cool breeze brush her cheeks."
+
+Task: Summarize this passage in two sentences that capture the setting, mood, and the protagonist’s emotional state.
+Analysis & Interpretation
+
+Task: Identify the main theme of the passage and explain in two or three sentences how the author conveys it through setting and character action.
+Creative Rewriting
+
+Task: Rewrite the passage in a style that mimics gothic horror, altering word choice and atmosphere while maintaining the original storyline.
+Discussion Questions
+
+Task: Provide two open-ended questions that a book club might use to spark deeper conversation about the text’s potential backstory or character motivations.
+Bias & Perspective Check
+
+Task: Suggest any potential cultural or thematic biases the passage might have if expanded into a longer story. Are there assumptions about setting, culture, or folklore that might reflect the author’s perspective or societal context?
+Reasoning Explanation
+
+Task: Briefly outline your reasoning process for each of the above tasks:
+How did you condense the text into a summary?
+How did you decide on the main theme?
+What influenced your choice of words and tone in the gothic horror rewrite?
+What guided you in crafting the discussion questions and identifying potential biases?
+Evaluation Criteria
+Accuracy: Are the summary and theme correct and coherent with the passage?
+Clarity & Brevity: Does the response clearly convey ideas in a concise format?
+Creativity: How effectively does the model transform the text into a new style (gothic horror)?
+Depth of Insight: Do the discussion questions and bias perspectives show critical thinking?
+Reasoning Transparency: Does the model clearly explain its thought process for each step?
+This prompt helps evaluators see how well an AI handles reading comprehension, thematic analysis, creative language transformation, question generation, bias awareness, and self-reflection on its reasoning.
+
+
+
+
+
+
+

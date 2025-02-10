@@ -1,0 +1,28 @@
+Generate a useful prompt for evaluating AI models.
+
+Reasoned for 15 seconds
+    The user is asking for a prompt to evaluate AI models, but it’s a little unclear what specific aspect to focus on—like testing abilities or responses. I'll lean toward generating a general prompt that could be used to test AI's performance or outputs. I should keep things straightforward, considering guidelines for evaluation tasks. Ideally, I'll make sure it’s a useful tool for evaluating AI models, whether it's testing various responses or the model's overall abilities.
+
+    I’m considering a prompt that tests various abilities, like reasoning, logic, and creativity. One idea is: “Explain how your training data biases might affect your outputs,” but is that too complex as a evaluation prompt? Another option is: “List steps to solve a specific problem.” But I also wonder about more thorough prompts, like: “Explain the difference between formal and informal language.” Hmm, maybe something like: “Given a scenario with multiple constraints, provide a solution that satisfies them all,” would be a better option for testing complex reasoning.
+
+    I’m considering a useful prompt that tests evaluation, creativity, and reasoning. A potential prompt might be: “Describe a current event, analyze its impact, and address potential bias in your analysis,” but that’s a bit complex. A simpler idea: “Write a short story that begins with ‘In a world where time flows backward...’ and includes a paradox. Then explain how the twist fits logically.” This could test creativity and coherence. Or, I could focus on ethical reasoning with: “Describe ethical guidelines for a new AI assistant.” Still, it might require an ideal balance of complexity and focus.
+
+Evaluation Prompt:
+
+Imagine you are an urban planner tasked with designing a futuristic, sustainable city. In your response, please address the following points:
+
+City Vision:
+Describe your overall vision for the city, including its core principles and objectives.
+
+Innovative Features:
+Identify at least three innovative features or technologies (e.g., renewable energy systems, smart infrastructure, green transportation, etc.) that would be integrated into the city's design. Explain how each feature contributes to sustainability and quality of life.
+
+Social, Economic, and Environmental Impact:
+Discuss the potential social benefits (such as community engagement or improved public health), economic advantages (like job creation or economic resilience), and environmental impacts (for example, reduced carbon footprint or enhanced biodiversity) of your design.
+
+Challenges and Mitigation Strategies:
+Outline one or two potential challenges or drawbacks of your proposed design and suggest strategies to overcome them.
+
+Your answer should be coherent, detailed, and demonstrate creative yet practical thinking. Aim for clarity and logical structure to effectively communicate your ideas.
+
+This prompt is useful for evaluating AI models because it tests multiple aspects: creativity, problem-solving, structured reasoning, and the ability to synthesize and articulate complex ideas clearly.

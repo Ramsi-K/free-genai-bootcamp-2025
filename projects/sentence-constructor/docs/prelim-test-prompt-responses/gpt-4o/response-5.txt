@@ -1,0 +1,5 @@
+Convert this sentence to Korean.
+Did you see the raven this morning? They were looking at our garden.
+
+ChatGPT said:
+오늘 아침에 까마귀 봤어요? 우리 정원을 보고 있더라고요.

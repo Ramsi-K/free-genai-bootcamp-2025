@@ -1,0 +1,22 @@
+Organize this information into a structured format you think is best.
+Mammal - Dog
+Mammal - Cat
+Bird - Sparrow
+Bird - Eagle
+Reptile - Snake
+Reptile - Lizard
+
+ChatGPT said:
+Here’s a structured way to organize the information clearly:
+
+Animal Classification
+Mammals
+Dog
+Cat
+Birds
+Sparrow
+Eagle
+Reptiles
+Snake
+Lizard
+Would you like more details, such as scientific names or characteristics? 😊

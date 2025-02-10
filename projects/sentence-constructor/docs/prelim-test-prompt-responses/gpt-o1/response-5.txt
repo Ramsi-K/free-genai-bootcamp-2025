@@ -1,0 +1,16 @@
+Convert this sentence to Korean.
+Did you see the raven this morning? They were looking at our garden.
+
+
+Reasoned for 7 seconds
+    Translating the sentence
+
+    I'm thinking through the translation of "Did you see the raven this morning? They were looking at our garden." into Korean. This involves converting "raven" to "까마귀" and deciding how to handle the singular "they" in Korean.
+
+    Crafting polite tones
+
+    I’m working through translating the sentences into a more polite form in Korean. Options range from using standard polite speech, addressing the raven as "그 까마귀," to a literal translation with detailed observations.
+
+Korean Translation (Polite Tone):
+
+오늘 아침에 그 까마귀 보셨어요? 우리 정원을 보고 있더라고요.

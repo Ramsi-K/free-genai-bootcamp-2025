@@ -1,0 +1,26 @@
+Organize this information into a structured format you think is best.
+Mammal - Dog
+Mammal - Cat
+Bird - Sparrow
+Bird - Eagle
+Reptile - Snake
+Reptile - Lizard
+
+
+Reptile
+    Considering tables
+
+    I'm leaning towards a table to organize the animal types and species. It seems like the ideal approach to present the data in a clear and organized way.
+
+Below is one way to structure the information in a clear, concise format—grouped by animal category and listing the examples within each group:
+
+| Animal Category	| Examples| 
+| Mammal	| Dog, Cat| 
+| Bird	| Sparrow, Eagle| 
+| Reptile	| Snake, Lizard| 
+
+
+
+
+
+

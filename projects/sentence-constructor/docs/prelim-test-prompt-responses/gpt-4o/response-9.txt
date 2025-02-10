@@ -1,0 +1,19 @@
+Generate a useful prompt for evaluating AI models.
+
+ChatGPT said:
+AI Model Evaluation Prompt
+Objective: Assess the AI model’s reasoning, accuracy, and adaptability in answering complex, open-ended questions.
+
+Prompt:
+"Given the following scenario, provide a well-structured response that demonstrates critical thinking, accuracy, and contextual awareness. Justify your answer with logical reasoning, consider potential counterarguments, and, if applicable, cite relevant sources or examples. If uncertainty exists, explain how you would approach resolving it."
+
+Scenario Example:
+"A company wants to implement an AI-powered customer support chatbot but is concerned about ethical issues such as bias, misinformation, and data privacy. Outline the key risks, propose mitigation strategies, and suggest evaluation metrics to ensure the chatbot remains reliable and fair over time."
+
+Why This Works?
+✔ Encourages deep reasoning rather than surface-level responses.
+✔ Tests the AI’s ability to justify and refine its output.
+✔ Evaluates adaptability by allowing multiple valid approaches.
+✔ Simulates real-world decision-making and AI ethics awareness.
+
+Would you like a more technical, coding-focused evaluation prompt? 🚀

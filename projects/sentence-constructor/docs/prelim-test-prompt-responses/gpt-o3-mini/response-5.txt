@@ -1,0 +1,9 @@
+Convert this sentence to Korean.
+Did you see the raven this morning? They were looking at our garden.
+
+Reasoned for 8 seconds
+    The user wants to translate "Did you see the raven this morning? They were looking at our garden." into Korean. "Raven" translates to "까마귀" in Korean, which is used for both ravens and crows. I’m considering the pronoun issue, since "they" could refer to multiple ravens or a singular raven with ambiguous gender. To go with the plural meaning of "They," I’ll assume the sentence refers to ravens in plural form. I'll continue with that assumption for the translation.
+
+    In the original sentence, "Did you see the raven this morning? They were looking at our garden," the use of "they" could be referring to multiple ravens or just a singular raven with a gender-neutral pronoun. Since "raven" is singular, but "they" is used, I’ll assume it refers to multiple ravens. In Korean, "raven" is "까마귀," and "까마귀들" is plural. The translation can be: "오늘 아침에 까마귀를 보았나요? 그들이 우리 정원을 바라보고 있었어요."
+
+오늘 아침에 까마귀를 보셨어요? 그들은 우리 정원을 바라보고 있었어요.

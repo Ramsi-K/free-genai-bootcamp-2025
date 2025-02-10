@@ -1,0 +1,23 @@
+Organize this information into a structured format you think is best.
+Mammal - Dog
+Mammal - Cat
+Bird - Sparrow
+Bird - Eagle
+Reptile - Snake
+Reptile - Lizard
+
+Reasoned for a couple of seconds
+Here's one way to organize the information using a hierarchical list:
+
+Animal Categories:
+
+- Mammals
+    - Dog
+    - Cat
+- Birds
+    - Sparrow
+    - Eagle
+- Reptiles
+    - Snake
+    - Lizard
+This format groups the animals by their respective classes, making it easy to see which animals belong to which category.

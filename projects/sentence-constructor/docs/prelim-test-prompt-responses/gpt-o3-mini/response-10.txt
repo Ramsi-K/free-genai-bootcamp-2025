@@ -1,0 +1,37 @@
+Reasoned for 8 seconds
+    Okay, I need to organize the information clearly. A family tree-like structure seems like a good approach. I'll note that "Sibling" has two terms: 형 for an older brother and 누나 for an older sister. "Aunt/Uncle" repeats too—삼촌 for paternal uncle and 이모 for maternal aunt.
+
+    Hmm, I could group the terms by generation and relationship type. Maybe a table or a bullet list would work best. Let's see...
+
+    So, I'll organize these into generations based on their role. For Generation 1, I have the Grandparents: 할아버지 (Grandfather) and 할머니 (Grandmother).
+
+    In Generation 2, the parents are represented by 아빠 (Father) and 엄마 (Mother).
+
+    Generation 3 includes siblings—형 (used by a male speaker for an older brother) and 누나 (used by a female speaker for an older sister).
+
+    For extended relatives, 삼촌 is a paternal uncle and 이모 is a maternal aunt.
+
+    I’ll probably structure this as a table.
+
+Below is one way to organize the family relationship terms by generation and role:
+
+1. Grandparents
+
+Grandfather: 할아버지
+Grandmother: 할머니
+2. Parents
+
+Father: 아빠
+Mother: 엄마
+3. Siblings
+
+Sibling (Male, older brother): 형
+Sibling (Female, older sister): 누나
+4. Extended Family (Aunts/Uncles)
+
+Aunt/Uncle (typically paternal): 삼촌
+Aunt/Uncle (typically maternal): 이모
+Note:
+
+In Korean, the choice between 형 and 누나 depends on the speaker's gender and the relative age. "형" is used by males for an older brother, while "누나" is used by females for an older sister.
+Similarly, 삼촌 usually refers to a paternal uncle, and 이모 refers to a maternal aunt, reflecting traditional familial distinctions.
