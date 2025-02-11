@@ -162,3 +162,6 @@ graph TD
 **Privacy Concern Example:** LLMs trained on user conversations risk retaining sensitive data, leading to potential privacy violations. For example, Samsung employees accidentally leaked proprietary code to ChatGPT, raising concerns about the security and privacy of user data.
 
 By following **responsible AI guidelines**, we can develop AI that is **trustworthy and beneficial** to society.  
+
+---
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*

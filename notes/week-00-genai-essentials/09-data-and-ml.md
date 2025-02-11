@@ -65,3 +65,6 @@ graph LR;
 ## Conclusion
 
 A well-structured **data pipeline** ensures reliable ML models by focusing on **quality, preprocessing, and evaluation**.
+
+---
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*

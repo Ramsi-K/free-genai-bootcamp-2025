@@ -42,11 +42,11 @@ Generative AI models go beyond classification and **create entirely new content*
 
 GenAI learns from vast datasets and uses models like **GANs, VAEs, and Transformers** to generate content.  
 
-"three backticks" mermaid  
+``` mermaid  
 graph TD;  
     A[Input Prompt] -->|Processed by LLM| B[Neural Network];  
     B -->|Pattern Recognition| C[Generated Content];  
-"three backticks"  
+```  
 
 ---
 
@@ -78,3 +78,6 @@ As AI continues to evolve, understanding the distinction between traditional AI 
 ## Conclusion
 
 Traditional AI is **rule-based and deterministic**, ideal for structured problem-solving. Generative AI, on the other hand, is **creative and dynamic**, enabling **new content generation across multiple domains**.  
+
+---
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*

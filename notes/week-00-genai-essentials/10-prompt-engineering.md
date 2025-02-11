@@ -51,3 +51,6 @@ graph LR;
 ## Conclusion
 
 Prompt engineering is a **critical skill** for maximizing AI model performance. By crafting structured, context-aware prompts, developers and users can **optimize LLM responses** for real-world applications.
+
+---
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*

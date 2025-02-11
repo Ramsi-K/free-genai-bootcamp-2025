@@ -66,3 +66,6 @@ graph LR;
 - Governance ensures **architecture consistency and accountability**.
 - Risk management helps **anticipate and mitigate** potential failures.
 - TOGAF techniques **optimize architecture planning and execution**.
+
+---
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*

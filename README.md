@@ -103,3 +103,10 @@ To stay on track and maximize learning, I’ll be following this mindset:
 - [Reddit Post – Tips on Surviving a Bootcamp](https://www.reddit.com/r/learnprogramming/comments/p6ke33/about_to_take_a_full_immersive_coding_bootcamp/)  
 
 📌 *This README will evolve as I make progress. For now, it serves as a starting point for my GenAI Bootcamp journey. Stay tuned for updates!*  
+
+## 📜 License & Attribution
+
+This repository is licensed under **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0)**.  
+You are free to **share and adapt** this work, but **must provide credit** and **cannot use it for commercial purposes**.  
+
+🔗 [Full License Details](https://creativecommons.org/licenses/by-nc-sa/4.0/)

@@ -154,3 +154,6 @@ A well-architected system **abstracts** AI model calls so the backend can switch
 
 - 📖 *AI Engineering: Building AI Systems* – by Chip Huyen  
 - 📖 *Designing Machine Learning Systems* – by Chip Huyen  
+
+---
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*

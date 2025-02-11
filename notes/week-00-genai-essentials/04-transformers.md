@@ -178,3 +178,6 @@ graph TD;
 ## **Conclusion**  
 
 Transformers **revolutionized NLP** by introducing **self-attention, multi-head attention, and parallel processing**. They form the foundation for **modern LLMs**, enabling breakthroughs in text generation, reasoning, and multimodal AI.  
+
+---
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*

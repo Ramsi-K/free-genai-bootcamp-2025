@@ -97,3 +97,6 @@ $$
 ## Conclusion
 
 Embeddings are a fundamental component of modern NLP and LLMs, enabling efficient text representation and semantic understanding. Next, we explore **Vector Databases**, which store and retrieve embeddings efficiently for AI-driven applications.
+
+---
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*

@@ -115,3 +115,6 @@ graph LR;
 ## Resources
 
 [TOGAF 10 Foundation - Course by Educba on Coursera](https://www.coursera.org/learn/togaf-10-foundation/home/welcome)
+
+---
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*

@@ -77,11 +77,12 @@ Shorter token sequences → Faster processing
 Fewer tokens → Lower cost in API-based models
 Better OOV handling → Improved model accuracy
 
-"three backticks" mermaid
+``` mermaid
 graph LR;
     A[Efficient Tokenization] --> B[Fewer Tokens];
     B --> C[Reduced Model Cost];
     B --> D[Improved Accuracy];
-"three backticks"
+```
 
 ---
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*

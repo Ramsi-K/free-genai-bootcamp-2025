@@ -82,3 +82,6 @@ graph TD;
 ## Conclusion
 
 Fine-tuning enables **task-specific AI performance** while optimizing computational efficiency. **Choosing the right fine-tuning method** (full fine-tuning, LoRA, RLHF) depends on **use case requirements, computational resources, and cost constraints**.
+
+---
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*

@@ -80,3 +80,6 @@ BERT and its variants are widely used in:
 BERT and its variants have **revolutionized NLP** by enabling deeper contextual understanding. Choosing the right variant depends on factors like **task complexity, computational resources, and efficiency requirements**.
 
 By leveraging these models, developers can build **powerful AI-driven applications** for search, chatbots, content generation, and more.
+
+---
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*

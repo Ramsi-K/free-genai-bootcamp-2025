@@ -86,3 +86,6 @@ LLMs are used in various domains, including:
 ## Conclusion
 
 LLMs are transforming the way we interact with AI, enabling **more human-like text generation, reasoning, and comprehension**. Their impact spans across multiple industries, from **customer service to creative content generation**.  
+
+---
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*
