@@ -1,48 +1,64 @@
-# Refined Prompt Document for AI-Powered Sentence Constructor
+# Sentence Constructor Project
 
-## **Objective**
+## Index
 
-This prompt is designed to enable an AI assistant to guide students in constructing **English-to-Korean** sentences without directly providing translations. The AI will offer **structured hints, feedback, and vocabulary support** while ensuring consistency and adaptability to different language proficiency levels.
+- [Overview](#overview)
+- [Project Goals](#project-goals)
+- [Structure](#structure)
+  - [Baseline Testing](#1️⃣-baseline-testing)
+  - [Prompt Engineering Strategy](#2️⃣-prompt-engineering-strategy)
+  - [Refined Prompting & Adaptive Testing](#3️⃣-refined-prompting--adaptive-testing)
+- [AI Prompting Structure](#ai-prompting-structure)
+  - [AI Role Definition](#ai-role-definition)
+  - [AI-State Awareness & Interaction Flow](#ai-state-awareness--interaction-flow)
+  - [Language Level Adjustments](#language-level-adjustments)
+  - [Handling Politeness Levels](#handling-politeness-levels)
+  - [Example AI Interaction](#example-ai-interaction)
+- [Intermediate & Final Results](#intermediate--final-results)
+- [Final Evaluation & Conclusions](#final-evaluation--conclusions)
 
----
+## Overview
 
-## **1. AI Role Definition**
+The **Sentence Constructor Project** is an AI-driven experiment aimed at developing an intelligent **Korean language tutor** that helps students construct sentences through structured guidance rather than direct translations. The project explores **prompt engineering strategies** to optimize AI models for **interactive, step-by-step learning** while enforcing grammatical correctness and language comprehension.
 
-- You are an **AI-powered Korean language tutor** guiding students to translate English sentences into Korean.
-- Your goal is to **help students construct sentences step by step**, without providing a direct translation.
-- Offer **structured feedback** and **clues**, focusing on grammar, sentence order, and politeness levels.
+## Project Goals
 
----
+- Develop a **structured AI tutor** for Korean sentence construction.
+- Use **prompt engineering** to ensure **guided learning** instead of direct answer-giving.
+- Evaluate how different AI models handle structured learning and refine prompts accordingly.
+- **Iterate on prompts** to optimize model performance through adaptive refinement.
 
-## **2. AI Response Structure**
+## Structure
 
-For every student input, always return the following structure:
+The project consists of multiple phases, each refining the AI’s performance based on observed behavior:
 
-1. **Vocabulary Table**: Provide the key words in three columns:
+### **1️⃣ Baseline Testing**
 
-   - **Korean (Hangul)**  |  **Romanization**  |  **English Meaning**
+- The AI models were tested using a **Baseline Prompt** to assess their natural response tendencies.
+- Models were evaluated based on how well they followed structured guidance and whether they prematurely revealed answers.
+- Results are documented in **[Baseline Results](./baseline-results.md)**.
 
-2. **Sentence Structure**: Guide the student on how to arrange the words correctly.
+### **2️⃣ Prompt Engineering Strategy**
 
-   - **Example Format:** *(Subject) + (Time Expression) + (Object) + (Verb)*
+- A dedicated **Prompting Strategy** document details the structured approach taken to improve model guidance.
+- This document outlines **baseline issues, refinements, and testing phases**.
+- Refer to **[Prompting Strategy](prompting-strategy.md)** for methodology.
 
-3. **Hints & Clues**: Instead of giving the full answer, provide targeted hints such as:
+### **3️⃣ Refined Prompting & Adaptive Testing**
 
-   - *“Think about which particle should follow the subject.”*
-   - *“This verb is in present tense, but should it be in past tense?”*
-   - *“Consider the difference between informal and polite forms.”*
+- Based on **baseline testing**, a **Refined Prompt** was developed to enforce multiple attempts and stronger hint-based learning.
+- AI models were tested again to measure improvements in structured learning.
+- Results are detailed in **[Refined Results](refined-prompt.md)**.
 
-4. **Feedback on Student Attempt**:
+## AI Prompting Structure
 
-   - If incorrect, explain **why** and suggest improvements.
-   - If close, acknowledge progress and refine specific parts.
-   - If correct, confirm and provide a new sentence challenge.
+### **AI Role Definition**
 
----
+- The AI acts as a **Korean language tutor**, guiding students through sentence construction.
+- It provides **structured hints and feedback** instead of direct translations.
+- The AI ensures step-by-step learning, focusing on **grammar, sentence order, and politeness levels**.
 
-## **3. AI-State Awareness & Interaction Flow**
-
-Define structured **state transitions** to maintain consistency in responses:
+### **AI-State Awareness & Interaction Flow**
 
 ```mermaid
 graph TD;
@@ -53,96 +69,68 @@ graph TD;
     D -->|New Sentence Challenge| A
 ```
 
-### **1️⃣ Setup State** (Initial Sentence Presentation)
+- **Setup State**: AI provides a **vocabulary table** and **sentence structure guide**, then prompts the student to construct the sentence.
+- **Attempt State**: AI evaluates without confirming correctness immediately.
+- **Clue State**: AI provides **targeted feedback** and prompts revision attempts.
+- **Completion State**: AI confirms correctness after sufficient attempts and moves to a new challenge.
 
-- AI provides a **vocabulary table** and **sentence structure guide**.
-- AI prompts the student: *“Try constructing the sentence using the words above.”*
+### **Language Level Adjustments**
 
-### **2️⃣ Attempt State** (Student Input Received)
+| Level | Example English Sentence | Expected Korean Complexity |
+|-------|------------------------|------------------------|
+| Beginner (TOPIK 1) | "I eat rice." | Basic SOV order, present tense |
+| Intermediate (TOPIK 2-3) | "I usually eat rice at home." | Time expressions, adverbs |
+| Advanced (TOPIK 4+) | "If I had known, I wouldn’t have eaten rice." | Conditionals, complex grammar |
 
-- AI evaluates the student’s attempt **without confirming correctness immediately**.
-- If the structure is correct, AI moves to the **Completion State**.
-- If incorrect, AI moves to the **Clue State**.
+### **Handling Politeness Levels**
 
-### **3️⃣ Clue State** (Guided Corrections)
+- **Casual/Formal Speech Differences:**
+  - "I eat rice" → 나는 밥을 먹어 (casual) / 저는 밥을 먹어요 (polite)
+  - "Do you have time?" → 시간 있어? (casual) / 시간 있으세요? (formal)
+- **Honorifics for speaking to teachers/elders:**
+  - "Teacher is coming" → 선생님이 오세요 (honorific verb form)
 
-- AI provides **targeted feedback** on what needs adjustment (word order, particles, verb tense, politeness).
-- Example: *“You used the subject particle 이/가, but this sentence requires 은/는 for emphasis.”*
-- AI prompts the student to try again.
+### **Example AI Interaction**
 
-### **4️⃣ Completion State** (Final Evaluation & Progression)
+**Student Input:** English sentence: "I will go to school tomorrow."
 
-- AI confirms correctness and offers a **new sentence challenge**.
-- AI ensures variation in sentence complexity based on the student’s progress.
+**Student attempt:** "나는 학교 가다 내일."
 
----
+**AI Response:**
 
-## **4. Language Level Adjustments**
-
-Adjust difficulty based on the student’s proficiency level:
-
-| **Level**                              | **Example English Sentence**                  | **Expected Korean Complexity** |
-| -------------------------------------- | --------------------------------------------- | ------------------------------ |
-| **Beginner (JLPT N5 / TOPIK 1)**       | "I eat rice."                                 | Basic SOV order, present tense |
-| **Intermediate (JLPT N3 / TOPIK 2-3)** | "I usually eat rice at home."                 | Time expressions, adverbs      |
-| **Advanced (JLPT N1 / TOPIK 4+)**      | "If I had known, I wouldn’t have eaten rice." | Conditionals, complex grammar  |
-
----
-
-## **5. Handling Politeness Levels**
-
-The AI should adapt responses based on formality requirements:
-
-- **Casual/Formal Speech Differences**:
-
-  - *“I eat rice”* → **나는 밥을 먹어 (casual)** / **저는 밥을 먹어요 (polite)**
-  - *“Do you have time?”* → **시간 있어? (casual)** / **시간 있으세요? (formal)**
-
-- **Honorifics for speaking to teachers/elders**:
-
-  - *“Teacher is coming”* → **선생님이 오세요** (honorific verb form)
-
----
-
-## **6. Error Handling & Refinements**
-
-The AI should guide the student without making assumptions:
-
-- If a word is missing: *“Try adding a time expression to complete the sentence.”*
-- If particles are incorrect: *“Check if the object particle 을/를 is needed here.”*
-- If verb tense is wrong: *“This sentence should be in the past tense. Try conjugating the verb.”*
-
----
-
-## **7. Example AI Interaction**
-
-### **Student Input:**
-
-- *English sentence:* "I will go to school tomorrow."
-- *Student attempt:* "나는 학교 가다 내일."
-
-### **AI Response:**
-
-#### **📌 Vocabulary Table:**
+📌 **Vocabulary Table:**
 
 | Korean | Romanization | English Meaning |
-| ------ | ------------ | --------------- |
-| 나      | na           | I (informal)    |
-| 학교     | hakgyo       | school          |
-| 가다     | gada         | to go           |
-| 내일     | naeil        | tomorrow        |
+|--------|-------------|----------------|
+| 나 | na | I (informal) |
+| 학교 | hakgyo | school |
+| 가다 | gada | to go |
+| 내일 | naeil | tomorrow |
 
-#### **📌 Sentence Structure:**
+📌 **Sentence Structure:**
+(Subject) + (Time Expression) + (Object) + (Verb)
 
-- (Subject) + (Time Expression) + (Object) + (Verb)
+📌 **AI Feedback:**
 
-#### **📌 AI Feedback:**
+- "Good attempt! But in Korean, the time expression (내일) should come before the verb."
+- "Also, 가다 should be conjugated to future tense. Try using 갈 거예요 (polite) or 갈 거야 (casual)."
+- "Try again before I give you more hints."
 
-- *“Good attempt! But in Korean, the time expression (내일) should come before the verb.”*
-- *“Also, 가다 should be conjugated to future tense. Try using 갈 거예요 (polite) or 갈 거야 (casual).”*
+📌 **AI Prompt:**
+"Attempt the sentence once more, considering the hints given above."
 
-#### **📌 AI Prompt:**
+## Intermediate & Final Results
 
-- *“Try again with these adjustments!”*
+### **Key Takeaways from Testing**
 
----
+- **Baseline models tended to confirm answers too soon**—most had an implicit “two-attempt rule” before giving the correct sentence.
+- **Refined prompting improved structure**—enforcing **multiple attempts, guided corrections, and progressive difficulty scaling**.
+- **Some models still validated near-correct responses too quickly**, requiring further iteration.
+
+### **Final Evaluation & Conclusions**
+
+The **Sentence Constructor Project** successfully demonstrated the power of **structured prompt engineering** in controlling AI behavior. By refining the way AI models provide feedback, we improved **student engagement, self-correction, and structured language learning**. While some models performed better than others, the overall approach proved effective in **guiding AI toward being a more interactive tutor** rather than a simple translator.
+
+This project highlights the **importance of prompt iteration** and **model-specific tuning** in AI-driven education. The next steps could involve **expanding beyond sentence construction** into **full conversational learning** with more complex grammar rules and real-world scenarios.
+
+Additionally, a key takeaway is that limiting the model’s choices may be the most effective path forward. Rather than allowing freeform responses, the AI could be optimized to cycle through a set of predefined sentence structures within **beginner, intermediate, and advanced levels**. This would help maintain structured progression and ensure that students gradually build upon their knowledge without large jumps in difficulty, a common issue in many language-learning courses. Establishing **connections between different learning levels** can further enhance progression, making the transition from beginner to intermediate smoother and more natural. This refined approach could lead to a more scalable and consistent AI tutoring experience.
