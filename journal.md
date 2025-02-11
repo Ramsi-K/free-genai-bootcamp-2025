@@ -1,5 +1,22 @@
 # GenAI Bootcamp 2025 – Journal  
 
+## Day 12 & 13: February 10-11, 2025
+
+I pulled an all-nighter and have been working for over 10 hours straight because I was falling behind in the bootcamp. I'm exhausted. Submitting the Sentence Constructor project made me realize something critical—I’ve spent too much time on theory and note-taking and not enough on practical application. While I’m proud of my GenAI notes and thrilled to have learned TOGAF, I should have focused on getting the practical work done first, submitted it, and then refined the theory later. Moving forward, my plan is to prioritize completing the minimum requirements first, then improve upon them instead of getting lost in details upfront.
+
+Completed Work:
+
+- Finalized and submitted the Sentence Constructor Project, completing the README, technical uncertainties, refined prompt results, and full documentation.
+- Tested and iterated prompts across multiple AI models, improving structured hinting, guided learning, and response enforcement.
+- Identified key takeaways from testing: AI models have a two-attempt threshold, need predefined learning paths, and require progressive difficulty scaling to avoid large jumps in complexity.
+- Completed the Technical Uncertainties document, summarizing challenges with AI-powered assistants, prompt portability, and integration into standalone systems.
+- Created and refined the main project README, consolidating findings from baseline testing, refined prompt testing, and prompt engineering strategies.
+- Cleaned up the repository structure, ensuring logical organization of prompts, results, and documentation.
+- Submitted the bootcamp project form, finalizing hypotheses, technical exploration, and outcomes.
+
+**Big Takeaway:**
+I should have completed the practical requirements first and then refined the theory at my own pace. For the next week, my priority is execution—getting things done first and improving later. No more getting stuck in details. Time to adapt and move forward. 
+
 ## Day 11: February 9, 2025
 
 - **Finalized and committed the main repository README**, ensuring structured documentation across all projects.
