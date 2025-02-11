@@ -70,4 +70,5 @@
 
 - **Vision** – A high-level representation of business goals and supporting architecture direction.
 
-
+---
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*

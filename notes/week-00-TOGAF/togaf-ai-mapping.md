@@ -1,9 +1,11 @@
 # TOGAF for GenAI - AI Mapping Guide
 
 ## **Overview**
+
 This document maps **TOGAF architecture principles** to **Generative AI (GenAI) workflows**, ensuring structured enterprise AI adoption.
 
 ## **Mapping TOGAF ADM to GenAI Lifecycle**
+
 ```mermaid
 %%{ init: { 'theme': 'base', 'themeVariables': { 'background': '#ffffff' } } }%%
 graph TD;
@@ -91,3 +93,6 @@ graph TD;
 - **Enterprise AI adoption should align with organizational change management strategies**.
 
 📌 *This mapping guide will evolve as AI practices mature!*
+---
+
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*

@@ -64,4 +64,8 @@
 
 ---
 
-This document summarizes **key inputs, outputs, and artifacts** produced in each **TOGAF ADM phase**. Let me know if you'd like refinements!
+This document summarizes **key inputs, outputs, and artifacts** produced in each **TOGAF ADM phase**
+
+---
+
+*Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository.*
