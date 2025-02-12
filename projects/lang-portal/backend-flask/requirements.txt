@@ -1,0 +1,5 @@
+flask
+flask-cors
+invoke
+pytest==7.4.3
+pytest-flask==1.3.0
