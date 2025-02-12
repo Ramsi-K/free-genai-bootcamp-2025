@@ -2,11 +2,11 @@
 
 ## 📌 Index
 
-- [Overview](#overview)
-- [Project Goals](#project-goals)
-- [API Endpoints](#api-endpoints)
-- [Database Schema](#database-schema)
-- [Diagrams](#diagrams)
+- [Overview](#-overview)
+- [Project Goals](#-project-goals)
+- [API Endpoints](#-api-endpoints)
+- [Database Schema](#-database-schema)
+- [Diagrams](#-click-for-diagrams)
 
 ## 📌 Overview
 
@@ -40,19 +40,6 @@ Lang Portal is a **backend API** for a **Korean language learning platform**, pr
 - **`study_sessions`**: Records learning sessions
 - **`word_review_items`**: Tracks correctness of word reviews
 
-## 📌 Diagrams
+## 📌 [Click for Diagrams](./docs/diagrams.md)
 
-- **Entity-Relationship Diagram**  
-  *(./diagrams/lang_portal_erd.mmd)*  
-
-- **System Architecture Diagram**  
-  *(./diagrams/lang_portal_system_architecture.mmd)*  
-
-- **Component Diagram**  
-  *(./diagrams/lang_portal_component_diagram.mmd)*  
-
-- **API Flow Diagram**  
-  *(./diagrams/lang_portal_api_flow.mmd)*  
-
-- **Deployment Architecture Diagram**  
-  *(./diagrams/lang_portal_deployment_architecture.mmd)*  
+---
