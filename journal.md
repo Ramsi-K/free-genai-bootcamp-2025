@@ -1,5 +1,23 @@
 # GenAI Bootcamp 2025 – Journal  
 
+## Day 14: February 12, 2025
+
+I spent the entire day on backend work, research, and trying to make sense of everything. I started with the official lecture videos(6+ hrs), trying to wrap my head around the project requirements, Flask, SQLite, and how everything connects. At some point, I realized that there was no way I could do Level 5. I don’t know enough about frontend, backend, or anything full-stack. Even getting Level 1 done would be a huge achievement at this point.
+
+Then I started thinking about Copilot and Cursor, since that is the entire project, and I realised that these tools offer drop down selections for different LLMs. That led me down a rabbit hole: which model is actually capable of coding, and in which languages does it return good quality code? I needed to know. So I ended up getting a bit sidetracked and wrote a nine-page research paper breaking it all down. I believed that this exploration would allow me to shoot for level 5 and grant the highest chance of success.
+
+After that, I tried to get back to the backend videos, but I was still confused. I took the backend and frontend specs and turned them into diagrams, hoping that seeing everything visually would help. It did, but not completely. I still felt lost. Then I started breaking down the codebase, going file by file, and finally understood that the backend is using Flask Blueprints. That’s why there were no `@app.route()` functions in `app.py`, and why I was feeling lost.
+
+I still have ~5 hours of lecture videos left, but I think I’ve cleared my head around the backend enough to start implementation tomorrow. I also know I’m done for the day because I’m getting snappy at my favorite AI assistant.
+
+## Completed Work
+
+- Watched over six hours of backend lecture videos, covering Flask, SQLite, and API structures.  
+- Realized that Level 5 is completely out of reach for me, and Level 1 is the real goal.  
+- Wrote and published a nine-page research paper on LLM coding performance and model-language pairs.  
+- Created multiple diagrams to visualize the backend structure and API interactions.  
+- Broke down the codebase and figured out that the backend uses Flask Blueprints, finally making sense of how everything is structured.  
+
 ## Day 12 & 13: February 10-11, 2025
 
 I pulled an all-nighter and have been working for over 10 hours straight because I was falling behind in the bootcamp. I'm exhausted. Submitting the Sentence Constructor project made me realize something critical—I’ve spent too much time on theory and note-taking and not enough on practical application. While I’m proud of my GenAI notes and thrilled to have learned TOGAF, I should have focused on getting the practical work done first, submitted it, and then refined the theory later. Moving forward, my plan is to prioritize completing the minimum requirements first, then improve upon them instead of getting lost in details upfront.
@@ -15,7 +33,7 @@ Completed Work:
 - Submitted the bootcamp project form, finalizing hypotheses, technical exploration, and outcomes.
 
 **Big Takeaway:**
-I should have completed the practical requirements first and then refined the theory at my own pace. For the next week, my priority is execution—getting things done first and improving later. No more getting stuck in details. Time to adapt and move forward. 
+I should have completed the practical requirements first and then refined the theory at my own pace. For the next week, my priority is execution—getting things done first and improving later. No more getting stuck in details. Time to adapt and move forward.
 
 ## Day 11: February 9, 2025
 
