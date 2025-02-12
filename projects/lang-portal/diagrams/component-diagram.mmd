@@ -1,0 +1,42 @@
+classDiagram
+    class User {
+        +Interacts with UI
+    }
+    
+    class Frontend {
+        +DashboardPage
+        +StudyActivitiesPage
+        +StudyActivityShowPage
+        +WordIndexPage
+        +WordShowPage
+        +GroupIndexPage
+        +GroupShowPage
+        +StudySessionsPage
+        +StudySessionShowPage
+        +SettingsPage
+    }
+    
+    class Backend {
+        +Handles API Requests
+        +Processes Business Logic
+        +Communicates with Database
+    }
+    
+    class Database {
+        +Stores Words, Groups, Study Sessions, and Reviews
+    }
+    
+    User --> Frontend : Uses
+    Frontend --> Backend : Sends API Requests
+    Backend --> Database : Queries Data
+
+    Frontend --> DashboardPage : Loads Dashboard Data
+    Frontend --> StudyActivitiesPage : Lists Study Activities
+    Frontend --> StudyActivityShowPage : Shows Study Activity Details
+    Frontend --> WordIndexPage : Lists Words
+    Frontend --> WordShowPage : Shows Word Details
+    Frontend --> GroupIndexPage : Lists Groups
+    Frontend --> GroupShowPage : Shows Group Details
+    Frontend --> StudySessionsPage : Lists Study Sessions
+    Frontend --> StudySessionShowPage : Shows Study Session Details
+    Frontend --> SettingsPage : Configures Preferences

@@ -1,0 +1,45 @@
+erDiagram
+    WORDS {
+        int id PK
+        string japanese
+        string romaji
+        string english
+        json parts
+    }
+    
+    WORDS_GROUPS {
+        int id PK
+        int word_id FK
+        int group_id FK
+    }
+    
+    GROUPS {
+        int id PK
+        string name
+    }
+    
+    STUDY_SESSIONS {
+        int id PK
+        int group_id FK
+        int study_activity_id FK
+        datetime created_at
+    }
+    
+    STUDY_ACTIVITIES {
+        int id PK
+        string name
+    }
+    
+    WORD_REVIEW_ITEMS {
+        int word_id FK
+        int study_session_id FK
+        boolean correct
+        datetime created_at
+    }
+    
+    WORDS ||--o{ WORDS_GROUPS : has
+    GROUPS ||--o{ WORDS_GROUPS : has
+    GROUPS ||--o{ STUDY_SESSIONS : contains
+    STUDY_SESSIONS ||--|{ WORD_REVIEW_ITEMS : records
+    STUDY_ACTIVITIES ||--o{ STUDY_SESSIONS : contains
+    WORDS ||--|{ WORD_REVIEW_ITEMS : reviewed_in

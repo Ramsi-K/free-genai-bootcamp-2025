@@ -1,0 +1,40 @@
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant Database
+
+    User->>Frontend: Navigate to Dashboard
+    Frontend->>Backend: GET /api/dashboard/last_study_session
+    Backend->>Database: Fetch latest study session
+    Database-->>Backend: Return session data
+    Backend-->>Frontend: JSON Response
+    Frontend-->>User: Display Dashboard Data
+
+    User->>Frontend: View Study Activities
+    Frontend->>Backend: GET /api/study_activities
+    Backend->>Database: Fetch available study activities
+    Database-->>Backend: Return study activities data
+    Backend-->>Frontend: JSON Response
+    Frontend-->>User: Display Study Activities List
+
+    User->>Frontend: Start a Study Session
+    Frontend->>Backend: POST /api/study_activities
+    Backend->>Database: Create new study session
+    Database-->>Backend: Confirm study session created
+    Backend-->>Frontend: JSON Response
+    Frontend-->>User: Launch Study Session
+
+    User->>Frontend: View Word Details
+    Frontend->>Backend: GET /api/words/:id
+    Backend->>Database: Fetch word details and stats
+    Database-->>Backend: Return word data
+    Backend-->>Frontend: JSON Response
+    Frontend-->>User: Display Word Details
+
+    User->>Frontend: View Groups
+    Frontend->>Backend: GET /api/groups
+    Backend->>Database: Fetch groups data
+    Database-->>Backend: Return groups
+    Backend-->>Frontend: JSON Response
+    Frontend-->>User: Display Groups

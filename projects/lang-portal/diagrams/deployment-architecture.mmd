@@ -1,0 +1,13 @@
+graph TD;
+    User-->Frontend[Web App - Vite + Tailwind];
+    Frontend-->|API Calls|Backend[Go API - Gin Framework];
+    Backend-->|DB Queries|Database[SQLite Database];
+    Backend-->|Deployed on|Server[VPS / Cloud Provider];
+    Server-->|Handles Traffic|LoadBalancer[Load Balancer];
+    LoadBalancer-->Backend;
+    
+    subgraph Hosting & Deployment
+        Frontend-->Hosting[Netlify / Vercel]
+        Backend-->CloudService[AWS / DigitalOcean]
+        Database-->CloudStorage[S3 / Persistent Volume]
+    end
