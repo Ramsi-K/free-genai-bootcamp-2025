@@ -223,3 +223,79 @@ graph TD;
 ```
 
 ---
+
+## API Interaction Diagram
+
+``` mermaid
+graph TD;
+    subgraph Database
+        db[SQLite3 DB: words.db]
+    end
+    
+    subgraph Backend
+        initdb[init_db.py]
+        build[build.py]
+        seed[seed*.json]
+        sqlsetup[sql/setup*.sql]
+        
+        API[Backend API]
+        API -- GET /api/dashboard/stats --> db
+        API -- GET /api/study-activities --> db
+        API -- GET /api/study-activities/id/sessions --> db
+        API -- GET /api/words --> db
+        API -- GET /api/words/:word_id --> db
+        API -- GET /api/groups --> db
+        API -- GET /api/groups/:id --> db
+        API -- GET /api/groups/:id/words --> db
+        API -- GET /api/groups/:id/words/raw --> db
+        API -- GET /api/study-sessions --> db
+        API -- GET /api/study-sessions/:id --> db
+        API -- POST /study_sessions --> db
+        API -- POST /study_sessions/:id/review --> db
+    end
+    
+    subgraph Frontend
+        App[App.tsx]
+        Dashboard[Dashboard Page]
+        StudyActivities[StudyActivities Page]
+        StudyActivityShow[StudyActivityShow Page]
+        StudyActivityLaunch[StudyActivityLaunch Page]
+        Words[Words Page]
+        WordShow[WordShow Page]
+        Groups[Groups Page]
+        GroupShow[GroupShow Page]
+        StudySessions[StudySessions Page]
+        StudySessionShow[StudySessionShow Page]
+        Settings[Settings Page]
+        
+        App -->|routes| Dashboard
+        App --> StudyActivities
+        App --> StudyActivityShow
+        App --> StudyActivityLaunch
+        App --> Words
+        App --> WordShow
+        App --> Groups
+        App --> GroupShow
+        App --> StudySessions
+        App --> StudySessionShow
+        App --> Settings
+        
+        Dashboard -->|fetch stats| API
+        StudyActivities -->|fetch activities| API
+        StudyActivityShow -->|fetch activity details| API
+        StudyActivityLaunch -->|start session| API
+        Words -->|fetch words| API
+        WordShow -->|fetch word details| API
+        Groups -->|fetch groups| API
+        GroupShow -->|fetch group details| API
+        StudySessions -->|fetch study sessions| API
+        StudySessionShow -->|fetch session details| API
+        Settings -->|fetch user preferences| API
+    end
+    
+    Frontend -->|API Calls| Backend
+    Backend -->|DB Queries| Database
+
+```
+
+---
