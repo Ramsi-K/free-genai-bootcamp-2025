@@ -1,5 +1,16 @@
 # GenAI Bootcamp 2025 – Journal  
 
+## Day 16: February 14, 2025  
+
+I spent most of the day trying to set up an **AI-assisted backend case study** to compare how different LLMs generate Flask API code. The goal was to structure an experiment that tracked how tools like **Copilot, Windsurf, and Cursor** handled backend tasks. But after hours of planning, I realized the setup was too complicated, and I wasn’t getting the results I needed. Ultimately, I dropped the idea.  
+
+Because of this, I didn’t watch any more of the backend lecture videos, and I didn’t write any code today.  
+
+**Completed Work**
+
+- **Planned an AI-assisted backend coding case study** (but scrapped it).  
+- **Reviewed different prompting strategies for AI coding tools.**  
+
 ## Day 15: February 13, 2025  
 
 Today was about **finalizing my backend understanding and preparing for implementation.** I wanted to start coding, but I needed to make sure I wasn’t going in blind.  
@@ -8,13 +19,13 @@ I started by **double-checking the missing API endpoints** that need to be imple
 
 Once I had clarity, I realized that I still needed a proper **plan for execution**. I reviewed the backend structure again—specifically **how Flask Blueprints handle routing**—and went over **how to connect the frontend to the backend** using API calls.  
 
-At some point, I got sidetracked again when I found a **DRM restriction** on my Korean vocabulary book, which was frustrating because **it’s literally just a list of words, and I couldn’t even extract it properly.** This led me to look into **converting AZW3 files to TXT or JSON**, which ended up being way more annoying than expected. I tried multiple extraction methods, but nothing worked perfectly. Ultimately I was only able to copy over 200 words as the publisher has added copy restrictions on the book as well. I looked at other sources such as Anki and Quizlet and may end up using those instead. 
+At some point, I got sidetracked again when I found a **DRM restriction** on my Korean vocabulary book, which was frustrating because **it’s literally just a list of words, and I couldn’t even extract it properly.** This led me to look into **converting AZW3 files to TXT or JSON**, which ended up being way more annoying than expected. I tried multiple extraction methods, but nothing worked perfectly. Ultimately I was only able to copy over 200 words as the publisher has added copy restrictions on the book as well. I looked at other sources such as Anki and Quizlet and may end up using those instead.
 
 Aside from that, I also thought more about my Level 5 project idea. The more I consider it, the more I realize I want **a visual-first language learning tool**, where flashcards use **images and videos instead of English translations**. I haven’t locked this in yet, but it’s definitely something I want to revisit once I finish the backend work.  
 
 By the end of the day, I had a clearer **execution plan for finishing the backend**, and I know exactly what I need to do next.  
 
-## Completed Work  
+**Completed Work**  
 
 - **Confirmed the actual API requirements** (tech specs vs. livestream corrections).  
 - **Reviewed Flask Blueprints again** to make sure I understand how routing works.  
@@ -32,7 +43,7 @@ After that, I tried to get back to the backend videos, but I was still confused.
 
 I still have ~5 hours of lecture videos left, but I think I’ve cleared my head around the backend enough to start implementation tomorrow. I also know I’m done for the day because I’m getting snappy at my favorite AI assistant.
 
-## Completed Work
+**Completed Work**
 
 - Watched over six hours of backend lecture videos, covering Flask, SQLite, and API structures.  
 - Realized that Level 5 is completely out of reach for me, and Level 1 is the real goal.  
