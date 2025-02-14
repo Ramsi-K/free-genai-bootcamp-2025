@@ -1,0 +1,1908 @@
+[
+    {
+      "hangul": "것",
+      "romanization": "geot",
+      "type": "noun",
+      "english": [
+        "a thing",
+        "an object"
+      ],
+      "example": {
+        "korean": "이것은 내 휴대폰이야.",
+        "english": "This thing is my mobile phone."
+      }
+    },
+    {
+      "hangul": "하다",
+      "romanization": "hada",
+      "type": "verb",
+      "english": [
+        "to do",
+        "to make"
+      ],
+      "example": {
+        "korean": "제가 하는 일은 학생들을 가르치는 일 입니다.",
+        "english": "What I do is teaching students."
+      }
+    },
+    {
+      "hangul": "있다",
+      "romanization": "itda",
+      "type": "verb",
+      "english": [
+        "to be (in a place)",
+        "exist",
+        "have"
+      ],
+      "example": {
+        "korean": "그는 지금 집에 있다.",
+        "english": "He is at home now."
+      }
+    },
+    {
+      "hangul": "있다",
+      "romanization": "itda",
+      "type": "assistant verb",
+      "english": "to be (in a state)",
+      "example": {
+        "korean": "그녀는 버스를 기다리며 그곳에 서 있다.",
+        "english": "She is standing there, waiting for the bus."
+      }
+    },
+    {
+      "hangul": "되다",
+      "romanization": "doeda",
+      "type": "verb",
+      "english": "to become",
+      "example": {
+        "korean": "그는 그가 원했던 대로 교사가 되었다.",
+        "english": "He became a teacher as he wanted."
+      }
+    },
+    {
+      "hangul": "수",
+      "romanization": "su",
+      "type": "noun",
+      "english": [
+        "way",
+        "means",
+        "possibility"
+      ],
+      "example": {
+        "korean": "그 일이 그렇게 될 수는 없습니다.",
+        "english": "There is no possibility that the work would be done like that."
+      }
+    },
+    {
+      "hangul": "같다",
+      "romanization": "gatda",
+      "type": "adjective",
+      "english": [
+        "(to be) the same",
+        "(to be) like or similar",
+        "(to be) probably so"
+      ],
+      "example": {
+        "korean": "오늘의 날씨는 어제와 같다.",
+        "english": "The weather today is the same as yesterday."
+      }
+    },
+    {
+      "hangul": "나",
+      "romanization": "na",
+      "type": "pronoun",
+      "english": "I",
+      "example": {
+        "korean": "나는 어제 여기에 도착했어.",
+        "english": "I arrived here yesterday."
+      }
+    },
+    {
+      "hangul": "그",
+      "romanization": "geu",
+      "type": "pronoun",
+      "english": "he",
+      "example": {
+        "korean": "그가 저를 도와줬던 사람이에요.",
+        "english": "He is the one who helped me."
+      }
+    },
+    {
+      "hangul": "아니다",
+      "romanization": "anida",
+      "type": "adjective",
+      "english": "not be",
+      "example": {
+        "korean": "이것은 제가 주문했던 것이 아니에요.",
+        "english": "This is not what I ordered."
+      }
+    },
+    {
+      "hangul": "보다",
+      "romanization": "boda",
+      "type": "verb",
+      "english": [
+        "to see",
+        "look at",
+        "watch",
+        "read"
+      ],
+      "example": {
+        "korean": "나는 어제 그 영화를 봤다.",
+        "english": "I watched the movie yesterday."
+      }
+    },
+    {
+      "hangul": "등",
+      "romanization": "deung",
+      "type": "noun",
+      "english": "back",
+      "example": {
+        "korean": "그는 바로 내 등 뒤에 서 있었다.",
+        "english": "He stood right behind my back."
+      }
+    },
+    {
+      "hangul": "때",
+      "romanization": "ttae",
+      "type": "noun",
+      "english": [
+        "time",
+        "an occasion",
+        "the time when"
+      ],
+      "example": {
+        "korean": "내가 어렸을 때 이 마을로 이사를 왔다.",
+        "english": "When I was young, I moved to this town."
+      }
+    },
+    {
+      "hangul": "거",
+      "romanization": "geo",
+      "type": "noun",
+      "english": [
+        "thing",
+        "that which",
+        "what"
+      ],
+      "example": {
+        "korean": "그 일은 그녀가 한 거예요.",
+        "english": "That is what she did."
+      }
+    },
+    {
+      "hangul": "가다",
+      "romanization": "gada",
+      "type": "verb",
+      "english": "to go",
+      "example": {
+        "korean": "(넌) 지난 주말에 어디에 갔었니?",
+        "english": "Where did you go last weekend?"
+      }
+    },
+    {
+      "hangul": "주다",
+      "romanization": "juda",
+      "type": "verb",
+      "english": "to give",
+      "example": {
+        "korean": "저 책 좀 저에게 줄래요?",
+        "english": "Would you give that book to me, please?"
+      }
+    },
+    {
+      "hangul": "대하다",
+      "romanization": "daehada",
+      "type": "verb",
+      "english": "to respond to",
+      "example": {
+        "korean": "그가 나를 대하는 태도가 마음에 들지 않는다.",
+        "english": "I do not like his responding attitude towards me."
+      }
+    },
+    {
+      "hangul": "년",
+      "romanization": "nyeon",
+      "type": "noun",
+      "english": "year",
+      "example": {
+        "korean": "(당신은) 몇 년도에 한국에 왔어요?",
+        "english": "What year did you come to Korea?"
+      }
+    },
+    {
+      "hangul": "한",
+      "romanization": "han",
+      "type": "noun",
+      "english": [
+        "one",
+        "(before a numeral) about, around"
+      ],
+      "example": {
+        "korean": "너는 여기에 올 때 딱 한 개만 가지고 오면 돼.",
+        "english": "You can bring just one when you come."
+      }
+    },
+    {
+      "hangul": "말",
+      "romanization": "mal",
+      "type": "noun",
+      "english": [
+        "word",
+        "speech"
+      ],
+      "example": {
+        "korean": "그의 말을 잘 들어 봐.",
+        "english": "Please, listen to his word."
+      }
+    },
+    {
+      "hangul": "일",
+      "romanization": "il",
+      "type": "noun",
+      "english": [
+        "work",
+        "job",
+        "business",
+        "matter"
+      ],
+      "example": {
+        "korean": "그녀가 하고 있는 일은 무엇이죠?",
+        "english": "What is her job?"
+      }
+    },
+    {
+      "hangul": "이",
+      "romanization": "i",
+      "type": "pronoun",
+      "english": "this",
+      "example": {
+        "korean": "이 책이 당신에게 많은 도움이 될 것입니다.",
+        "english": "This book will be helpful for you."
+      }
+    },
+    {
+      "hangul": "때문에",
+      "romanization": "ttaemune",
+      "type": "noun",
+      "english": [
+        "Because of",
+        "Because"
+      ],
+      "example": {
+        "korean": "그 소음 때문에 잠을 잘 수가 없었다.",
+        "english": "I could not sleep because of the noise."
+      }
+    },
+    {
+      "hangul": "말하다",
+      "romanization": "malhada",
+      "type": "verb",
+      "english": [
+        "to speak",
+        "to talk",
+        "to say"
+      ],
+      "example": {
+        "korean": "그가 말하기 전에 빨리 여기를 떠나자.",
+        "english": "Let’s leave here before he speaks."
+      }
+    },
+    {
+      "hangul": "위하다",
+      "romanization": "wihada",
+      "type": "verb",
+      "english": [
+        "to help or benefit",
+        "to do for the sake of",
+        "for the purpose of"
+      ],
+      "example": {
+        "korean": "군인들은 자신들의 나라를 위해 그 일을 한다.",
+        "english": "The soldiers do it for (the sake of) their country."
+      }
+    },
+    {
+      "hangul": "그러나",
+      "romanization": "geureona",
+      "type": "adverb",
+      "english": [
+        "but",
+        "however"
+      ],
+      "example": {
+        "korean": "그는 7시까지 여기에 오기로 약속을 했다. 그러나 그는 오지 않았다.",
+        "english": "He promised to come here by seven, but he didn’t."
+      }
+    },
+    {
+      "hangul": "오다",
+      "romanization": "oda",
+      "type": "verb",
+      "english": "to come",
+      "example": {
+        "korean": "너는 내일 몇 시에 올 수 있어?",
+        "english": "What time can you come tomorrow?"
+      }
+    },
+    {
+      "hangul": "알다",
+      "romanization": "alda",
+      "type": "verb",
+      "english": [
+        "to know",
+        "understand"
+      ],
+      "example": {
+        "korean": "오늘 제 생일이라는 것을 그들도 아나요?",
+        "english": "Do they also know that today is my birthday?"
+      }
+    },
+    {
+      "hangul": "씨",
+      "romanization": "ssi",
+      "type": "noun",
+      "english": "sir or madam, Mr. or Ms.",
+      "example": {
+        "korean": "민호 씨는 어디 출신이에요?",
+        "english": "Mr. Minho, where are you from?"
+      }
+    },
+    {
+      "hangul": "그렇다",
+      "romanization": "geureota",
+      "type": "adjective",
+      "english": [
+        "to be correct",
+        "to be really so"
+      ],
+      "example": {
+        "korean": "선생님이 너 오늘 학교에 안 왔다고 하셨는데 정말 그랬니?",
+        "english": "Your teacher told me that you didn’t come to your school. Is this correct?"
+      }
+    },
+    {
+      "hangul": "크다",
+      "romanization": "keuda",
+      "type": "adjective",
+      "english": [
+        "big",
+        "large",
+        "great",
+        "tall"
+      ],
+      "example": {
+        "korean": "그 케이크는 정말 크다.",
+        "english": "The cake is very big"
+      }
+    },
+    {
+      "hangul": "또",
+      "romanization": "tto",
+      "type": "adverb",
+      "english": [
+        "also",
+        "again"
+      ],
+      "example": {
+        "korean": "그는 또 지각을 했다.",
+        "english": "He was late again."
+      }
+    },
+    {
+      "hangul": "사회",
+      "romanization": "sahoe",
+      "type": "noun",
+      "english": "society",
+      "example": {
+        "korean": "그는 이 사회에서 아주 중요한 역할을 맡고 있어요.",
+        "english": "He takes an important role in this society."
+      }
+    },
+    {
+      "hangul": "많은",
+      "romanization": "maneun",
+      "type": "adjective",
+      "english": [
+        "many",
+        "much",
+        "a lot of",
+        "plentiful"
+      ],
+      "example": {
+        "korean": "이번 행사에 많은 사람들이 모여 들었다.",
+        "english": "Many people gathered for this event."
+      }
+    },
+    {
+      "hangul": "안",
+      "romanization": "an",
+      "type": "adverb",
+      "english": "not",
+      "example": {
+        "korean": "그녀는 오늘 숙제를 안 했다.",
+        "english": "She did not do her homework today."
+      }
+    },
+    {
+      "hangul": "좋다",
+      "romanization": "jota",
+      "type": "adjective",
+      "english": [
+        "good",
+        "great",
+        "excellent",
+        "nice"
+      ],
+      "example": {
+        "korean": "오늘 날씨가 정말 좋다.",
+        "english": "The weather is really good today."
+      }
+    },
+    {
+      "hangul": "더",
+      "romanization": "deo",
+      "type": "adverb",
+      "english": "more",
+      "example": {
+        "korean": "음식 좀 더 드릴까요?",
+        "english": "Do you want more food?"
+      }
+    },
+    {
+      "hangul": "받다",
+      "romanization": "batda",
+      "type": "verb",
+      "english": [
+        "to receive",
+        "take",
+        "obtain"
+      ],
+      "example": {
+        "korean": "너 어제 내가 보낸 메시지 받았니?",
+        "english": "Did you receive my message yesterday?"
+      }
+    },
+    {
+      "hangul": "그것",
+      "romanization": "geugeot",
+      "type": "pronoun",
+      "english": "that",
+      "example": {
+        "korean": "그것은 제 것이 아닙니다.",
+        "english": "That is not mine."
+      }
+    },
+    {
+      "hangul": "집",
+      "romanization": "jip",
+      "type": "noun",
+      "english": [
+        "house",
+        "home"
+      ],
+      "example": {
+        "korean": "이 집의 가격은 너무 비쌉니다.",
+        "english": "This house is too expensive."
+      }
+    },
+    {
+      "hangul": "나오다",
+      "romanization": "naoda",
+      "type": "verb",
+      "english": "to come out",
+      "example": {
+        "korean": "그는 별을 보기 위해 밖으로 나왔다.",
+        "english": "He came out to see stars."
+      }
+    },
+    {
+      "hangul": "따르다",
+      "romanization": "ttareuda",
+      "type": "verb",
+      "english": "to follow",
+      "example": {
+        "korean": "여러분들은 선생님의 지시사항을 잘 따라야 합니다.",
+        "english": "You need to follow the instructions of your teacher."
+      }
+    },
+    {
+      "hangul": "그리고",
+      "romanization": "geurigo",
+      "type": "adverb",
+      "english": [
+        "and",
+        "also",
+        "in addition"
+      ],
+      "example": {
+        "korean": "이것은 제가 그린 것입니다. 그리고 저것은 지수가 그린 것입니다.",
+        "english": "This is what I drew and that is what Jisoo drew."
+      }
+    },
+    {
+      "hangul": "문제",
+      "romanization": "munje",
+      "type": "noun",
+      "english": [
+        "problem",
+        "question"
+      ],
+      "example": {
+        "korean": "우리는 해결해야 할 많은 문제들을 가지고 있습니다.",
+        "english": "We have a lot of problems to be solved."
+      }
+    },
+    {
+      "hangul": "그런",
+      "romanization": "geureon",
+      "type": "determiner",
+      "english": [
+        "like that",
+        "such"
+      ],
+      "example": {
+        "korean": "나는 그런 경험이 별로 없다.",
+        "english": "I do not have any experience like that."
+      }
+    },
+    {
+      "hangul": "살다",
+      "romanization": "salda",
+      "type": "verb",
+      "english": [
+        "to live",
+        "to be alive",
+        "to dwell"
+      ],
+      "example": {
+        "korean": "저는 서울에서 살아요.",
+        "english": "I live in Seoul."
+      }
+    },
+    {
+      "hangul": "저",
+      "romanization": "jeo",
+      "type": "pronoun",
+      "english": "(humble, formal, polite) the first person deferential singular pronoun, I",
+      "example": {
+        "korean": "저는 이제 곧 19살이 됩니다.",
+        "english": "I will be 19 years old soon."
+      }
+    },
+    {
+      "hangul": "척하다",
+      "romanization": "cheokhada",
+      "type": "verb",
+      "english": "to pretend",
+      "example": {
+        "korean": "강아지는 무서워서 죽은 척했어요.",
+        "english": "The dog pretended to be dead because it was scared."
+      }
+    },
+    {
+      "hangul": "생각하다",
+      "romanization": "saenggakhada",
+      "type": "verb",
+      "english": "to think",
+      "example": {
+        "korean": "그는 그 문제에 대해 어떻게 생각하니?",
+        "english": "What does he think of the issue?"
+      }
+    },
+    {
+      "hangul": "모르다",
+      "romanization": "moreuda",
+      "type": "verb",
+      "english": [
+        "not to know",
+        "to be ignorant of"
+      ],
+      "example": {
+        "korean": "나는 그의 전화번호를 모른다.",
+        "english": "I do not know his phone number."
+      }
+    },
+    {
+      "hangul": "속",
+      "romanization": "sok",
+      "type": "noun",
+      "english": "the inside",
+      "example": {
+        "korean": "그 상자 속에 찾고 있는 게 있어요.",
+        "english": "What you are looking for is in the inside of the box."
+      }
+    },
+    {
+      "hangul": "만들다",
+      "romanization": "mandeulda",
+      "type": "verb",
+      "english": [
+        "to make",
+        "establish"
+      ],
+      "example": {
+        "korean": "저는 친구에게 주려고 종이 비행기를 만들었어요.",
+        "english": "I made a paper airplane for my friend."
+      }
+    },
+    {
+        "hangul": "곳",
+        "romanization": "kot",
+        "type": "noun",
+        "english": "place",
+        "example": {
+        "korean": "저는 컴퓨터를 둘 곳을 찾고 있어요.",
+        "english": "I am looking for a place to put a computer."
+        }
+    },
+    {
+        "hangul": "두",
+        "romanization": "du",
+        "type": "number",
+        "english": "two",
+        "example": {
+        "korean": "오늘은 두 사람만 이곳을 방문했어요.",
+        "english": "Only two people came here today."
+        }
+    },
+    {
+        "hangul": "앞",
+        "romanization": "ap",
+        "type": "noun",
+        "english": [
+        "fore",
+        "former",
+        "front"
+        ],
+        "example": {
+        "korean": "앞으로 나오세요.",
+        "english": "Please come to the front."
+        }
+    },
+    {
+        "hangul": "경우",
+        "romanization": "gyeongu",
+        "type": "noun",
+        "english": [
+        "conditions",
+        "circumstances",
+        "case",
+        "event"
+        ],
+        "example": {
+        "korean": "그럴 경우에는 게임이 연기될 수 있나요?",
+        "english": "In the case of it being so, could the game be postponed?"
+        }
+    },
+    {
+        "hangul": "중",
+        "romanization": "jung",
+        "type": "noun",
+        "english": [
+        "amongst",
+        "in the course of",
+        "during"
+        ],
+        "example": {
+        "korean": "그 중에서 가장 좋아하는 노래는 뭐에요?",
+        "english": "What is your favorite song amongst them?"
+        }
+    },
+    {
+        "hangul": "어떤",
+        "romanization": "eotteon",
+        "type": "determiner",
+        "english": [
+        "which",
+        "what kind of",
+        "some",
+        "any",
+        "certain",
+        "of a certain kind"
+        ],
+        "example": {
+        "korean": "어떤 선택이든 확실한 것은 없다.",
+        "english": "Any choice is not certain."
+        }
+    },
+    {
+        "hangul": "잘",
+        "romanization": "jal",
+        "type": "adverb",
+        "english": [
+        "be good at",
+        "well",
+        "often",
+        "at a good time"
+        ],
+        "example": {
+        "korean": "그는 매운 음식을 잘 먹어요.",
+        "english": "He’s good at eating spicy food."
+        }
+    },
+    {
+        "hangul": "그녀",
+        "romanization": "geunyeo",
+        "type": "pronoun",
+        "english": "she",
+        "example": {
+        "korean": "그녀는 저에게 이 선물을 주었어요.",
+        "english": "She gave me this present."
+        }
+    },
+    {
+        "hangul": "먹다",
+        "romanization": "meokda",
+        "type": "verb",
+        "english": [
+        "to eat",
+        "have",
+        "grow older"
+        ],
+        "example": {
+        "korean": "오늘 아침에 뭐 먹었어요?",
+        "english": "What did you eat for breakfast?"
+        }
+    },
+    {
+        "hangul": "자신",
+        "romanization": "jasin",
+        "type": "noun",
+        "english": "one’s body, oneself",
+        "example": {
+        "korean": "피터는 자신이 부끄러운 줄 알아야해.",
+        "english": "Peter ought to be ashamed of himself"
+        }
+    },
+    {
+        "hangul": "문화",
+        "romanization": "munhwa",
+        "type": "noun",
+        "english": [
+        "culture",
+        "civilization"
+        ],
+        "example": {
+        "korean": "저는 이곳의 문화에 익숙하지 않아요.",
+        "english": "I am not familiar with the culture here."
+        }
+    },
+    {
+        "hangul": "원",
+        "romanization": "won",
+        "type": "noun",
+        "english": [
+        "won (the official currency of South Korea)",
+        "circle"
+        ],
+        "example": {
+        "korean": "이 책의 가격은 12,000원입니다.",
+        "english": "The price of this book is 12,000 won."
+        }
+    },
+    {
+        "hangul": "생각",
+        "romanization": "saenggak",
+        "type": "noun",
+        "english": [
+        "idea",
+        "thought"
+        ],
+        "example": {
+        "korean": "그거 정말 좋은 생각이네요.",
+        "english": "That is a good idea."
+        }
+    },
+    {
+        "hangul": "어떻다",
+        "romanization": "eotteota",
+        "type": "adjective",
+        "english": [
+        "(to be) in what state",
+        "(to be) how"
+        ],
+        "example": {
+        "korean": "최근에 구입한 새 핸드폰은 어때요?",
+        "english": "How is the new mobile phone that you have purchased recently?"
+        }
+    },
+    {
+        "hangul": "명",
+        "romanization": "myeong",
+        "type": "noun",
+        "english": "counter for people",
+        "example": {
+        "korean": "오늘은 10명이 참석할 예정입니다.",
+        "english": "Today 10 people are going to participate in the conference."
+        }
+    },
+    {
+        "hangul": "통하다",
+        "romanization": "tonghada",
+        "type": "verb",
+        "english": [
+        "to pass through",
+        "to communicate",
+        "to use as a medium"
+        ],
+        "example": {
+        "korean": "저는 그녀와 이야기가 잘 통해요.",
+        "english": "I can communicate with her well."
+        }
+    },
+    {
+        "hangul": "그러다",
+        "romanization": "geureoda",
+        "type": "verb",
+        "english": "to do so, do it, say so",
+        "example": {
+        "korean": "그는 여기에 온다고 그랬어요.",
+        "english": "He said that he would come here."
+        }
+    },
+    {
+        "hangul": "소리",
+        "romanization": "sori",
+        "type": "noun",
+        "english": [
+        "sound",
+        "voice"
+        ],
+        "example": {
+        "korean": "음악 소리가 너무 커요.",
+        "english": "The sound of music is too loud."
+        }
+    },
+    {
+        "hangul": "다시",
+        "romanization": "dasi",
+        "type": "adverb",
+        "english": [
+        "again",
+        "once more"
+        ],
+        "example": {
+        "korean": "다시 말해 줄 수 있나요?",
+        "english": "Can you please say that again?"
+        }
+    },
+    {
+        "hangul": "다른",
+        "romanization": "dareun",
+        "type": "determiner",
+        "english": [
+        "different",
+        "other"
+        ],
+        "example": {
+        "korean": "다른 것을 볼 수 있을까요?",
+        "english": "Can I see a different thing?"
+        }
+    },
+    {
+        "hangul": "이런",
+        "romanization": "ireon",
+        "type": "determiner",
+        "english": "like this, such",
+        "example": {
+        "korean": "이런 물건을 또 사오지 마세요.",
+        "english": "Please, do not buy the stuff like this again."
+        }
+    },
+    {
+        "hangul": "여자",
+        "romanization": "yeoja",
+        "type": "noun",
+        "english": [
+        "woman",
+        "girl",
+        "lady",
+        "female"
+        ],
+        "example": {
+        "korean": "저희 가족 중에 여자는 세 명 있습니다.",
+        "english": "Among my family members, there are three women."
+        }
+    },
+    {
+        "hangul": "개",
+        "romanization": "gae",
+        "type": "noun",
+        "english": "dog",
+        "example": {
+        "korean": "너는 개를 좋아하니?",
+        "english": "Do you like dogs?"
+        }
+    },
+    {
+        "hangul": "정도",
+        "romanization": "jeongdo",
+        "type": "noun",
+        "english": [
+        "degree",
+        "extent",
+        "an approximate amount"
+        ],
+        "example": {
+        "korean": "이 아파트의 임대료는 어느 정도의 금액인가요?",
+        "english": "What is an approximate amount of the rent for this apartment?"
+        }
+    },
+    {
+        "hangul": "뒤",
+        "romanization": "dwi",
+        "type": "noun",
+        "english": [
+        "back",
+        "latter",
+        "rear",
+        "afterward",
+        "behind"
+        ],
+        "example": {
+        "korean": "열쇠는 바로 네 뒤에 있어.",
+        "english": "The key is right behind you."
+        }
+    },
+    {
+        "hangul": "듣다",
+        "romanization": "deutda",
+        "type": "verb",
+        "english": [
+        "to listen",
+        "hear",
+        "take a course"
+        ],
+        "example": {
+        "korean": "지금 제 말 잘 들리나요?",
+        "english": "Can you hear me now?"
+        }
+    },
+    {
+        "hangul": "다",
+        "romanization": "da",
+        "type": "adverb",
+        "english": [
+        "all",
+        "completely"
+        ],
+        "example": {
+        "korean": "이거 네가 다 먹었니?",
+        "english": "Did you eat all of these?"
+        }
+    },
+    {
+        "hangul": "좀",
+        "romanization": "jom",
+        "type": "adverb",
+        "english": [
+        "a little",
+        "somewhat",
+        "a little while",
+        "a short time"
+        ],
+        "example": {
+        "korean": "좀 있다가 제가 다시 전화 드리겠습니다.",
+        "english": "I’ll call you back in little later."
+        }
+    },
+    {
+        "hangul": "들다",
+        "romanization": "deulda",
+        "type": "verb",
+        "english": [
+        "to cost",
+        "be spent",
+        "hold",
+        "carry"
+        ],
+        "example": {
+        "korean": "제가 여기에 오는 데 이천 원이 들었어요.",
+        "english": "It cost me 2,000 won to be here."
+        }
+    },
+    {
+        "hangul": "싶다",
+        "romanization": "sipda",
+        "type": "adjective",
+        "english": "to desire, want",
+        "example": {
+        "korean": "저는 정말 설악산에 가 보고 싶어요.",
+        "english": "I really want to go to Mt. Seorak."
+        }
+    },
+    {
+        "hangul": "보이다",
+        "romanization": "boida",
+        "type": "verb",
+        "english": [
+        "to be seen",
+        "be shown",
+        "show",
+        "be visible"
+        ],
+        "example": {
+        "korean": "너는 저기 있는 간판이 보이니?",
+        "english": "Is that sign visible to you?"
+        }
+    },
+    {
+        "hangul": "가지다",
+        "romanization": "gajida",
+        "type": "verb",
+        "english": [
+        "to have",
+        "possess"
+        ],
+        "example": {
+        "korean": "너는 차를 가지고 있니?",
+        "english": "Do you have a car?"
+        }
+    },
+    {
+        "hangul": "함께",
+        "romanization": "hamkke",
+        "type": "adverb",
+        "english": "together",
+        "example": {
+        "korean": "저희와 함께 영화보러 갈래요?",
+        "english": "Would you go to a movie together with us?"
+        }
+    },
+    {
+        "hangul": "아이",
+        "romanization": "ai",
+        "type": "noun",
+        "english": "child",
+        "example": {
+        "korean": "이 아이는 엄마를 기다리고 있어요.",
+        "english": "This child is waiting for his mom."
+        }
+    },
+    {
+        "hangul": "지나다",
+        "romanization": "jinada",
+        "type": "verb",
+        "english": "to pass",
+        "example": {
+        "korean": "도로가 너무 좁아서 차들이 지나가지를 못했다.",
+        "english": "The road was so narrow that cars were unable to pass."
+        }
+    },
+    {
+        "hangul": "많이",
+        "romanization": "mani",
+        "type": "adverb",
+        "english": [
+        "a lot",
+        "in abundance"
+        ],
+        "example": {
+        "korean": "나는 그 노래를 많이 들었다.",
+        "english": "I have listened to that song a lot."
+        }
+    },
+    {
+        "hangul": "시간",
+        "romanization": "sigan",
+        "type": "noun",
+        "english": [
+        "time",
+        "hour"
+        ],
+        "example": {
+        "korean": "이번 주말에 시간 좀 내서 제 방을 청소해야 겠어요.",
+        "english": "I should spend some time cleaning my room this weekend."
+        }
+    },
+    {
+        "hangul": "너",
+        "romanization": "neo",
+        "type": "pronoun",
+        "english": "you (informal)",
+        "example": {
+        "korean": "너는 언제부터 요리하는 법을 배우기 시작했니?",
+        "english": "When did you start learning how to cook?"
+        }
+    },
+    {
+        "hangul": "인간",
+        "romanization": "ingan",
+        "type": "noun",
+        "english": [
+        "people",
+        "humanity",
+        "person",
+        "mankind",
+        "human"
+        ],
+        "example": {
+        "korean": "모든 인간은 불완전하다.",
+        "english": "All humans are fallible."
+        }
+    },
+    {
+        "hangul": "사실",
+        "romanization": "sasil",
+        "type": "noun",
+        "english": [
+        "fact",
+        "reality",
+        "truth"
+        ],
+        "example": {
+        "korean": "거짓말하지 마. 나는 그 사실을 알고 싶어.",
+        "english": "Please, don’t lie to me. I want to know the truth."
+        }
+    },
+    {
+        "hangul": "나다",
+        "romanization": "nada",
+        "type": "verb",
+        "english": [
+        "to be born",
+        "appear",
+        "arise",
+        "occur",
+        "break out",
+        "come out"
+        ],
+        "example": {
+        "korean": "결과가 잘 안 나왔어요.",
+        "english": "The result did not come out well."
+        }
+    },
+    {
+        "hangul": "이렇다",
+        "romanization": "ireota",
+        "type": "adjective",
+        "english": "(to be) like this, in this way",
+        "example": {
+        "korean": "이렇게 하면 사람들이 담배를 덜 피울 것입니다.",
+        "english": "In this way, there will be less people smoking."
+        }
+    },
+    {
+        "hangul": "어머니",
+        "romanization": "eomeoni",
+        "type": "noun",
+        "english": [
+        "mom",
+        "mother"
+        ],
+        "example": {
+        "korean": "저희 어머니께서 차를 파시려고 하는데요.",
+        "english": "My mother wants to sell her car."
+        }
+    },
+    {
+        "hangul": "눈",
+        "romanization": "nun",
+        "type": "noun",
+        "english": [
+        "eye",
+        "vision",
+        "snow"
+        ],
+        "example": {
+        "korean": "나는 눈에 안약을 한 방울 넣었다.",
+        "english": "I put a drop of medicine in my eye."
+        }
+    },
+    {
+        "hangul": "뭐",
+        "romanization": "mwo",
+        "type": "pronoun",
+        "english": "what",
+        "example": {
+        "korean": "이게 뭐예요?",
+        "english": "What is this?"
+        }
+    },
+    {
+        "hangul": "점",
+        "romanization": "jeom",
+        "type": "noun",
+        "english": [
+        "a point",
+        "spot",
+        "aspect"
+        ],
+        "example": {
+        "korean": "그 점을 반드시 기억해야 합니다.",
+        "english": "You have to remember that point."
+        }
+    },
+    {
+        "hangul": "의하다",
+        "romanization": "uihada",
+        "type": "verb",
+        "english": [
+        "to be due to",
+        "to accord with",
+        "to be pursuant to"
+        ],
+        "example": {
+        "korean": "유효하지 않은 문자에 의해서 이러한 문제가 발생할 수도 있습니다.",
+        "english": "This may be due to invalid characters."
+        }
+    },
+
+    {
+        "hangul": "시대",
+        "romanization": "sidae",
+        "type": "noun",
+        "english": [
+        "historical age or period"
+        ],
+        "example": {
+        "korean": "이 풍습은 조선 시대부터 시작된 것입니다.",
+        "english": "The practice dates from the Joseon Dynasty period."
+        }
+    },
+    {
+        "hangul": "다음",
+        "romanization": "daeum",
+        "type": "noun",
+        "english": [
+        "the next",
+        "the following"
+        ],
+        "example": {
+        "korean": "저희는 다음 업무일 정오까지 납품을 보증하겠습니다.",
+        "english": "We guarantee delivery by noon on the next business day."
+        }
+    },
+    {
+        "hangul": "이러하다",
+        "romanization": "ireohada",
+        "type": "adjective",
+        "english": "to be like this",
+        "example": {
+        "korean": "저는 사람들이 이러한 책상을 갖고 싶어 한다고 생각해요.",
+        "english": "I think people dream about having a desk like this."
+        }
+    },
+    {
+        "hangul": "누구",
+        "romanization": "nugu",
+        "type": "pronoun",
+        "english": [
+        "who",
+        "someone"
+        ],
+        "example": {
+        "korean": "그는 누구예요?",
+        "english": "Who is he?"
+        }
+    },
+    {
+        "hangul": "전",
+        "romanization": "jeon",
+        "type": "noun",
+        "english": [
+        "front",
+        "(time) before",
+        "previous",
+        "ex-"
+        ],
+        "example": {
+        "korean": "2019년도의 판매액과 전년도의 판매액을 비교해 보면 어떠한가요?",
+        "english": "How do sales in 2019 compare to those for the previous year?"
+        }
+    },
+    {
+        "hangul": "부탁",
+        "romanization": "butak",
+        "type": "noun",
+        "english": [
+        "request",
+        "favor"
+        ],
+        "example": {
+        "korean": "부탁이 있는데요.",
+        "english": "I have a favor to ask."
+        }
+    },
+    {
+        "hangul": "여러",
+        "romanization": "yeoreo",
+        "type": "determiner",
+        "english": [
+        "several",
+        "various"
+        ],
+        "example": {
+        "korean": "저는 그 프로그램을 이전에 여러 번 봤어요.",
+        "english": "I watched the show several times before."
+        }
+    },
+    {
+        "hangul": "뻔하다",
+        "romanization": "ppeonhada",
+        "type": "adjective",
+        "english": [
+        "clear",
+        "obvious",
+        "evident"
+        ],
+        "example": {
+        "korean": "네가 공부를 안했는데 결과야 뻔하지.",
+        "english": "Since you didn’t study, it’s pretty obvious what the result will be."
+        }
+    },
+    {
+        "hangul": "하나",
+        "romanization": "hana",
+        "type": "noun",
+        "english": "one",
+        "example": {
+        "korean": "이 방에는 침대 하나와 의자 두개가 있어요.",
+        "english": "There are one bed and two chairs in this room."
+        }
+    },
+    {
+        "hangul": "세계",
+        "romanization": "segye",
+        "type": "noun",
+        "english": "the world",
+        "example": {
+        "korean": "세계의 많은 사람들이 복지 혜택을 필요로 합니다.",
+        "english": "There are a lot of people in the world who need welfare."
+        }
+    },
+    {
+        "hangul": "버리다",
+        "romanization": "beorida",
+        "type": "verb",
+        "english": "to throw away",
+        "example": {
+        "korean": "여기에 쓰레기를 버리지 마세요.",
+        "english": "Don’t throw away trash here."
+        }
+    },
+    {
+        "hangul": "위",
+        "romanization": "wi",
+        "type": "noun",
+        "english": [
+        "above",
+        "upper",
+        "upside",
+        "top"
+        ],
+        "example": {
+        "korean": "얼굴 윗부분을 만져 주세요.",
+        "english": "Please, touch the upper part of the face."
+        }
+    },
+    {
+        "hangul": "운동",
+        "romanization": "undong",
+        "type": "noun",
+        "english": [
+        "exercise",
+        "physical activity",
+        "sport",
+        "movement in general"
+        ],
+        "example": {
+        "korean": "저는 일주일에 4일 운동해요.",
+        "english": "I exercise four days a week."
+        }
+    },
+    {
+        "hangul": "퍼센트",
+        "romanization": "peosenteu",
+        "type": "noun",
+        "english": "percent (a part or other object per hundred)",
+        "example": {
+        "korean": "오늘 우리은행 주식이 5퍼센트 올랐어요.",
+        "english": "Woori Bank’s stock gained five percent today."
+        }
+    },
+    {
+        "hangul": "학교",
+        "romanization": "hakgyo",
+        "type": "noun",
+        "english": "school",
+        "example": {
+        "korean": "그는 학교에서 저보다 한 학년 위였어요.",
+        "english": "He was a year ahead of me in school."
+        }
+    },
+    {
+        "hangul": "자기",
+        "romanization": "jagi",
+        "type": "noun",
+        "english": "oneself, the self, the ego",
+        "example": {
+        "korean": "그 여성은 자기 자신에 대해서 무엇이라고 말하고 있나요?",
+        "english": "What does the woman say about herself?"
+        }
+    },
+    {
+        "hangul": "가장",
+        "romanization": "gajang",
+        "type": "adverb",
+        "english": [
+        "most",
+        "the most",
+        "the best"
+        ],
+        "example": {
+        "korean": "저는 이 책을 가장 좋아해요.",
+        "english": "I like this book the most."
+        }
+    },
+    {
+        "hangul": "대통령",
+        "romanization": "daetongnyeong",
+        "type": "noun",
+        "english": "president of a country",
+        "example": {
+        "korean": "대통령은 국민들에 의해 선출된 한 국가의 수장입니다.",
+        "english": "The president is the head of a country elected by the people."
+        }
+    },
+    {
+        "hangul": "가지",
+        "romanization": "gaji",
+        "type": "noun",
+        "english": "kinds, types",
+        "example": {
+        "korean": "그 문제를 해결하기 위한 여러 가지 방법이 있다.",
+        "english": "There are various kinds of ways to solve the problem."
+        }
+    },
+
+    {
+        "hangul": "어색하다",
+        "romanization": "eosaekhada",
+        "type": "adjective",
+        "english": [
+        "to be awkward",
+        "to be odd"
+        ],
+        "example": {
+        "korean": "뭐라고 꼭 집어서 말할 수는 없지만, 뭔가 어색해요.",
+        "english": "I can’t quite put a finger on it, but something is awkward."
+        }
+    },
+    {
+        "hangul": "시작하다",
+        "romanization": "sijakhada",
+        "type": "verb",
+        "english": [
+        "to begin",
+        "to start"
+        ],
+        "example": {
+        "korean": "도로 공사는 언제 시작되나요?",
+        "english": "When will the road works begin?"
+        }
+    },
+    {
+        "hangul": "바로",
+        "romanization": "baro",
+        "type": "adverb",
+        "english": "straight, right (now)",
+        "example": {
+        "korean": "지금 바로 시작합니다.",
+        "english": "It will start right now."
+        }
+    },
+    {
+        "hangul": "어느",
+        "romanization": "eoneu",
+        "type": "determiner",
+        "english": [
+        "which",
+        "some"
+        ],
+        "example": {
+        "korean": "어느 음료를 좋아하나요?",
+        "english": "Which drink do you like?"
+        }
+    },
+    {
+        "hangul": "그래서",
+        "romanization": "geuraeseo",
+        "type": "adverb",
+        "english": [
+        "so",
+        "therefore",
+        "accordingly",
+        "because of that"
+        ],
+        "example": {
+        "korean": "그래서 나는 그에게 이렇게 말했다.",
+        "english": "Therefore, I spoke to him like this."
+        }
+    },
+    {
+        "hangul": "무엇",
+        "romanization": "mueot",
+        "type": "pronoun",
+        "english": [
+        "what",
+        "something",
+        "anything"
+        ],
+        "example": {
+        "korean": "무엇이라고 말했어요?",
+        "english": "What did you say?"
+        }
+    },
+    {
+        "hangul": "정부",
+        "romanization": "jeongbu",
+        "type": "noun",
+        "english": "national government, particularly the executive branch",
+        "example": {
+        "korean": "정부는 휴대폰 요금의 인하를 추진하고 있습니다.",
+        "english": "The government is pushing to lower mobile phone charges."
+        }
+    },
+    {
+        "hangul": "모든",
+        "romanization": "modeun",
+        "type": "determiner",
+        "english": [
+        "all",
+        "every",
+        "each"
+        ],
+        "example": {
+        "korean": "모든 사람들이 일어서서 크게 환호성을 지릅니다.",
+        "english": "All the people stand and cheer loudly."
+        }
+    },
+    {
+        "hangul": "번",
+        "romanization": "beon",
+        "type": "counter",
+        "english": "times",
+        "example": {
+        "korean": "저는 1년에 두 번 미국에 방문해요.",
+        "english": "I visit the U.S. two times a year."
+        }
+    },
+    {
+        "hangul": "그거",
+        "romanization": "geugeo",
+        "type": "pronoun",
+        "english": "it, that thing",
+        "example": {
+        "korean": "그거 무슨 문제 있어요?",
+        "english": "What is the problem with that thing?"
+        }
+    },
+    {
+        "hangul": "돈",
+        "romanization": "don",
+        "type": "noun",
+        "english": "money",
+        "example": {
+        "korean": "그는 돈이 많은 영화 배우예요.",
+        "english": "He is a film star with a lot of money."
+        }
+    },
+    {
+        "hangul": "국가",
+        "romanization": "gukga",
+        "type": "noun",
+        "english": [
+        "political state",
+        "nation",
+        "country",
+        "polity",
+        "national anthem"
+        ],
+        "example": {
+        "korean": "인근 국가에서 많은 사람들이 탈출했습니다.",
+        "english": "A lot of people escaped from a nearby country."
+        }
+    },
+    {
+        "hangul": "그런데",
+        "romanization": "geureonde",
+        "type": "adverb",
+        "english": [
+        "but",
+        "however",
+        "on the other hand"
+        ],
+        "example": {
+        "korean": "그런데 사실 극히 소수의 사람들이 그것을 좋아해요.",
+        "english": "But the truth is, very few people like it."
+        }
+    },
+    {
+        "hangul": "날",
+        "romanization": "nal",
+        "type": "noun",
+        "english": [
+        "day",
+        "time"
+        ],
+        "example": {
+        "korean": "오늘은 일 년 중에 가장 짧은 날입니다.",
+        "english": "Today is the shortest day of the year."
+        }
+    },
+    {
+        "hangul": "여기",
+        "romanization": "yeogi",
+        "type": "pronoun",
+        "english": "here",
+        "example": {
+        "korean": "저 여기 있어요.",
+        "english": "I am here."
+        }
+    },
+    {
+        "hangul": "모두",
+        "romanization": "modu",
+        "type": "adverb",
+        "english": [
+        "all",
+        "wholly",
+        "altogether",
+        "entirely"
+        ],
+        "example": {
+        "korean": "저희 가족 구성원들 모두 이 보험에 적용이 되나요?",
+        "english": "Are all the members of my family covered under this policy?"
+        }
+    },
+    {
+        "hangul": "여성",
+        "romanization": "yeoseong",
+        "type": "noun",
+        "english": "woman, women in general, femininity, womanhood",
+        "example": {
+        "korean": "저는 석사 학위를 가지고 있는 29살의 여성입니다.",
+        "english": "I am a 29-year-old woman with a master’s degree."
+        }
+    },
+    {
+        "hangul": "친구",
+        "romanization": "chingu",
+        "type": "noun",
+        "english": "friend",
+        "example": {
+        "korean": "그는 제 친구예요.",
+        "english": "He is my friend."
+        }
+    },
+    {
+        "hangul": "마음",
+        "romanization": "maeum",
+        "type": "noun",
+        "english": [
+        "personality",
+        "heart",
+        "mind"
+        ],
+        "example": {
+        "korean": "저는 그 색상을 좋아하지 않아서 마음을 바꾸었어요.",
+        "english": "I changed my mind because I do not like the color."
+        }
+},
+    {
+        "hangul": "후",
+        "romanization": "hu",
+        "type": "noun",
+        "english": "after",
+        "example": {
+        "korean": "그는 시간을 본 후 급하게 떠났다.",
+        "english": "After looking at the time, he left in a hurry."
+        }
+    },
+    {
+        "hangul": "가다",
+        "romanization": "gada",
+        "type": "verb",
+        "english": "go",
+        "example": {
+        "korean": "그들은 개관식에 참석하러 서울로 갔어요.",
+        "english": "They went to Seoul for the opening."
+        }
+    },
+    {
+        "hangul": "놓다",
+        "romanization": "nota",
+        "type": "verb",
+        "english": [
+        "to lay",
+        "put",
+        "let go"
+        ],
+        "example": {
+        "korean": "그녀는 주전자를 불 위에 놓았어요.",
+        "english": "She put a kettle over the fire."
+        }
+    },
+    {
+        "hangul": "관계",
+        "romanization": "gwangye",
+        "type": "noun",
+        "english": [
+        "connection",
+        "relationship"
+        ],
+        "example": {
+        "korean": "사랑은 굳건한 토대 위에 세워진 관계입니다.",
+        "english": "Love is a relationship built on a firm foundation."
+        }
+    },
+    {
+        "hangul": "아버지",
+        "romanization": "abeoji",
+        "type": "noun",
+        "english": [
+        "father",
+        "dad"
+        ],
+        "example": {
+        "korean": "아버지는 올해 환갑을 맞이하셨다.",
+        "english": "My father reached the age of sixty this year."
+        }
+    },
+    {
+        "hangul": "남자",
+        "romanization": "namja",
+        "type": "noun",
+        "english": "man, boy, male",
+        "example": {
+        "korean": "이 남자는 미국인인가요?",
+        "english": "Is this man American?"
+        }
+    },
+    {
+        "hangul": "어디",
+        "romanization": "eodi",
+        "type": "pronoun",
+        "english": "where, somewhere",
+        "example": {
+        "korean": "혹시 지하철 역이 어디 있는지 아세요?",
+        "english": "Do you know where the subway station is by any chance?"
+        }
+    },
+    {
+        "hangul": "몸",
+        "romanization": "mom",
+        "type": "noun",
+        "english": [
+        "body",
+        "health",
+        "shape"
+        ],
+        "example": {
+        "korean": "그는 멋진 몸을 가지고 있어요.",
+        "english": "He has a nice body."
+        }
+    },
+    {
+        "hangul": "얼굴",
+        "romanization": "eolgul",
+        "type": "noun",
+        "english": "face, visage",
+        "example": {
+        "korean": "그녀의 얼굴은 창백하고 말라 보여요.",
+        "english": "She looks pale and thin in the face."
+        }
+    },
+    {
+        "hangul": "들어가다",
+        "romanization": "deureogada",
+        "type": "verb",
+        "english": [
+        "to go into",
+        "enter",
+        "attend",
+        "join"
+        ],
+        "example": {
+        "korean": "저는 내년에 대학교에 들어가요.",
+        "english": "I will attend university next year."
+        }
+    },
+    {
+        "hangul": "왜",
+        "romanization": "wae",
+        "type": "adverb",
+        "english": "why",
+        "example": {
+        "korean": "너는 이 가수를 왜 좋아해?",
+        "english": "Why do you like this singer?"
+        }
+    },
+    {
+        "hangul": "나타나다",
+        "romanization": "natanada",
+        "type": "verb",
+        "english": "to appear, become manifest",
+        "example": {
+        "korean": "그것은 다음 순간에 나타날 것입니다.",
+        "english": "It will appear in another moment."
+        }
+    },
+    {
+        "hangul": "말다",
+        "romanization": "malda",
+        "type": "verb",
+        "english": "(used to negate imperatives), to not do something, to stop doing",
+        "example": {
+        "korean": "잔디에 앉지 마세요.",
+        "english": "Please, do not sit on the lawn."
+        }
+    },
+    {
+        "hangul": "지역",
+        "romanization": "jiyeok",
+        "type": "noun",
+        "english": "area, district, particular geographic region",
+        "example": {
+        "korean": "이곳이 이 지역에서 가장 고급스러운 식당이에요.",
+        "english": "This place is the most exclusive restaurant in this area."
+        }
+    },
+    {
+        "hangul": "다르다",
+        "romanization": "dareuda",
+        "type": "adjective",
+        "english": "(to be) different",
+        "example": {
+        "korean": "우리 아이들은 서로 매우 다르다.",
+        "english": "Our children are very different from each other."
+        }
+    },
+    {
+        "hangul": "모습",
+        "romanization": "moseup",
+        "type": "noun",
+        "english": "the appearance of a person, surface appearance in general, aspect of a matter",
+        "example": {
+        "korean": "제 모습이 어떤가요?",
+        "english": "What do you think of my appearance?"
+        }
+    },
+    {
+        "hangul": "물",
+        "romanization": "mul",
+        "type": "noun",
+        "english": "water, a liquid widely distributed in the natural world in the form of rivers, lakes, oceans, and groundwater",
+        "example": {
+        "korean": "물의 순환은 매일 일어납니다.",
+        "english": "The cycle of water happens every day."
+        }
+    },
+    {
+        "hangul": "만나다",
+        "romanization": "mannada",
+        "type": "verb",
+        "english": [
+        "to meet",
+        "see",
+        "become acquainted with",
+        "to encounter"
+        ],
+        "example": {
+        "korean": "그를 또 언제 만나게 될 지 몰라요.",
+        "english": "I do not know when I will see him again."
+        }
+    },
+    {
+        "hangul": "내다",
+        "romanization": "naeda",
+        "type": "verb",
+        "english": "to bring about, pull forth, put out, issue, pay, submit",
+        "example": {
+        "korean": "제품의 품질이 좋으면 제가 돈을 더 낼게요.",
+        "english": "I will pay more for a high-quality product."
+        }
+    },
+    
