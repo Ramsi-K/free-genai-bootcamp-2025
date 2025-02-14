@@ -1,5 +1,27 @@
 # GenAI Bootcamp 2025 – Journal  
 
+## Day 15: February 13, 2025  
+
+Today was about **finalizing my backend understanding and preparing for implementation.** I wanted to start coding, but I needed to make sure I wasn’t going in blind.  
+
+I started by **double-checking the missing API endpoints** that need to be implemented. There was some confusion about whether the homework was fully defined, so I spent time confirming that **the official documentation was incomplete** and that the real requirements were scattered across the livestreams and community discussions.  
+
+Once I had clarity, I realized that I still needed a proper **plan for execution**. I reviewed the backend structure again—specifically **how Flask Blueprints handle routing**—and went over **how to connect the frontend to the backend** using API calls.  
+
+At some point, I got sidetracked again when I found a **DRM restriction** on my Korean vocabulary book, which was frustrating because **it’s literally just a list of words, and I couldn’t even extract it properly.** This led me to look into **converting AZW3 files to TXT or JSON**, which ended up being way more annoying than expected. I tried multiple extraction methods, but nothing worked perfectly. Ultimately I was only able to copy over 200 words as the publisher has added copy restrictions on the book as well. I looked at other sources such as Anki and Quizlet and may end up using those instead. 
+
+Aside from that, I also thought more about my Level 5 project idea. The more I consider it, the more I realize I want **a visual-first language learning tool**, where flashcards use **images and videos instead of English translations**. I haven’t locked this in yet, but it’s definitely something I want to revisit once I finish the backend work.  
+
+By the end of the day, I had a clearer **execution plan for finishing the backend**, and I know exactly what I need to do next.  
+
+## Completed Work  
+
+- **Confirmed the actual API requirements** (tech specs vs. livestream corrections).  
+- **Reviewed Flask Blueprints again** to make sure I understand how routing works.  
+- **Figured out how the frontend will connect to the backend** (API calls, CORS setup).  
+- **Tried to extract my Korean vocab book** but hit DRM restrictions.  
+- **Revisited my Level 5 idea**—thinking about flashcards with AI-generated videos.  
+
 ## Day 14: February 12, 2025
 
 I spent the entire day on backend work, research, and trying to make sense of everything. I started with the official lecture videos(6+ hrs), trying to wrap my head around the project requirements, Flask, SQLite, and how everything connects. At some point, I realized that there was no way I could do Level 5. I don’t know enough about frontend, backend, or anything full-stack. Even getting Level 1 done would be a huge achievement at this point.
