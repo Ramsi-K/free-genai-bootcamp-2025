@@ -1,7 +1,9 @@
-CREATE TABLE IF NOT EXISTS words (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  kanji TEXT NOT NULL,
-  romaji TEXT NOT NULL,
-  english TEXT NOT NULL,
-  parts TEXT NOT NULL  -- Store parts as JSON string
+CREATE TABLE words (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    hangul TEXT,  -- ✅ Replaces kanji
+    romanization TEXT,  -- ✅ Replaces romaji
+    english TEXT,
+    parts JSON,
+    example_korean TEXT,  -- ✅ New column
+    example_english TEXT  -- ✅ New column
 );
