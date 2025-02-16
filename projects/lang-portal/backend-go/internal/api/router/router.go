@@ -1,9 +1,10 @@
 package router
 
 import (
+	"github.com/Ramsi-K/free-genai-bootcamp-2025/tree/main/projects/lang-portal/backend-go/internal/api/handlers"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/yourusername/lang-portal/internal/api/handlers"
 	"gorm.io/gorm"
 )
 

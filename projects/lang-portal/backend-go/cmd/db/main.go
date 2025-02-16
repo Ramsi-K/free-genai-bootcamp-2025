@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/yourusername/lang-portal/pkg/database"
+	"github.com/Ramsi-K/free-genai-bootcamp-2025/tree/main/projects/lang-portal/backend-go/pkg/database"
 )
 
 func main() {

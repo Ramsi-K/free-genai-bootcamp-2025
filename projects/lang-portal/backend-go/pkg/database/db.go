@@ -5,11 +5,12 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/Ramsi-K/free-genai-bootcamp-2025/tree/main/projects/lang-portal/backend-go/internal/models"
+
 	_ "github.com/mattn/go-sqlite3" // SQLite driver
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"github.com/yourusername/lang-portal/internal/models"
 )
 
 func SetupDB() (*gorm.DB, error) {
@@ -19,13 +20,13 @@ func SetupDB() (*gorm.DB, error) {
 	}
 
 	dbPath := filepath.Join("instance", "words.db")
-	
+
 	// Configure GORM with SQLite
 	config := &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger:                                   logger.Default.LogMode(logger.Info),
 		DisableForeignKeyConstraintWhenMigrating: true, // SQLite specific
 	}
-	
+
 	db, err := gorm.Open(sqlite.Open(dbPath+"?_fk=1"), config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %v", err)
@@ -54,4 +55,4 @@ func SetupDB() (*gorm.DB, error) {
 	}
 
 	return db, nil
-} 
+}
