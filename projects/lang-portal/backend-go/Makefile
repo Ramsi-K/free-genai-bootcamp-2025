@@ -1,4 +1,4 @@
-.PHONY: build init seed run clean
+.PHONY: build init seed run clean verify-db serve help
 
 # Set environment variables for CGO
 export CGO_ENABLED=1
@@ -65,3 +65,21 @@ verify-gcc:
 
 # Full setup with GCC verification
 setup: clean verify-gcc deps build init seed 
+
+# Verify database contents
+verify-db: build-db
+	./bin/db -verify
+
+# Run API server
+serve: build-server
+	./bin/server
+
+# Show help
+help:
+	@echo "Available commands:"
+	@echo "  make setup      - Full setup: install deps, build, init db, and seed"
+	@echo "  make init      - Initialize database"
+	@echo "  make seed      - Seed database with data"
+	@echo "  make verify-db - Verify database contents"
+	@echo "  make serve     - Start the API server"
+	@echo "  make clean     - Remove build artifacts" 
