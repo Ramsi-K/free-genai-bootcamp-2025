@@ -1,11 +1,15 @@
 from invoke import task
 from app import create_app
 from models import db, Word, Group, StudyActivity
+import os
 
 @task
 def init_db(ctx):
     """Initialize the database with tables and seed data"""
     try:
+        # Create instance directory if it doesn't exist
+        os.makedirs('instance', exist_ok=True)
+        
         app = create_app()
         with app.app_context():
             # Create all tables from SQLAlchemy models

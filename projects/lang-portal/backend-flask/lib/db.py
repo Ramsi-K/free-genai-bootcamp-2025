@@ -125,10 +125,15 @@ def load_seed_data(db, Word, Group, StudyActivity):
     
     # Add words
     for word_data in words_data:
+        # Ensure english is a list
+        english_meanings = word_data['english']
+        if isinstance(english_meanings, str):
+            english_meanings = [english_meanings]
+            
         word = Word(
             hangul=word_data['hangul'],
             romanization=word_data['romanization'],
-            english=word_data['english'],
+            english=english_meanings,  # Will be automatically handled by SQLAlchemy
             type=word_data['type'],
             example_korean=word_data.get('example', {}).get('korean', ''),
             example_english=word_data.get('example', {}).get('english', '')

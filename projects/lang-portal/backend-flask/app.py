@@ -1,11 +1,22 @@
 from flask import Flask
 from models import db
 from routes import words, groups, study_sessions, dashboard
+import os
 
 def create_app():
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/words.db'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    # Ensure instance path exists
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
+        
+    # Configure SQLAlchemy
+    app.config.update(
+        SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(app.instance_path, 'words.db'),
+        SQLALCHEMY_TRACK_MODIFICATIONS=False
+    )
     
     # Initialize SQLAlchemy with the Flask app
     db.init_app(app)

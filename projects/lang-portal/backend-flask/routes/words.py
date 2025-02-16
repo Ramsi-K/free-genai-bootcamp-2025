@@ -18,7 +18,7 @@ def list_words():
         else:
             query = query.order_by(getattr(Word, sort_by))
             
-    paginated = query.paginate(page=page, per_page=100)
+    paginated = query.paginate(page=page, per_page=100, error_out=False)
     
     return jsonify([{
         'id': word.id,

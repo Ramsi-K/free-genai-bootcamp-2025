@@ -178,3 +178,31 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# SQLite database
+instance/
+*.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/

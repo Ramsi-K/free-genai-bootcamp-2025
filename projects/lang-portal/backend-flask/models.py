@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.types import JSON
 
 # Create the SQLAlchemy instance locally
 db = SQLAlchemy()
@@ -10,7 +11,7 @@ class Word(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     hangul = db.Column(db.String, nullable=False)
     romanization = db.Column(db.String, nullable=False)
-    english = db.Column(db.String, nullable=False)
+    english = db.Column(JSON, nullable=False)
     type = db.Column(db.String, nullable=False)
     example_korean = db.Column(db.String)
     example_english = db.Column(db.String)
