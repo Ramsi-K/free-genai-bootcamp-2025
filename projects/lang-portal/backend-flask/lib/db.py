@@ -111,5 +111,45 @@ class Db:
 
             self.import_study_activities_json(cursor, 'seed/study_activities.json')
 
-# Create an instance of the Db class
-db = Db()
+def load_seed_data(db, Word, Group, StudyActivity):
+    """Load seed data from JSON files into the database"""
+    # Load Korean words
+    with open('seed/data_korean.json', 'r', encoding='utf-8') as f:
+        words_data = json.load(f)
+        
+    # Create or get Core Korean group
+    core_group = Group.query.filter_by(name='Core Korean').first()
+    if not core_group:
+        core_group = Group(name='Core Korean')
+        db.session.add(core_group)
+    
+    # Add words
+    for word_data in words_data:
+        word = Word(
+            hangul=word_data['hangul'],
+            romanization=word_data['romanization'],
+            english=word_data['english'],
+            type=word_data['type'],
+            example_korean=word_data.get('example', {}).get('korean', ''),
+            example_english=word_data.get('example', {}).get('english', '')
+        )
+        word.groups.append(core_group)
+        db.session.add(word)
+    
+    # Load study activities
+    with open('seed/study_activities.json', 'r', encoding='utf-8') as f:
+        activities_data = json.load(f)
+        
+    for activity_data in activities_data:
+        activity = StudyActivity(
+            name=activity_data['name'],
+            url=activity_data['url'],
+            thumbnail_url=activity_data.get('preview_url', '')
+        )
+        db.session.add(activity)
+    
+    # Update group word count
+    core_group.words_count = len(words_data)
+    
+    # Commit all changes
+    db.session.commit()
