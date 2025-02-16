@@ -1,16 +1,37 @@
 .PHONY: build init seed run clean
 
+# Set environment variables for CGO
+export CGO_ENABLED=1
+
+# Windows-specific settings
+ifeq ($(OS),Windows_NT)
+    # Check for different shells
+    ifeq ($(SHELL),/bin/bash)
+        # Git Bash
+        export PATH := /c/msys64/mingw64/bin:$(PATH)
+        export CC := gcc
+    else ifeq ($(SHELL),/usr/bin/bash)
+        # MSYS2
+        export PATH := /mingw64/bin:$(PATH)
+        export CC := gcc
+    else
+        # CMD/PowerShell
+        export PATH := C:\msys64\mingw64\bin;$(PATH)
+        export CC := gcc
+    endif
+endif
+
 # Ensure bin directory exists
 bin:
 	mkdir -p bin
 
-# Build the database CLI tool
+# Build the database CLI tool with CGO enabled
 build-db: bin
-	go build -o bin/db cmd/db/main.go
+	go build -tags sqlite_fts5 -o bin/db cmd/db/main.go
 
-# Build the server
+# Build the server with CGO enabled
 build-server: bin
-	go build -o bin/server cmd/server/main.go
+	go build -tags sqlite_fts5 -o bin/server cmd/server/main.go
 
 # Build all binaries
 build: build-db build-server
@@ -37,5 +58,10 @@ deps:
 	go mod tidy
 	go mod download
 
-# Full setup: install deps, build, init db, and seed
-setup: deps build init seed 
+# Verify GCC installation
+verify-gcc:
+	@echo "Checking GCC installation..."
+	@gcc --version || (echo "GCC not found. Please install MSYS2 and run: pacman -S mingw-w64-x86_64-gcc" && exit 1)
+
+# Full setup with GCC verification
+setup: clean verify-gcc deps build init seed 

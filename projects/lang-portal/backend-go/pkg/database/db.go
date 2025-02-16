@@ -2,10 +2,10 @@ package database
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
+	_ "github.com/mattn/go-sqlite3" // SQLite driver
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -23,12 +23,23 @@ func SetupDB() (*gorm.DB, error) {
 	// Configure GORM with SQLite
 	config := &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
+		DisableForeignKeyConstraintWhenMigrating: true, // SQLite specific
 	}
 	
-	db, err := gorm.Open(sqlite.Open(dbPath), config)
+	db, err := gorm.Open(sqlite.Open(dbPath+"?_fk=1"), config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %v", err)
 	}
+
+	// Set connection pool settings
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get database instance: %v", err)
+	}
+
+	// Set connection pool settings
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
 
 	// Auto Migrate the schema
 	if err := db.AutoMigrate(
