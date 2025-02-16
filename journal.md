@@ -1,5 +1,22 @@
 # GenAI Bootcamp 2025 – Journal  
 
+## Day 17: February 16, 2025  
+
+I first **converted the provided Go-Gin backend specs to Python-Flask**, adapting everything for **Korean language learning**. I didn’t build directly from Go-Gin because I **don’t know Go at all**, but I do know Python—even though I’ve never worked with Flask before. I figured **debugging Python errors** would be easier than dealing with **Go from scratch**, and it worked. By **breaking down the issues step by step**, I was able to fully implement the backend in **Flask before rebuilding it in Go-Gin**. In hindsight, trying to build from the **original Go-Gin specs** would have been a nightmare. By breaking it down into a structured approach, **Cursor AI was able to guide the entire process effectively**, even though I had no prior Go experience.  
+
+The setup took forever. Fixing database migrations, dependencies, and Go’s quirks (CGO, SQLite, GCC, environment paths) was exhausting. The biggest challenge was getting **make, GCC, and Go to work in the same environment**, but after multiple failed setups across **Windows, WSL, and MSYS2**, I finally got everything running. Once the backend was fully implemented, **testing became another battle**. The test cases were failing because of **duplicate data inserts and pagination mismatches**, which meant rewriting how test databases were structured. After several debugging rounds, all the tests finally passed, confirming that **the Go-Gin backend is fully functional**.  
+
+**Completed Work**  
+
+- **Converted AZW3 vocabulary book to JSON.**  
+- **Converted Go-Gin backend specs to Python-Flask (Korean).**  
+- **Fully implemented Flask before rebuilding in Go-Gin.**  
+- **Fixed CGO, SQLite, GCC, and Make integration issues.**  
+- **Successfully ran database migrations.**  
+- **Debugged and passed all backend tests.**  
+
+At this point, **both the Flask and Go-Gin backends are fully implemented and tested**. Next, I need to decide between **frontend integration or OPEA**.  
+
 ## Day 16: February 14, 2025  
 
 I spent most of the day trying to set up an **AI-assisted backend case study** to compare how different LLMs generate Flask API code. The goal was to structure an experiment that tracked how tools like **Copilot, Windsurf, and Cursor** handled backend tasks. But after hours of planning, I realized the setup was too complicated, and I wasn’t getting the results I needed. Ultimately, I dropped the idea.  
