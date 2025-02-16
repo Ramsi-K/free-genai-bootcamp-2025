@@ -4,7 +4,7 @@ from sqlalchemy import desc
 
 bp = Blueprint('words', __name__)
 
-@bp.route('/api/words')
+@bp.route('/words')
 def list_words():
     page = request.args.get('page', 1, type=int)
     sort_by = request.args.get('sort_by', 'hangul')
@@ -20,6 +20,9 @@ def list_words():
             
     paginated = query.paginate(page=page, per_page=100, error_out=False)
     
+    if not paginated.items:
+        return jsonify([])
+    
     return jsonify([{
         'id': word.id,
         'hangul': word.hangul,
@@ -32,7 +35,7 @@ def list_words():
         }
     } for word in paginated.items])
 
-@bp.route('/api/words/<int:id>')
+@bp.route('/words/<int:id>')
 def get_word(id):
     word = Word.query.get_or_404(id)
     return jsonify({

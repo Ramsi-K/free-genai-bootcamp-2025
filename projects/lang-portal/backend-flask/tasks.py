@@ -36,3 +36,25 @@ def seed_db(ctx):
     except Exception as e:
         print(f"Error seeding database: {e}")
         raise
+
+@task
+def verify_db(ctx):
+    """Verify database contents"""
+    try:
+        app = create_app()
+        with app.app_context():
+            word_count = Word.query.count()
+            group_count = Group.query.count()
+            print(f"Database contains {word_count} words and {group_count} groups")
+            
+            if word_count == 0:
+                print("No words found. Try running 'invoke seed-db'")
+            else:
+                first_word = Word.query.first()
+                print("\nSample word:")
+                print(f"Hangul: {first_word.hangul}")
+                print(f"English: {first_word.english}")
+                print(f"Type: {first_word.type}")
+    except Exception as e:
+        print(f"Error verifying database: {e}")
+        raise
