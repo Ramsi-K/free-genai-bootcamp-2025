@@ -35,12 +35,15 @@ The file structure will follow Flask conventions:
 
 The database will be a single SQLite database called `words.db`. The schema reflects Korean vocabulary:
 
-* **words** - Stored vocabulary words.
+* * **words** - Stored vocabulary words.
   * `id` (integer, primary key)
   * `hangul` (string): Korean Hangul representation.
   * `romanization` (string): Romanized version of the word.
   * `english` (string): English translation.
-  * `parts` (JSON): Word components stored as JSON.
+  * `type` (string): Part of speech (noun, verb, etc.).  
+  * `example_korean` (string): Example sentence in Korean.  
+  * `example_english` (string): Example sentence in English.  
+
 * **words\_groups** - Join table for words and groups (many-to-many).
   * `id` (integer, primary key)
   * `word_id` (integer, foreign key referencing words.id).
@@ -97,20 +100,28 @@ The API endpoints remain the same but are implemented as Flask route definitions
   * **JSON Response Example:**
 
         ```json
-        [
+          [
             {
                 "id": 1,
                 "hangul": "학교",
                 "romanization": "hakgyo",
                 "english": "school",
-                "parts": "{\"type\": \"noun\"}"
+                "type": "noun",
+                "example": {
+                    "korean": "나는 학교에 갑니다.",
+                    "english": "I go to school."
+                }
             },
-           {
+            {
                 "id": 2,
                 "hangul": "선생님",
                 "romanization": "seonsaengnim",
                 "english": "teacher",
-                "parts": "{\"type\": \"noun\"}"
+                "type": "noun",
+                "example": {
+                    "korean": "우리 선생님은 친절하십니다.",
+                    "english": "Our teacher is kind."
+                }
             }
         ]
         ```
@@ -120,11 +131,15 @@ The API endpoints remain the same but are implemented as Flask route definitions
 
         ```json
         {
-            "id": 1,
-            "hangul": "학교",
-            "romanization": "hakgyo",
-            "english": "school",
-            "parts": "{\"type\": \"noun\"}"
+                "id": 1,
+                "hangul": "학교",
+                "romanization": "hakgyo",
+                "english": "school",
+                "type": "noun",
+                "example": {
+                    "korean": "나는 학교에 갑니다.",
+                    "english": "I go to school."
+                }
         }
         ```
 
@@ -164,15 +179,25 @@ The API endpoints remain the same but are implemented as Flask route definitions
         [
             {
                 "id": 1,
-                "hangul": "안녕하세요",
-                "romanization": "annyeonghaseyo",
-                "english": "Hello"
+                "hangul": "학교",
+                "romanization": "hakgyo",
+                "english": "school",
+                "type": "noun",
+                "example": {
+                    "korean": "나는 학교에 갑니다.",
+                    "english": "I go to school."
+                }
             },
             {
                 "id": 2,
-                "hangul": "감사합니다",
-                "romanization": "gamsahamnida",
-                "english": "Thank you"
+                "hangul": "선생님",
+                "romanization": "seonsaengnim",
+                "english": "teacher",
+                "type": "noun",
+                "example": {
+                    "korean": "우리 선생님은 친절하십니다.",
+                    "english": "Our teacher is kind."
+                }
             }
         ]
         ```
@@ -236,15 +261,25 @@ The API endpoints remain the same but are implemented as Flask route definitions
         [
             {
                 "id": 1,
-                "hangul": "안녕하세요",
-                "romanization": "annyeonghaseyo",
-                "english": "Hello"
+                "hangul": "학교",
+                "romanization": "hakgyo",
+                "english": "school",
+                "type": "noun",
+                "example": {
+                    "korean": "나는 학교에 갑니다.",
+                    "english": "I go to school."
+                }
             },
             {
                 "id": 2,
-                "hangul": "감사합니다",
-                "romanization": "gamsahamnida",
-                "english": "Thank you"
+                "hangul": "선생님",
+                "romanization": "seonsaengnim",
+                "english": "teacher",
+                "type": "noun",
+                "example": {
+                    "korean": "우리 선생님은 친절하십니다.",
+                    "english": "Our teacher is kind."
+                }
             }
         ]
         ```
@@ -285,7 +320,7 @@ All query parameters (`page`, `sort_by`, `order`) and pagination work the same w
 
 * **For `/words` endpoint:**
   * `page`: Page number (default: 1).
-  * `sort_by`: Sort field (`hangul`, `romanization`, `english`, `correct_count`, `wrong_count`) (default: `hangul`).
+  * `sort_by`: Sort field (`hangul`, `romanization`, `english`, `type`,`correct_count`, `wrong_count`) (default: `hangul`).
   * `order`: Sort order (`asc`, `desc`) (default: `asc`).
 * **For `/groups` endpoint:**
   * `page`: Page number (default: 1).
