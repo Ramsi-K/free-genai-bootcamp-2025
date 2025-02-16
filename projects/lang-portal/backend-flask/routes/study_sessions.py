@@ -136,13 +136,19 @@ def load(app):
           'review_items_count': session['review_items_count']
         },
         'words': [{
-          'id': word['id'],
-          'kanji': word['kanji'],
-          'romaji': word['romaji'],
-          'english': word['english'],
-          'correct_count': word['session_correct_count'],
-          'wrong_count': word['session_wrong_count']
+          "id": word["id"],
+          "hangul": word["hangul"],
+          "romanization": word["romanization"],
+          "type": word["type"],
+          "english": word["english"].split(", "),  # ✅ Convert stored string back to list
+          "example": {  # ✅ Fix example structure
+              "korean": word["example_korean"],
+              "english": word["example_english"]
+          },
+          "correct_count": word["correct_count"],
+          "wrong_count": word["wrong_count"]
         } for word in words],
+
         'total': total_count,
         'page': page,
         'per_page': per_page,

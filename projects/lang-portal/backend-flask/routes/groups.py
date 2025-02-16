@@ -139,13 +139,18 @@ def load(app):
       words_data = []
       for word in words:
         words_data.append({
-          "id": word["id"],
-          "kanji": word["kanji"],
-          "romaji": word["romaji"],
-          "english": word["english"],
-          "correct_count": word["correct_count"],
-          "wrong_count": word["wrong_count"]
-        })
+                    "id": word["id"],
+                    "hangul": word["hangul"],
+                    "romanization": word["romanization"],
+                    "type": word["type"],
+                    "english": word["english"].split(", "),  # ✅ Convert stored string back to list
+                    "example": {  # ✅ Fix example structure
+                        "korean": word["example_korean"],
+                        "english": word["example_english"]
+                    },
+                    "correct_count": word["correct_count"],
+                    "wrong_count": word["wrong_count"]
+                })
 
       return jsonify({
         'words': words_data,
