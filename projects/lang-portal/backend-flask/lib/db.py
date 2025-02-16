@@ -75,12 +75,13 @@ class Db:
             example_english = word.get('example', {}).get('english', '')
 
             cursor.execute('''
-                INSERT INTO words (hangul, romanization, english, parts, example_korean, example_english)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO words (hangul, romanization, english, type, parts, example_korean, example_english)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             ''', (
                 word['hangul'], 
                 word['romanization'], 
                 ', '.join(word['english']),  # ✅ Converts list to string
+                word['type'],  # ✅ Properly stores noun, verb, etc.
                 json.dumps(word['parts']), 
                 example_korean,  # ✅ Properly extracts from JSON
                 example_english
@@ -104,10 +105,7 @@ class Db:
         with app.app_context():
             cursor = self.cursor()
             self.setup_tables(cursor)
-
-            self.import_word_json(cursor, 'Core Verbs', 'seed/data_verbs.json')
-            self.import_word_json(cursor, 'Core Adjectives', 'seed/data_adjectives.json')
-
+ 
             # ✅ Now properly imports Korean words (Handles `example["korean"]` and `example["english"]`)
             self.import_word_json(cursor, 'Core Korean', 'seed/data_korean.json')
 
