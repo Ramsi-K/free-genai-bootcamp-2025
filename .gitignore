@@ -4,4 +4,8 @@
 */todo.txt
 */*/todo.txt
 
+#ignore sourced docs and assets
 assets/
+
+#ignore .spec files
+.specstory/
