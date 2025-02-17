@@ -2,49 +2,62 @@ package router
 
 import (
 	"github.com/Ramsi-K/free-genai-bootcamp-2025/tree/main/projects/lang-portal/backend-go/internal/api/handlers"
-
-	"github.com/gin-contrib/cors"
+	"github.com/Ramsi-K/free-genai-bootcamp-2025/tree/main/projects/lang-portal/backend-go/internal/api/middleware"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 func SetupRouter(db *gorm.DB) *gin.Engine {
-	router := gin.Default()
+	r := gin.Default()
 
-	// Configure CORS
-	router.Use(cors.Default())
+	// Enable CORS
+	r.Use(middleware.CORS())
 
 	// Create handlers
 	wordHandler := handlers.NewWordHandler(db)
-
-	// Root route with API documentation
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"name":        "Korean Language Learning API",
-			"version":     "1.0",
-			"description": "API for managing Korean vocabulary and study sessions",
-			"endpoints": gin.H{
-				"words": gin.H{
-					"list": "/api/words",
-					"get":  "/api/words/<id>",
-					"parameters": gin.H{
-						"page":    "Page number (default: 1)",
-						"sort_by": "Sort field (hangul, romanization, english, type)",
-						"order":   "Sort order (asc, desc)",
-					},
-				},
-				// Other endpoints will be added as we implement them
-			},
-		})
-	})
+	groupHandler := handlers.NewGroupHandler(db)
+	studyActivityHandler := handlers.NewStudyActivityHandler(db)
+	dashboardHandler := handlers.NewDashboardHandler(db)
+	settingsHandler := handlers.NewSettingsHandler(db)
 
 	// API routes
-	api := router.Group("/api")
+	api := r.Group("/api")
 	{
-		// Words routes
-		api.GET("/words", wordHandler.List)
-		api.GET("/words/:id", wordHandler.Get)
+		// Dashboard endpoints
+		api.GET("/dashboard", dashboardHandler.GetDashboard)
+
+		// Words endpoints
+		words := api.Group("/words")
+		{
+			words.GET("", wordHandler.List)
+			words.GET("/:id", wordHandler.Get)
+		}
+
+		// Groups endpoints
+		groups := api.Group("/groups")
+		{
+			groups.GET("", groupHandler.List)
+			groups.GET("/:id", groupHandler.Get)
+			groups.GET("/:id/words", groupHandler.GetWords)
+			groups.GET("/:id/study_sessions", groupHandler.GetStudySessions)
+		}
+
+		// Study activities endpoints
+		activities := api.Group("/study_activities")
+		{
+			activities.GET("", studyActivityHandler.List)
+			activities.GET("/:id", studyActivityHandler.Get)
+			activities.GET("/:id/study_sessions", studyActivityHandler.GetSessions)
+			activities.POST("/:id/launch", studyActivityHandler.Launch)
+		}
+
+		// Settings endpoints
+		settings := api.Group("/settings")
+		{
+			settings.POST("/reset_history", settingsHandler.ResetHistory)
+			settings.POST("/full_reset", settingsHandler.FullReset)
+		}
 	}
 
-	return router
+	return r
 }

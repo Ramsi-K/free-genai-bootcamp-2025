@@ -33,7 +33,7 @@ func (h *WordHandler) List(c *gin.Context) {
 	}
 
 	var words []models.Word
-	query := h.db.Model(&models.Word{})
+	query := h.db.Model(&models.Word{}).Preload("Reviews")
 
 	// Apply sorting
 	if pagination.SortBy != "" {
@@ -62,23 +62,15 @@ func (h *WordHandler) List(c *gin.Context) {
 		return
 	}
 
-	// Format response
-	response := make([]gin.H, len(words))
-	for i, word := range words {
-		response[i] = gin.H{
-			"id":           word.ID,
-			"hangul":       word.Hangul,
-			"romanization": word.Romanization,
-			"english":      word.English,
-			"type":         word.Type,
-			"example": gin.H{
-				"korean":  word.ExampleKorean,
-				"english": word.ExampleEnglish,
-			},
-		}
-	}
-
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, gin.H{
+		"words": words,
+		"pagination": gin.H{
+			"current_page": pagination.GetPage(),
+			"total_pages":  (total + int64(pagination.GetLimit()) - 1) / int64(pagination.GetLimit()),
+			"total_items":  total,
+			"per_page":     pagination.GetLimit(),
+		},
+	})
 }
 
 func (h *WordHandler) Get(c *gin.Context) {
@@ -91,7 +83,7 @@ func (h *WordHandler) Get(c *gin.Context) {
 	}
 
 	var word models.Word
-	if err := h.db.First(&word, id).Error; err != nil {
+	if err := h.db.Preload("Reviews").Preload("Groups").First(&word, id).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Word not found"})
 			return
@@ -100,15 +92,5 @@ func (h *WordHandler) Get(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"id":           word.ID,
-		"hangul":       word.Hangul,
-		"romanization": word.Romanization,
-		"english":      word.English,
-		"type":         word.Type,
-		"example": gin.H{
-			"korean":  word.ExampleKorean,
-			"english": word.ExampleEnglish,
-		},
-	})
+	c.JSON(http.StatusOK, word)
 }
