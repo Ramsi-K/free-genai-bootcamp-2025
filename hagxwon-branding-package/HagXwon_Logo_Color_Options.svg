@@ -1,0 +1,111 @@
+<svg viewBox="0 0 400 800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Option 1: Tech Blue -->
+  <g transform="translate(0, 0)">
+    <rect width="400" height="160" fill="white"/>
+    <g transform="translate(80, 40)">
+      <path d="M20 20 L100 20 M60 20 L60 100 M20 60 L100 60" 
+            stroke="#4A90E2" stroke-width="16" 
+            stroke-linecap="round" fill="none"/>
+      <g transform="translate(140, 0)">
+        <circle cx="40" cy="60" r="40" 
+                stroke="#4A90E2" stroke-width="16" 
+                fill="none"/>
+        <circle cx="40" cy="60" r="15" 
+                fill="#4A90E2"/>
+      </g>
+    </g>
+    <g transform="translate(120, 40)">
+      <path d="M20 0 L120 100 M120 0 L20 100" 
+            stroke="#2C3E50" stroke-width="24" 
+            stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- Option 2: Modern Purple -->
+  <g transform="translate(0, 160)">
+    <rect width="400" height="160" fill="white"/>
+    <g transform="translate(80, 40)">
+      <path d="M20 20 L100 20 M60 20 L60 100 M20 60 L100 60" 
+            stroke="#9B51E0" stroke-width="16" 
+            stroke-linecap="round" fill="none"/>
+      <g transform="translate(140, 0)">
+        <circle cx="40" cy="60" r="40" 
+                stroke="#9B51E0" stroke-width="16" 
+                fill="none"/>
+        <circle cx="40" cy="60" r="15" 
+                fill="#9B51E0"/>
+      </g>
+    </g>
+    <g transform="translate(120, 40)">
+      <path d="M20 0 L120 100 M120 0 L20 100" 
+            stroke="#6B2FB3" stroke-width="24" 
+            stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- Option 3: Energy Orange -->
+  <g transform="translate(0, 320)">
+    <rect width="400" height="160" fill="white"/>
+    <g transform="translate(80, 40)">
+      <path d="M20 20 L100 20 M60 20 L60 100 M20 60 L100 60" 
+            stroke="#FF9500" stroke-width="16" 
+            stroke-linecap="round" fill="none"/>
+      <g transform="translate(140, 0)">
+        <circle cx="40" cy="60" r="40" 
+                stroke="#FF9500" stroke-width="16" 
+                fill="none"/>
+        <circle cx="40" cy="60" r="15" 
+                fill="#FF9500"/>
+      </g>
+    </g>
+    <g transform="translate(120, 40)">
+      <path d="M20 0 L120 100 M120 0 L20 100" 
+            stroke="#FF5E3A" stroke-width="24" 
+            stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- Option 4: Success Green -->
+  <g transform="translate(0, 480)">
+    <rect width="400" height="160" fill="white"/>
+    <g transform="translate(80, 40)">
+      <path d="M20 20 L100 20 M60 20 L60 100 M20 60 L100 60" 
+            stroke="#34C759" stroke-width="16" 
+            stroke-linecap="round" fill="none"/>
+      <g transform="translate(140, 0)">
+        <circle cx="40" cy="60" r="40" 
+                stroke="#34C759" stroke-width="16" 
+                fill="none"/>
+        <circle cx="40" cy="60" r="15" 
+                fill="#34C759"/>
+      </g>
+    </g>
+    <g transform="translate(120, 40)">
+      <path d="M20 0 L120 100 M120 0 L20 100" 
+            stroke="#248A3D" stroke-width="24" 
+            stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- Option 5: Bold Red -->
+  <g transform="translate(0, 640)">
+    <rect width="400" height="160" fill="white"/>
+    <g transform="translate(80, 40)">
+      <path d="M20 20 L100 20 M60 20 L60 100 M20 60 L100 60" 
+            stroke="#FF3B30" stroke-width="16" 
+            stroke-linecap="round" fill="none"/>
+      <g transform="translate(140, 0)">
+        <circle cx="40" cy="60" r="40" 
+                stroke="#FF3B30" stroke-width="16" 
+                fill="none"/>
+        <circle cx="40" cy="60" r="15" 
+                fill="#FF3B30"/>
+      </g>
+    </g>
+    <g transform="translate(120, 40)">
+      <path d="M20 0 L120 100 M120 0 L20 100" 
+            stroke="#D70015" stroke-width="24" 
+            stroke-linecap="round"/>
+    </g>
+  </g>
+</svg>

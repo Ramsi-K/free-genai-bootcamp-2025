@@ -1,0 +1,52 @@
+<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="200" fill="white"/>
+  
+  <!-- Base text group -->
+  <g transform="translate(80, 40)">
+    <!-- 학 character with tech-inspired angles -->
+    <path d="M20 20 L100 20 M60 20 L60 100 M20 60 L100 60" 
+          stroke="#4A90E2" stroke-width="16" 
+          stroke-linecap="square"
+          fill="none"/>
+    
+    <!-- 원 character reimagined as a circuit-like circle -->
+    <g transform="translate(140, 0)">
+      <circle cx="40" cy="60" r="40" 
+              stroke="#4A90E2" stroke-width="16" 
+              fill="none"/>
+      <!-- Digital dots around circle -->
+      <circle cx="40" cy="20" r="6" fill="#4A90E2"/>
+      <circle cx="80" cy="60" r="6" fill="#4A90E2"/>
+      <circle cx="40" cy="100" r="6" fill="#4A90E2"/>
+      <circle cx="0" cy="60" r="6" fill="#4A90E2"/>
+    </g>
+  </g>
+  
+  <!-- Dynamic X overlay -->
+  <g transform="translate(120, 40)">
+    <!-- Left diagonal with gradient -->
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2C3E50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6B2FB3;stop-opacity:1" />
+    </linearGradient>
+    <path d="M20 0 L120 100" 
+          stroke="url(#grad1)" stroke-width="24" 
+          stroke-linecap="round"/>
+    
+    <!-- Right diagonal with gradient -->
+    <linearGradient id="grad2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2C3E50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6B2FB3;stop-opacity:1" />
+    </linearGradient>
+    <path d="M120 0 L20 100" 
+          stroke="url(#grad2)" stroke-width="24" 
+          stroke-linecap="round"/>
+  </g>
+  
+  <!-- Circuit-inspired decorative elements -->
+  <g stroke="#4A90E2" stroke-width="2">
+    <path d="M30 180 L60 180 L60 160" fill="none"/>
+    <path d="M340 20 L370 20 L370 40" fill="none"/>
+  </g>
+</svg>
