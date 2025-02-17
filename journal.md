@@ -1,5 +1,20 @@
 # GenAI Bootcamp 2025 – Journal  
 
+## Day 18: February 17, 2025  
+
+Today was a lighter day compared to yesterday's intense backend work. I finalized the **HagXwon logo**—both the **modern version and the color variations**—and I’m happy with how they turned out. I also spent time watching the backend testing video, and that’s when I realized I **completely forgot to implement the dashboard.** That hit hard because I thought I was done with backend, and now I have to go back and add it.  
+
+Aside from that, I started drafting an **opinion piece on AI's Ouroboric Knowledge Loop** looking at how AI models are feeding off their own outputs and what that means for the future of knowledge generation. The piece isn’t finished yet, but I spent some time researching and structuring my thoughts.  
+
+**Completed Work**  
+
+- **Finalized HagXwon logo** (modern + color versions).  
+- **Watched backend testing video** and realized I forgot the dashboard.  
+- **Started drafting an opinion piece** on AI's self-consuming knowledge cycle.  
+
+Next up, I need to **decide how to approach the dashboard**—whether to implement it in **Flask first or go straight to Go-Gin.** Once that’s done, I can finally move on to **frontend integration.**
+
+
 ## Day 17: February 16, 2025  
 
 I first **converted the provided Go-Gin backend specs to Python-Flask**, adapting everything for **Korean language learning**. I didn’t build directly from Go-Gin because I **don’t know Go at all**, but I do know Python—even though I’ve never worked with Flask before. I figured **debugging Python errors** would be easier than dealing with **Go from scratch**, and it worked. By **breaking down the issues step by step**, I was able to fully implement the backend in **Flask before rebuilding it in Go-Gin**. In hindsight, trying to build from the **original Go-Gin specs** would have been a nightmare. By breaking it down into a structured approach, **Cursor AI was able to guide the entire process effectively**, even though I had no prior Go experience.  
