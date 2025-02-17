@@ -1,6 +1,14 @@
 # GenAI Bootcamp 2025 – Journal  
 
-## Day 18: February 17, 2025  
+## Jump to what I was doing in
+
+- [Week 1](#week-1)
+- [Week 0](#week-0)
+- [Pre-bootcamp](#pre-bootcamp-prep)
+
+## Week 1
+
+### Day 18: February 17, 2025  
 
 Today was a lighter day compared to yesterday's intense backend work. I finalized the **HagXwon logo**—both the **modern version and the color variations**—and I’m happy with how they turned out. I also spent time watching the backend testing video, and that’s when I realized I **completely forgot to implement the dashboard.** That hit hard because I thought I was done with backend, and now I have to go back and add it.  
 
@@ -12,10 +20,7 @@ Aside from that, I started drafting an **opinion piece on AI's Ouroboric Knowled
 - **Watched backend testing video** and realized I forgot the dashboard.  
 - **Started drafting an opinion piece** on AI's self-consuming knowledge cycle.  
 
-Next up, I need to **decide how to approach the dashboard**—whether to implement it in **Flask first or go straight to Go-Gin.** Once that’s done, I can finally move on to **frontend integration.**
-
-
-## Day 17: February 16, 2025  
+### Day 17: February 16, 2025  
 
 I first **converted the provided Go-Gin backend specs to Python-Flask**, adapting everything for **Korean language learning**. I didn’t build directly from Go-Gin because I **don’t know Go at all**, but I do know Python—even though I’ve never worked with Flask before. I figured **debugging Python errors** would be easier than dealing with **Go from scratch**, and it worked. By **breaking down the issues step by step**, I was able to fully implement the backend in **Flask before rebuilding it in Go-Gin**. In hindsight, trying to build from the **original Go-Gin specs** would have been a nightmare. By breaking it down into a structured approach, **Cursor AI was able to guide the entire process effectively**, even though I had no prior Go experience.  
 
@@ -32,7 +37,7 @@ The setup took forever. Fixing database migrations, dependencies, and Go’s qui
 
 At this point, **both the Flask and Go-Gin backends are fully implemented and tested**. Next, I need to decide between **frontend integration or OPEA**.  
 
-## Day 16: February 14, 2025  
+### Day 16: February 14, 2025  
 
 I spent most of the day trying to set up an **AI-assisted backend case study** to compare how different LLMs generate Flask API code. The goal was to structure an experiment that tracked how tools like **Copilot, Windsurf, and Cursor** handled backend tasks. But after hours of planning, I realized the setup was too complicated, and I wasn’t getting the results I needed. Ultimately, I dropped the idea.  
 
@@ -43,7 +48,7 @@ Because of this, I didn’t watch any more of the backend lecture videos, and I 
 - **Planned an AI-assisted backend coding case study** (but scrapped it).  
 - **Reviewed different prompting strategies for AI coding tools.**  
 
-## Day 15: February 13, 2025  
+### Day 15: February 13, 2025  
 
 Today was about **finalizing my backend understanding and preparing for implementation.** I wanted to start coding, but I needed to make sure I wasn’t going in blind.  
 
@@ -65,7 +70,7 @@ By the end of the day, I had a clearer **execution plan for finishing the backen
 - **Tried to extract my Korean vocab book** but hit DRM restrictions.  
 - **Revisited my Level 5 idea**—thinking about flashcards with AI-generated videos.  
 
-## Day 14: February 12, 2025
+### Day 14: February 12, 2025
 
 I spent the entire day on backend work, research, and trying to make sense of everything. I started with the official lecture videos(6+ hrs), trying to wrap my head around the project requirements, Flask, SQLite, and how everything connects. At some point, I realized that there was no way I could do Level 5. I don’t know enough about frontend, backend, or anything full-stack. Even getting Level 1 done would be a huge achievement at this point.
 
@@ -83,7 +88,9 @@ I still have ~5 hours of lecture videos left, but I think I’ve cleared my head
 - Created multiple diagrams to visualize the backend structure and API interactions.  
 - Broke down the codebase and figured out that the backend uses Flask Blueprints, finally making sense of how everything is structured.  
 
-## Day 12 & 13: February 10-11, 2025
+## Week 0
+
+### Day 12 & 13: February 10-11, 2025
 
 I pulled an all-nighter and have been working for over 10 hours straight because I was falling behind in the bootcamp. I'm exhausted. Submitting the Sentence Constructor project made me realize something critical—I’ve spent too much time on theory and note-taking and not enough on practical application. While I’m proud of my GenAI notes and thrilled to have learned TOGAF, I should have focused on getting the practical work done first, submitted it, and then refined the theory later. Moving forward, my plan is to prioritize completing the minimum requirements first, then improve upon them instead of getting lost in details upfront.
 
@@ -100,7 +107,7 @@ Completed Work:
 **Big Takeaway:**
 I should have completed the practical requirements first and then refined the theory at my own pace. For the next week, my priority is execution—getting things done first and improving later. No more getting stuck in details. Time to adapt and move forward.
 
-## Day 11: February 9, 2025
+### Day 11: February 9, 2025
 
 - **Finalized and committed the main repository README**, ensuring structured documentation across all projects.
 - **Created the "Project Requirements" document** to define technical constraints, architectural goals, and implementation considerations.
@@ -111,7 +118,7 @@ I should have completed the practical requirements first and then refined the th
 - **Reviewed technical uncertainty and constraints for AI-powered assistants**, identifying key risks and prompting strategies.
 - **Prepared for upcoming logical and physical architecture diagrams**, ensuring alignment with bootcamp submission deadlines.
 
-## Day 10: February 8, 2025
+### Day 10: February 8, 2025
 
 - **Updated Main Repository README** to include a structured **directory overview**.
 - **Added TOGAF Glossary** (`glossary.md`) documenting key TOGAF terms and definitions.
@@ -124,7 +131,7 @@ I should have completed the practical requirements first and then refined the th
   - Roughly established **data strategy, model selection, and governance considerations**.
   - Structured key documentation for **technical architecture, implementation planning, and AI compliance**.
 
-## Day 9: February 7, 2025
+### Day 9: February 7, 2025
 
 - Completed **TOGAF Module 3 Notes**, covering **Governance, Risk, and Techniques**.
 - Refined understanding of **architecture compliance, risk management, and TOGAF techniques**.
@@ -135,7 +142,7 @@ I should have completed the practical requirements first and then refined the th
 - Continued studying **Mid-Level and Low-Level System Design**, but found it **very confusing**.
 - Tried different resources and explanations but still struggling to understand **LLD application and diagramming**.
 
-## Day 8: February 5, 2025
+### Day 8: February 5, 2025
 
 - Completed **TOGAF Module 2 Notes**, breaking down **ADM phases** with **BIG Questions & Themes** for better clarity.
 - Ensured structured understanding with a **WHO → WHAT → WHY → HOW → WHEN → NOW** approach.
@@ -145,7 +152,7 @@ I should have completed the practical requirements first and then refined the th
 - Struggled with **Mid-Level & Low-Level Design**, currently researching best practices and structured learning resources.
 - Updated the **main README** to reflect **Korean Hagwon** instead of Japanese.
 
-## Day 7: February 4, 2025
+### Day 7: February 4, 2025
 
 - Spent significant time researching **TOGAF** to gain a clearer understanding of enterprise architecture.
 - Attempted to read the **official TOGAF documentation**, but found it dense and difficult to navigate.
@@ -153,14 +160,16 @@ I should have completed the practical requirements first and then refined the th
 - Based on recommendations, enrolled in a **Coursera TOGAF course** (free audit option).
 - Completed **Module 1** of the course and took detailed notes in **Markdown format**.
 
-## Day 6: February 3, 2025
+### Day 6: February 3, 2025
 
 - Developed a detailed **business scenario** for the HagXwon AI-powered language learning platform.
 - Scoped out key **functional and business requirements**, ensuring alignment with real-world hagwon industry needs.
 - Researched **TOGAF and enterprise architecture** principles to understand structured methodologies for large-scale AI implementation.
 - Developed a **general understanding of TOGAF ADM framework** and how it applies to AI-powered education platforms.
 
-## Day 5: February 1, 2025
+## Pre Bootcamp prep
+
+### Day 5: February 1, 2025
 
 - Expanded **BERT and fine-tuning** topics, covering **BERT, SBERT, and LoRA/RLHF techniques**.  
 - Completed **Data and Machine Learning** notes, refining **ML pipelines, knowledge mining, and evaluation metrics**.  
@@ -168,7 +177,7 @@ I should have completed the practical requirements first and then refined the th
 - Fixed **Mermaid diagrams** to improve clarity and horizontal readability.  
 - Prepared for next topics: **LLM Development Tools and Model Deployment Strategies**.  
 
-## **Day 4: January 31, 2025**  
+### Day 4: January 31, 2025
 
 - Completed structured notes on **transformers, tokenization, and embeddings**, solidifying LLM fundamentals.  
 - Created **Mermaid flowcharts** to visualize key NLP processes and architecture.  
@@ -176,7 +185,7 @@ I should have completed the practical requirements first and then refined the th
 - Debugged **math rendering issues**, ensuring proper display of formulas.  
 - Next focus: **BERT and fine-tuning techniques**.  
 
-## **Day 3: January 30, 2025**  
+### Day 3: January 30, 2025**  
 
 - Completed detailed notes on **AI vs. Generative AI**, focusing on key differences, use cases, and impact.  
 - Wrote structured documentation on **Large Language Models (LLMs)**, covering foundational models, embeddings, transformers, and real-world applications.  
@@ -184,14 +193,14 @@ I should have completed the practical requirements first and then refined the th
 - Fixed **Mermaid diagrams and math rendering issues**, ensuring all visuals are properly formatted.  
 - Preparing for the next topic: **Tokenization & NLP fundamentals** in GenAI.  
 
-## **Day 2: January 28, 2025**  
+### Day 2: January 28, 2025**  
 
 - Worked through **GenAI Essentials**, covering **AI vs. GenAI**, **LLMs**, and **transformers**.  
 - Structured my **Week 00 folder**, adding separate **note files** for key topics.
 - Created a **README for Week 00** summarizing key topics and indexing notes.  
 - Ensured **repo structure is scalable** for future weeks of the bootcamp.  
 
-## **Day 1: January 27, 2025**  
+### Day 1: January 27, 2025**  
 
 - Explored the **bootcamp structure, expectations, and requirements**.  
 - Set up the **GitHub repository** and planned the **organization of notes and projects**.  
