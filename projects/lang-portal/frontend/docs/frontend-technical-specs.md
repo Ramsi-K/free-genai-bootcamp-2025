@@ -68,12 +68,6 @@ This page shows details of a study activity and its past study sessions.
 - Description
 - Launch button
 - Paginated list of past study sessions
-  - id
-  - activity name
-  - group name
-  - start time
-  - end time (inferred by the last word_review_item submitted)
-  - number of review items
 
 #### Required API Endpoints
 
@@ -99,12 +93,6 @@ This page allows the user to launch a study activity.
 
 - `POST /api/study_activities`
 
-#### Behaviour
-
-After the form is submitted a new tab opens with the study activity based on its URL provided in the database.
-
-Also the after form is submitted the page will redirect to the study sesssion show page
-
 ---
 
 ### Words Index `/words`
@@ -120,10 +108,16 @@ This page displays all words available in the database.
 
     ```json
     {
-      "id": 1,
-      "hangul": "학교",
-      "romanization": "hakgyo",
-      "english": "school",
+      "hangul":"학교",
+      "romanization":"hakgyo",
+      "type":"noun",
+      "english":[
+          "school"
+      ],
+      "example":{
+          "korean":"그는 학교에서 저보다 한 학년 위였어요.",
+          "english":"He was a year ahead of me in school."
+      },
       "correct_count": 10,
       "wrong_count": 2
     }
@@ -153,7 +147,7 @@ This page provides detailed information about a specific word.
     "id": 5,
     "hangul": "학생",
     "romanization": "haksaeng",
-    "english": "student",
+    "english": ["student"],
     "study_statistics": {
       "correct_count": 5,
       "wrong_count": 1
@@ -165,6 +159,33 @@ This page provides detailed information about a specific word.
 #### Required API Endpoints
 
 - `GET /api/words/:id`
+
+---
+
+### Sentence Practice `/sentence_practice`
+
+#### Purpose
+
+This page allows users to practice constructing sentences using Korean vocabulary, similar to word practice.
+
+#### Components
+
+- **Sentence Construction Tool**
+  - Displays a sentence in English that the user must translate into Korean.
+  - Provides a selection of words that can be dragged and dropped to form the sentence.
+  - Provides feedback on correctness with possible alternative translations.
+  - Tracks correct and incorrect sentence attempts.
+
+- **Example Sentences**
+  - Displays example sentences with translations for reference.
+  - Allows users to attempt translation and compare with model answers.
+
+#### Required API Endpoints
+
+- `GET /api/sentence_practice`
+- `POST /api/sentence_practice/attempt` (Submits user's sentence attempt for evaluation)
+- `GET /api/sentence_practice/examples` (Retrieves example sentences for learning)
+- `GET /api/sentence_practice/statistics` (Retrieves user progress on sentence practice)
 
 ---
 
@@ -208,8 +229,8 @@ This page shows details of a specific group, including words and study sessions 
     "group_name": "School-related Words",
     "total_word_count": 15,
     "words": [
-      {"hangul": "학교", "romanization": "hakgyo", "english": "school"},
-      {"hangul": "학생", "romanization": "haksaeng", "english": "student"}
+      {"hangul": "학교", "romanization": "hakgyo", "english": ["school"]},
+      {"hangul": "학생", "romanization": "haksaeng", "english": ["student"]}
     ]
   }
   ```
@@ -219,3 +240,25 @@ This page shows details of a specific group, including words and study sessions 
 - `GET /api/groups/:id`
 - `GET /api/groups/:id/words`
 - `GET /api/groups/:id/study_sessions`
+
+### Settings Page `/settings`
+
+#### Purpose
+
+This page allows users to configure study portal settings.
+
+#### Components
+
+- **Theme Selection**
+  - Light, Dark, or System Default theme selection.
+- **Reset History Button**
+  - Deletes all study sessions and word review items.
+- **Full Reset Button**
+  - Drops all tables and re-creates the database with seed data.
+
+#### Required API Endpoints
+
+- `POST /api/reset_history`
+- `POST /api/full_reset`
+
+---
