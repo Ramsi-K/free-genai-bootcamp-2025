@@ -1,0 +1,30 @@
+[
+    {
+      "group_name": "Common Verbs",
+      "words": [
+        {"hangul": "하다", "romanization": "hada", "english": "to do"},
+        {"hangul": "가다", "romanization": "gada", "english": "to go"},
+        {"hangul": "오다", "romanization": "oda", "english": "to come"},
+        {"hangul": "먹다", "romanization": "meokda", "english": "to eat"}
+      ]
+    },
+    {
+      "group_name": "Common Nouns",
+      "words": [
+        {"hangul": "책", "romanization": "chaek", "english": "book"},
+        {"hangul": "학교", "romanization": "hakgyo", "english": "school"},
+        {"hangul": "학생", "romanization": "haksaeng", "english": "student"},
+        {"hangul": "컴퓨터", "romanization": "keompyuteo", "english": "computer"}
+      ]
+    },
+    {
+      "group_name": "Basic Adjectives",
+      "words": [
+        {"hangul": "좋다", "romanization": "jota", "english": "good"},
+        {"hangul": "나쁘다", "romanization": "nappeuda", "english": "bad"},
+        {"hangul": "크다", "romanization": "keuda", "english": "big"},
+        {"hangul": "작다", "romanization": "jakda", "english": "small"}
+      ]
+    }
+  ]
+  
