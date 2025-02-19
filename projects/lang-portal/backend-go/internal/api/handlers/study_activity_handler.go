@@ -56,13 +56,36 @@ func (h *StudyActivityHandler) CreateStudySession(c *gin.Context) {
 		return
 	}
 
+	// Verify group exists
+	var group models.WordGroup
+	if err := h.activityRepo.GetDB().First(&group, session.GroupID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Group not found"})
+		return
+	}
+
+	// Verify activity exists
+	var activity models.StudyActivity
+	if err := h.activityRepo.GetDB().First(&activity, session.ActivityID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Activity not found"})
+		return
+	}
+
 	session.CompletedAt = time.Now()
 	if err := h.activityRepo.CreateStudySession(&session); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating study session"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, session)
+	c.JSON(http.StatusCreated, gin.H{
+		"id":            session.ID,
+		"group_id":      session.GroupID,
+		"activity_id":   session.ActivityID,
+		"correct_count": uint(session.CorrectCount),
+		"wrong_count":   uint(session.WrongCount),
+		"completed_at":  session.CompletedAt,
+		"created_at":    session.CreatedAt,
+		"updated_at":    session.UpdatedAt,
+	})
 }
 
 // GetLastStudySession returns the most recent study session
@@ -73,7 +96,18 @@ func (h *StudyActivityHandler) GetLastStudySession(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, session)
+	c.JSON(http.StatusOK, gin.H{
+		"id":            session.ID,
+		"group_id":      session.GroupID,
+		"activity_id":   session.ActivityID,
+		"correct_count": uint(session.CorrectCount),
+		"wrong_count":   uint(session.WrongCount),
+		"completed_at":  session.CompletedAt,
+		"created_at":    session.CreatedAt,
+		"updated_at":    session.UpdatedAt,
+		"group":         session.Group,
+		"activity":      session.Activity,
+	})
 }
 
 // GetStudyProgress returns overall study progress

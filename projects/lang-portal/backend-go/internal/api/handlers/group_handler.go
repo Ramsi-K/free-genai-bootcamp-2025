@@ -10,11 +10,11 @@ import (
 
 // GroupHandler handles group-related requests
 type GroupHandler struct {
-	groupRepo *repository.GroupRepository
+	groupRepo repository.GroupRepository
 }
 
 // NewGroupHandler creates a new group handler instance
-func NewGroupHandler(repo *repository.GroupRepository) *GroupHandler {
+func NewGroupHandler(repo repository.GroupRepository) *GroupHandler {
 	return &GroupHandler{groupRepo: repo}
 }
 

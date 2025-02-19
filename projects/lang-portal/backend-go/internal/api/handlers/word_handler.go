@@ -10,11 +10,11 @@ import (
 
 // WordHandler handles word-related requests
 type WordHandler struct {
-	wordRepo *repository.WordRepository
+	wordRepo repository.WordRepository
 }
 
 // NewWordHandler creates a new WordHandler instance
-func NewWordHandler(repo *repository.WordRepository) *WordHandler {
+func NewWordHandler(repo repository.WordRepository) *WordHandler {
 	return &WordHandler{wordRepo: repo}
 }
 

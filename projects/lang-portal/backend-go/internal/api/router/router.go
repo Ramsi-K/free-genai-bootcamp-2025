@@ -27,7 +27,7 @@ func SetupRouter() *gin.Engine {
 	wordHandler := handlers.NewWordHandler(wordRepo)
 	groupHandler := handlers.NewGroupHandler(groupRepo)
 	activityHandler := handlers.NewStudyActivityHandler(activityRepo)
-	adminHandler := handlers.NewAdminHandler()
+	adminHandler := handlers.NewAdminHandler(database.GetDB())
 
 	// API routes group
 	api := r.Group("/api")
@@ -59,8 +59,8 @@ func SetupRouter() *gin.Engine {
 		api.GET("/sentence_practice/statistics", nil) // TODO: Implement handler
 
 		// Admin endpoints
-		api.POST("/reset_history", adminHandler.ResetHistory)
-		api.POST("/full_reset", adminHandler.FullReset)
+		api.POST("/admin/reset/history", adminHandler.ResetHistory)
+		api.POST("/admin/reset/full", adminHandler.FullReset)
 	}
 
 	return r

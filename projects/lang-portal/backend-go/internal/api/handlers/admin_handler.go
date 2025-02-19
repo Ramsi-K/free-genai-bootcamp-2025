@@ -1,42 +1,55 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/pkg/database"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // AdminHandler handles administrative functions
-type AdminHandler struct{}
+type AdminHandler struct {
+	db *gorm.DB
+}
 
 // NewAdminHandler creates a new admin handler instance
-func NewAdminHandler() *AdminHandler {
-	return &AdminHandler{}
+func NewAdminHandler(db *gorm.DB) *AdminHandler {
+	return &AdminHandler{db: db}
 }
 
 // ResetHistory resets user study history
 func (h *AdminHandler) ResetHistory(c *gin.Context) {
-	db := database.GetDB()
+	err := h.db.Transaction(func(tx *gorm.DB) error {
+		// Reset study sessions
+		if err := tx.Where("1 = 1").Delete(&models.StudySession{}).Error; err != nil {
+			return fmt.Errorf("failed to delete study sessions: %v", err)
+		}
 
-	// Reset study sessions
-	if err := db.Exec("DELETE FROM study_sessions").Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error resetting study history"})
-		return
-	}
+		// Get all words
+		var words []models.Word
+		if err := tx.Find(&words).Error; err != nil {
+			return fmt.Errorf("failed to fetch words: %v", err)
+		}
 
-	// Reset word statistics
-	if err := db.Model(&models.Word{}).Updates(map[string]interface{}{
-		"study_statistics": struct {
-			CorrectCount int `json:"correct_count"`
-			WrongCount   int `json:"wrong_count"`
-		}{
-			CorrectCount: 0,
-			WrongCount:   0,
-		},
-	}).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error resetting word statistics"})
+		// Reset statistics for each word
+		for _, word := range words {
+			word.StudyStatistics = models.StudyStatistics{
+				CorrectCount: 0,
+				WrongCount:   0,
+			}
+			if err := tx.Save(&word).Error; err != nil {
+				return fmt.Errorf("failed to reset statistics for word %d: %v", word.ID, err)
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -45,19 +58,36 @@ func (h *AdminHandler) ResetHistory(c *gin.Context) {
 
 // FullReset drops and reseeds all data
 func (h *AdminHandler) FullReset(c *gin.Context) {
-	db := database.GetDB()
-
 	// Drop all tables
-	if err := db.Exec("DROP TABLE IF EXISTS study_sessions, group_words, words, word_groups, study_activities").Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error dropping tables"})
+	if err := h.db.Migrator().DropTable(
+		&models.StudySession{},
+		&models.WordReviewItem{},
+		"group_words", // Drop join table first
+		&models.Word{},
+		&models.WordGroup{},
+		&models.StudyActivity{},
+	); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to drop tables: %v", err)})
 		return
 	}
 
 	// Run migrations
-	if err := database.Initialize(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error initializing database"})
+	if err := h.db.AutoMigrate(
+		&models.Word{},
+		&models.WordGroup{},
+		&models.StudyActivity{},
+		&models.StudySession{},
+		&models.WordReviewItem{},
+	); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to run migrations: %v", err)})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Database reset and reseeded successfully"})
+	// Load seed data
+	if err := database.SeedDB(h.db); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to load seed data: %v", err)})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Database reset successfully"})
 }

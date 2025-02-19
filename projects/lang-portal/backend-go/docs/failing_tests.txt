@@ -1,0 +1,35 @@
+Here's a comprehensive list of all tests with their current status:
+Unit Tests in group_handler_test.go:
+TestListGroups ✅ WORKING
+Subtest: "Success - Empty List" ✅ WORKING
+Subtest: "Success - Multiple Groups" ✅ WORKING
+TestGetGroup ✅ WORKING
+Subtest: "Success" ✅ WORKING
+Subtest: "Invalid ID" ✅ WORKING
+Subtest: "Group Not Found" ✅ WORKING
+TestGroupHandler_Integration ❌ NOT WORKING
+Subtest: "List Groups" ❌ NOT WORKING
+Expected 1 group, got 23 groups
+Group name/description mismatch
+Subtest: "Get Group" ❌ NOT WORKING
+Group name/description mismatch
+Subtest: "Get Group Words" ❌ NOT WORKING
+Expected 2 words, got 28 words
+Subtest: "Get Group Study Sessions" ❌ NOT WORKING
+Expected 1 session, got 0 sessions
+Subtest: "Get Non-existent Group" ✅ WORKING
+Subtest: "Get Group with Invalid ID" ✅ WORKING
+Unit Tests in admin_handler_test.go:
+TestAdminHandler_Integration ❌ NOT WORKING
+Subtest: "Reset History" ❌ NOT WORKING
+UNIQUE constraint failed on word_groups.id
+Subtest: "Full Reset" ❌ NOT WORKING
+UNIQUE constraint failed on word_groups.id
+
+# For failing integration tests
+go test -v ./internal/api/handlers -run TestGroupHandler_Integration/List_Groups
+go test -v ./internal/api/handlers -run TestGroupHandler_Integration/Get_Group
+go test -v ./internal/api/handlers -run TestGroupHandler_Integration/Get_Group_Words
+go test -v ./internal/api/handlers -run TestGroupHandler_Integration/Get_Group_Study_Sessions
+go test -v ./internal/api/handlers -run TestAdminHandler_Integration/Reset_History
+go test -v ./internal/api/handlers -run TestAdminHandler_Integration/Full_Reset

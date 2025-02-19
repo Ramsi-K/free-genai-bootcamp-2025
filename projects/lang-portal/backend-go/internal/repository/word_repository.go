@@ -4,18 +4,25 @@ import (
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
 )
 
-// WordRepository handles database operations for words
-type WordRepository struct {
+// WordRepository defines the interface for word operations
+type WordRepository interface {
+	ListWords(page, limit int) ([]models.Word, int64, error)
+	GetWord(id uint) (*models.Word, error)
+	GetWordsByGroup(groupID uint) ([]models.Word, error)
+}
+
+// WordRepositoryImpl implements WordRepository
+type WordRepositoryImpl struct {
 	*BaseRepository
 }
 
 // NewWordRepository creates a new word repository instance
-func NewWordRepository(base *BaseRepository) *WordRepository {
-	return &WordRepository{base}
+func NewWordRepository(base *BaseRepository) WordRepository {
+	return &WordRepositoryImpl{base}
 }
 
 // ListWords returns a paginated list of words
-func (r *WordRepository) ListWords(page, limit int) ([]models.Word, int64, error) {
+func (r *WordRepositoryImpl) ListWords(page, limit int) ([]models.Word, int64, error) {
 	var words []models.Word
 	var total int64
 	offset := (page - 1) * limit
@@ -32,7 +39,7 @@ func (r *WordRepository) ListWords(page, limit int) ([]models.Word, int64, error
 }
 
 // GetWord retrieves a word by ID
-func (r *WordRepository) GetWord(id uint) (*models.Word, error) {
+func (r *WordRepositoryImpl) GetWord(id uint) (*models.Word, error) {
 	var word models.Word
 	if err := r.db.First(&word, id).Error; err != nil {
 		return nil, err
@@ -41,7 +48,7 @@ func (r *WordRepository) GetWord(id uint) (*models.Word, error) {
 }
 
 // GetWordsByGroup retrieves words belonging to a specific group
-func (r *WordRepository) GetWordsByGroup(groupID uint) ([]models.Word, error) {
+func (r *WordRepositoryImpl) GetWordsByGroup(groupID uint) ([]models.Word, error) {
 	var words []models.Word
 	if err := r.db.Joins("JOIN group_words ON group_words.word_id = words.id").
 		Where("group_words.word_group_id = ?", groupID).

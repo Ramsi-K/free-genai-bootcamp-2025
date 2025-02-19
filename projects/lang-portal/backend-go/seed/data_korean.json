@@ -332,7 +332,7 @@
         
       "example_sentence":{
           "korean":"그가 말하기 전에 빨리 여기를 떠나자.",
-          "english":"Let’s leave here before he speaks."
+          "english":"Let's leave here before he speaks."
       }
   },
   {
@@ -361,7 +361,7 @@
         
       "example_sentence":{
           "korean":"그는 7시까지 여기에 오기로 약속을 했다. 그러나 그는 오지 않았다.",
-          "english":"He promised to come here by seven, but he didn’t."
+          "english":"He promised to come here by seven, but he didn't."
       }
   },
   {
@@ -416,7 +416,7 @@
         
       "example_sentence":{
           "korean":"선생님이 너 오늘 학교에 안 왔다고 하셨는데 정말 그랬니?",
-          "english":"Your teacher told me that you didn’t come to your school. Is this correct?"
+          "english":"Your teacher told me that you didn't come to your school. Is this correct?"
       }
   },
   {
@@ -832,7 +832,7 @@
         
       "example_sentence":{
           "korean":"그는 매운 음식을 잘 먹어요.",
-          "english":"He’s good at eating spicy food."
+          "english":"He's good at eating spicy food."
       }
   },
   {
@@ -868,7 +868,7 @@
       "romanization":"jasin",
       "type":"noun",
       "english":[
-          "one’s body",
+          "one's body",
           "oneself"
       ],
         
@@ -1308,7 +1308,7 @@
         
       "example_sentence":{
           "korean":"거짓말하지 마. 나는 그 사실을 알고 싶어.",
-          "english":"Please, don’t lie to me. I want to know the truth."
+          "english":"Please, don't lie to me. I want to know the truth."
       }
   },
   {
@@ -1525,7 +1525,7 @@
         
       "example_sentence":{
           "korean":"네가 공부를 안했는데 결과야 뻔하지.",
-          "english":"Since you didn’t study, it’s pretty obvious what the result will be."
+          "english":"Since you didn't study, it's pretty obvious what the result will be."
       }
   },
   {
@@ -1564,7 +1564,7 @@
         
       "example_sentence":{
           "korean":"여기에 쓰레기를 버리지 마세요.",
-          "english":"Don’t throw away trash here."
+          "english":"Don't throw away trash here."
       }
   },
   {
@@ -1609,7 +1609,7 @@
         
       "example_sentence":{
           "korean":"오늘 우리은행 주식이 5퍼센트 올랐어요.",
-          "english":"Woori Bank’s stock gained five percent today."
+          "english":"Woori Bank's stock gained five percent today."
       }
   },
   {
@@ -1693,7 +1693,7 @@
         
       "example_sentence":{
           "korean":"뭐라고 꼭 집어서 말할 수는 없지만, 뭔가 어색해요.",
-          "english":"I can’t quite put a finger on it, but something is awkward."
+          "english":"I can't quite put a finger on it, but something is awkward."
       }
   },
   {
@@ -1926,7 +1926,7 @@
         
       "example_sentence":{
           "korean":"저는 석사 학위를 가지고 있는 29살의 여성입니다.",
-          "english":"I am a 29-year-old woman with a master’s degree."
+          "english":"I am a 29-year-old woman with a master's degree."
       }
   },
   {
@@ -3065,7 +3065,7 @@
         
       "example_sentence":{
           "korean":"당신은 문맥을 통해서 단어의 의미를 파악할 수 있을 거예요.",
-          "english":"You can use context to figure out the word’s meaning."
+          "english":"You can use context to figure out the word's meaning."
       }
   },
   {
@@ -3120,7 +3120,7 @@
         
       "example_sentence":{
           "korean":"저는 이미 몇천 번을 해 봤어요.",
-          "english":"I’ve already done it a few thousand times."
+          "english":"I've already done it a few thousand times."
       }
   },
   {
@@ -3147,7 +3147,7 @@
         
       "example_sentence":{
           "korean":"저는 정치에 큰 관심을 두지 않아요.",
-          "english":"I don’t concern myself with politics."
+          "english":"I don't concern myself with politics."
       }
   },
   {
@@ -3387,7 +3387,7 @@
         
       "example_sentence":{
           "korean":"저는 제 글에 매우 예민합니다.",
-          "english":"I’m really neurotic about my writing."
+          "english":"I'm really neurotic about my writing."
       }
   },
   {
@@ -3866,7 +3866,7 @@
       "type":"noun",
       "english":[
           "the thing itself",
-          "something’s"
+          "something's"
       ],
         
       "example_sentence":{
@@ -5884,7 +5884,7 @@
         
       "example_sentence":{
           "korean":"당신이 원하는 만큼 마실 수 있습니다.",
-          "english":"You can drink as much as you’d like."
+          "english":"You can drink as much as you'd like."
       }
   },
   {
@@ -7443,7 +7443,7 @@
       "type":"adverb",
       "english":[
           "directly",
-          "on one’s own",
+          "on one's own",
           "by oneself",
           "personally",
           "in person"
@@ -7495,7 +7495,7 @@
         
       "example_sentence":{
           "korean":"저는 발을 다쳐서 걷기가 힘들어요.",
-          "english":"I hurt my foot and it’s difficult to walk."
+          "english":"I hurt my foot and it's difficult to walk."
       }
   },
   {
@@ -7919,7 +7919,7 @@
       "romanization":"jinaeda",
       "type":"verb",
       "english":[
-          "to spend (one’s time)",
+          "to spend (one's time)",
           "live",
           "get along"
       ],
@@ -8095,7 +8095,7 @@
       "type":"adverb",
       "english":[
           "by oneself",
-          "on one’s own",
+          "on one's own",
           "without assistance",
           "for oneself"
       ],
@@ -8171,7 +8171,7 @@
       "english":[
           "properly",
           "in the appropriate manner",
-          "according to one’s standards"
+          "according to one's standards"
       ],
         
       "example_sentence":{
@@ -8709,7 +8709,7 @@
       "type":"verb",
       "english":[
           "to work",
-          "do one’s job",
+          "do one's job",
           "labor",
           "serve"
       ],
@@ -10855,7 +10855,7 @@
         
       "example_sentence":{
           "korean":"그녀는 강아지의 귀를 잡았습니다.",
-          "english":"She grabbed the dog’s ear."
+          "english":"She grabbed the dog's ear."
       }
   },
   {
@@ -11230,7 +11230,7 @@
         
       "example_sentence":{
           "korean":"저는 강아지 한 마리를 기르고 있어요.",
-          "english":"I’m raising a dog."
+          "english":"I'm raising a dog."
       }
   },
   {
@@ -11481,7 +11481,7 @@
         
       "example_sentence":{
           "korean":"오늘 밤 모임 때 그 옷이 필요해요.",
-          "english":"I need the clothes for tonight’s meeting."
+          "english":"I need the clothes for tonight's meeting."
       }
   },
   {
@@ -12407,7 +12407,7 @@
         
       "example_sentence":{
           "korean":"쉬도록 해요.",
-          "english":"Let’s take a break."
+          "english":"Let's take a break."
       }
   },
   {
@@ -12631,7 +12631,7 @@
       "type":"noun",
       "english":[
           "expertise",
-          "one’s field of specialization"
+          "one's field of specialization"
       ],
         
       "example_sentence":{
@@ -16230,7 +16230,7 @@
         
       "example_sentence":{
           "korean":"우리의 가치 있는 문화재를 소중하게 여깁시다.",
-          "english":"Let’s cherish our valuable cultural properties."
+          "english":"Let's cherish our valuable cultural properties."
       }
   },
   {
@@ -17164,7 +17164,7 @@
         
       "example_sentence":{
           "korean":"거의 끝나가는데 지금 포기하다니 안타깝다.",
-          "english":"It would be a pity to give up now. It’s almost over."
+          "english":"It would be a pity to give up now. It's almost over."
       }
   },
   {
@@ -17257,7 +17257,7 @@
         
       "example_sentence":{
           "korean":"그 회사는 세계 최대 보험 회사입니다.",
-          "english":"The company is the world’s largest insurance company."
+          "english":"The company is the world's largest insurance company."
       }
   },
   {
@@ -17456,7 +17456,7 @@
           "gaze",
           "eye",
           "attention",
-          "the object of one’s gaze"
+          "the object of one's gaze"
       ],
         
       "example_sentence":{
@@ -18152,7 +18152,7 @@
         
       "example_sentence":{
           "korean":"상대방의 기분을 파악하는 게 중요합니다.",
-          "english":"The important thing is to assess the other person’s mood."
+          "english":"The important thing is to assess the other person's mood."
       }
   },
   {
@@ -18479,7 +18479,7 @@
         
       "example_sentence":{
           "korean":"위원회의 보고서는 저희가 개선 작업을 하는 데 있어서 도움을 줄 것입니다.",
-          "english":"The committee’s report will help us in the work of reform."
+          "english":"The committee's report will help us in the work of reform."
       }
   },
   {
@@ -19094,7 +19094,7 @@
       "romanization":"buin",
       "type":"noun",
       "english":[
-          "(honorific) (another person’s) wife",
+          "(honorific) (another person's) wife",
           "denial",
           "disaffirmation"
       ],
@@ -19597,7 +19597,7 @@
         
       "example_sentence":{
           "korean":"실업률이 조금이라도 더 높아지게 되면 장관의 경제 정책은 시험대에 오르게 될 것입니다.",
-          "english":"The minister’s economic policy will be tested if the unemployment rate goes any higher."
+          "english":"The minister's economic policy will be tested if the unemployment rate goes any higher."
       }
   },
   {
@@ -20402,7 +20402,7 @@
       "english":[
           "to be bruited about",
           "have come to hearing",
-          "reach one’s ears"
+          "reach one's ears"
       ],
         
       "example_sentence":{
@@ -20849,7 +20849,7 @@
       "romanization":"jida",
       "type":"verb",
       "english":[
-          "to carry on one’s back",
+          "to carry on one's back",
           "bear",
           "undertake",
           "be defeated",
@@ -22362,7 +22362,7 @@
         
       "example_sentence":{
           "korean":"그녀는 실수로 고양이 꼬리 끝을 밟았습니다.",
-          "english":"She stepped on the end of a cat’s tail by mistake."
+          "english":"She stepped on the end of a cat's tail by mistake."
       }
   },
   {
@@ -23474,7 +23474,7 @@
         
       "example_sentence":{
           "korean":"그는 부모님의 조언을 무시했습니다.",
-          "english":"He ignored his parents’ advice."
+          "english":"He ignored his parents' advice."
       }
   },
   {
@@ -23663,7 +23663,7 @@
       "english":[
           "to stay",
           "remain",
-          "pause on one’s way",
+          "pause on one's way",
           "stop going"
       ],
         
@@ -23775,7 +23775,7 @@
         
       "example_sentence":{
           "korean":"그 무기는 피고의 집에서 발견되었다.",
-          "english":"The weapon was found in the defendant’s home."
+          "english":"The weapon was found in the defendant's home."
       }
   },
   {
@@ -23842,7 +23842,7 @@
       "romanization":"gamda",
       "type":"verb",
       "english":[
-          "to close one’s eyes",
+          "to close one's eyes",
           "wash oneself",
           "bathe",
           "wind around",
@@ -24405,7 +24405,7 @@
       "romanization":"pyeongsaeng",
       "type":"noun",
       "english":[
-          "one’s entire life",
+          "one's entire life",
           "lifetime"
       ],
         
@@ -26377,7 +26377,7 @@
           "to shoot",
           "fire a shot",
           "treat",
-          "pay for someone’s drink or meal"
+          "pay for someone's drink or meal"
       ],
         
       "example_sentence":{
@@ -26579,7 +26579,7 @@
       "romanization":"dalgyal",
       "type":"noun",
       "english":[
-          "a hen’s egg"
+          "a hen's egg"
       ],
         
       "example_sentence":{
@@ -26620,7 +26620,7 @@
       "type":"noun",
       "english":[
           "floor",
-          "floor’s covering",
+          "floor's covering",
           "especially for wood flooring",
           "the top of a roof or mountain"
       ],
@@ -26700,8 +26700,8 @@
       ],
         
       "example_sentence":{
-          "korean":"그녀가 저에게 이것을 좋아하냐고 물어본다면, 저는 ‘아니요’라고 말할 것입니다.",
-          "english":"If she questions me whether I like this, I will say ‘no’."
+          "korean":"그녀가 저에게 이것을 좋아하냐고 물어본다면, 저는 ‘아니요'라고 말할 것입니다.",
+          "english":"If she questions me whether I like this, I will say ‘no'."
       }
   },
   {
@@ -26900,7 +26900,7 @@
       "type":"verb",
       "english":[
           "to bend",
-          "bow (one’s head)",
+          "bow (one's head)",
           "incline",
           "stoop",
           "duck"
@@ -27120,7 +27120,7 @@
         
       "example_sentence":{
           "korean":"그 아이는 어제 나무에 올라가서 새 둥지를 발견했습니다.",
-          "english":"The child climbed up a tree and found a bird’s nest yesterday."
+          "english":"The child climbed up a tree and found a bird's nest yesterday."
       }
   },
   {
@@ -27539,7 +27539,7 @@
         
       "example_sentence":{
           "korean":"수리를 요청하고 싶으시면, 이 번호로 연락해 주세요.",
-          "english":"If you’d like to ask for a repair, call this number."
+          "english":"If you'd like to ask for a repair, call this number."
       }
   },
   {
@@ -27956,7 +27956,7 @@
       "type":"verb",
       "english":[
           "to lose",
-          "no longer have in one’s possession"
+          "no longer have in one's possession"
       ],
         
       "example_sentence":{
@@ -28663,7 +28663,7 @@
       "romanization":"sinda",
       "type":"verb",
       "english":[
-          "to wear on one’s feet",
+          "to wear on one's feet",
           "put on",
           "slip on"
       ],
@@ -29186,7 +29186,7 @@
       "type":"noun",
       "english":[
           "fairy tale",
-          "children’s story"
+          "children's story"
       ],
         
       "example_sentence":{

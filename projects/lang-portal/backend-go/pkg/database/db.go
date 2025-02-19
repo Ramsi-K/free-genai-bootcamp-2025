@@ -45,7 +45,7 @@ func Initialize() error {
 
 	if wordCount == 0 || groupCount == 0 || activityCount == 0 {
 		log.Println("Database is empty, loading seed data...")
-		if err := LoadSeedData(DB); err != nil {
+		if err := SeedDB(DB); err != nil {
 			log.Printf("Warning: Failed to load seed data: %v", err)
 			return err
 		}

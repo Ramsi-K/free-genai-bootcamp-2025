@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // ExampleSentence represents a Korean-English sentence pair
@@ -79,10 +81,36 @@ type Word struct {
 	Hangul          string          `gorm:"not null;uniqueIndex" json:"hangul"`
 	Romanization    string          `gorm:"not null" json:"romanization"`
 	Type            string          `gorm:"not null" json:"type"`
-	English         StringSlice     `gorm:"type:text;not null" json:"english"`
+	English         StringSlice     `gorm:"type:json;not null" json:"english"`
 	Groups          []WordGroup     `gorm:"many2many:group_words" json:"groups,omitempty"`
-	ExampleSentence ExampleSentence `gorm:"type:text" json:"example_sentence"`
-	StudyStatistics StudyStatistics `gorm:"type:text" json:"study_statistics"`
+	ExampleSentence ExampleSentence `gorm:"type:json" json:"example_sentence"`
+	StudyStatistics StudyStatistics `gorm:"type:json" json:"study_statistics"`
 	CreatedAt       time.Time       `json:"created_at"`
 	UpdatedAt       time.Time       `json:"updated_at"`
+}
+
+// BeforeSave hook to ensure JSON fields are properly serialized
+func (w *Word) BeforeSave(tx *gorm.DB) error {
+	// Ensure English is never null
+	if w.English == nil {
+		w.English = StringSlice{}
+	}
+
+	// Ensure ExampleSentence is properly initialized
+	if w.ExampleSentence.Korean == "" && w.ExampleSentence.English == "" {
+		w.ExampleSentence = ExampleSentence{
+			Korean:  "예문이 없습니다.",
+			English: "No example sentence available.",
+		}
+	}
+
+	// Ensure StudyStatistics is properly initialized
+	if w.StudyStatistics.CorrectCount == 0 && w.StudyStatistics.WrongCount == 0 {
+		w.StudyStatistics = StudyStatistics{
+			CorrectCount: 0,
+			WrongCount:   0,
+		}
+	}
+
+	return nil
 }
