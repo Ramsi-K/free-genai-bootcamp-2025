@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Ramsi-K/free-genai-bootcamp-2025/projects/lang-portal/backend-go/internal/api/middleware"
 	"github.com/Ramsi-K/free-genai-bootcamp-2025/projects/lang-portal/backend-go/internal/models"
 
 	"github.com/gin-gonic/gin"
@@ -20,56 +19,40 @@ func NewWordHandler(db *gorm.DB) *WordHandler {
 }
 
 func (h *WordHandler) List(c *gin.Context) {
-	var pagination middleware.Pagination
-	if err := c.ShouldBindQuery(&pagination); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Validate pagination parameters
-	if err := pagination.Validate(); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
-		return
-	}
-
 	var words []models.Word
-	query := h.db.Model(&models.Word{}).Where("deleted_at IS NULL")
-
-	// Apply sorting
-	if pagination.SortBy != "" {
-		order := pagination.SortBy
-		if pagination.Order == "desc" {
-			order += " DESC"
-		} else {
-			order += " ASC"
-		}
-		query = query.Order(order)
+	// Parse pagination parameters
+	pageStr := c.DefaultQuery("page", "1")
+	perPageStr := c.DefaultQuery("per_page", "100")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		page = 1
 	}
+	perPage, err := strconv.Atoi(perPageStr)
+	if err != nil || perPage < 1 {
+		perPage = 100
+	}
+	offset := (page - 1) * perPage
 
-	// Count total before pagination
+	// Get total count
 	var total int64
-	if err := query.Count(&total).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error counting words"})
+	err = h.db.Model(&models.Word{}).Distinct("words.id").Count(&total).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to count words"})
 		return
 	}
 
-	// Apply pagination
-	offset := (pagination.GetPage() - 1) * pagination.GetLimit()
-	query = query.Offset(offset).Limit(pagination.GetLimit())
-
-	if err := query.Find(&words).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching words"})
+	// Query words with pagination, ensuring distinct results
+	err = h.db.Model(&models.Word{}).Distinct("words.id").Order("id asc").Offset(offset).Limit(perPage).Find(&words).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load words"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"words": words,
-		"pagination": gin.H{
-			"current_page": pagination.GetPage(),
-			"total_pages":  (total + int64(pagination.GetLimit()) - 1) / int64(pagination.GetLimit()),
-			"total_items":  total,
-			"per_page":     pagination.GetLimit(),
-		},
+		"words":    words,
+		"total":    total,
+		"page":     page,
+		"per_page": perPage,
 	})
 }
 

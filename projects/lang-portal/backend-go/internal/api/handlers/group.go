@@ -36,26 +36,10 @@ type GroupHandler struct {
 
 // NewGroupHandler creates a new instance of GroupHandler
 func NewGroupHandler(db *gorm.DB) *GroupHandler {
-	// Try to find the seed directory relative to the working directory
-	cwd, err := os.Getwd()
+	// Get the absolute path of the current directory (expected to be backend-go)
+	cwd, err := filepath.Abs(".")
 	if err != nil {
-		// If we can't get working directory, use current directory
 		cwd = "."
-	}
-
-	// Check if we're in a test environment
-	if _, err := os.Stat(filepath.Join(cwd, "seed", "word_groups.json")); os.IsNotExist(err) {
-		// Look for test data directory
-		testDir := filepath.Join(cwd, "seed")
-		if _, err := os.Stat(filepath.Join(testDir, "word_groups.json")); os.IsNotExist(err) {
-			// Try parent directory
-			parentDir := filepath.Join(cwd, "..", "seed")
-			if _, err := os.Stat(filepath.Join(parentDir, "word_groups.json")); err == nil {
-				cwd = filepath.Dir(parentDir)
-			}
-		} else {
-			cwd = filepath.Dir(testDir)
-		}
 	}
 
 	return &GroupHandler{
@@ -183,28 +167,29 @@ func (h *GroupHandler) List(c *gin.Context) {
 		return
 	}
 
-	// Count words in each group and create unique groups
-	groupCounts := make(map[string]int)
+	// Build a set of unique words for each group from the JSON mapping
+	groupWordSet := make(map[string]map[string]bool)
 	var uniqueGroups []string
 	for _, mapping := range mappings {
 		for _, groupName := range mapping.GroupNames {
-			if _, exists := groupCounts[groupName]; !exists {
+			if _, exists := groupWordSet[groupName]; !exists {
+				groupWordSet[groupName] = make(map[string]bool)
 				uniqueGroups = append(uniqueGroups, groupName)
 			}
-			groupCounts[groupName]++
+			groupWordSet[groupName][mapping.Hangul] = true
 		}
 	}
 
-	// Sort group names for consistent ordering
+	// Sort the group names for consistent ordering
 	sort.Strings(uniqueGroups)
 
-	// Convert to response format with IDs
+	// Build the response with the correct word counts per group
 	response := make([]GroupResponse, len(uniqueGroups))
 	for i, name := range uniqueGroups {
 		response[i] = GroupResponse{
 			ID:         uint(i + 1),
 			Name:       name,
-			WordsCount: groupCounts[name],
+			WordsCount: len(groupWordSet[name]),
 		}
 	}
 
@@ -247,32 +232,16 @@ func (h *GroupHandler) GetStudySessions(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// Updated loadWordGroupMappings to load exclusively from backend-go/seed/word_groups.json
 func (h *GroupHandler) loadWordGroupMappings() ([]WordGroupMapping, error) {
-	// Try to find word_groups.json in multiple locations
-	locations := []string{
-		filepath.Join(h.dataDir, "seed", "word_groups.json"),
-		filepath.Join("seed", "word_groups.json"),
-		filepath.Join("..", "seed", "word_groups.json"),
-		filepath.Join("..", "..", "seed", "word_groups.json"),
-	}
-
-	var file []byte
-	var err error
-	for _, loc := range locations {
-		file, err = os.ReadFile(loc)
-		if err == nil {
-			break
-		}
-	}
-
+	filePath := filepath.Join(h.dataDir, "seed", "word_groups.json")
+	data, err := os.ReadFile(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("error reading word_groups.json from any location: %v", err)
+		return nil, fmt.Errorf("failed to read word_groups.json: %w", err)
 	}
-
 	var mappings []WordGroupMapping
-	if err := json.Unmarshal(file, &mappings); err != nil {
-		return nil, fmt.Errorf("error unmarshaling word_groups.json: %v", err)
+	if err := json.Unmarshal(data, &mappings); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal word groups from %s: %w", filePath, err)
 	}
-
 	return mappings, nil
 }

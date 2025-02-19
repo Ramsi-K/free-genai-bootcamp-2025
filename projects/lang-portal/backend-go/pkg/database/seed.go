@@ -24,17 +24,58 @@ type WordData struct {
 
 // LoadSeedData is the main entry point for seeding the database
 func LoadSeedData(db *gorm.DB) error {
-	// Get the current working directory
-	cwd, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("failed to get working directory: %v", err)
+	// Create Core Korean group
+	group := models.Group{
+		Name: "Core Korean",
+	}
+	if err := db.FirstOrCreate(&group, models.Group{Name: "Core Korean"}).Error; err != nil {
+		return fmt.Errorf("failed to create core group: %v", err)
 	}
 
-	// Use the seed directory relative to the current working directory
-	dataDir := filepath.Join(cwd, "seed")
+	// Read and parse words data using absolute path
+	wordFilePath := filepath.Join("seed", "data_korean.json")
+	absWordFilePath, err := filepath.Abs(wordFilePath)
+	if err != nil {
+		return fmt.Errorf("error obtaining absolute path for data_korean.json: %v", err)
+	}
+	data, err := os.ReadFile(absWordFilePath)
+	if err != nil {
+		return fmt.Errorf("failed to read seed data from %s: %v", absWordFilePath, err)
+	}
 
-	// Call SeedDatabase with the data directory
-	return SeedDatabase(db, dataDir)
+	var words []WordData
+	if err := json.Unmarshal(data, &words); err != nil {
+		return fmt.Errorf("failed to parse seed data: %v", err)
+	}
+
+	fmt.Printf("Successfully loaded %d words from %s\n", len(words), absWordFilePath)
+
+	// Begin transaction
+	tx := db.Begin()
+	if tx.Error != nil {
+		return fmt.Errorf("failed to begin transaction: %v", tx.Error)
+	}
+
+	// Insert words using correct JSON field 'Example'
+	for _, wordData := range words {
+		word := models.Word{
+			Hangul:       wordData.Hangul,
+			Romanization: wordData.Romanization,
+			English:      wordData.English,
+			Type:         wordData.Type,
+			ExampleSentence: models.Example{
+				Korean:  wordData.ExampleSentence.Korean,
+				English: wordData.ExampleSentence.English,
+			},
+		}
+
+		if err := tx.Create(&word).Error; err != nil {
+			tx.Rollback()
+			return fmt.Errorf("failed to create word: %v", err)
+		}
+	}
+
+	return tx.Commit().Error
 }
 
 // SeedDatabase handles the actual seeding process
@@ -131,9 +172,14 @@ func cleanDatabase(tx *gorm.DB) error {
 }
 
 func loadWords(dataDir string) ([]WordData, error) {
-	file, err := os.ReadFile(filepath.Join(dataDir, "data_korean.json"))
+	wordPath := filepath.Join(dataDir, "data_korean.json")
+	absPath, err := filepath.Abs(wordPath)
 	if err != nil {
-		return nil, fmt.Errorf("error reading data_korean.json: %v", err)
+		return nil, fmt.Errorf("error obtaining absolute path for data_korean.json: %v", err)
+	}
+	file, err := os.ReadFile(absPath)
+	if err != nil {
+		return nil, fmt.Errorf("error reading data_korean.json from %s: %v", absPath, err)
 	}
 
 	var words []WordData
@@ -141,6 +187,7 @@ func loadWords(dataDir string) ([]WordData, error) {
 		return nil, fmt.Errorf("error unmarshaling data_korean.json: %v", err)
 	}
 
+	fmt.Printf("Successfully loaded %d words from %s\n", len(words), absPath)
 	return words, nil
 }
 

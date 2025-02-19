@@ -130,14 +130,6 @@ func getTestWords() []models.Word {
 	}
 }
 
-func getTestGroups() []models.Group {
-	return []models.Group{
-		{Name: "School", WordsCount: 1},
-		{Name: "Food", WordsCount: 1},
-		{Name: "Basic Words", WordsCount: 2},
-	}
-}
-
 func setupTestRouter(db *gorm.DB) *gin.Engine {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()

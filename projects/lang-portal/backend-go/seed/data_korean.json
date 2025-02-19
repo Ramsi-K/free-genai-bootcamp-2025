@@ -205,8 +205,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"(넌) 지난 주말에 어디에 갔었니?",
+          "english":"Where did you go last weekend?"
       }
   },
   {
@@ -218,8 +218,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"저 책 좀 저에게 줄래요?",
+          "english":"Would you give that book to me, please?"
       }
   },
   {
@@ -244,8 +244,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"(당신은) 몇 년도에 한국에 왔어요?",
+          "english":"What year did you come to Korea?"
       }
   },
   {
@@ -289,8 +289,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"그녀가 하고 있는 일은 무엇이죠?",
+          "english":"What is her job?"
       }
   },
   {
@@ -373,8 +373,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"너는 내일 몇 시에 올 수 있어?",
+          "english":"What time can you come tomorrow?"
       }
   },
   {
@@ -387,8 +387,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"오늘 제 생일이라는 것을 그들도 아나요?",
+          "english":"Do they also know that today is my birthday?"
       }
   },
   {
@@ -415,8 +415,8 @@
       ],
         
       "example_sentence":{
-          "korean":"Your teacher told me that you didn’t come to your school. Is this correct?",
-          "english":""
+          "korean":"선생님이 너 오늘 학교에 안 왔다고 하셨는데 정말 그랬니?",
+          "english":"Your teacher told me that you didn’t come to your school. Is this correct?"
       }
   },
   {
@@ -432,7 +432,7 @@
         
       "example_sentence":{
           "korean":"그 케이크는 정말 크다.",
-          "english":""
+          "english":"The cake is very big"
       }
   },
   {
@@ -516,8 +516,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"음식 좀 더 드릴까요?",
+          "english":"Do you want more food?"
       }
   },
   {
@@ -531,8 +531,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"너 어제 내가 보낸 메시지 받았니?",
+          "english":"Did you receive my message yesterday?"
       }
   },
   {
@@ -684,8 +684,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"그는 그 문제에 대해 어떻게 생각하니?",
+          "english":"What does he think of the issue?"
       }
   },
   {
@@ -782,14 +782,14 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"그럴 경우에는 게임이 연기될 수 있나요?",
+          "english":"In the case of it being so, could the game be postponed?"
       }
   },
   {
       "hangul":"중",
       "romanization":"jung",
-      "type":"unknown",
+      "type":"noun",
       "english":[
           "amongst",
           "in the course of",
@@ -797,8 +797,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"그 중에서 가장 좋아하는 노래는 뭐에요?",
+          "english":"What is your favorite song amongst them?"
       }
   },
   {
@@ -859,8 +859,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"오늘 아침에 뭐 먹었어요?",
+          "english":"What did you eat for breakfast?"
       }
   },
   {
@@ -1001,8 +1001,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"다시 말해 줄 수 있나요?",
+          "english":"Can you please say that again?"
       }
   },
   {
@@ -1015,8 +1015,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"다른 것을 볼 수 있을까요?",
+          "english":"Can I see a different thing?"
       }
   },
   {
@@ -1058,8 +1058,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"너는 개를 좋아하니?",
+          "english":"Do you like dogs?"
       }
   },
   {
@@ -1073,8 +1073,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"이 아파트의 임대료는 어느 정도의 금액인가요?",
+          "english":"What is an approximate amount of the rent for this apartment?"
       }
   },
   {
@@ -1105,8 +1105,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"지금 제 말 잘 들리나요?",
+          "english":"Can you hear me now?"
       }
   },
   {
@@ -1119,8 +1119,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"이거 네가 다 먹었니?",
+          "english":"Did you eat all of these?"
       }
   },
   {
@@ -1136,7 +1136,7 @@
         
       "example_sentence":{
           "korean":"좀 있다가 제가 다시 전화 드리겠습니다.",
-          "english":"I’ll call you back in little later."
+          "english":"I'll call you back in little later."
       }
   },
   {
@@ -1181,8 +1181,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"너는 저기 있는 간판이 보이니?",
+          "english":"Is that sign visible to you?"
       }
   },
   {
@@ -1195,8 +1195,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"너는 차를 가지고 있니?",
+          "english":"Do you have a car?"
       }
   },
   {
@@ -1208,8 +1208,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"저희와 함께 영화보러 갈래요?",
+          "english":"Would you go to a movie together with us?"
       }
   },
   {
@@ -1275,8 +1275,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"너는 언제부터 요리하는 법을 배우기 시작했니?",
+          "english":"When did you start learning how to cook?"
       }
   },
   {
@@ -1381,8 +1381,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"이게 뭐예요?",
+          "english":"What is this?"
       }
   },
   {
@@ -1465,8 +1465,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"그는 누구예요?",
+          "english":"Who is he?"
       }
   },
   {
@@ -1481,8 +1481,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"2019년도의 판매액과 전년도의 판매액을 비교해 보면 어떠한가요?",
+          "english":"How do sales in 2019 compare to those for the previous year?"
       }
   },
   {
@@ -1636,8 +1636,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"그 여성은 자기 자신에 대해서 무엇이라고 말하고 있나요?",
+          "english":"What does the woman say about herself?"
       }
   },
   {
@@ -1706,8 +1706,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"도로 공사는 언제 시작되나요?",
+          "english":"When will the road works begin?"
       }
   },
   {
@@ -1734,8 +1734,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"어느 음료를 좋아하나요?",
+          "english":"Which drink do you like?"
       }
   },
   {
@@ -1765,8 +1765,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"무엇이라고 말했어요?",
+          "english":"What did you say?"
       }
   },
   {
@@ -1821,8 +1821,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"그거 무슨 문제 있어요?",
+          "english":"What is the problem with that thing?"
       }
   },
   {
@@ -1909,8 +1909,8 @@
       ],
         
       "example_sentence":{
-          "korean":"",
-          "english":""
+          "korean":"저희 가족 구성원들 모두 이 보험에 적용이 되나요?",
+          "english":"Are all the members of my family covered under this policy?"
       }
   },
   {
