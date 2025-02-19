@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Ramsi-K/free-genai-bootcamp-2025/tree/main/projects/lang-portal/backend-go/internal/models"
+	"github.com/Ramsi-K/free-genai-bootcamp-2025/projects/lang-portal/backend-go/internal/models"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -146,6 +146,7 @@ func (h *StudyActivityHandler) Create(c *gin.Context) {
 		Description  string `json:"description"`
 		Type         string `json:"type" binding:"required"`
 		ThumbnailURL string `json:"thumbnail_url"`
+		URL          string `json:"url"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {

@@ -6,7 +6,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Ramsi-K/free-genai-bootcamp-2025/tree/main/projects/lang-portal/backend-go/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -27,18 +26,22 @@ func TestWordHandler(t *testing.T) {
 		// Assert response
 		assert.Equal(t, http.StatusOK, w.Code)
 
-		var response []models.Word
+		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
-		assert.Len(t, response, 2)
+
+		words := response["words"].([]interface{})
+		assert.Len(t, words, 2)
 
 		// Check first word
-		assert.Equal(t, "학교", response[0].Hangul)
-		assert.Equal(t, "hakgyo", response[0].Romanization)
-		assert.Equal(t, []string{"school"}, response[0].English)
-		assert.Equal(t, "noun", response[0].Type)
-		assert.Equal(t, "나는 학교에 갑니다", response[0].ExampleSentence.Korean)
-		assert.Equal(t, "I go to school", response[0].ExampleSentence.English)
+		word := words[0].(map[string]interface{})
+		assert.Equal(t, "학교", word["hangul"])
+		assert.Equal(t, "hakgyo", word["romanization"])
+		assert.Equal(t, []interface{}{"school"}, word["english"])
+		assert.Equal(t, "noun", word["type"])
+		example := word["example"].(map[string]interface{})
+		assert.Equal(t, "나는 학교에 갑니다", example["korean"])
+		assert.Equal(t, "I go to school", example["english"])
 	})
 
 	t.Run("Get", func(t *testing.T) {
@@ -56,17 +59,26 @@ func TestWordHandler(t *testing.T) {
 		// Assert response
 		assert.Equal(t, http.StatusOK, w.Code)
 
-		var response models.Word
-		err = json.Unmarshal(w.Body.Bytes(), &response)
+		var word map[string]interface{}
+		err = json.Unmarshal(w.Body.Bytes(), &word)
 		assert.NoError(t, err)
 
 		// Check word details
-		assert.Equal(t, "학교", response.Hangul)
-		assert.Equal(t, "hakgyo", response.Romanization)
-		assert.Equal(t, []string{"school"}, response.English)
-		assert.Equal(t, "noun", response.Type)
-		assert.Equal(t, "나는 학교에 갑니다", response.ExampleSentence.Korean)
-		assert.Equal(t, "I go to school", response.ExampleSentence.English)
+		assert.Equal(t, "학교", word["hangul"])
+		assert.Equal(t, "hakgyo", word["romanization"])
+		assert.Equal(t, []interface{}{"school"}, word["english"])
+		assert.Equal(t, "noun", word["type"])
+		example := word["example"].(map[string]interface{})
+		assert.Equal(t, "나는 학교에 갑니다", example["korean"])
+		assert.Equal(t, "I go to school", example["english"])
+
+		// Test non-existent word
+		w = performRequest(helper.router, "GET", "/api/words/999", nil)
+		assert.Equal(t, http.StatusNotFound, w.Code)
+
+		// Test invalid ID format
+		w = performRequest(helper.router, "GET", "/api/words/invalid", nil)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
 }
 
@@ -120,12 +132,16 @@ func TestWordHandler_List(t *testing.T) {
 			assert.Equal(t, tt.expectedStatus, w.Code)
 
 			if tt.expectedStatus == http.StatusOK {
-				words, err := parseWordList(w)
+				var response map[string]interface{}
+				err = json.Unmarshal(w.Body.Bytes(), &response)
 				assert.NoError(t, err)
+
+				words := response["words"].([]interface{})
 				assert.Len(t, words, tt.expectedLen)
 
 				if tt.expectedLen > 0 {
-					assert.Equal(t, tt.expectedFirst, words[0]["hangul"])
+					word := words[0].(map[string]interface{})
+					assert.Equal(t, tt.expectedFirst, word["hangul"])
 				}
 			} else if tt.expectedError != "" {
 				response, err := parseResponse(w)
@@ -185,9 +201,10 @@ func TestWordHandler_Get(t *testing.T) {
 
 			if tt.expectedStatus == http.StatusOK {
 				// Parse response
-				response, err := parseResponse(w)
+				var word map[string]interface{}
+				err = json.Unmarshal(w.Body.Bytes(), &word)
 				assert.NoError(t, err)
-				assert.Equal(t, tt.expectedHangul, response["hangul"])
+				assert.Equal(t, tt.expectedHangul, word["hangul"])
 			}
 		})
 	}

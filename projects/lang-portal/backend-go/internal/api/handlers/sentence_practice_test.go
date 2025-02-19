@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Ramsi-K/free-genai-bootcamp-2025/tree/main/projects/lang-portal/backend-go/internal/models"
+	"github.com/Ramsi-K/free-genai-bootcamp-2025/projects/lang-portal/backend-go/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,9 +18,6 @@ func TestSentencePracticeHandler(t *testing.T) {
 		// Seed test data
 		err = helper.seedTestData()
 		require.NoError(t, err)
-
-		handler := NewSentencePracticeHandler(helper.db)
-		helper.router.GET("/api/sentence_practice", handler.GetPracticeSentence)
 
 		// Test successful request
 		w := performRequest(helper.router, "GET", "/api/sentence_practice", nil)
@@ -49,17 +46,26 @@ func TestSentencePracticeHandler(t *testing.T) {
 		err = helper.seedTestData()
 		require.NoError(t, err)
 
-		handler := NewSentencePracticeHandler(helper.db)
-		helper.router.POST("/api/sentence_practice/attempt", handler.SubmitSentenceAttempt)
+		// Get a word ID for testing
+		w := performRequest(helper.router, "GET", "/api/words", nil)
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var response map[string]interface{}
+		err = json.Unmarshal(w.Body.Bytes(), &response)
+		require.NoError(t, err)
+
+		words := response["words"].([]interface{})
+		require.NotEmpty(t, words)
+		word := words[0].(map[string]interface{})
+		wordID := uint(word["id"].(float64))
 
 		// Test correct attempt
-		w := performRequest(helper.router, "POST", "/api/sentence_practice/attempt", map[string]interface{}{
-			"sentence_id":      1,
+		w = performRequest(helper.router, "POST", "/api/sentence_practice/attempt", map[string]interface{}{
+			"sentence_id":      wordID,
 			"user_translation": "나는 학교에 갑니다",
 		})
 		assert.Equal(t, http.StatusOK, w.Code)
 
-		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
 		assert.True(t, response["correct"].(bool))
@@ -68,7 +74,7 @@ func TestSentencePracticeHandler(t *testing.T) {
 
 		// Test incorrect attempt
 		w = performRequest(helper.router, "POST", "/api/sentence_practice/attempt", map[string]interface{}{
-			"sentence_id":      1,
+			"sentence_id":      wordID,
 			"user_translation": "Wrong translation",
 		})
 		assert.Equal(t, http.StatusOK, w.Code)
@@ -78,7 +84,7 @@ func TestSentencePracticeHandler(t *testing.T) {
 		assert.False(t, response["correct"].(bool))
 		assert.Equal(t, "Not quite right. Try again!", response["message"])
 
-		// Test invalid sentence ID
+		// Test non-existent sentence ID
 		w = performRequest(helper.router, "POST", "/api/sentence_practice/attempt", map[string]interface{}{
 			"sentence_id":      999,
 			"user_translation": "Test",
@@ -87,7 +93,7 @@ func TestSentencePracticeHandler(t *testing.T) {
 
 		// Test missing required fields
 		w = performRequest(helper.router, "POST", "/api/sentence_practice/attempt", map[string]interface{}{
-			"sentence_id": 1,
+			"sentence_id": wordID,
 		})
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
@@ -99,9 +105,6 @@ func TestSentencePracticeHandler(t *testing.T) {
 		// Seed test data
 		err = helper.seedTestData()
 		require.NoError(t, err)
-
-		handler := NewSentencePracticeHandler(helper.db)
-		helper.router.GET("/api/sentence_practice/examples", handler.GetSentenceExamples)
 
 		// Test successful request
 		w := performRequest(helper.router, "GET", "/api/sentence_practice/examples?word=학교", nil)
@@ -142,9 +145,6 @@ func TestSentencePracticeHandler(t *testing.T) {
 		err = helper.seedTestData()
 		require.NoError(t, err)
 
-		handler := NewSentencePracticeHandler(helper.db)
-		helper.router.GET("/api/sentence_practice/statistics", handler.GetSentenceStatistics)
-
 		// Test empty statistics
 		w := performRequest(helper.router, "GET", "/api/sentence_practice/statistics", nil)
 		assert.Equal(t, http.StatusOK, w.Code)
@@ -157,20 +157,20 @@ func TestSentencePracticeHandler(t *testing.T) {
 		assert.Equal(t, float64(0), emptyStats["accuracy_rate"])
 
 		// Create some attempts
-		attempt1 := models.SentencePracticeAttempt{
-			WordID:          1,
-			UserTranslation: "나는 학교에 갑니다",
-			Correct:         true,
-		}
-		attempt2 := models.SentencePracticeAttempt{
-			WordID:          1,
-			UserTranslation: "Wrong translation",
-			Correct:         false,
+		attempts := []models.SentencePracticeAttempt{
+			{
+				WordID:          1,
+				UserTranslation: "나는 학교에 갑니다",
+				Correct:         true,
+			},
+			{
+				WordID:          1,
+				UserTranslation: "Wrong translation",
+				Correct:         false,
+			},
 		}
 
-		err = helper.db.Create(&attempt1).Error
-		require.NoError(t, err)
-		err = helper.db.Create(&attempt2).Error
+		err = helper.db.Create(&attempts).Error
 		require.NoError(t, err)
 
 		// Test statistics with data

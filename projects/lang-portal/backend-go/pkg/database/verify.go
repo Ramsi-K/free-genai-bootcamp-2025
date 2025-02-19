@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/Ramsi-K/free-genai-bootcamp-2025/tree/main/projects/lang-portal/backend-go/internal/models"
+	"github.com/Ramsi-K/free-genai-bootcamp-2025/projects/lang-portal/backend-go/internal/models"
 
 	"gorm.io/gorm"
 )

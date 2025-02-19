@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/Ramsi-K/free-genai-bootcamp-2025/tree/main/projects/lang-portal/backend-go/pkg/database"
+	"github.com/Ramsi-K/free-genai-bootcamp-2025/projects/lang-portal/backend-go/pkg/database"
 )
 
 func main() {

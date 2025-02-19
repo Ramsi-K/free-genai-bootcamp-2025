@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/Ramsi-K/free-genai-bootcamp-2025/tree/main/projects/lang-portal/backend-go/internal/models"
+	"github.com/Ramsi-K/free-genai-bootcamp-2025/projects/lang-portal/backend-go/internal/models"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -42,7 +42,6 @@ func (h *SettingsHandler) FullReset(c *gin.Context) {
 		&models.WordReview{},
 		&models.StudySession{},
 		&models.StudyActivity{},
-		&models.WordsGroups{},
 		&models.Word{},
 		&models.Group{},
 		&models.SentencePracticeAttempt{},
@@ -55,7 +54,6 @@ func (h *SettingsHandler) FullReset(c *gin.Context) {
 	if err := h.db.AutoMigrate(
 		&models.Word{},
 		&models.Group{},
-		&models.WordsGroups{},
 		&models.StudyActivity{},
 		&models.StudySession{},
 		&models.WordReview{},

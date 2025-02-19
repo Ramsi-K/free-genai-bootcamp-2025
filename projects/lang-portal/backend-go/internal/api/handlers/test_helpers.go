@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Ramsi-K/free-genai-bootcamp-2025/tree/main/projects/lang-portal/backend-go/internal/models"
+	"github.com/Ramsi-K/free-genai-bootcamp-2025/projects/lang-portal/backend-go/internal/models"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -20,20 +20,16 @@ type testHelper struct {
 }
 
 func newTestHelper(t *testing.T) (*testHelper, error) {
-	db, err := setupTestDB(t, nil)
+	db, err := setupTestDB(t)
 	if err != nil {
 		return nil, err
 	}
 
 	router := setupTestRouter(db)
-	th := &testHelper{db: db, router: router}
-	if err := th.seedTestData(); err != nil {
-		return nil, err
-	}
-	return th, nil
+	return &testHelper{db: db, router: router}, nil
 }
 
-func setupTestDB(t *testing.T, seedWords []models.Word) (*gorm.DB, error) {
+func setupTestDB(t *testing.T) (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
 	})
@@ -48,7 +44,6 @@ func setupTestDB(t *testing.T, seedWords []models.Word) (*gorm.DB, error) {
 		&models.StudyActivity{},
 		&models.StudySession{},
 		&models.WordReview{},
-		&models.WordsGroups{},
 		&models.SentencePracticeAttempt{},
 	)
 	if err != nil {
@@ -69,7 +64,6 @@ func getTestWords() []models.Word {
 				Korean:  "나는 학교에 갑니다",
 				English: "I go to school",
 			},
-			WordGroups: []string{"School", "Education"},
 		},
 		{
 			Hangul:       "사과",
@@ -80,8 +74,15 @@ func getTestWords() []models.Word {
 				Korean:  "사과를 먹습니다",
 				English: "I eat an apple",
 			},
-			WordGroups: []string{"Food", "Fruits"},
 		},
+	}
+}
+
+func getTestGroups() []models.Group {
+	return []models.Group{
+		{Name: "School", WordsCount: 1},
+		{Name: "Food", WordsCount: 1},
+		{Name: "Basic Words", WordsCount: 2},
 	}
 }
 
@@ -100,6 +101,12 @@ func setupTestRouter(db *gorm.DB) *gin.Engine {
 	// Register routes
 	api := r.Group("/api")
 	{
+		// Dashboard routes
+		api.GET("/dashboard", dashboardHandler.GetDashboard)
+		api.GET("/dashboard/last_study_session", dashboardHandler.GetLastStudySession)
+		api.GET("/dashboard/study_progress", dashboardHandler.GetStudyProgress)
+		api.GET("/dashboard/quick_stats", dashboardHandler.GetQuickStats)
+
 		// Word routes
 		api.GET("/words", wordHandler.List)
 		api.GET("/words/:id", wordHandler.Get)
@@ -111,22 +118,20 @@ func setupTestRouter(db *gorm.DB) *gin.Engine {
 		api.GET("/groups/:id/study_sessions", groupHandler.GetStudySessions)
 
 		// Study activity routes
-		api.GET("/study-activities", studyActivityHandler.List)
-		api.GET("/study-activities/:id", studyActivityHandler.Get)
-		api.POST("/study-activities/:id/launch", studyActivityHandler.Launch)
-
-		// Dashboard route
-		api.GET("/dashboard", dashboardHandler.GetDashboard)
+		api.GET("/study_activities", studyActivityHandler.List)
+		api.GET("/study_activities/:id", studyActivityHandler.Get)
+		api.GET("/study_activities/:id/study_sessions", studyActivityHandler.GetSessions)
+		api.POST("/study_activities/:id/launch", studyActivityHandler.Launch)
 
 		// Settings routes
-		api.POST("/settings/reset-history", settingsHandler.ResetHistory)
-		api.POST("/settings/full-reset", settingsHandler.FullReset)
+		api.POST("/settings/reset_history", settingsHandler.ResetHistory)
+		api.POST("/settings/full_reset", settingsHandler.FullReset)
 
 		// Sentence practice routes
-		api.GET("/sentence-practice", sentencePracticeHandler.GetPracticeSentence)
-		api.POST("/sentence-practice/attempt", sentencePracticeHandler.SubmitSentenceAttempt)
-		api.GET("/sentence-practice/examples", sentencePracticeHandler.GetSentenceExamples)
-		api.GET("/sentence-practice/statistics", sentencePracticeHandler.GetSentenceStatistics)
+		api.GET("/sentence_practice", sentencePracticeHandler.GetPracticeSentence)
+		api.POST("/sentence_practice/attempt", sentencePracticeHandler.SubmitSentenceAttempt)
+		api.GET("/sentence_practice/examples", sentencePracticeHandler.GetSentenceExamples)
+		api.GET("/sentence_practice/statistics", sentencePracticeHandler.GetSentenceStatistics)
 	}
 
 	return r
@@ -164,10 +169,6 @@ func (h *testHelper) seedTestData() error {
 	}
 
 	// Clean up tables to prevent duplicate seed data using Unscoped() to permanently delete rows
-	if err := tx.Session(&gorm.Session{AllowGlobalUpdate: true}).Unscoped().Delete(&models.WordsGroups{}).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
 	if err := tx.Session(&gorm.Session{AllowGlobalUpdate: true}).Unscoped().Delete(&models.Word{}).Error; err != nil {
 		tx.Rollback()
 		return err
@@ -189,63 +190,25 @@ func (h *testHelper) seedTestData() error {
 		return err
 	}
 
-	// Seed test words using FirstOrCreate to avoid duplicates
-	words := []models.Word{
-		{
-			Hangul:       "학교",
-			Romanization: "hakgyo",
-			English:      []string{"school"},
-			Type:         "noun",
-			ExampleSentence: models.Example{
-				Korean:  "나는 학교에 갑니다",
-				English: "I go to school",
-			},
-		},
-		{
-			Hangul:       "사과",
-			Romanization: "sagwa",
-			English:      []string{"apple"},
-			Type:         "noun",
-			ExampleSentence: models.Example{
-				Korean:  "사과를 먹습니다",
-				English: "I eat an apple",
-			},
-		},
-	}
-
+	// Create test words
+	words := getTestWords()
 	for _, word := range words {
-		var existing models.Word
-		if err := tx.Where("hangul = ? AND romanization = ?", word.Hangul, word.Romanization).
-			First(&existing).Error; err == gorm.ErrRecordNotFound {
-			if err := tx.Create(&word).Error; err != nil {
-				tx.Rollback()
-				return err
-			}
+		if err := tx.Create(&word).Error; err != nil {
+			tx.Rollback()
+			return err
 		}
 	}
 
-	// Seed test groups using FirstOrCreate to avoid duplicates
-	type groupData struct {
-		Name       string
-		WordsCount int
-	}
-	groupsData := []groupData{
-		{"School-related Words", 2},
-		{"Basic Words", 0},
-	}
-
-	for _, gd := range groupsData {
-		var group models.Group
-		if err := tx.Where("name = ?", gd.Name).First(&group).Error; err == gorm.ErrRecordNotFound {
-			group = models.Group{Name: gd.Name, WordsCount: gd.WordsCount}
-			if err := tx.Create(&group).Error; err != nil {
-				tx.Rollback()
-				return err
-			}
+	// Create test groups
+	groups := getTestGroups()
+	for _, group := range groups {
+		if err := tx.Create(&group).Error; err != nil {
+			tx.Rollback()
+			return err
 		}
 	}
 
-	// Seed test study activities using FirstOrCreate
+	// Create test study activities
 	activities := []models.StudyActivity{
 		{
 			Name:         "Flashcards",
@@ -255,30 +218,24 @@ func (h *testHelper) seedTestData() error {
 		},
 		{
 			Name:         "Multiple Choice",
-			Description:  "Practice with multiple choice questions",
+			Description:  "Test your knowledge with multiple choice questions",
 			Type:         "multiple_choice",
-			ThumbnailURL: "/images/multiple-choice.png",
+			ThumbnailURL: "/images/multiple_choice.png",
+		},
+		{
+			Name:         "Sentence Practice",
+			Description:  "Practice using words in sentences",
+			Type:         "sentence_practice",
+			ThumbnailURL: "/images/sentence_practice.png",
 		},
 	}
 
 	for _, activity := range activities {
-		var existAct models.StudyActivity
-		if err := tx.Where("name = ?", activity.Name).First(&existAct).Error; err == gorm.ErrRecordNotFound {
-			if err := tx.Create(&activity).Error; err != nil {
-				tx.Rollback()
-				return err
-			}
+		if err := tx.Create(&activity).Error; err != nil {
+			tx.Rollback()
+			return err
 		}
 	}
 
-	// Link words to group using INSERT OR IGNORE
-	if err := tx.Exec("INSERT OR IGNORE INTO words_groups (word_id, group_id) VALUES (1, 1), (2, 1)").Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	// Removed seeding of test study session to allow tests to create their own study sessions
-
-	// Commit transaction
 	return tx.Commit().Error
 }

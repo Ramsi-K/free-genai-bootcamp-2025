@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Ramsi-K/free-genai-bootcamp-2025/tree/main/projects/lang-portal/backend-go/internal/models"
+	"github.com/Ramsi-K/free-genai-bootcamp-2025/projects/lang-portal/backend-go/internal/models"
 
 	_ "github.com/mattn/go-sqlite3" // SQLite driver
 	"gorm.io/driver/sqlite"
@@ -65,7 +65,6 @@ func MigrateDB(db *gorm.DB) error {
 		&models.StudySession{},
 		&models.StudyActivity{},
 		&models.WordReview{},
-		&models.WordsGroups{},
 		&models.SentencePracticeAttempt{},
 	); err != nil {
 		return fmt.Errorf("failed to migrate database: %v", err)
@@ -83,7 +82,6 @@ func VerifyDB(db *gorm.DB) error {
 		"study_sessions",
 		"study_activities",
 		"word_reviews",
-		"words_groups",
 		"sentence_practice_attempts",
 	}
 

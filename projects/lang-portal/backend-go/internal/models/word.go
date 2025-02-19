@@ -7,21 +7,13 @@ import (
 	"gorm.io/gorm"
 )
 
-// Join table for many-to-many relationship
-type WordsGroups struct {
-	WordID  uint `gorm:"primaryKey"`
-	GroupID uint `gorm:"primaryKey"`
-}
-
 type Word struct {
-	gorm.Model                   // Adds ID, CreatedAt, UpdatedAt, DeletedAt
+	gorm.Model
 	Hangul          string       `gorm:"not null" json:"hangul"`
 	Romanization    string       `gorm:"not null" json:"romanization"`
 	English         []string     `gorm:"serializer:json;not null" json:"english"`
 	Type            string       `gorm:"not null" json:"type"`
-	WordGroups      []string     `gorm:"-" json:"word_groups"` // Transient field for group names
 	ExampleSentence Example      `gorm:"embedded" json:"example"`
-	Groups          []Group      `gorm:"many2many:words_groups;" json:"word_groups,omitempty"`
 	Reviews         []WordReview `gorm:"foreignKey:WordID" json:"-"`
 }
 
@@ -34,16 +26,7 @@ type Group struct {
 	gorm.Model
 	Name       string         `gorm:"not null" json:"group_name"`
 	WordsCount int            `gorm:"default:0" json:"word_count"`
-	Words      []Word         `gorm:"many2many:words_groups;" json:"words,omitempty"`
 	Sessions   []StudySession `gorm:"foreignKey:GroupID" json:"-"`
-}
-
-// BeforeSave hook to update WordsCount
-func (g *Group) BeforeSave(tx *gorm.DB) error {
-	if len(g.Words) > 0 {
-		g.WordsCount = len(g.Words)
-	}
-	return nil
 }
 
 // MarshalJSON implements custom JSON marshaling for Group
@@ -92,6 +75,7 @@ type StudyActivity struct {
 	Description  string         `json:"description"`
 	ThumbnailURL string         `json:"thumbnail_url"`
 	Type         string         `gorm:"not null" json:"type"`
+	URL          string         `json:"url"`
 	Sessions     []StudySession `gorm:"foreignKey:StudyActivityID" json:"-"`
 }
 
@@ -120,7 +104,7 @@ func (w *Word) StudyStatistics() map[string]int {
 	}
 }
 
-// MarshalJSON implements custom JSON marshaling
+// MarshalJSON implements custom JSON marshaling for Word
 func (w *Word) MarshalJSON() ([]byte, error) {
 	type Alias Word
 	stats := w.StudyStatistics()
