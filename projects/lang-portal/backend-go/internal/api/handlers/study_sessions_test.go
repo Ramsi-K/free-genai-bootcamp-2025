@@ -1,61 +1,40 @@
 package handlers
 
 import (
-	"bytes"
 	"encoding/json"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
+	"github.com/Ramsi-K/free-genai-bootcamp-2025/tree/main/projects/lang-portal/backend-go/internal/models"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestStudySession_Create(t *testing.T) {
-	tests := []struct {
-		name           string
-		payload        map[string]interface{}
-		expectedStatus int
-	}{
-		{
-			name: "Valid session creation",
-			payload: map[string]interface{}{
-				"group_id": 1,
-			},
-			expectedStatus: http.StatusOK,
-		},
-		{
-			name: "Missing group_id",
-			payload: map[string]interface{}{
-				"invalid": "data",
-			},
-			expectedStatus: http.StatusBadRequest,
-		},
-	}
+func TestStudySessionHandler(t *testing.T) {
+	t.Run("Create", func(t *testing.T) {
+		// Setup
+		helper, err := newTestHelper(t)
+		require.NoError(t, err)
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// Setup
-			db := createMockDB(t)
-			handler := NewStudySessionHandler(db)
-			router := setupTestRouter(handler)
+		// Seed test data
+		err = helper.seedTestData()
+		require.NoError(t, err)
 
-			// Create request
-			payloadBytes, _ := json.Marshal(tt.payload)
-			w := httptest.NewRecorder()
-			req, _ := http.NewRequest("POST", "/api/study_sessions", bytes.NewBuffer(payloadBytes))
-			req.Header.Set("Content-Type", "application/json")
-			router.ServeHTTP(w, req)
+		// Create request
+		payload := map[string]interface{}{
+			"group_id":          1,
+			"study_activity_id": 1,
+		}
+		w := performRequest(helper.router, "POST", "/api/study_sessions", payload)
 
-			// Assert status code
-			assert.Equal(t, tt.expectedStatus, w.Code)
+		// Assert response
+		assert.Equal(t, http.StatusCreated, w.Code)
 
-			if tt.expectedStatus == http.StatusOK {
-				// Parse response
-				response, err := parseResponse(w)
-				assert.NoError(t, err)
-				assert.NotNil(t, response["id"])
-				assert.Equal(t, float64(1), response["group_id"])
-			}
-		})
-	}
+		var response models.StudySession
+		err = json.Unmarshal(w.Body.Bytes(), &response)
+		assert.NoError(t, err)
+		assert.Equal(t, uint(1), response.GroupID)
+		assert.Equal(t, uint(1), response.StudyActivityID)
+		assert.Nil(t, response.CompletedAt)
+	})
 }

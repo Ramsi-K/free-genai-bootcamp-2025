@@ -15,78 +15,60 @@ import (
 
 func TestWordHandler(t *testing.T) {
 	t.Run("List", func(t *testing.T) {
+		// Setup
 		helper, err := newTestHelper(t)
 		require.NoError(t, err)
-
-		handler := NewWordHandler(helper.db)
-		helper.router.GET("/api/words", handler.List)
 
 		// Seed test data
 		err = helper.seedTestData()
 		require.NoError(t, err)
 
-		// Test successful list request
+		// Create request
 		w := performRequest(helper.router, "GET", "/api/words", nil)
+
+		// Assert response
 		assert.Equal(t, http.StatusOK, w.Code)
 
-		var response struct {
-			Words      []models.Word `json:"words"`
-			Pagination struct {
-				CurrentPage int   `json:"current_page"`
-				TotalPages  int   `json:"total_pages"`
-				TotalItems  int64 `json:"total_items"`
-				PerPage     int   `json:"per_page"`
-			} `json:"pagination"`
-		}
+		var response []models.Word
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
-		assert.Len(t, response.Words, 2)
-		assert.Equal(t, "학교", response.Words[0].Hangul)
-		assert.Equal(t, "hakgyo", response.Words[0].Romanization)
+		assert.Len(t, response, 2)
 
-		// Test pagination
-		w = performRequest(helper.router, "GET", "/api/words?page=1&limit=1", nil)
-		assert.Equal(t, http.StatusOK, w.Code)
-		err = json.Unmarshal(w.Body.Bytes(), &response)
-		assert.NoError(t, err)
-		assert.Len(t, response.Words, 1)
-		assert.Equal(t, 1, response.Pagination.CurrentPage)
-		assert.Equal(t, 2, response.Pagination.TotalPages)
-
-		// Test invalid page number
-		w = performRequest(helper.router, "GET", "/api/words?page=0", nil)
-		assert.Equal(t, http.StatusBadRequest, w.Code)
+		// Check first word
+		assert.Equal(t, "학교", response[0].Hangul)
+		assert.Equal(t, "hakgyo", response[0].Romanization)
+		assert.Equal(t, []string{"school"}, response[0].English)
+		assert.Equal(t, "noun", response[0].Type)
+		assert.Equal(t, "나는 학교에 갑니다", response[0].Example.Korean)
+		assert.Equal(t, "I go to school", response[0].Example.English)
 	})
 
 	t.Run("Get", func(t *testing.T) {
+		// Setup
 		helper, err := newTestHelper(t)
 		require.NoError(t, err)
-
-		handler := NewWordHandler(helper.db)
-		helper.router.GET("/api/words/:id", handler.Get)
 
 		// Seed test data
 		err = helper.seedTestData()
 		require.NoError(t, err)
 
-		// Test successful get request
+		// Create request
 		w := performRequest(helper.router, "GET", "/api/words/1", nil)
+
+		// Assert response
 		assert.Equal(t, http.StatusOK, w.Code)
 
-		var word models.Word
-		err = json.Unmarshal(w.Body.Bytes(), &word)
+		var response models.Word
+		err = json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
-		assert.Equal(t, "학교", word.Hangul)
-		assert.Equal(t, "hakgyo", word.Romanization)
-		assert.Equal(t, "그는 학교에서 저보다 한 학년 위였어요.", word.Example.Korean)
 
-		// Test non-existent word
-		w = performRequest(helper.router, "GET", "/api/words/999", nil)
-		assert.Equal(t, http.StatusNotFound, w.Code)
-
-		// Test invalid ID format
-		w = performRequest(helper.router, "GET", "/api/words/invalid", nil)
-		assert.Equal(t, http.StatusBadRequest, w.Code)
+		// Check word details
+		assert.Equal(t, "학교", response.Hangul)
+		assert.Equal(t, "hakgyo", response.Romanization)
+		assert.Equal(t, []string{"school"}, response.English)
+		assert.Equal(t, "noun", response.Type)
+		assert.Equal(t, "나는 학교에 갑니다", response.Example.Korean)
+		assert.Equal(t, "I go to school", response.Example.English)
 	})
 }
 

@@ -51,12 +51,14 @@ func LoadSeedData(db *gorm.DB) error {
 	// Insert words
 	for _, wordData := range words {
 		word := models.Word{
-			Hangul:         wordData.Hangul,
-			Romanization:   wordData.Romanization,
-			English:        wordData.English,
-			Type:           wordData.Type,
-			ExampleKorean:  wordData.Example.Korean,
-			ExampleEnglish: wordData.Example.English,
+			Hangul:       wordData.Hangul,
+			Romanization: wordData.Romanization,
+			English:      wordData.English,
+			Type:         wordData.Type,
+			Example: models.Example{
+				Korean:  wordData.Example.Korean,
+				English: wordData.Example.English,
+			},
 		}
 
 		if err := tx.Create(&word).Error; err != nil {
@@ -81,6 +83,66 @@ func LoadSeedData(db *gorm.DB) error {
 	// Commit transaction
 	if err := tx.Commit().Error; err != nil {
 		return fmt.Errorf("failed to commit transaction: %v", err)
+	}
+
+	return nil
+}
+
+// SeedWords loads words from a JSON file and inserts them into the database
+func SeedWords(db *gorm.DB, filePath string) error {
+	// Read JSON file
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return err
+	}
+
+	// Parse JSON into slice of Word structs
+	var words []models.Word
+	if err := json.Unmarshal(data, &words); err != nil {
+		return err
+	}
+
+	// Insert words into database
+	for _, word := range words {
+		if err := db.Create(&word).Error; err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// SeedTestData inserts test data into the database
+func SeedTestData(db *gorm.DB) error {
+	// Create test words
+	words := []models.Word{
+		{
+			Hangul:       "학교",
+			Romanization: "hakgyo",
+			English:      []string{"school"},
+			Type:         "noun",
+			Example: models.Example{
+				Korean:  "나는 학교에 갑니다",
+				English: "I go to school",
+			},
+		},
+		{
+			Hangul:       "사과",
+			Romanization: "sagwa",
+			English:      []string{"apple"},
+			Type:         "noun",
+			Example: models.Example{
+				Korean:  "사과를 먹습니다",
+				English: "I eat an apple",
+			},
+		},
+	}
+
+	// Insert words into database
+	for _, word := range words {
+		if err := db.Create(&word).Error; err != nil {
+			return err
+		}
 	}
 
 	return nil
