@@ -1619,7 +1619,7 @@
       "english":[
           "school"
       ],
-       "word_groups" : [],
+       "word_groups" : ["School"],
       "example_sentence":{
           "korean":"그는 학교에서 저보다 한 학년 위였어요.",
           "english":"He was a year ahead of me in school."
@@ -5895,7 +5895,7 @@
           "to learn",
           "study"
       ],
-       "word_groups" : [],
+       "word_groups" : ["School"],
       "example_sentence":{
           "korean":"저는 매일 새로운 기술에 대해 더 많이 배우고 있습니다.",
           "english":"I learn more about new technology every day."

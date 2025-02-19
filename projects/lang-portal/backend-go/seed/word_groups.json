@@ -1,15 +1,532 @@
 {
   "groups": {
+    "Body Parts": {
+      "description": "Words for human body parts",
+      "words": [
+        {
+          "hangul": "얼굴",
+          "romanization": "eolgul",
+          "english": ["face"]
+        },
+        {
+          "hangul": "눈",
+          "romanization": "nun",
+          "english": ["eye"]
+        },
+        {
+          "hangul": "귀",
+          "romanization": "gwi",
+          "english": ["ear"]
+        },
+        {
+          "hangul": "코",
+          "romanization": "ko",
+          "english": ["nose"]
+        },
+        {
+          "hangul": "입",
+          "romanization": "ip",
+          "english": ["mouth"]
+        },
+        {
+          "hangul": "이",
+          "romanization": "i",
+          "english": ["teeth"]
+        },
+        {
+          "hangul": "목",
+          "romanization": "mok",
+          "english": ["neck"]
+        },
+        {
+          "hangul": "머리(카락)",
+          "romanization": "meori(karak)",
+          "english": ["hair"]
+        },
+        {
+          "hangul": "팔",
+          "romanization": "pal",
+          "english": ["arm"]
+        },
+        {
+          "hangul": "손",
+          "romanization": "son",
+          "english": ["hand"]
+        },
+        {
+          "hangul": "손가락",
+          "romanization": "songarak",
+          "english": ["fingers"]
+        },
+        {
+          "hangul": "발",
+          "romanization": "bal",
+          "english": ["foot"]
+        },
+        {
+          "hangul": "다리",
+          "romanization": "dari",
+          "english": ["leg"]
+        },
+        {
+          "hangul": "무릎",
+          "romanization": "mureup",
+          "english": ["knee"]
+        },
+        {
+          "hangul": "배",
+          "romanization": "bae",
+          "english": ["stomach"]
+        },
+        {
+          "hangul": "등",
+          "romanization": "deung",
+          "english": ["back"]
+        },
+        {
+          "hangul": "엉덩이",
+          "romanization": "eongdeongi",
+          "english": ["buttocks"]
+        },
+        {
+          "hangul": "몸",
+          "romanization": "mom",
+          "english": ["body"]
+        },
+        {
+          "hangul": "머리",
+          "romanization": "meori",
+          "english": ["head"]
+        },
+        {
+          "hangul": "목구멍",
+          "romanization": "mokgumeong",
+          "english": ["throat"]
+        },
+        {
+          "hangul": "볼",
+          "romanization": "bol",
+          "english": ["cheeks"]
+        },
+        {
+          "hangul": "가슴",
+          "romanization": "gaseum",
+          "english": ["chest"]
+        },
+        {
+          "hangul": "팔꿈치",
+          "romanization": "palkkumchi",
+          "english": ["elbow"]
+        },
+        {
+          "hangul": "발가락",
+          "romanization": "balgarak",
+          "english": ["toes"]
+        },
+        {
+          "hangul": "허리",
+          "romanization": "heori",
+          "english": ["waist"]
+        },
+        {
+          "hangul": "혀",
+          "romanization": "hyeo",
+          "english": ["tongue"]
+        },
+        {
+          "hangul": "턱",
+          "romanization": "teok",
+          "english": ["chin"]
+        },
+        {
+          "hangul": "발목",
+          "romanization": "balmok",
+          "english": ["ankle"]
+        }
+      ]
+        
+  },
+  
+  
+    "Days & Dates": {
+      "description": "Words for days of the week and related temporal references",
+      "words": [
+        {
+          "hangul": "일요일",
+          "romanization": "il-yoil",
+          "english": ["Sunday"]
+        },
+        {
+          "hangul": "월요일",
+          "romanization": "wol-yoil",
+          "english": ["Monday"]
+        },
+        {
+          "hangul": "화요일",
+          "romanization": "hwa-yoil",
+          "english": ["Tuesday"]
+        },
+        {
+          "hangul": "수요일",
+          "romanization": "su-yoil",
+          "english": ["Wednesday"]
+        },
+        {
+          "hangul": "목요일",
+          "romanization": "mog-yoil",
+          "english": ["Thursday"]
+        },
+        {
+          "hangul": "금요일",
+          "romanization": "geum-yoil",
+          "english": ["Friday"]
+        },
+        {
+          "hangul": "토요일",
+          "romanization": "to-yoil",
+          "english": ["Saturday"]
+        },
+        {
+          "hangul": "어제",
+          "romanization": "eoje",
+          "english": ["yesterday"]
+        },
+        {
+          "hangul": "오늘",
+          "romanization": "oneul",
+          "english": ["today"]
+        },
+        {
+          "hangul": "내일",
+          "romanization": "naeil",
+          "english": ["tomorrow"]
+        },
+        {
+          "hangul": "모레",
+          "romanization": "more",
+          "english": ["day after tomorrow"]
+        }
+      ]
+    
+  },
+
+  
+    "Idioms & Proverbs": {
+      "description": "Traditional Korean idioms, proverbs, and four-character expressions",
+      "words": [
+        {
+          "hangul": "인지상정",
+          "romanization": "in-ji-sang-jeong",
+          "english": ["a feeling that everyone feels"]
+        },
+        {
+          "hangul": "천군만마",
+          "romanization": "cheon-gun-man-ma",
+          "english": ["a great help, huge support (lit. 1K soldiers, 10K horses)"]
+        },
+        {
+          "hangul": "꼬리가 길면 밟힌다",
+          "romanization": "kkoriga gil-myeon balpinda",
+          "english": ["a long tail will tread on you"]
+        },
+        {
+          "hangul": "빛 좋은개살구",
+          "romanization": "bit joeun gae-sal-gu",
+          "english": ["all that glitters is not gold"]
+        },
+        {
+          "hangul": "오비이락",
+          "romanization": "o-bi-i-rak",
+          "english": ["arousing suspicion"]
+        },
+        {
+          "hangul": "울며겨자먹기",
+          "romanization": "ul-myeo-gyeoja-meokgi",
+          "english": ["bite the bullet; eat mustard while crying"]
+        },
+        {
+          "hangul": "밑도끝도없이",
+          "romanization": "mit-do-kkeut-do-eop-si",
+          "english": ["continuously (without end)"]
+        },
+        {
+          "hangul": "백해무익",
+          "romanization": "baek-hae-mu-ik",
+          "english": ["does more harm than good"]
+        },
+        {
+          "hangul": "이열치열",
+          "romanization": "i-yeol-chi-yeol",
+          "english": ["fight fire with fire"]
+        },
+        {
+          "hangul": "금상첨화",
+          "romanization": "geum-sang-cheom-hwa",
+          "english": ["icing on the cake (flowers on silk)"]
+        },
+        {
+          "hangul": "동문서답",
+          "romanization": "dong-mun-seo-dap",
+          "english": ["irrelevant or non-sequitur answer"]
+        },
+        {
+          "hangul": "밑 빠진 독에 물 붓기",
+          "romanization": "mit-ppajin dog-e mul butgi",
+          "english": ["to make matters worse (pour water into a bottomless pit)"]
+        },
+        {
+          "hangul": "동병상련",
+          "romanization": "dong-byeong-sang-ryeon",
+          "english": ["misery loves company; sufferers sympathize with each other"]
+        },
+        {
+          "hangul": "상부상조",
+          "romanization": "sang-bu-sang-jo",
+          "english": ["mutually beneficial (win-win situation)"]
+        },
+        {
+          "hangul": "우물안개구리",
+          "romanization": "u-mul-an-gae-gu-ri",
+          "english": ["narrowminded view (frog in a well)"]
+        },
+        {
+          "hangul": "일대일로",
+          "romanization": "il-dae-il-lo",
+          "english": ["New Silk Road Project (One Belt One Road Initiative)"]
+        },
+        {
+          "hangul": "속수무책",
+          "romanization": "sok-su-mu-chaek",
+          "english": ["to be helpless (hands are tied)"]
+        },
+        {
+          "hangul": "망연자실",
+          "romanization": "mang-yeon-ja-sil",
+          "english": ["to be shocked (dazed, stunned)"]
+        },
+        {
+          "hangul": "설상가상",
+          "romanization": "seol-sang-ga-sang",
+          "english": ["to make matters worse (add frost on top of snow)"]
+        },
+        {
+          "hangul": "만장일치",
+          "romanization": "man-jang-il-chi",
+          "english": ["unanimous agreement"]
+        },
+        {
+          "hangul": "마이동풍",
+          "romanization": "ma-i-dong-pung",
+          "english": [
+            "utter indifference",
+            "pouring water on a duck's back",
+            "praying to deaf ears"
+          ]
+        },
+        {
+          "hangul": "새발의 피",
+          "romanization": "sae-bal-e pi",
+          "english": [
+            "practically nothing",
+            "a mere smidgen (lit. blood from a bird's foot)"
+          ]
+        }
+      ]
+    
+  },
     "Telling the Time": {
       "description": "Words related to time, schedules, and temporal concepts",
       "words": [
-        {
-          "hangul": "시간",
-          "romanization": "sigan",
-          "english": ["time", "hour"]
-        }
-      ]
+              {
+                "hangul": "어제",
+                "romanization": "eoje",
+                "english": ["yesterday"]
+              },
+              {
+                "hangul": "오늘",
+                "romanization": "oneul",
+                "english": ["today"]
+              },
+              {
+                "hangul": "내일",
+                "romanization": "naeil",
+                "english": ["tomorrow"]
+              },
+              {
+                "hangul": "모레",
+                "romanization": "more",
+                "english": ["day after tomorrow"]
+              },
+              {
+                "hangul": "평일",
+                "romanization": "pyeongil",
+                "english": ["weekday"]
+              },
+              {
+                "hangul": "매주",
+                "romanization": "maeju",
+                "english": ["every week"]
+              },
+              {
+                "hangul": "매달",
+                "romanization": "maedal",
+                "english": ["every month"]
+              },
+              {
+                "hangul": "매년",
+                "romanization": "maenyeon",
+                "english": ["every year"]
+              },
+              {
+                "hangul": "요즘",
+                "romanization": "yojeum",
+                "english": ["these days"]
+              },
+              {
+                "hangul": "최근에",
+                "romanization": "choegeune",
+                "english": ["recently"]
+              },
+              {
+                "hangul": "항상",
+                "romanization": "hangsang",
+                "english": ["always"]
+              },
+              {
+                "hangul": "자주",
+                "romanization": "jaju",
+                "english": ["often"]
+              },
+              {
+                "hangul": "가끔",
+                "romanization": "gakgeum",
+                "english": ["sometimes"]
+              },
+              {
+                "hangul": "아까",
+                "romanization": "akka",
+                "english": ["a while ago"]
+              },
+              {
+                "hangul": "이따가",
+                "romanization": "itaga",
+                "english": ["a little later"]
+              },
+              {
+                "hangul": "지난주",
+                "romanization": "jinanju",
+                "english": ["last week"]
+              },
+              {
+                "hangul": "이번주",
+                "romanization": "ibonju",
+                "english": ["this week"]
+              },
+              {
+                "hangul": "다음주",
+                "romanization": "daeumju",
+                "english": ["next week"]
+              },
+              {
+                "hangul": "지난달",
+                "romanization": "jinandal",
+                "english": ["last month"]
+              },
+              {
+                "hangul": "이번달",
+                "romanization": "ibondal",
+                "english": ["this month"]
+              },
+              {
+                "hangul": "다음달",
+                "romanization": "daeumdal",
+                "english": ["next month"]
+              },
+              {
+                "hangul": "작년",
+                "romanization": "jagnyeon",
+                "english": ["last year"]
+              },
+              {
+                "hangul": "올해",
+                "romanization": "olhae",
+                "english": ["this year"]
+              },
+              {
+                "hangul": "내년",
+                "romanization": "naenyeon",
+                "english": ["next year"]
+              }
+            ]   
     },
+      "Months of the Year": {
+        "description": "Korean words for the 12 months of the year",
+        "words": [
+          {
+            "hangul": "일월",
+            "romanization": "irwol",
+            "english": ["January"]
+          },
+          {
+            "hangul": "이월",
+            "romanization": "iwol",
+            "english": ["February"]
+          },
+          {
+            "hangul": "삼월",
+            "romanization": "samwol",
+            "english": ["March"]
+          },
+          {
+            "hangul": "사월",
+            "romanization": "sawol",
+            "english": ["April"]
+          },
+          {
+            "hangul": "오월",
+            "romanization": "owol",
+            "english": ["May"]
+          },
+          {
+            "hangul": "유월",
+            "romanization": "yuwol",
+            "english": ["June"]
+          },
+          {
+            "hangul": "칠월",
+            "romanization": "chirwol",
+            "english": ["July"]
+          },
+          {
+            "hangul": "팔월",
+            "romanization": "parwol",
+            "english": ["August"]
+          },
+          {
+            "hangul": "구월",
+            "romanization": "guwol",
+            "english": ["September"]
+          },
+          {
+            "hangul": "시월",
+            "romanization": "siwol",
+            "english": ["October"]
+          },
+          {
+            "hangul": "십일월",
+            "romanization": "sibilwol",
+            "english": ["November"]
+          },
+          {
+            "hangul": "십이월",
+            "romanization": "sibiwol",
+            "english": ["December"]
+          }
+        ]
+   
+    },
+    
+    
     "Numbers": {
       "description": "Numerical terms and counting words",
       "words": [
@@ -42,6 +559,7 @@
         }
       ]
     },
+
     "School": {
       "description": "Educational terms and academic concepts",
       "words": [
@@ -49,8 +567,113 @@
           "hangul": "학교",
           "romanization": "hakgyo",
           "english": ["school"]
+        },
+        {
+          "hangul": "배우다",
+          "romanization": "baeuda",
+          "english": ["to learn", "study"]
+        },
+        {
+          "hangul": "교실",
+          "romanization": "gyosil",
+          "english": ["classroom"]
+        },
+        {
+          "hangul": "칠판",
+          "romanization": "chilpan",
+          "english": ["blackboard", "chalkboard"]
+        },
+        {
+          "hangul": "책상",
+          "romanization": "chaeksang",
+          "english": ["desk"]
+        },
+        {
+          "hangul": "의자",
+          "romanization": "uija",
+          "english": ["chair"]
+        },
+        {
+          "hangul": "필통",
+          "romanization": "piltong",
+          "english": ["pencil case"]
+        },
+        {
+          "hangul": "교과서",
+          "romanization": "gyogwaseo",
+          "english": ["textbook"]
+        },
+        {
+          "hangul": "과목",
+          "romanization": "gwamok",
+          "english": ["subject"]
+        },
+        {
+          "hangul": "숙제",
+          "romanization": "sukje",
+          "english": ["homework"]
+        },
+        {
+          "hangul": "시험",
+          "romanization": "siheom",
+          "english": ["test", "exam"]
+        },
+        {
+          "hangul": "성적",
+          "romanization": "seongjeok",
+          "english": ["grade", "academic record"]
+        },
+        {
+          "hangul": "졸업",
+          "romanization": "joreop",
+          "english": ["graduation"]
+        },
+        {
+          "hangul": "입학",
+          "romanization": "iphak",
+          "english": ["admission", "enrollment"]
+        },
+        {
+          "hangul": "동급생",
+          "romanization": "donggeupsaeng",
+          "english": ["classmate"]
+        },
+        {
+          "hangul": "방학",
+          "romanization": "banghak",
+          "english": ["school vacation"]
+        },
+        {
+          "hangul": "중간고사",
+          "romanization": "junggan-gosa",
+          "english": ["midterm exam"]
+        },
+        {
+          "hangul": "기말고사",
+          "romanization": "gimal-gosa",
+          "english": ["final exam"]
+        },
+        {
+          "hangul": "도서관",
+          "romanization": "doseogwan",
+          "english": ["library"]
+        },
+        {
+          "hangul": "수업",
+          "romanization": "sueop",
+          "english": ["class", "lesson"]
+        },
+        {
+          "hangul": "선생님",
+          "romanization": "seonsaengnim",
+          "english": ["teacher", "instructor"]
+        },
+        {
+          "hangul": "학생",
+          "romanization": "haksaeng",
+          "english": ["student"]
         }
-      ]
+      ]      
     },
     "Shopping": {
       "description": "Words related to buying, selling, and commerce",
@@ -76,11 +699,243 @@
     },
     "Weather": {
       "description": "Words related to climate and weather conditions",
-      "words": []
+      "words": [
+        {
+          "hangul": "날씨",
+          "romanization": "nalssi",
+          "english": ["weather"]
+        },
+        {
+          "hangul": "맑다",
+          "romanization": "makda",
+          "english": ["to be clear/sunny"]
+        },
+        {
+          "hangul": "흐리다",
+          "romanization": "heurida",
+          "english": ["to be cloudy"]
+        },
+        {
+          "hangul": "비",
+          "romanization": "bi",
+          "english": ["rain"]
+        },
+        {
+          "hangul": "눈",
+          "romanization": "nun",
+          "english": ["snow"]
+        },
+        {
+          "hangul": "장마",
+          "romanization": "jangma",
+          "english": ["monsoon season", "rainy season"]
+        },
+        {
+          "hangul": "습도",
+          "romanization": "seupdo",
+          "english": ["humidity"]
+        },
+        {
+          "hangul": "건조하다",
+          "romanization": "geonjohada",
+          "english": ["to be dry"]
+        },
+        {
+          "hangul": "무덥다",
+          "romanization": "mudeopda",
+          "english": ["to be swelteringly hot and humid"]
+        },
+        {
+          "hangul": "폭우",
+          "romanization": "pogu",
+          "english": ["heavy rain", "downpour"]
+        },
+        {
+          "hangul": "폭설",
+          "romanization": "pokseol",
+          "english": ["heavy snowfall"]
+        },
+        {
+          "hangul": "태풍",
+          "romanization": "taepung",
+          "english": ["typhoon"]
+        },
+        {
+          "hangul": "바람",
+          "romanization": "baram",
+          "english": ["wind"]
+        },
+        {
+          "hangul": "강풍",
+          "romanization": "gangpung",
+          "english": ["strong wind", "gale"]
+        },
+        {
+          "hangul": "우산",
+          "romanization": "usan",
+          "english": ["umbrella"]
+        },
+        {
+          "hangul": "우비",
+          "romanization": "ubi",
+          "english": ["raincoat"]
+        },
+        {
+          "hangul": "자외선 차단제",
+          "romanization": "ja-oe-seon chadanje",
+          "english": ["sunscreen"]
+        },
+        {
+          "hangul": "천둥번개",
+          "romanization": "cheondung-beongae",
+          "english": ["thunder and lightning"]
+        },
+        {
+          "hangul": "쌀쌀하다",
+          "romanization": "ssalssal-hada",
+          "english": ["to be chilly"]
+        },
+        {
+          "hangul": "미세먼지",
+          "romanization": "mise-meonji",
+          "english": ["fine dust"]
+        },
+        {
+          "hangul": "황사",
+          "romanization": "hwangsa",
+          "english": ["yellow dust"]
+        },
+        {
+          "hangul": "일기예보",
+          "romanization": "ilgi-yebo",
+          "english": ["weather forecast"]
+        },
+        {
+          "hangul": "온도",
+          "romanization": "ondo",
+          "english": ["temperature"]
+        },
+        {
+          "hangul": "쾌청하다",
+          "romanization": "kwaecheong-hada",
+          "english": ["to be pleasantly clear"]
+        },
+        {
+          "hangul": "서늘하다",
+          "romanization": "seoneul-hada",
+          "english": ["to be cool, slightly cold"]
+        },
+        {
+          "hangul": "땀이 난다",
+          "romanization": "ttami nanda",
+          "english": ["I'm sweating"]
+        },
+        {
+          "hangul": "환절기",
+          "romanization": "hwanjeolgi",
+          "english": ["seasonal transition"]
+        },
+        {
+          "hangul": "더위",
+          "romanization": "deowi",
+          "english": ["the heat", "hot weather"]
+        },
+        {
+          "hangul": "사계절",
+          "romanization": "sa-gyejeol",
+          "english": ["four seasons"]
+        },
+        {
+          "hangul": "일교차",
+          "romanization": "il-gyocha",
+          "english": ["difference in day-night temperature"]
+        }
+      ]
     },
     "Transportation": {
       "description": "Words for vehicles and travel methods",
-      "words": []
+      "words": [
+        {
+          "hangul": "자동차",
+          "romanization": "jadongcha",
+          "english": ["car", "automobile"]
+        },
+        {
+          "hangul": "버스",
+          "romanization": "beoseu",
+          "english": ["bus"]
+        },
+        {
+          "hangul": "지하철",
+          "romanization": "jihacheol",
+          "english": ["subway"]
+        },
+        {
+          "hangul": "기차",
+          "romanization": "gicha",
+          "english": ["train"]
+        },
+        {
+          "hangul": "택시",
+          "romanization": "taeksi",
+          "english": ["taxi"]
+        },
+        {
+          "hangul": "비행기",
+          "romanization": "bihaenggi",
+          "english": ["airplane"]
+        },
+        {
+          "hangul": "배",
+          "romanization": "bae",
+          "english": ["boat", "ship"]
+        },
+        {
+          "hangul": "자전거",
+          "romanization": "jajeongeo",
+          "english": ["bicycle"]
+        },
+        {
+          "hangul": "오토바이",
+          "romanization": "otobai",
+          "english": ["motorcycle"]
+        },
+        {
+          "hangul": "트럭",
+          "romanization": "teureok",
+          "english": ["truck"]
+        },
+        {
+          "hangul": "헬리콥터",
+          "romanization": "hellikopteo",
+          "english": ["helicopter"]
+        },
+        {
+          "hangul": "수레",
+          "romanization": "sure",
+          "english": ["cart", "wagon"]
+        },
+        {
+          "hangul": "도로",
+          "romanization": "doro",
+          "english": ["road"]
+        },
+        {
+          "hangul": "고속도로",
+          "romanization": "gosokdoro",
+          "english": ["highway", "expressway"]
+        },
+        {
+          "hangul": "정류장",
+          "romanization": "jeongnyujang",
+          "english": ["(bus) stop", "station"]
+        },
+        {
+          "hangul": "항구",
+          "romanization": "hanggu",
+          "english": ["port", "harbor"]
+        }
+      ]
     },
     "Religion": {
       "description": "Words related to religious concepts and practices",
@@ -88,7 +943,83 @@
     },
     "Colours": {
       "description": "Words describing colors",
-      "words": []
+      "words": [
+        {
+          "hangul": "빨간색",
+          "romanization": "ppalgan-saek",
+          "english": ["red"]
+        },
+        {
+          "hangul": "주황색",
+          "romanization": "juhwang-saek",
+          "english": ["orange"]
+        },
+        {
+          "hangul": "노란색",
+          "romanization": "noran-saek",
+          "english": ["yellow"]
+        },
+        {
+          "hangul": "초록색",
+          "romanization": "chorok-saek",
+          "english": ["green"]
+        },
+        {
+          "hangul": "파란색",
+          "romanization": "paran-saek",
+          "english": ["blue"]
+        },
+        {
+          "hangul": "보라색",
+          "romanization": "bora-saek",
+          "english": ["purple"]
+        },
+        {
+          "hangul": "분홍색",
+          "romanization": "bunhong-saek",
+          "english": ["pink"]
+        },
+        {
+          "hangul": "갈색",
+          "romanization": "gal-saek",
+          "english": ["brown"]
+        },
+        {
+          "hangul": "검은색",
+          "romanization": "geomeun-saek",
+          "english": ["black"]
+        },
+        {
+          "hangul": "흰색",
+          "romanization": "huin-saek",
+          "english": ["white"]
+        },
+        {
+          "hangul": "회색",
+          "romanization": "hoe-saek",
+          "english": ["gray"]
+        },
+        {
+          "hangul": "금색",
+          "romanization": "geum-saek",
+          "english": ["gold"]
+        },
+        {
+          "hangul": "은색",
+          "romanization": "eun-saek",
+          "english": ["silver"]
+        },
+        {
+          "hangul": "하늘색",
+          "romanization": "haneul-saek",
+          "english": ["sky blue"]
+        },
+        {
+          "hangul": "연두색",
+          "romanization": "yeondu-saek",
+          "english": ["light green"]
+        }
+      ]
     },
     "Abstract": {
       "description": "Conceptual and philosophical terms",
@@ -125,6 +1056,611 @@
       "description": "Words related to society, politics, and civic life",
       "words": []
     }
-  }
+  },
+  "Office & Workplace": {
+    "description": "Words for a Korean office environment, useful in tech/AI jobs",
+    "words": [
+      {
+        "hangul": "사무실",
+        "romanization": "samusil",
+        "english": ["office"]
+      },
+      {
+        "hangul": "직원",
+        "romanization": "jikwon",
+        "english": ["employee", "staff member"]
+      },
+      {
+        "hangul": "팀장",
+        "romanization": "timjang",
+        "english": ["team leader"]
+      },
+      {
+        "hangul": "동료",
+        "romanization": "dongnyo",
+        "english": ["colleague", "coworker"]
+      },
+      {
+        "hangul": "상사",
+        "romanization": "sangsa",
+        "english": ["boss", "superior"]
+      },
+      {
+        "hangul": "선배",
+        "romanization": "seonbae",
+        "english": ["senior coworker"]
+      },
+      {
+        "hangul": "후배",
+        "romanization": "hubae",
+        "english": ["junior coworker"]
+      },
+      {
+        "hangul": "부서",
+        "romanization": "buseo",
+        "english": ["department"]
+      },
+      {
+        "hangul": "프로젝트",
+        "romanization": "peurojegteu",
+        "english": ["project"]
+      },
+      {
+        "hangul": "자료",
+        "romanization": "jaryo",
+        "english": ["data", "documents"]
+      },
+      {
+        "hangul": "회의",
+        "romanization": "hoeui",
+        "english": ["meeting"]
+      },
+      {
+        "hangul": "회의실",
+        "romanization": "hoeui-sil",
+        "english": ["meeting room"]
+      },
+      {
+        "hangul": "보고서",
+        "romanization": "bogoseo",
+        "english": ["report"]
+      },
+      {
+        "hangul": "프레젠테이션",
+        "romanization": "peurejenteishon",
+        "english": ["presentation"]
+      },
+      {
+        "hangul": "일정",
+        "romanization": "iljeong",
+        "english": ["schedule", "agenda"]
+      },
+      {
+        "hangul": "근무 시간",
+        "romanization": "geunmu sigan",
+        "english": ["working hours"]
+      },
+      {
+        "hangul": "재택근무",
+        "romanization": "jaetaek-geunmu",
+        "english": ["telecommuting", "working from home"]
+      },
+      {
+        "hangul": "출근",
+        "romanization": "chulgeun",
+        "english": ["going to work", "clock in"]
+      },
+      {
+        "hangul": "퇴근",
+        "romanization": "toe-geun",
+        "english": ["leaving work", "clock out"]
+      },
+      {
+        "hangul": "인사과",
+        "romanization": "insa-gwa",
+        "english": ["HR department"]
+      },
+      {
+        "hangul": "급여",
+        "romanization": "geubyeo",
+        "english": ["salary", "pay"]
+      },
+      {
+        "hangul": "이메일",
+        "romanization": "imeil",
+        "english": ["email"]
+      },
+      {
+        "hangul": "전화",
+        "romanization": "jeonhwa",
+        "english": ["phone", "call"]
+      }
+    ]
+  },
+  
+  "Slang": {
+    "description": "Casual or slang expressions (some may be offensive)",
+    "words": [
+      {
+        "hangul": "튕기네",
+        "romanization": "twing-gine",
+        "english": ["You're playing hard to get."]
+      },
+      {
+        "hangul": "넌 밥이야",
+        "romanization": "neon bab-i-ya",
+        "english": ["You're mine now!", "I've got you just where I want you."]
+      },
+      {
+        "hangul": "배째",
+        "romanization": "bae-jjae",
+        "english": ["Sue me!", "(lit. cut my stomach)"]
+      },
+      {
+        "hangul": "아이고, 진짜 웃긴다",
+        "romanization": "aigo, jinja utginda",
+        "english": ["That's stupid", "That's ridiculous"]
+      },
+      {
+        "hangul": "잘 자. 내 꿈꿔",
+        "romanization": "jal ja, nae kkum-kkwo",
+        "english": ["Sleep tight", "Dream of me"]
+      },
+      {
+        "hangul": "세상에 공짜가 어딨어",
+        "romanization": "sesange gongjja-ga eodisseo",
+        "english": ["There's no free lunch"]
+      },
+      {
+        "hangul": "넘겨 집지마",
+        "romanization": "neomgyeo jipjima",
+        "english": ["Your fly is open."]
+      },
+      {
+        "hangul": "헌팅하러 가자",
+        "romanization": "heonting-hareo gaja",
+        "english": ["Let's pick up chicks."]
+      },
+      {
+        "hangul": "황당하군",
+        "romanization": "hwangdang-hagun",
+        "english": ["This is absurd", "Leaves me speechless"]
+      },
+      {
+        "hangul": "농땡이 치지마",
+        "romanization": "nongttaengi chijima",
+        "english": ["Don't goof off!"]
+      },
+      {
+        "hangul": "너 개기니",
+        "romanization": "neo gaegini",
+        "english": ["Are you slacking?", "Are you goofing off?"]
+      },
+      {
+        "hangul": "왜 사니",
+        "romanization": "wae sani",
+        "english": ["What's on your mind?"]
+      },
+      {
+        "hangul": "왕입니다요",
+        "romanization": "wang-imnida-yo",
+        "english": ["You're the man!", "(lit. You're the king!)"]
+      },
+      {
+        "hangul": "열공",
+        "romanization": "yeol-gong",
+        "english": ["Study hard (short)"]
+      },
+      {
+        "hangul": "열심히 공부하자",
+        "romanization": "yeolsimhi gongbu-haja",
+        "english": ["Study hard (full)"]
+      },
+      {
+        "hangul": "초딩",
+        "romanization": "chodeng",
+        "english": ["Elementary school student (slang)"]
+      },
+      {
+        "hangul": "고딩",
+        "romanization": "goding",
+        "english": ["High school student (slang)"]
+      },
+      {
+        "hangul": "짱",
+        "romanization": "jjang",
+        "english": ["cool", "awesome"]
+      },
+      {
+        "hangul": "병신",
+        "romanization": "byeongsin",
+        "english": ["Dumbass", "retard (offensive)"]
+      },
+      {
+        "hangul": "젠장",
+        "romanization": "jenjang",
+        "english": ["Damn it", "goddamn", "shit"]
+      },
+      {
+        "hangul": "엿먹어",
+        "romanization": "yeot-meogeo",
+        "english": ["F you"]
+      },
+      {
+        "hangul": "걸레같은 년",
+        "romanization": "geolle-gateun nyeon",
+        "english": ["Slut", "whore"]
+      },
+      {
+        "hangul": "씹새끼",
+        "romanization": "ssip-saekki",
+        "english": ["Piece of shit", "bitch", "fucker"]
+      },
+      {
+        "hangul": "지랄",
+        "romanization": "jiral",
+        "english": ["Bullshit", "crazy nonsense"]
+      },
+      {
+        "hangul": "속이 거북하다",
+        "romanization": "soki geobukhada",
+        "english": ["My gut is killing me"]
+      },
+      {
+        "hangul": "약한 통증",
+        "romanization": "yakhan tongjeung",
+        "english": ["My stomach is feeling funny"]
+      },
+      {
+        "hangul": "나를 만만하게 보지마",
+        "romanization": "nareul manmanhage bojima",
+        "english": ["Don't think I'm that easy"]
+      },
+      {
+        "hangul": "내가 만만하게 보여",
+        "romanization": "naega manmanhage boyeo",
+        "english": ["Do I look that easy?"]
+      },
+      {
+        "hangul": "야~~ 신난다",
+        "romanization": "ya~ sin-nanda",
+        "english": ["Yeah, this is fun!"]
+      },
+      {
+        "hangul": "저 사람 변태 아니야",
+        "romanization": "jeo saram byeontae aniya",
+        "english": ["Is he a pervert or something?"]
+      },
+      {
+        "hangul": "우정이 갈수록 부실해진다",
+        "romanization": "ujeong-i galsurok busilhaejinda",
+        "english": ["Friendship fades with time"]
+      },
+      {
+        "hangul": "사랑이 식었구나",
+        "romanization": "sarangi sigeotguna",
+        "english": ["The love is gone"]
+      },
+      {
+        "hangul": "원샷",
+        "romanization": "won-shat",
+        "english": ["Bottoms up!"]
+      },
+      {
+        "hangul": "그걸 꼭 말로 해야되니",
+        "romanization": "geugeol kkok mallo haeyadweni",
+        "english": ["Do I really have to say it?"]
+      },
+      {
+        "hangul": "닭살 났어",
+        "romanization": "dakssal nasseo",
+        "english": ["I've got goose bumps"]
+      },
+      {
+        "hangul": "흥분하지마",
+        "romanization": "heungbun-hajima",
+        "english": ["Chill out!", "Calm down"]
+      },
+      {
+        "hangul": "지금 가는 중이야. 곧 도착해",
+        "romanization": "jigeum ganeun jungiya, got dochakae",
+        "english": ["I'm on my way", "I'll be there soon"]
+      },
+      {
+        "hangul": "관계를 더욱 돈독히 해야합니다",
+        "romanization": "gwangyereul deouk dondokhi haeyahamnida",
+        "english": ["We must cement our relationship"]
+      },
+      {
+        "hangul": "나름대로는 열심히 했어",
+        "romanization": "nareumdaeroneun yeolsimhi haesseo",
+        "english": ["I did my best (in my own way)"]
+      },
+      {
+        "hangul": "나이 값을 좀 해라",
+        "romanization": "nai gabseul jom haera",
+        "english": ["Act your age!"]
+      }
+    ]
+
+  },
+  "Cafe & Coffee Shop": {
+    "description": "Common phrases and expressions used in Korean cafes",
+    "words": [
+      {
+        "hangul": "어서 오세요",
+        "romanization": "eoseo oseyo",
+        "english": ["Welcome"]
+      },
+      {
+        "hangul": "주문하시겠어요?",
+        "romanization": "jumun hasigesseoyo?",
+        "english": ["Would you like to order?"]
+      },
+      {
+        "hangul": "뭐 드릴까요?",
+        "romanization": "mwo deurilkkayo?",
+        "english": ["What can I get for you?"]
+      },
+      {
+        "hangul": "매장이세요, 테이크아웃이세요?",
+        "romanization": "maejang-iseyo, teikeu-aut-iseyo?",
+        "english": ["For here or to go?"]
+      },
+      {
+        "hangul": "시럽 넣어드릴까요?",
+        "romanization": "sireop neoeodeurilkkayo?",
+        "english": ["Would you like syrup?"]
+      },
+      {
+        "hangul": "얼음은 어느 정도로 드릴까요?",
+        "romanization": "eoreumeun eoneu jeongdoro deurilkkayo?",
+        "english": ["How much ice would you like?"]
+      },
+      {
+        "hangul": "주문하신 음료 나왔습니다",
+        "romanization": "jumunhasin eumryo nawasseumnida",
+        "english": ["Your drink is ready"]
+      },
+      {
+        "hangul": "진동벨 울리면 가져가세요",
+        "romanization": "jindongbel ullimyeon gajyeogaseyo",
+        "english": [
+          "Please pick up your order when the pager goes off"
+        ]
+      },
+      {
+        "hangul": "영수증 필요하세요?",
+        "romanization": "yeongsujeung pillyohaseyo?",
+        "english": ["Would you like a receipt?"]
+      },
+      {
+        "hangul": "결제는 카드로 하시나요?",
+        "romanization": "gyeoljeneun kadeuro hasinayo?",
+        "english": ["Will you be paying by card?"]
+      },
+      {
+        "hangul": "감사합니다. 맛있게 드세요",
+        "romanization": "gamsahamnida. masitge deuseyo",
+        "english": ["Thank you. Enjoy your drink"]
+      },
+      {
+        "hangul": "라떼 하나 주세요",
+        "romanization": "latte hana juseyo",
+        "english": ["One latte, please"]
+      }
+    ]
+  },
+
+    "Vegetarian & Dining": {
+      "description": "Korean phrases for vegetarians/vegans ordering and paying in restaurants (playful but accurate)",
+      "words": [
+        {
+          "hangul": "저는 고기를 전혀 못 먹어요. 야채만 있으면 돼요!",
+          "romanization": "jeoneun gogireul jeonhyeo mot meogeoyo. yachaeman isseumyeon dwaeyo!",
+          "english": [
+            "I can’t eat meat at all. Veggies are all I need!"
+          ]
+        },
+        {
+          "hangul": "저는 비건 식단이에요. 동물성 재료는 전혀 안 먹어요.",
+          "romanization": "jeoneun bigeon sikdaniyeyo. dongmulseong jaeryeoneun jeonhyeo an meogeoyo.",
+          "english": [
+            "I'm on a vegan diet. I don’t eat any animal products."
+          ]
+        },
+        {
+          "hangul": "여기에 멸치 액젓이나 동물성 재료가 들어가나요?",
+          "romanization": "yeogie myeolchi aekjeot-ina dongmulseong jaeryoga deureoganayo?",
+          "english": [
+            "Does this contain fish sauce or any animal-based ingredients?"
+          ]
+        },
+        {
+          "hangul": "가능하시면 해산물도 빼 주세요. 죄송해요!",
+          "romanization": "ganeunghasimyeon haesanmuldo bbae juseyo. joesonghaeyo!",
+          "english": [
+            "If possible, please remove all seafood, too. I’m sorry!"
+          ]
+        },
+        {
+          "hangul": "다시마나 표고버섯 육수로 만들 수 있어요?",
+          "romanization": "dasimana pyogobeoseot yuksuro mandeul su isseoyo?",
+          "english": [
+            "Could you make it with kelp or shiitake mushroom stock?"
+          ]
+        },
+        {
+          "hangul": "동물성 재료가 전혀 없죠? 안심하고 먹어도 돼요?",
+          "romanization": "dongmulseong jaeryoga jeonhyeo eopjyo? ansimhago meogeodo dwaeyo?",
+          "english": [
+            "There’s absolutely no animal product in it, right? Safe for me to eat?"
+          ]
+        },
+        {
+          "hangul": "아무리 배고파도 고기는 무리예요. 풀만 먹어도 괜찮아요!",
+          "romanization": "amuri baegopado gogineun muriyeyo. pulman meogeodo gwaenchanayo!",
+          "english": [
+            "No matter how hungry I am, meat won’t work. I’m fine with just greens!"
+          ]
+        },
+        {
+          "hangul": "혹시 사찰 음식도 있나요? (불교식 채식)",
+          "romanization": "hoksi sachal eumsikdo innayo? (bulgyosik chaesik)",
+          "english": [
+            "Do you serve Buddhist temple cuisine? (Buddhist-style vegetarian food)"
+          ]
+        },
+        {
+          "hangul": "안에 달걀이나 유제품도 안 들어가죠?",
+          "romanization": "ane dalgyarina yujepaemdo an deureogajyo?",
+          "english": [
+            "There’s no egg or dairy in it, right?"
+          ]
+        },
+        {
+          "hangul": "계산서 부탁드려요. 현금이랑 카드 중에 뭐가 편하세요?",
+          "romanization": "gyesanseo butakdeuryeoyo. hyeongeumirang kadeu jung-e mwo-ga pyeonhaseyo?",
+          "english": [
+            "Check, please. Which payment do you prefer—cash or card?"
+          ]
+        },
+        {
+          "hangul": "카드로 결제할게요. 포인트 적립도 되나요?",
+          "romanization": "kadeuro gyeoljehalgeyo. pointeu jeongnipdo doenayo?",
+          "english": [
+            "I’ll pay by card. Can I earn points?"
+          ]
+        },
+        {
+          "hangul": "영수증은 괜찮아요. 지구를 위해 종이 아껴볼게요.",
+          "romanization": "yeongsujeungeun gwaenchanayo. jigureul wihae jongi akkyeobolgeyo.",
+          "english": [
+            "No receipt, please. Let’s save some paper for the planet."
+          ]
+        }
+      ]
+
+  },
+  "Office & AI Tech": {
+      "description": "Words and short phrases relevant to a new AI Engineer in a Korean office environment, focusing on networking and AI technology",
+      "words": [
+        {
+          "hangul": "인공지능",
+          "romanization": "ingong jineung",
+          "english": ["Artificial Intelligence (AI)"]
+        },
+        {
+          "hangul": "머신러닝",
+          "romanization": "meoshinleoning",
+          "english": ["Machine Learning"]
+        },
+        {
+          "hangul": "딥러닝",
+          "romanization": "dipneoning",
+          "english": ["Deep Learning"]
+        },
+        {
+          "hangul": "신경망",
+          "romanization": "shingyeong-mang",
+          "english": ["Neural Network"]
+        },
+        {
+          "hangul": "알고리즘",
+          "romanization": "algorijeum",
+          "english": ["Algorithm"]
+        },
+        {
+          "hangul": "데이터셋",
+          "romanization": "deiteoset",
+          "english": ["Dataset"]
+        },
+        {
+          "hangul": "모델 훈련",
+          "romanization": "model hunryeon",
+          "english": ["Model Training"]
+        },
+        {
+          "hangul": "배포",
+          "romanization": "baepo",
+          "english": ["Deployment"]
+        },
+        {
+          "hangul": "협업",
+          "romanization": "hyeobeop",
+          "english": ["Collaboration"]
+        },
+        {
+          "hangul": "개발 환경",
+          "romanization": "gaebal hwangyeong",
+          "english": ["Development Environment"]
+        },
+        {
+          "hangul": "깃",
+          "romanization": "git",
+          "english": ["Git (version control)"]
+        },
+        {
+          "hangul": "깃허브",
+          "romanization": "githeobeu",
+          "english": ["GitHub"]
+        },
+        {
+          "hangul": "클라우드 컴퓨팅",
+          "romanization": "keullaudeu keompyuting",
+          "english": ["Cloud Computing"]
+        },
+        {
+          "hangul": "프로토타입",
+          "romanization": "peurototaip",
+          "english": ["Prototype"]
+        },
+        {
+          "hangul": "요구 사항",
+          "romanization": "yogu sahyang",
+          "english": ["Requirements"]
+        },
+        {
+          "hangul": "회의 일정",
+          "romanization": "hoeui iljeong",
+          "english": ["Meeting Schedule"]
+        },
+        {
+          "hangul": "브레인스토밍",
+          "romanization": "beure-in-seu-toming",
+          "english": ["Brainstorming"]
+        },
+        {
+          "hangul": "파이썬",
+          "romanization": "paisseon",
+          "english": ["Python"]
+        },
+        {
+          "hangul": "출시 노트",
+          "romanization": "chulsi noteu",
+          "english": ["Release Notes"]
+        },
+        {
+          "hangul": "워크숍",
+          "romanization": "weokeusyop",
+          "english": ["Workshop"]
+        },
+        {
+          "hangul": "네트워킹",
+          "romanization": "neteuwoking",
+          "english": ["Networking"]
+        },
+        {
+          "hangul": "회식",
+          "romanization": "hoesik",
+          "english": [
+            "Company Dinner",
+            "Team Gathering after Work"
+          ]
+        }
+      ]
+    }  
+  
+  
 }
   
