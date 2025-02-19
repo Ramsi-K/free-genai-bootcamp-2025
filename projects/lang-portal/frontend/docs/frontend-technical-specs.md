@@ -1,5 +1,31 @@
 ## Frontend Technical Spec (English - Korean JSON Format)
 
+# **📌 JSON Data Sources for API Endpoints**
+
+| **API Endpoint**                            | **JSON/Data Source**          | **What It Retrieves**                                  | **Notes** |
+|---------------------------------------------|------------------------------|------------------------------------------------------|----------|
+| `GET /api/words`                            | `data_korean.json`           | Retrieves paginated word list                        | Used for general word browsing |
+| `GET /api/words/:id`                        | `data_korean.json`           | Fetches detailed word info + example sentences      | Includes `groups` field for thematic categorization |
+| `GET /api/groups`                           | `word_groups.json`           | Retrieves list of thematic word groups              | Groups like "Food," "School," "Shopping" |
+| `GET /api/groups/:id`                       | `word_groups.json`           | Fetches words assigned to a specific word group     | Ensures words belong to correct categories |
+| `GET /api/groups/:id/words`                 | `word_groups.json`           | Retrieves words inside a thematic category          | Example: "School" group contains "학생," "책" |
+| `GET /api/groups/:id/study_sessions`        | Database (Tracked Data)      | Fetches study session history for a word group      | Requires database storage |
+| `GET /api/dashboard/last_study_session`     | Database (Tracked Data)      | Fetches last study session details                  | Requires user tracking |
+| `GET /api/dashboard/study_progress`         | Database (Tracked Data)      | Retrieves overall study progress                    | Shows percentage of words mastered |
+| `GET /api/dashboard/quick_stats`            | Database (Tracked Data)      | Returns quick stats (success rate, active groups)   | Used in the dashboard UI |
+| `GET /api/sentence_practice`                | `data_korean.json`           | Fetches example sentences for practice              | Pulls from `example` field in words JSON |
+| `POST /api/sentence_practice/attempt`       | Database (Tracked Data)      | Submits user-translated sentence for evaluation     | Stores user attempts and grading |
+| `GET /api/sentence_practice/examples`       | `data_korean.json`           | Fetches example sentences for a specific word       | `/api/sentence_practice/examples?word=학생` |
+| `GET /api/sentence_practice/statistics`     | Database (Tracked Data)      | Retrieves user progress in sentence practice        | Tracks accuracy, attempts, and improvement |
+| `GET /api/study_activities`                 | `study_activities.json`      | Fetches available study activities                  | Example: "Typing Tutor" app |
+| `GET /api/study_activities/:id`             | `study_activities.json`      | Retrieves details of a study activity               | Provides activity name and launch URL |
+| `GET /api/study_activities/:id/study_sessions` | Database (Tracked Data)   | Retrieves past study sessions for an activity       | Tracks session attempts |
+| `POST /api/study_activities`                | Database (Tracked Data)      | Creates a new study session                         | Logs study session metadata |
+| `POST /api/reset_history`                   | Database (Tracked Data)      | Resets user study history                           | Deletes past sessions and progress |
+| `POST /api/full_reset`                      | Database (Tracked Data)      | Drops and reseeds all data                          | Full reset of learning progress |
+
+
+
 ### Dashboard `/dashboard`
 
 #### Purpose
@@ -183,9 +209,75 @@ This page allows users to practice constructing sentences using Korean vocabular
 #### Required API Endpoints
 
 - `GET /api/sentence_practice`
+  - Retrieves random sentences for practice from data_korean.json.
+  - Example Response:
+  ```json
+  {
+  "sentence_id": 12,
+  "word": {
+    "hangul": "학생",
+    "romanization": "haksaeng",
+    "english": ["student"]
+  },
+  "example_sentence": {
+    "korean": "이 학생은 공부를 열심히 합니다.",
+    "english": "This student studies hard."
+  }
+  }
+  ```
+
+
+
 - `POST /api/sentence_practice/attempt` (Submits user's sentence attempt for evaluation)
+  - Submits a user's attempt at translating a sentence.
+  - Example Request:
+
+```json
+{
+"sentence_id": 12,
+"user_translation": "이 학생은 공부를 열심히 합니다."
+}
+
+```
+  - Example Response:
+```json
+{
+  "correct": true,
+  "message": "Correct! Well done!",
+  "alternatives": ["이 학생은 정말 열심히 공부해요."]
+}
+```
+
 - `GET /api/sentence_practice/examples` (Retrieves example sentences for learning)
-- `GET /api/sentence_practice/statistics` (Retrieves user progress on sentence practice)
+  - Fetches example sentences for a given word.
+  - Example Request: /api/sentence_practice/examples?word=학생
+  - Example Response:
+```json
+{
+"word": "학생",
+"example_sentences": [
+  {
+    "korean": "이 학생은 공부를 열심히 합니다.",
+    "english": "This student studies hard."
+  },
+  {
+    "korean": "학생들은 도서관에서 공부하고 있어요.",
+    "english": "The students are studying in the library."
+  }
+]
+}
+```
+
+- GET /api/sentence_practice/statistics
+Retrieves the user's progress in sentence practice.
+Example Response:
+```json
+{
+  "total_sentences_attempted": 50,
+  "correct_answers": 40,
+  "accuracy_rate": "80%"
+}
+```
 
 ---
 
