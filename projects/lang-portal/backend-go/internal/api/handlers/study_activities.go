@@ -19,7 +19,7 @@ func NewStudyActivityHandler(db *gorm.DB) *StudyActivityHandler {
 
 func (h *StudyActivityHandler) List(c *gin.Context) {
 	var activities []models.StudyActivity
-	if err := h.db.Find(&activities).Error; err != nil {
+	if err := h.db.Where("deleted_at IS NULL").Find(&activities).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching study activities"})
 		return
 	}
@@ -37,7 +37,7 @@ func (h *StudyActivityHandler) Get(c *gin.Context) {
 	}
 
 	var activity models.StudyActivity
-	if err := h.db.First(&activity, id).Error; err != nil {
+	if err := h.db.Where("id = ? AND deleted_at IS NULL", id).First(&activity).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Study activity not found"})
 			return
@@ -59,7 +59,7 @@ func (h *StudyActivityHandler) GetSessions(c *gin.Context) {
 	}
 
 	var sessions []models.StudySession
-	if err := h.db.Where("study_activity_id = ?", id).
+	if err := h.db.Where("study_activity_id = ? AND deleted_at IS NULL", id).
 		Preload("Group").
 		Preload("Reviews").
 		Order("completed_at DESC").
@@ -103,9 +103,20 @@ func (h *StudyActivityHandler) Launch(c *gin.Context) {
 		return
 	}
 
+	// Verify activity exists
+	var activity models.StudyActivity
+	if err := h.db.Where("id = ? AND deleted_at IS NULL", activityID).First(&activity).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Study activity not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching study activity"})
+		return
+	}
+
 	// Verify group exists
 	var group models.Group
-	if err := h.db.First(&group, req.GroupID).Error; err != nil {
+	if err := h.db.Where("id = ? AND deleted_at IS NULL", req.GroupID).First(&group).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Group not found"})
 			return

@@ -12,14 +12,14 @@ import (
 )
 
 type WordData struct {
-	Hangul       string   `json:"hangul"`
-	Romanization string   `json:"romanization"`
-	English      []string `json:"english"`
-	Type         string   `json:"type"`
-	Example      struct {
+	Hangul          string   `json:"hangul"`
+	Romanization    string   `json:"romanization"`
+	English         []string `json:"english"`
+	Type            string   `json:"type"`
+	ExampleSentence struct {
 		Korean  string `json:"korean"`
 		English string `json:"english"`
-	} `json:"example"`
+	} `json:"example_sentence"`
 }
 
 func LoadSeedData(db *gorm.DB) error {
@@ -55,9 +55,9 @@ func LoadSeedData(db *gorm.DB) error {
 			Romanization: wordData.Romanization,
 			English:      wordData.English,
 			Type:         wordData.Type,
-			Example: models.Example{
-				Korean:  wordData.Example.Korean,
-				English: wordData.Example.English,
+			ExampleSentence: models.Example{
+				Korean:  wordData.ExampleSentence.Korean,
+				English: wordData.ExampleSentence.English,
 			},
 		}
 
@@ -121,7 +121,7 @@ func SeedTestData(db *gorm.DB) error {
 			Romanization: "hakgyo",
 			English:      []string{"school"},
 			Type:         "noun",
-			Example: models.Example{
+			ExampleSentence: models.Example{
 				Korean:  "나는 학교에 갑니다",
 				English: "I go to school",
 			},
@@ -131,7 +131,7 @@ func SeedTestData(db *gorm.DB) error {
 			Romanization: "sagwa",
 			English:      []string{"apple"},
 			Type:         "noun",
-			Example: models.Example{
+			ExampleSentence: models.Example{
 				Korean:  "사과를 먹습니다",
 				English: "I eat an apple",
 			},

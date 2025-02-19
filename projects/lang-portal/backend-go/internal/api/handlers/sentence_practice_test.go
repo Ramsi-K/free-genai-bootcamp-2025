@@ -15,12 +15,12 @@ func TestSentencePracticeHandler(t *testing.T) {
 		helper, err := newTestHelper(t)
 		require.NoError(t, err)
 
-		handler := NewSentencePracticeHandler(helper.db)
-		helper.router.GET("/api/sentence_practice", handler.GetPracticeSentence)
-
 		// Seed test data
 		err = helper.seedTestData()
 		require.NoError(t, err)
+
+		handler := NewSentencePracticeHandler(helper.db)
+		helper.router.GET("/api/sentence_practice", handler.GetPracticeSentence)
 
 		// Test successful request
 		w := performRequest(helper.router, "GET", "/api/sentence_practice", nil)
@@ -28,7 +28,7 @@ func TestSentencePracticeHandler(t *testing.T) {
 
 		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Verify response structure
 		assert.NotNil(t, response["sentence_id"])
@@ -45,12 +45,12 @@ func TestSentencePracticeHandler(t *testing.T) {
 		helper, err := newTestHelper(t)
 		require.NoError(t, err)
 
-		handler := NewSentencePracticeHandler(helper.db)
-		helper.router.POST("/api/sentence_practice/attempt", handler.SubmitSentenceAttempt)
-
 		// Seed test data
 		err = helper.seedTestData()
 		require.NoError(t, err)
+
+		handler := NewSentencePracticeHandler(helper.db)
+		helper.router.POST("/api/sentence_practice/attempt", handler.SubmitSentenceAttempt)
 
 		// Test correct attempt
 		w := performRequest(helper.router, "POST", "/api/sentence_practice/attempt", map[string]interface{}{
@@ -61,7 +61,7 @@ func TestSentencePracticeHandler(t *testing.T) {
 
 		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.True(t, response["correct"].(bool))
 		assert.Equal(t, "Correct! Well done!", response["message"])
 		assert.NotEmpty(t, response["alternatives"])
@@ -74,7 +74,7 @@ func TestSentencePracticeHandler(t *testing.T) {
 		assert.Equal(t, http.StatusOK, w.Code)
 
 		err = json.Unmarshal(w.Body.Bytes(), &response)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.False(t, response["correct"].(bool))
 		assert.Equal(t, "Not quite right. Try again!", response["message"])
 
@@ -96,12 +96,12 @@ func TestSentencePracticeHandler(t *testing.T) {
 		helper, err := newTestHelper(t)
 		require.NoError(t, err)
 
-		handler := NewSentencePracticeHandler(helper.db)
-		helper.router.GET("/api/sentence_practice/examples", handler.GetSentenceExamples)
-
 		// Seed test data
 		err = helper.seedTestData()
 		require.NoError(t, err)
+
+		handler := NewSentencePracticeHandler(helper.db)
+		helper.router.GET("/api/sentence_practice/examples", handler.GetSentenceExamples)
 
 		// Test successful request
 		w := performRequest(helper.router, "GET", "/api/sentence_practice/examples?word=학교", nil)
@@ -109,7 +109,7 @@ func TestSentencePracticeHandler(t *testing.T) {
 
 		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, "학교", response["word"])
 		assert.NotEmpty(t, response["example_sentences"])
 
@@ -118,7 +118,7 @@ func TestSentencePracticeHandler(t *testing.T) {
 		assert.Equal(t, http.StatusOK, w.Code)
 
 		err = json.Unmarshal(w.Body.Bytes(), &response)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, "hakgyo", response["word"])
 		assert.NotEmpty(t, response["example_sentences"])
 
@@ -130,12 +130,16 @@ func TestSentencePracticeHandler(t *testing.T) {
 		w = performRequest(helper.router, "GET", "/api/sentence_practice/examples?word=nonexistent", nil)
 		assert.Equal(t, http.StatusOK, w.Code)
 		err = json.Unmarshal(w.Body.Bytes(), &response)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Empty(t, response["example_sentences"])
 	})
 
 	t.Run("GetSentenceStatistics", func(t *testing.T) {
 		helper, err := newTestHelper(t)
+		require.NoError(t, err)
+
+		// Seed test data
+		err = helper.seedTestData()
 		require.NoError(t, err)
 
 		handler := NewSentencePracticeHandler(helper.db)
@@ -147,7 +151,7 @@ func TestSentencePracticeHandler(t *testing.T) {
 
 		var emptyStats map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &emptyStats)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, float64(0), emptyStats["total_sentences_attempted"])
 		assert.Equal(t, float64(0), emptyStats["correct_answers"])
 		assert.Equal(t, float64(0), emptyStats["accuracy_rate"])
@@ -164,8 +168,10 @@ func TestSentencePracticeHandler(t *testing.T) {
 			Correct:         false,
 		}
 
-		helper.db.Create(&attempt1)
-		helper.db.Create(&attempt2)
+		err = helper.db.Create(&attempt1).Error
+		require.NoError(t, err)
+		err = helper.db.Create(&attempt2).Error
+		require.NoError(t, err)
 
 		// Test statistics with data
 		w = performRequest(helper.router, "GET", "/api/sentence_practice/statistics", nil)
@@ -173,7 +179,7 @@ func TestSentencePracticeHandler(t *testing.T) {
 
 		var stats map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &stats)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, float64(2), stats["total_sentences_attempted"])
 		assert.Equal(t, float64(1), stats["correct_answers"])
 		assert.Equal(t, float64(50), stats["accuracy_rate"])

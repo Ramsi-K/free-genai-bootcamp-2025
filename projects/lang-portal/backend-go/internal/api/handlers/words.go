@@ -33,7 +33,7 @@ func (h *WordHandler) List(c *gin.Context) {
 	}
 
 	var words []models.Word
-	query := h.db.Model(&models.Word{}).Preload("Groups")
+	query := h.db.Model(&models.Word{}).Where("deleted_at IS NULL").Preload("Groups", "deleted_at IS NULL")
 
 	// Apply sorting
 	if pagination.SortBy != "" {
@@ -92,7 +92,9 @@ func (h *WordHandler) Get(c *gin.Context) {
 	}
 
 	var word models.Word
-	if err := h.db.Preload("Groups").First(&word, id).Error; err != nil {
+	if err := h.db.Where("id = ? AND deleted_at IS NULL", id).
+		Preload("Groups", "deleted_at IS NULL").
+		First(&word).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Word not found"})
 			return

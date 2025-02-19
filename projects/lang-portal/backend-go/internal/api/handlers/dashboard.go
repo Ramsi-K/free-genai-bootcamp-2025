@@ -22,8 +22,12 @@ func (h *DashboardHandler) GetDashboard(c *gin.Context) {
 
 	// Get last study session
 	var lastSession models.StudySession
-	if err := h.db.Preload("Activity").Preload("Group").Preload("Reviews").
-		Order("completed_at DESC").First(&lastSession).Error; err != nil && err != gorm.ErrRecordNotFound {
+	if err := h.db.Where("completed_at IS NOT NULL").
+		Preload("Activity").
+		Preload("Group").
+		Preload("Reviews").
+		Order("completed_at DESC").
+		First(&lastSession).Error; err != nil && err != gorm.ErrRecordNotFound {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching last session"})
 		return
 	}
@@ -47,41 +51,63 @@ func (h *DashboardHandler) GetDashboard(c *gin.Context) {
 
 	// Get study progress
 	var totalWords int64
-	h.db.Model(&models.Word{}).Count(&totalWords)
+	h.db.Model(&models.Word{}).Where("deleted_at IS NULL").Count(&totalWords)
 
 	var studiedWords int64
-	h.db.Model(&models.WordReview{}).Distinct("word_id").Count(&studiedWords)
+	h.db.Model(&models.WordReview{}).Where("deleted_at IS NULL").Distinct("word_id").Count(&studiedWords)
 
 	var totalCorrect int64
-	h.db.Model(&models.WordReview{}).Where("correct = ?", true).Count(&totalCorrect)
+	h.db.Model(&models.WordReview{}).Where("correct = ? AND deleted_at IS NULL", true).Count(&totalCorrect)
 
 	var totalReviews int64
-	h.db.Model(&models.WordReview{}).Count(&totalReviews)
+	h.db.Model(&models.WordReview{}).Where("deleted_at IS NULL").Count(&totalReviews)
+
+	var masteryProgress float64
+	if totalReviews > 0 {
+		masteryProgress = float64(totalCorrect) / float64(totalReviews) * 100
+	}
 
 	dashboardData.StudyProgress = models.StudyProgress{
 		WordsStudied:    int(studiedWords),
 		TotalWords:      int(totalWords),
-		MasteryProgress: float64(totalCorrect) / float64(totalReviews) * 100,
+		MasteryProgress: masteryProgress,
 	}
 
 	// Get quick stats
 	var totalSessions int64
-	h.db.Model(&models.StudySession{}).Count(&totalSessions)
+	h.db.Model(&models.StudySession{}).Where("deleted_at IS NULL").Count(&totalSessions)
 
 	var activeGroups int64
-	h.db.Model(&models.Group{}).Where("words_count > 0").Count(&activeGroups)
+	h.db.Model(&models.Group{}).Where("words_count > 0 AND deleted_at IS NULL").Count(&activeGroups)
 
 	// Calculate study streak
 	streak := h.calculateStudyStreak()
 
+	var successRate float64
+	if totalReviews > 0 {
+		successRate = float64(totalCorrect) / float64(totalReviews) * 100
+	}
+
 	dashboardData.QuickStats = models.QuickStats{
-		SuccessRate:       float64(totalCorrect) / float64(totalReviews) * 100,
+		SuccessRate:       successRate,
 		TotalSessions:     int(totalSessions),
 		TotalActiveGroups: int(activeGroups),
 		StudyStreak:       streak,
 	}
 
-	c.JSON(http.StatusOK, dashboardData)
+	// For example, count valid study sessions
+	var sessionCount int64
+	if err := h.db.Model(&models.StudySession{}).
+		Where("completed_at IS NOT NULL AND deleted_at IS NULL").
+		Count(&sessionCount).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching dashboard data"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"completed_sessions": sessionCount,
+		// ... include other dashboard fields as needed
+	})
 }
 
 func (h *DashboardHandler) GetLastStudySession(c *gin.Context) {
@@ -165,7 +191,9 @@ func (h *DashboardHandler) GetQuickStats(c *gin.Context) {
 
 func (h *DashboardHandler) calculateStudyStreak() int {
 	var sessions []models.StudySession
-	if err := h.db.Order("completed_at DESC").Find(&sessions).Error; err != nil {
+	if err := h.db.Where("completed_at IS NOT NULL AND deleted_at IS NULL").
+		Order("completed_at DESC").
+		Find(&sessions).Error; err != nil {
 		return 0
 	}
 

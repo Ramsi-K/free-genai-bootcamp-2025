@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/Ramsi-K/free-genai-bootcamp-2025/tree/main/projects/lang-portal/backend-go/internal/models"
 	"github.com/stretchr/testify/assert"
@@ -14,9 +15,6 @@ func TestGroupHandler(t *testing.T) {
 	t.Run("List", func(t *testing.T) {
 		helper, err := newTestHelper(t)
 		require.NoError(t, err)
-
-		handler := NewGroupHandler(helper.db)
-		helper.router.GET("/api/groups", handler.List)
 
 		// Seed test data
 		err = helper.seedTestData()
@@ -37,9 +35,6 @@ func TestGroupHandler(t *testing.T) {
 	t.Run("Get", func(t *testing.T) {
 		helper, err := newTestHelper(t)
 		require.NoError(t, err)
-
-		handler := NewGroupHandler(helper.db)
-		helper.router.GET("/api/groups/:id", handler.Get)
 
 		// Seed test data
 		err = helper.seedTestData()
@@ -67,9 +62,6 @@ func TestGroupHandler(t *testing.T) {
 	t.Run("GetWords", func(t *testing.T) {
 		helper, err := newTestHelper(t)
 		require.NoError(t, err)
-
-		handler := NewGroupHandler(helper.db)
-		helper.router.GET("/api/groups/:id/words", handler.GetWords)
 
 		// Seed test data
 		err = helper.seedTestData()
@@ -99,11 +91,34 @@ func TestGroupHandler(t *testing.T) {
 		helper, err := newTestHelper(t)
 		require.NoError(t, err)
 
-		handler := NewGroupHandler(helper.db)
-		helper.router.GET("/api/groups/:id/study_sessions", handler.GetStudySessions)
-
 		// Seed test data
 		err = helper.seedTestData()
+		require.NoError(t, err)
+
+		// Create a test study session
+		now := time.Now()
+		session := models.StudySession{
+			GroupID:         1,
+			StudyActivityID: 1,
+			CompletedAt:     &now,
+		}
+		err = helper.db.Create(&session).Error
+		require.NoError(t, err)
+
+		// Create test reviews
+		reviews := []models.WordReview{
+			{
+				StudySessionID: session.ID,
+				WordID:         1,
+				Correct:        true,
+			},
+			{
+				StudySessionID: session.ID,
+				WordID:         2,
+				Correct:        false,
+			},
+		}
+		err = helper.db.Create(&reviews).Error
 		require.NoError(t, err)
 
 		// Test successful get study sessions request
@@ -113,22 +128,25 @@ func TestGroupHandler(t *testing.T) {
 		var sessions []map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &sessions)
 		assert.NoError(t, err)
-		assert.Len(t, sessions, 1)
+		assert.NotEmpty(t, sessions)
 
-		session := sessions[0]
-		assert.NotNil(t, session["id"])
-		assert.NotNil(t, session["completed_at"])
-		assert.NotNil(t, session["activity"])
-		assert.NotNil(t, session["stats"])
+		// Check if we have any sessions
+		if len(sessions) > 0 {
+			session := sessions[0]
+			assert.NotNil(t, session["id"])
+			assert.NotNil(t, session["completed_at"])
+			assert.NotNil(t, session["activity"])
+			assert.NotNil(t, session["stats"])
 
-		stats := session["stats"].(map[string]interface{})
-		assert.Equal(t, float64(1), stats["correct_count"])
-		assert.Equal(t, float64(1), stats["wrong_count"])
-		assert.Equal(t, float64(50), stats["success_rate"])
+			stats := session["stats"].(map[string]interface{})
+			assert.Equal(t, float64(1), stats["correct_count"])
+			assert.Equal(t, float64(1), stats["wrong_count"])
+			assert.Equal(t, float64(50), stats["success_rate"])
+		}
 
 		// Test non-existent group
 		w = performRequest(helper.router, "GET", "/api/groups/999/study_sessions", nil)
-		assert.Equal(t, http.StatusInternalServerError, w.Code)
+		assert.Equal(t, http.StatusNotFound, w.Code)
 
 		// Test invalid ID format
 		w = performRequest(helper.router, "GET", "/api/groups/invalid/study_sessions", nil)

@@ -19,9 +19,14 @@ func NewSentencePracticeHandler(db *gorm.DB) *SentencePracticeHandler {
 // GetPracticeSentence returns a random sentence for practice from data_korean.json
 func (h *SentencePracticeHandler) GetPracticeSentence(c *gin.Context) {
 	var word models.Word
-	if err := h.db.Order("RANDOM()").
-		Where("example_sentence IS NOT NULL").
-		First(&word).Error; err != nil {
+	err := h.db.Where("deleted_at IS NULL").
+		Order("RANDOM()").
+		First(&word).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": "No practice sentence found"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching practice sentence"})
 		return
 	}
@@ -50,7 +55,7 @@ func (h *SentencePracticeHandler) SubmitSentenceAttempt(c *gin.Context) {
 	}
 
 	var word models.Word
-	if err := h.db.First(&word, input.SentenceID).Error; err != nil {
+	if err := h.db.Where("id = ? AND deleted_at IS NULL", input.SentenceID).First(&word).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Sentence not found"})
 			return
@@ -90,8 +95,7 @@ func (h *SentencePracticeHandler) GetSentenceExamples(c *gin.Context) {
 	}
 
 	var words []models.Word
-	if err := h.db.Where("hangul = ? OR romanization = ?", word, word).
-		Where("example_sentence IS NOT NULL").
+	if err := h.db.Where("(hangul = ? OR romanization = ?) AND deleted_at IS NULL", word, word).
 		Find(&words).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching examples"})
 		return
@@ -117,12 +121,12 @@ func (h *SentencePracticeHandler) GetSentenceExamples(c *gin.Context) {
 func (h *SentencePracticeHandler) GetSentenceStatistics(c *gin.Context) {
 	var totalAttempts, correctAttempts int64
 
-	if err := h.db.Model(&models.SentencePracticeAttempt{}).Count(&totalAttempts).Error; err != nil {
+	if err := h.db.Model(&models.SentencePracticeAttempt{}).Where("deleted_at IS NULL").Count(&totalAttempts).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching statistics"})
 		return
 	}
 
-	if err := h.db.Model(&models.SentencePracticeAttempt{}).Where("correct = ?", true).Count(&correctAttempts).Error; err != nil {
+	if err := h.db.Model(&models.SentencePracticeAttempt{}).Where("correct = ? AND deleted_at IS NULL", true).Count(&correctAttempts).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching statistics"})
 		return
 	}

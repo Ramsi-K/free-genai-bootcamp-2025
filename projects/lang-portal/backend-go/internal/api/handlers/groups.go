@@ -19,7 +19,7 @@ func NewGroupHandler(db *gorm.DB) *GroupHandler {
 
 func (h *GroupHandler) List(c *gin.Context) {
 	var groups []models.Group
-	if err := h.db.Find(&groups).Error; err != nil {
+	if err := h.db.Where("deleted_at IS NULL").Find(&groups).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching groups"})
 		return
 	}
@@ -37,7 +37,7 @@ func (h *GroupHandler) Get(c *gin.Context) {
 	}
 
 	var group models.Group
-	if err := h.db.First(&group, id).Error; err != nil {
+	if err := h.db.Where("id = ? AND deleted_at IS NULL", id).First(&group).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Group not found"})
 			return
@@ -59,7 +59,10 @@ func (h *GroupHandler) GetWords(c *gin.Context) {
 	}
 
 	var group models.Group
-	if err := h.db.Preload("Words.Groups").First(&group, id).Error; err != nil {
+	if err := h.db.Where("id = ? AND deleted_at IS NULL", id).
+		Preload("Words", "deleted_at IS NULL").
+		Preload("Words.Groups", "deleted_at IS NULL").
+		First(&group).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Group not found"})
 			return
@@ -89,8 +92,19 @@ func (h *GroupHandler) GetStudySessions(c *gin.Context) {
 		return
 	}
 
+	// First check if group exists
+	var group models.Group
+	if err := h.db.Where("id = ? AND deleted_at IS NULL", id).First(&group).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Group not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching group"})
+		return
+	}
+
 	var sessions []models.StudySession
-	if err := h.db.Where("group_id = ?", id).
+	if err := h.db.Where("group_id = ? AND deleted_at IS NULL", id).
 		Preload("Activity").
 		Preload("Reviews").
 		Order("completed_at DESC").
