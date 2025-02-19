@@ -14,19 +14,20 @@ type WordsGroups struct {
 }
 
 type Word struct {
-	gorm.Model                // Adds ID, CreatedAt, UpdatedAt, DeletedAt
-	Hangul       string       `gorm:"not null" json:"hangul"`
-	Romanization string       `gorm:"not null" json:"romanization"`
-	English      []string     `gorm:"serializer:json;not null" json:"english"`
-	Type         string       `gorm:"not null" json:"type"`
-	Example      Example      `gorm:"embedded" json:"example"`
-	Groups       []Group      `gorm:"many2many:words_groups;" json:"word_groups,omitempty"`
-	Reviews      []WordReview `gorm:"foreignKey:WordID" json:"-"`
+	gorm.Model                   // Adds ID, CreatedAt, UpdatedAt, DeletedAt
+	Hangul          string       `gorm:"not null" json:"hangul"`
+	Romanization    string       `gorm:"not null" json:"romanization"`
+	English         []string     `gorm:"serializer:json;not null" json:"english"`
+	Type            string       `gorm:"not null" json:"type"`
+	WordGroups      []string     `gorm:"-" json:"word_groups"` // Transient field for group names
+	ExampleSentence Example      `gorm:"embedded" json:"example"`
+	Groups          []Group      `gorm:"many2many:words_groups;" json:"word_groups,omitempty"`
+	Reviews         []WordReview `gorm:"foreignKey:WordID" json:"-"`
 }
 
 type Example struct {
-	Korean  string `gorm:"column:example_korean" json:"korean"`
-	English string `gorm:"column:example_english" json:"english"`
+	Korean  string `json:"korean"`
+	English string `json:"english"`
 }
 
 type Group struct {
@@ -130,4 +131,14 @@ func (w *Word) MarshalJSON() ([]byte, error) {
 		Alias:           (*Alias)(w),
 		StudyStatistics: stats,
 	})
+}
+
+type SentencePracticeAttempt struct {
+	ID              uint   `gorm:"primaryKey"`
+	WordID          uint   `gorm:"not null;index"`
+	Word            Word   `gorm:"foreignKey:WordID"`
+	UserTranslation string `gorm:"not null"`
+	Correct         bool   `gorm:"not null"`
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
 }

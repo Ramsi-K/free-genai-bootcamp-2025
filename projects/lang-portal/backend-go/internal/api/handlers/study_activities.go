@@ -127,3 +127,32 @@ func (h *StudyActivityHandler) Launch(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, session)
 }
+
+// Create creates a new study activity
+func (h *StudyActivityHandler) Create(c *gin.Context) {
+	var input struct {
+		Name         string `json:"name" binding:"required"`
+		Description  string `json:"description"`
+		Type         string `json:"type" binding:"required"`
+		ThumbnailURL string `json:"thumbnail_url"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	activity := models.StudyActivity{
+		Name:         input.Name,
+		Description:  input.Description,
+		Type:         input.Type,
+		ThumbnailURL: input.ThumbnailURL,
+	}
+
+	if err := h.db.Create(&activity).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating study activity"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, activity)
+}

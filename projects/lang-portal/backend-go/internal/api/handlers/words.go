@@ -33,7 +33,7 @@ func (h *WordHandler) List(c *gin.Context) {
 	}
 
 	var words []models.Word
-	query := h.db.Model(&models.Word{}).Preload("Reviews")
+	query := h.db.Model(&models.Word{}).Preload("Groups")
 
 	// Apply sorting
 	if pagination.SortBy != "" {
@@ -62,6 +62,15 @@ func (h *WordHandler) List(c *gin.Context) {
 		return
 	}
 
+	// Extract group names for each word
+	for i := range words {
+		groupNames := make([]string, len(words[i].Groups))
+		for j, group := range words[i].Groups {
+			groupNames[j] = group.Name
+		}
+		words[i].WordGroups = groupNames
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"words": words,
 		"pagination": gin.H{
@@ -83,7 +92,7 @@ func (h *WordHandler) Get(c *gin.Context) {
 	}
 
 	var word models.Word
-	if err := h.db.Preload("Reviews").Preload("Groups").First(&word, id).Error; err != nil {
+	if err := h.db.Preload("Groups").First(&word, id).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Word not found"})
 			return
@@ -91,6 +100,13 @@ func (h *WordHandler) Get(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching word"})
 		return
 	}
+
+	// Extract group names for the response
+	groupNames := make([]string, len(word.Groups))
+	for i, group := range word.Groups {
+		groupNames[i] = group.Name
+	}
+	word.WordGroups = groupNames
 
 	c.JSON(http.StatusOK, word)
 }

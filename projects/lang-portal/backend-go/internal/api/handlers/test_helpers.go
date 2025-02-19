@@ -36,7 +36,15 @@ func setupTestDB(t *testing.T, seedWords []models.Word) (*gorm.DB, error) {
 	}
 
 	// Auto migrate the schema
-	err = db.AutoMigrate(&models.Word{}, &models.Group{}, &models.StudyActivity{}, &models.StudySession{}, &models.WordReview{}, &models.WordsGroups{})
+	err = db.AutoMigrate(
+		&models.Word{},
+		&models.Group{},
+		&models.StudyActivity{},
+		&models.StudySession{},
+		&models.WordReview{},
+		&models.WordsGroups{},
+		&models.SentencePracticeAttempt{},
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -63,6 +71,7 @@ func setupTestRouter(db *gorm.DB) *gin.Engine {
 	studyActivityHandler := NewStudyActivityHandler(db)
 	dashboardHandler := NewDashboardHandler(db)
 	settingsHandler := NewSettingsHandler(db)
+	sentencePracticeHandler := NewSentencePracticeHandler(db)
 
 	// Register routes
 	r.GET("/api/words", wordHandler.List)
@@ -77,6 +86,12 @@ func setupTestRouter(db *gorm.DB) *gin.Engine {
 	r.POST("/api/settings/reset-history", settingsHandler.ResetHistory)
 	r.POST("/api/settings/full-reset", settingsHandler.FullReset)
 
+	// Sentence practice routes
+	r.GET("/api/sentence_practice", sentencePracticeHandler.GetPracticeSentence)
+	r.POST("/api/sentence_practice/attempt", sentencePracticeHandler.SubmitSentenceAttempt)
+	r.GET("/api/sentence_practice/examples", sentencePracticeHandler.GetSentenceExamples)
+	r.GET("/api/sentence_practice/statistics", sentencePracticeHandler.GetSentenceStatistics)
+
 	return r
 }
 
@@ -87,7 +102,7 @@ func getTestWords() []models.Word {
 			Romanization: "hakgyo",
 			English:      []string{"school"},
 			Type:         "noun",
-			Example: models.Example{
+			ExampleSentence: models.Example{
 				Korean:  "나는 학교에 갑니다",
 				English: "I go to school",
 			},
@@ -97,7 +112,7 @@ func getTestWords() []models.Word {
 			Romanization: "sagwa",
 			English:      []string{"apple"},
 			Type:         "noun",
-			Example: models.Example{
+			ExampleSentence: models.Example{
 				Korean:  "사과를 먹습니다",
 				English: "I eat an apple",
 			},

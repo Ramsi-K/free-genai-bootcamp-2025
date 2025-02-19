@@ -17,7 +17,7 @@ func NewSettingsHandler(db *gorm.DB) *SettingsHandler {
 }
 
 func (h *SettingsHandler) ResetHistory(c *gin.Context) {
-	// Delete all study sessions and word reviews
+	// Delete all study sessions, word reviews, and sentence practice attempts
 	if err := h.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&models.StudySession{}).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error resetting study sessions"})
 		return
@@ -25,6 +25,11 @@ func (h *SettingsHandler) ResetHistory(c *gin.Context) {
 
 	if err := h.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&models.WordReview{}).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error resetting word reviews"})
+		return
+	}
+
+	if err := h.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&models.SentencePracticeAttempt{}).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error resetting sentence practice attempts"})
 		return
 	}
 
@@ -40,6 +45,7 @@ func (h *SettingsHandler) FullReset(c *gin.Context) {
 		&models.WordsGroups{},
 		&models.Word{},
 		&models.Group{},
+		&models.SentencePracticeAttempt{},
 	); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error dropping tables"})
 		return
@@ -53,6 +59,7 @@ func (h *SettingsHandler) FullReset(c *gin.Context) {
 		&models.StudyActivity{},
 		&models.StudySession{},
 		&models.WordReview{},
+		&models.SentencePracticeAttempt{},
 	); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error recreating tables"})
 		return

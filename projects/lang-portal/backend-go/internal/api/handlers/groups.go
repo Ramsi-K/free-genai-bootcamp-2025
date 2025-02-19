@@ -59,13 +59,22 @@ func (h *GroupHandler) GetWords(c *gin.Context) {
 	}
 
 	var group models.Group
-	if err := h.db.Preload("Words").First(&group, id).Error; err != nil {
+	if err := h.db.Preload("Words.Groups").First(&group, id).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Group not found"})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching group"})
 		return
+	}
+
+	// Extract group names for each word
+	for i := range group.Words {
+		groupNames := make([]string, len(group.Words[i].Groups))
+		for j, g := range group.Words[i].Groups {
+			groupNames[j] = g.Name
+		}
+		group.Words[i].WordGroups = groupNames
 	}
 
 	c.JSON(http.StatusOK, group.Words)
