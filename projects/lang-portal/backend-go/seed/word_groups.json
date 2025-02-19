@@ -1,30 +1,130 @@
-[
-    {
-      "group_name": "Common Verbs",
+{
+  "groups": {
+    "Telling the Time": {
+      "description": "Words related to time, schedules, and temporal concepts",
       "words": [
-        {"hangul": "하다", "romanization": "hada", "english": "to do"},
-        {"hangul": "가다", "romanization": "gada", "english": "to go"},
-        {"hangul": "오다", "romanization": "oda", "english": "to come"},
-        {"hangul": "먹다", "romanization": "meokda", "english": "to eat"}
+        {
+          "hangul": "시간",
+          "romanization": "sigan",
+          "english": ["time", "hour"]
+        }
       ]
     },
-    {
-      "group_name": "Common Nouns",
+    "Numbers": {
+      "description": "Numerical terms and counting words",
       "words": [
-        {"hangul": "책", "romanization": "chaek", "english": "book"},
-        {"hangul": "학교", "romanization": "hakgyo", "english": "school"},
-        {"hangul": "학생", "romanization": "haksaeng", "english": "student"},
-        {"hangul": "컴퓨터", "romanization": "keompyuteo", "english": "computer"}
+        {
+          "hangul": "수",
+          "romanization": "su",
+          "english": ["way", "means", "possibility"]
+        }
       ]
     },
-    {
-      "group_name": "Basic Adjectives",
+    "Opposites": {
+      "description": "Words that express contrary concepts",
+      "words": []
+    },
+    "The House": {
+      "description": "Words related to home, furniture, and household items",
+      "words": []
+    },
+    "Animals": {
+      "description": "Words for animals and animal-related terms",
+      "words": []
+    },
+    "Family": {
+      "description": "Words for family members and relationships",
       "words": [
-        {"hangul": "좋다", "romanization": "jota", "english": "good"},
-        {"hangul": "나쁘다", "romanization": "nappeuda", "english": "bad"},
-        {"hangul": "크다", "romanization": "keuda", "english": "big"},
-        {"hangul": "작다", "romanization": "jakda", "english": "small"}
+        {
+          "hangul": "아버지",
+          "romanization": "abeoji",
+          "english": ["father", "dad"]
+        }
       ]
+    },
+    "School": {
+      "description": "Educational terms and academic concepts",
+      "words": [
+        {
+          "hangul": "학교",
+          "romanization": "hakgyo",
+          "english": ["school"]
+        }
+      ]
+    },
+    "Shopping": {
+      "description": "Words related to buying, selling, and commerce",
+      "words": []
+    },
+    "Food": {
+      "description": "Words for food, drinks, and cooking",
+      "words": []
+    },
+    "Body Actions": {
+      "description": "Verbs describing physical actions and body movements",
+      "words": [
+        {
+          "hangul": "하다",
+          "romanization": "hada",
+          "english": ["to do", "to make"]
+        }
+      ]
+    },
+    "Frequency & Degree": {
+      "description": "Words expressing how often or how much",
+      "words": []
+    },
+    "Weather": {
+      "description": "Words related to climate and weather conditions",
+      "words": []
+    },
+    "Transportation": {
+      "description": "Words for vehicles and travel methods",
+      "words": []
+    },
+    "Religion": {
+      "description": "Words related to religious concepts and practices",
+      "words": []
+    },
+    "Colours": {
+      "description": "Words describing colors",
+      "words": []
+    },
+    "Abstract": {
+      "description": "Conceptual and philosophical terms",
+      "words": []
+    },
+    "Technology & Science": {
+      "description": "Words related to technology, scientific concepts, and modern innovations",
+      "words": []
+    },
+    "Emotions & Feelings": {
+      "description": "Words describing emotional states, feelings, and personal sentiments",
+      "words": []
+    },
+    "Grammar & Structure": {
+      "description": "Grammatical elements, particles, and structural words",
+      "words": [
+        {
+          "hangul": "것",
+          "romanization": "geot",
+          "english": ["a thing", "an object"]
+        },
+        {
+          "hangul": "하다",
+          "romanization": "hada",
+          "english": ["to do", "to make"]
+        }
+      ]
+    },
+    "Cultural Concepts": {
+      "description": "Korean-specific cultural terms, traditions, and social practices",
+      "words": []
+    },
+    "Social & Political": {
+      "description": "Words related to society, politics, and civic life",
+      "words": []
     }
-  ]
+  }
+}
   

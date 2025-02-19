@@ -1,5 +1,74 @@
 ## Frontend Technical Spec (English - Korean JSON Format)
 
+# **📌 JSON Data Structures**
+
+## Word Data Structure
+```json
+{
+  "id": 1,
+  "hangul": "학교",
+  "romanization": "hakgyo",
+  "type": "noun",
+  "english": ["school"],
+  "word_groups": ["School", "Education"],
+  "example_sentence": {
+    "korean": "그는 학교에서 저보다 한 학년 위였어요.",
+    "english": "He was a year ahead of me in school."
+  },
+  "study_statistics": {
+    "correct_count": 10,
+    "wrong_count": 2
+  },
+  "created_at": "2024-03-15T10:00:00Z",
+  "updated_at": "2024-03-15T10:00:00Z"
+}
+```
+
+## Word Group Data Structure
+```json
+{
+  "id": 1,
+  "name": "School-related Words",
+  "description": "Words related to education and school life",
+  "words": [
+    {
+      "hangul": "학교",
+      "romanization": "hakgyo",
+      "english": ["school"]
+    }
+  ],
+  "created_at": "2024-03-15T10:00:00Z",
+  "updated_at": "2024-03-15T10:00:00Z"
+}
+```
+
+## Study Session Data Structure
+```json
+{
+  "id": 1,
+  "group_id": 1,
+  "activity_id": 1,
+  "correct_count": 8,
+  "wrong_count": 2,
+  "completed_at": "2024-03-15T10:30:00Z",
+  "created_at": "2024-03-15T10:00:00Z",
+  "updated_at": "2024-03-15T10:30:00Z"
+}
+```
+
+## Study Activity Data Structure
+```json
+{
+  "id": 1,
+  "name": "Typing Practice",
+  "description": "Practice typing Korean words",
+  "thumbnail": "typing_practice.png",
+  "launch_url": "/activities/typing",
+  "created_at": "2024-03-15T10:00:00Z",
+  "updated_at": "2024-03-15T10:00:00Z"
+}
+```
+
 # **📌 JSON Data Sources for API Endpoints**
 
 | **API Endpoint**                            | **JSON/Data Source**          | **What It Retrieves**                                  | **Notes** |
@@ -140,7 +209,8 @@ This page displays all words available in the database.
       "english":[
           "school"
       ],
-      "example":{
+      "word_groups" : [],
+      "example_sentence":{
           "korean":"그는 학교에서 저보다 한 학년 위였어요.",
           "english":"He was a year ahead of me in school."
       },

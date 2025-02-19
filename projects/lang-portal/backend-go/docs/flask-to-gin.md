@@ -90,41 +90,113 @@ lang-portal/
 ```go
 // internal/models/word.go
 type Word struct {
-    ID            uint      `gorm:"primaryKey"`
-    Hangul        string    `gorm:"not null"`
-    Romanization  string    `gorm:"not null"`
-    English       []string  `gorm:"type:json;not null"` // Store as JSON
-    Type          string    `gorm:"not null"`
-    ExampleKorean string
-    ExampleEnglish string
+    ID              uint      `gorm:"primaryKey"`
+    Hangul          string    `gorm:"not null"`
+    Romanization    string    `gorm:"not null"`
+    English         []string  `gorm:"type:json;not null"` // Store as JSON
+    Type            string    `gorm:"not null"`
+    WordGroups      []string  `gorm:"type:json"`
+    ExampleSentence struct {
+        Korean  string `json:"korean"`
+        English string `json:"english"`
+    } `gorm:"type:json"`
+    StudyStatistics struct {
+        CorrectCount int `json:"correct_count"`
+        WrongCount   int `json:"wrong_count"`
+    } `gorm:"type:json"`
+    CreatedAt       time.Time
+    UpdatedAt       time.Time
+}
+
+// internal/models/word_group.go
+type WordGroup struct {
+    ID          uint      `gorm:"primaryKey"`
+    Name        string    `gorm:"not null"`
+    Description string    `gorm:"not null"`
+    Words       []Word    `gorm:"many2many:group_words"`
+    CreatedAt   time.Time
+    UpdatedAt   time.Time
+}
+
+// internal/models/study_session.go
+type StudySession struct {
+    ID              uint      `gorm:"primaryKey"`
+    GroupID         uint      `gorm:"index"`
+    ActivityID      uint      `gorm:"index"`
+    CorrectCount    int
+    WrongCount      int
+    CompletedAt     time.Time
+    CreatedAt       time.Time
+    UpdatedAt       time.Time
+}
+
+// internal/models/study_activity.go
+type StudyActivity struct {
+    ID          uint      `gorm:"primaryKey"`
+    Name        string    `gorm:"not null"`
+    Description string
+    Thumbnail   string
+    LaunchURL   string    `gorm:"not null"`
+    CreatedAt   time.Time
+    UpdatedAt   time.Time
 }
 ```
 
 **Justification:**
+- Added all fields from frontend spec and JSON data
+- Proper GORM tags for validation and DB mapping
+- JSON storage for arrays and nested structures
+- Added timestamp fields for tracking
+- Added study statistics tracking
+- Added proper relationships between models
 
-- Use struct tags for validation and DB mapping
-- Store English meanings as JSON for flexibility
-- Leverage Go's strong typing
-
-### 3.2 Request Handling
+### 3.2 API Endpoints
 
 ```go
-// internal/api/handlers/words.go
-func (h *WordHandler) List(c *gin.Context) {
-    var pagination utils.Pagination
-    if err := c.ShouldBindQuery(&pagination); err != nil {
-        c.JSON(400, gin.H{"error": err.Error()})
-        return
-    }
-    // ... handler logic
+// internal/api/router/router.go
+func SetupRouter(h *handlers.Handler) *gin.Engine {
+    r := gin.Default()
+    
+    // Words endpoints
+    r.GET("/api/words", h.ListWords)
+    r.GET("/api/words/:id", h.GetWord)
+    
+    // Groups endpoints
+    r.GET("/api/groups", h.ListGroups)
+    r.GET("/api/groups/:id", h.GetGroup)
+    r.GET("/api/groups/:id/words", h.GetGroupWords)
+    r.GET("/api/groups/:id/study_sessions", h.GetGroupStudySessions)
+    
+    // Dashboard endpoints
+    r.GET("/api/dashboard/last_study_session", h.GetLastStudySession)
+    r.GET("/api/dashboard/study_progress", h.GetStudyProgress)
+    r.GET("/api/dashboard/quick_stats", h.GetQuickStats)
+    
+    // Study activities endpoints
+    r.GET("/api/study_activities", h.ListStudyActivities)
+    r.GET("/api/study_activities/:id", h.GetStudyActivity)
+    r.GET("/api/study_activities/:id/study_sessions", h.GetActivityStudySessions)
+    r.POST("/api/study_activities", h.CreateStudySession)
+    
+    // Sentence practice endpoints
+    r.GET("/api/sentence_practice", h.GetPracticeSentence)
+    r.POST("/api/sentence_practice/attempt", h.SubmitSentenceAttempt)
+    r.GET("/api/sentence_practice/examples", h.GetSentenceExamples)
+    r.GET("/api/sentence_practice/statistics", h.GetSentenceStatistics)
+    
+    // Settings endpoints
+    r.POST("/api/reset_history", h.ResetHistory)
+    r.POST("/api/full_reset", h.FullReset)
+    
+    return r
 }
 ```
 
 **Justification:**
-
-- Structured error handling
-- Request validation using Gin
-- Clear separation of concerns
+- Complete API coverage matching frontend requirements
+- RESTful endpoint design
+- Proper route grouping
+- Consistent naming convention
 
 ## 4. Performance Optimizations
 
