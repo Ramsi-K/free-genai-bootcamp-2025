@@ -22,11 +22,6 @@ type WordData struct {
 	} `json:"example_sentence"`
 }
 
-type WordGroupMapping struct {
-	Hangul     string   `json:"hangul"`
-	GroupNames []string `json:"group_names"`
-}
-
 // LoadSeedData is the main entry point for seeding the database
 func LoadSeedData(db *gorm.DB) error {
 	// Get the current working directory
@@ -82,33 +77,6 @@ func SeedDatabase(db *gorm.DB, dataDir string) error {
 		}
 	}
 
-	// Load word-group mappings to create unique groups
-	mappings, err := loadWordGroupMappings(dataDir)
-	if err != nil {
-		tx.Rollback()
-		return fmt.Errorf("failed to load word-group mappings: %v", err)
-	}
-
-	// Create unique groups from mappings
-	uniqueGroups := make(map[string]int)
-	for _, mapping := range mappings {
-		for _, groupName := range mapping.GroupNames {
-			uniqueGroups[groupName]++
-		}
-	}
-
-	// Create groups with word counts
-	for groupName, count := range uniqueGroups {
-		group := models.Group{
-			Name:       groupName,
-			WordsCount: count,
-		}
-		if err := tx.Create(&group).Error; err != nil {
-			tx.Rollback()
-			return fmt.Errorf("failed to create group %s: %v", groupName, err)
-		}
-	}
-
 	// Create default study activities
 	activities := []models.StudyActivity{
 		{
@@ -148,7 +116,6 @@ func cleanDatabase(tx *gorm.DB) error {
 	// Clean up tables using Unscoped() to permanently delete rows
 	models := []interface{}{
 		&models.Word{},
-		&models.Group{},
 		&models.StudyActivity{},
 		&models.StudySession{},
 		&models.WordReview{},
@@ -175,20 +142,6 @@ func loadWords(dataDir string) ([]WordData, error) {
 	}
 
 	return words, nil
-}
-
-func loadWordGroupMappings(dataDir string) ([]WordGroupMapping, error) {
-	file, err := os.ReadFile(filepath.Join(dataDir, "word_groups.json"))
-	if err != nil {
-		return nil, fmt.Errorf("error reading word_groups.json: %v", err)
-	}
-
-	var mappings []WordGroupMapping
-	if err := json.Unmarshal(file, &mappings); err != nil {
-		return nil, fmt.Errorf("error unmarshaling word_groups.json: %v", err)
-	}
-
-	return mappings, nil
 }
 
 // SeedTestData inserts test data into the database
@@ -220,19 +173,6 @@ func SeedTestData(db *gorm.DB) error {
 	// Insert words into database
 	for _, word := range words {
 		if err := db.Create(&word).Error; err != nil {
-			return err
-		}
-	}
-
-	// Create test groups
-	groups := []models.Group{
-		{Name: "School"},
-		{Name: "Food"},
-	}
-
-	// Insert groups into database
-	for _, group := range groups {
-		if err := db.Create(&group).Error; err != nil {
 			return err
 		}
 	}

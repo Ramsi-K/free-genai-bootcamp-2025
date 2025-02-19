@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -29,12 +30,38 @@ type GroupResponse struct {
 }
 
 type GroupHandler struct {
-	db *gorm.DB
+	db      *gorm.DB
+	dataDir string // Directory containing word_groups.json
 }
 
 // NewGroupHandler creates a new instance of GroupHandler
 func NewGroupHandler(db *gorm.DB) *GroupHandler {
-	return &GroupHandler{db: db}
+	// Try to find the seed directory relative to the working directory
+	cwd, err := os.Getwd()
+	if err != nil {
+		// If we can't get working directory, use current directory
+		cwd = "."
+	}
+
+	// Check if we're in a test environment
+	if _, err := os.Stat(filepath.Join(cwd, "seed", "word_groups.json")); os.IsNotExist(err) {
+		// Look for test data directory
+		testDir := filepath.Join(cwd, "seed")
+		if _, err := os.Stat(filepath.Join(testDir, "word_groups.json")); os.IsNotExist(err) {
+			// Try parent directory
+			parentDir := filepath.Join(cwd, "..", "seed")
+			if _, err := os.Stat(filepath.Join(parentDir, "word_groups.json")); err == nil {
+				cwd = filepath.Dir(parentDir)
+			}
+		} else {
+			cwd = filepath.Dir(testDir)
+		}
+	}
+
+	return &GroupHandler{
+		db:      db,
+		dataDir: cwd,
+	}
 }
 
 // Get retrieves a specific group by its ID
@@ -46,33 +73,35 @@ func (h *GroupHandler) Get(c *gin.Context) {
 		return
 	}
 
-	// Load all groups
+	// Load word-group mappings
 	mappings, err := h.loadWordGroupMappings()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to load word groups: %v", err)})
 		return
 	}
 
-	// Count words in each group
+	// Get unique sorted group names
 	groupCounts := make(map[string]int)
+	var uniqueGroups []string
 	for _, mapping := range mappings {
 		for _, groupName := range mapping.GroupNames {
+			if _, exists := groupCounts[groupName]; !exists {
+				uniqueGroups = append(uniqueGroups, groupName)
+			}
 			groupCounts[groupName]++
 		}
 	}
 
-	// Find group by ID
-	var groups []string
-	for name := range groupCounts {
-		groups = append(groups, name)
-	}
+	// Sort group names for consistent ordering
+	sort.Strings(uniqueGroups)
 
-	if int(id) > len(groups) || id < 1 {
+	// Check if ID is valid
+	if int(id) > len(uniqueGroups) || id < 1 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Group not found"})
 		return
 	}
 
-	groupName := groups[id-1]
+	groupName := uniqueGroups[id-1]
 	c.JSON(http.StatusOK, GroupResponse{
 		ID:         uint(id),
 		Name:       groupName,
@@ -89,33 +118,35 @@ func (h *GroupHandler) GetWords(c *gin.Context) {
 		return
 	}
 
-	// Load all groups
+	// Load word-group mappings
 	mappings, err := h.loadWordGroupMappings()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to load word groups: %v", err)})
 		return
 	}
 
-	// Get list of group names
-	var groups []string
-	groupCounts := make(map[string]int)
+	// Get unique sorted group names
+	var uniqueGroups []string
+	groupMap := make(map[string]bool)
 	for _, mapping := range mappings {
 		for _, groupName := range mapping.GroupNames {
-			if _, exists := groupCounts[groupName]; !exists {
-				groups = append(groups, groupName)
-				groupCounts[groupName] = 1
-			} else {
-				groupCounts[groupName]++
+			if !groupMap[groupName] {
+				uniqueGroups = append(uniqueGroups, groupName)
+				groupMap[groupName] = true
 			}
 		}
 	}
 
-	if int(id) > len(groups) || id < 1 {
+	// Sort group names for consistent ordering
+	sort.Strings(uniqueGroups)
+
+	// Check if ID is valid
+	if int(id) > len(uniqueGroups) || id < 1 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Group not found"})
 		return
 	}
 
-	groupName := groups[id-1]
+	groupName := uniqueGroups[id-1]
 
 	// Find words in this group
 	var wordsInGroup []string
@@ -154,22 +185,27 @@ func (h *GroupHandler) List(c *gin.Context) {
 
 	// Count words in each group and create unique groups
 	groupCounts := make(map[string]int)
+	var uniqueGroups []string
 	for _, mapping := range mappings {
 		for _, groupName := range mapping.GroupNames {
+			if _, exists := groupCounts[groupName]; !exists {
+				uniqueGroups = append(uniqueGroups, groupName)
+			}
 			groupCounts[groupName]++
 		}
 	}
 
+	// Sort group names for consistent ordering
+	sort.Strings(uniqueGroups)
+
 	// Convert to response format with IDs
-	var response []GroupResponse
-	id := uint(1)
-	for name, count := range groupCounts {
-		response = append(response, GroupResponse{
-			ID:         id,
+	response := make([]GroupResponse, len(uniqueGroups))
+	for i, name := range uniqueGroups {
+		response[i] = GroupResponse{
+			ID:         uint(i + 1),
 			Name:       name,
-			WordsCount: count,
-		})
-		id++
+			WordsCount: groupCounts[name],
+		}
 	}
 
 	c.JSON(http.StatusOK, response)
@@ -212,16 +248,25 @@ func (h *GroupHandler) GetStudySessions(c *gin.Context) {
 }
 
 func (h *GroupHandler) loadWordGroupMappings() ([]WordGroupMapping, error) {
-	// Get the current working directory
-	cwd, err := os.Getwd()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get working directory: %v", err)
+	// Try to find word_groups.json in multiple locations
+	locations := []string{
+		filepath.Join(h.dataDir, "seed", "word_groups.json"),
+		filepath.Join("seed", "word_groups.json"),
+		filepath.Join("..", "seed", "word_groups.json"),
+		filepath.Join("..", "..", "seed", "word_groups.json"),
 	}
 
-	// Read word_groups.json
-	file, err := os.ReadFile(filepath.Join(cwd, "seed", "word_groups.json"))
+	var file []byte
+	var err error
+	for _, loc := range locations {
+		file, err = os.ReadFile(loc)
+		if err == nil {
+			break
+		}
+	}
+
 	if err != nil {
-		return nil, fmt.Errorf("error reading word_groups.json: %v", err)
+		return nil, fmt.Errorf("error reading word_groups.json from any location: %v", err)
 	}
 
 	var mappings []WordGroupMapping

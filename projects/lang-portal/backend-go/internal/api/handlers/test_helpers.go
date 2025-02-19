@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/Ramsi-K/free-genai-bootcamp-2025/projects/lang-portal/backend-go/internal/models"
@@ -17,16 +19,67 @@ import (
 type testHelper struct {
 	db     *gorm.DB
 	router *gin.Engine
+	tmpDir string
 }
 
 func newTestHelper(t *testing.T) (*testHelper, error) {
-	db, err := setupTestDB(t)
+	// Create a temporary directory for test data
+	tmpDir, err := os.MkdirTemp("", "lang-portal-test-*")
 	if err != nil {
 		return nil, err
 	}
 
+	// Create seed directory
+	seedDir := filepath.Join(tmpDir, "seed")
+	if err := os.MkdirAll(seedDir, 0755); err != nil {
+		os.RemoveAll(tmpDir)
+		return nil, err
+	}
+
+	// Create test word_groups.json
+	wordGroups := []map[string]interface{}{
+		{
+			"hangul":      "학교",
+			"group_names": []string{"School", "Education", "Basic Words"},
+		},
+		{
+			"hangul":      "사과",
+			"group_names": []string{"Food", "Fruits", "Basic Words"},
+		},
+	}
+
+	wordGroupsData, err := json.Marshal(wordGroups)
+	if err != nil {
+		os.RemoveAll(tmpDir)
+		return nil, err
+	}
+
+	if err := os.WriteFile(filepath.Join(seedDir, "word_groups.json"), wordGroupsData, 0644); err != nil {
+		os.RemoveAll(tmpDir)
+		return nil, err
+	}
+
+	// Set up database
+	db, err := setupTestDB(t)
+	if err != nil {
+		os.RemoveAll(tmpDir)
+		return nil, err
+	}
+
+	// Set up router
 	router := setupTestRouter(db)
-	return &testHelper{db: db, router: router}, nil
+
+	return &testHelper{
+		db:     db,
+		router: router,
+		tmpDir: tmpDir,
+	}, nil
+}
+
+func (h *testHelper) Cleanup() {
+	if h.tmpDir != "" {
+		os.RemoveAll(h.tmpDir)
+	}
 }
 
 func setupTestDB(t *testing.T) (*gorm.DB, error) {
@@ -40,7 +93,6 @@ func setupTestDB(t *testing.T) (*gorm.DB, error) {
 	// Run migrations
 	err = db.AutoMigrate(
 		&models.Word{},
-		&models.Group{},
 		&models.StudyActivity{},
 		&models.StudySession{},
 		&models.WordReview{},
@@ -162,48 +214,33 @@ func parseWordList(w *httptest.ResponseRecorder) ([]map[string]interface{}, erro
 }
 
 func (h *testHelper) seedTestData() error {
-	// Begin transaction
-	tx := h.db.Begin()
-	if tx.Error != nil {
-		return tx.Error
-	}
-
-	// Clean up tables to prevent duplicate seed data using Unscoped() to permanently delete rows
-	if err := tx.Session(&gorm.Session{AllowGlobalUpdate: true}).Unscoped().Delete(&models.Word{}).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-	if err := tx.Session(&gorm.Session{AllowGlobalUpdate: true}).Unscoped().Delete(&models.Group{}).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-	if err := tx.Session(&gorm.Session{AllowGlobalUpdate: true}).Unscoped().Delete(&models.StudyActivity{}).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-	if err := tx.Session(&gorm.Session{AllowGlobalUpdate: true}).Unscoped().Delete(&models.StudySession{}).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-	if err := tx.Session(&gorm.Session{AllowGlobalUpdate: true}).Unscoped().Delete(&models.SentencePracticeAttempt{}).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
 	// Create test words
-	words := getTestWords()
-	for _, word := range words {
-		if err := tx.Create(&word).Error; err != nil {
-			tx.Rollback()
-			return err
-		}
+	words := []models.Word{
+		{
+			Hangul:       "학교",
+			Romanization: "hakgyo",
+			English:      []string{"school"},
+			Type:         "noun",
+			ExampleSentence: models.Example{
+				Korean:  "나는 학교에 갑니다",
+				English: "I go to school",
+			},
+		},
+		{
+			Hangul:       "사과",
+			Romanization: "sagwa",
+			English:      []string{"apple"},
+			Type:         "noun",
+			ExampleSentence: models.Example{
+				Korean:  "사과를 먹습니다",
+				English: "I eat an apple",
+			},
+		},
 	}
 
-	// Create test groups
-	groups := getTestGroups()
-	for _, group := range groups {
-		if err := tx.Create(&group).Error; err != nil {
-			tx.Rollback()
+	// Insert words into database
+	for _, word := range words {
+		if err := h.db.Create(&word).Error; err != nil {
 			return err
 		}
 	}
@@ -222,20 +259,13 @@ func (h *testHelper) seedTestData() error {
 			Type:         "multiple_choice",
 			ThumbnailURL: "/images/multiple_choice.png",
 		},
-		{
-			Name:         "Sentence Practice",
-			Description:  "Practice using words in sentences",
-			Type:         "sentence_practice",
-			ThumbnailURL: "/images/sentence_practice.png",
-		},
 	}
 
 	for _, activity := range activities {
-		if err := tx.Create(&activity).Error; err != nil {
-			tx.Rollback()
+		if err := h.db.Create(&activity).Error; err != nil {
 			return err
 		}
 	}
 
-	return tx.Commit().Error
+	return nil
 }
