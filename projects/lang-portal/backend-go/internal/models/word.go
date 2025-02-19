@@ -1,116 +1,39 @@
 package models
 
 import (
-	"database/sql/driver"
-	"encoding/json"
-	"errors"
 	"time"
-
-	"gorm.io/gorm"
 )
-
-// ExampleSentence represents a Korean-English sentence pair
-type ExampleSentence struct {
-	Korean  string `json:"korean"`
-	English string `json:"english"`
-}
-
-// Value implements the driver.Valuer interface for ExampleSentence
-func (es ExampleSentence) Value() (driver.Value, error) {
-	return json.Marshal(es)
-}
-
-// Scan implements the sql.Scanner interface for ExampleSentence
-func (es *ExampleSentence) Scan(value interface{}) error {
-	if value == nil {
-		return nil
-	}
-	bytes, ok := value.([]byte)
-	if !ok {
-		return errors.New("invalid scan source for ExampleSentence")
-	}
-	return json.Unmarshal(bytes, es)
-}
-
-// StudyStatistics represents learning progress statistics
-type StudyStatistics struct {
-	CorrectCount int `json:"correct_count"`
-	WrongCount   int `json:"wrong_count"`
-}
-
-// Value implements the driver.Valuer interface for StudyStatistics
-func (ss StudyStatistics) Value() (driver.Value, error) {
-	return json.Marshal(ss)
-}
-
-// Scan implements the sql.Scanner interface for StudyStatistics
-func (ss *StudyStatistics) Scan(value interface{}) error {
-	if value == nil {
-		return nil
-	}
-	bytes, ok := value.([]byte)
-	if !ok {
-		return errors.New("invalid scan source for StudyStatistics")
-	}
-	return json.Unmarshal(bytes, ss)
-}
-
-// StringSlice is a custom type for handling string arrays in SQLite
-type StringSlice []string
-
-// Value implements the driver.Valuer interface for StringSlice
-func (ss StringSlice) Value() (driver.Value, error) {
-	return json.Marshal(ss)
-}
-
-// Scan implements the sql.Scanner interface for StringSlice
-func (ss *StringSlice) Scan(value interface{}) error {
-	if value == nil {
-		return nil
-	}
-	bytes, ok := value.([]byte)
-	if !ok {
-		return errors.New("invalid scan source for StringSlice")
-	}
-	return json.Unmarshal(bytes, ss)
-}
 
 // Word represents a vocabulary word in the language learning system
 type Word struct {
-	ID              uint            `gorm:"primaryKey" json:"id"`
-	Hangul          string          `gorm:"not null;uniqueIndex" json:"hangul"`
-	Romanization    string          `gorm:"not null" json:"romanization"`
-	Type            string          `gorm:"not null" json:"type"`
-	English         StringSlice     `gorm:"type:json;not null" json:"english"`
-	Groups          []WordGroup     `gorm:"many2many:group_words" json:"groups,omitempty"`
-	ExampleSentence ExampleSentence `gorm:"type:json" json:"example_sentence"`
-	StudyStatistics StudyStatistics `gorm:"type:json" json:"study_statistics"`
-	CreatedAt       time.Time       `json:"created_at"`
-	UpdatedAt       time.Time       `json:"updated_at"`
+	ID                  uint          `gorm:"primaryKey" json:"id"`
+	Hangul              string        `gorm:"not null;uniqueIndex" json:"hangul"`
+	Romanization        string        `gorm:"not null" json:"romanization"`
+	Type                string        `gorm:"not null" json:"type"`
+	EnglishTranslations []Translation `gorm:"foreignKey:WordID" json:"english_translations"`
+	Sentences           []Sentence    `gorm:"foreignKey:WordID" json:"sentences,omitempty"`
+	Groups              []WordGroup   `gorm:"many2many:group_words" json:"groups,omitempty"`
+	CorrectCount        int           `gorm:"default:0" json:"correct_count"`
+	WrongCount          int           `gorm:"default:0" json:"wrong_count"`
+	CreatedAt           time.Time     `json:"created_at"`
+	UpdatedAt           time.Time     `json:"updated_at"`
 }
 
-// BeforeSave hook to ensure JSON fields are properly serialized
-func (w *Word) BeforeSave(tx *gorm.DB) error {
-	// Ensure English is never null
-	if w.English == nil {
-		w.English = StringSlice{}
-	}
+// Translation represents an English translation for a Korean word
+type Translation struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	WordID    uint      `gorm:"not null;index" json:"word_id"`
+	English   string    `gorm:"not null" json:"english"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
 
-	// Ensure ExampleSentence is properly initialized
-	if w.ExampleSentence.Korean == "" && w.ExampleSentence.English == "" {
-		w.ExampleSentence = ExampleSentence{
-			Korean:  "예문이 없습니다.",
-			English: "No example sentence available.",
-		}
-	}
-
-	// Ensure StudyStatistics is properly initialized
-	if w.StudyStatistics.CorrectCount == 0 && w.StudyStatistics.WrongCount == 0 {
-		w.StudyStatistics = StudyStatistics{
-			CorrectCount: 0,
-			WrongCount:   0,
-		}
-	}
-
-	return nil
+// Sentence represents an example sentence for a word
+type Sentence struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	WordID    uint      `gorm:"not null;index" json:"word_id"`
+	Korean    string    `gorm:"not null" json:"korean"`
+	English   string    `gorm:"not null" json:"english"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

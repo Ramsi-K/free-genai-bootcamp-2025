@@ -32,34 +32,50 @@ func loadKoreanWords(tx *gorm.DB) error {
 		return fmt.Errorf("could not read data_korean.json: %v", err)
 	}
 
-	var words []KoreanWordData
-	if err := json.Unmarshal(data, &words); err != nil {
+	var wordsData []KoreanWordData
+	if err := json.Unmarshal(data, &wordsData); err != nil {
 		return fmt.Errorf("failed to parse data_korean.json: %v", err)
 	}
 
-	log.Printf("Loading %d Korean words from data_korean.json", len(words))
+	log.Printf("Loading %d Korean words from data_korean.json", len(wordsData))
 
 	// Create words
-	for _, wordData := range words {
+	for _, wordData := range wordsData {
 		word := &models.Word{
 			Hangul:       wordData.Hangul,
 			Romanization: wordData.Romanization,
-			English:      models.StringSlice(wordData.English),
 			Type:         wordData.Type,
-			ExampleSentence: models.ExampleSentence{
-				Korean:  wordData.ExampleSentence.Korean,
-				English: wordData.ExampleSentence.English,
-			},
-			StudyStatistics: models.StudyStatistics{
-				CorrectCount: 0,
-				WrongCount:   0,
-			},
+			CorrectCount: 0,
+			WrongCount:   0,
 		}
 
 		// Create word if it doesn't exist
 		result := tx.Where(models.Word{Hangul: word.Hangul}).FirstOrCreate(&word)
 		if result.Error != nil {
 			return fmt.Errorf("failed to create word %s: %v", word.Hangul, result.Error)
+		}
+
+		// Create translations
+		for _, eng := range wordData.English {
+			translation := &models.Translation{
+				WordID:  word.ID,
+				English: eng,
+			}
+			if err := tx.Where(models.Translation{WordID: word.ID, English: eng}).FirstOrCreate(&translation).Error; err != nil {
+				return fmt.Errorf("failed to create translation for word %s: %v", word.Hangul, err)
+			}
+		}
+
+		// Create example sentence
+		if wordData.ExampleSentence.Korean != "" && wordData.ExampleSentence.English != "" {
+			sentence := &models.Sentence{
+				WordID:  word.ID,
+				Korean:  wordData.ExampleSentence.Korean,
+				English: wordData.ExampleSentence.English,
+			}
+			if err := tx.Where(models.Sentence{WordID: word.ID, Korean: sentence.Korean}).FirstOrCreate(&sentence).Error; err != nil {
+				return fmt.Errorf("failed to create sentence for word %s: %v", word.Hangul, err)
+			}
 		}
 	}
 
@@ -68,17 +84,19 @@ func loadKoreanWords(tx *gorm.DB) error {
 
 // WordGroupData represents the structure of word_groups.json
 type WordGroupData struct {
-	Name  string `json:"name"`
-	Words []struct {
-		Hangul          string   `json:"hangul"`
-		Romanization    string   `json:"romanization"`
-		Type            string   `json:"type"`
-		English         []string `json:"english"`
-		ExampleSentence struct {
-			Korean  string `json:"korean"`
-			English string `json:"english"`
-		} `json:"example_sentence"`
-	} `json:"words"`
+	Groups map[string]struct {
+		Description string `json:"description"`
+		Words       []struct {
+			Hangul          string   `json:"hangul"`
+			Romanization    string   `json:"romanization"`
+			Type            string   `json:"type"`
+			English         []string `json:"english"`
+			ExampleSentence struct {
+				Korean  string `json:"korean"`
+				English string `json:"english"`
+			} `json:"example_sentence"`
+		} `json:"words"`
+	} `json:"groups"`
 }
 
 // StudyActivitySeed represents the structure of study_activities.json
@@ -116,19 +134,18 @@ func loadWordGroups(tx *gorm.DB) error {
 		return fmt.Errorf("could not read word_groups.json: %v", err)
 	}
 
-	var wordGroups []WordGroupData
-	if err := json.Unmarshal(data, &wordGroups); err != nil {
+	var wordGroupsData WordGroupData
+	if err := json.Unmarshal(data, &wordGroupsData); err != nil {
 		return fmt.Errorf("failed to parse word_groups.json: %v", err)
 	}
 
-	log.Printf("Loading %d word groups from word_groups.json", len(wordGroups))
+	log.Printf("Loading word groups from word_groups.json")
 
 	// Create word groups and associate words
-	for _, groupData := range wordGroups {
+	for groupName, groupData := range wordGroupsData.Groups {
 		group := &models.WordGroup{
-			Name:        groupData.Name,
-			Description: "Group for " + groupData.Name,
-			WordsCount:  len(groupData.Words),
+			Name:        groupName,
+			Description: groupData.Description,
 		}
 
 		// Create group if it doesn't exist
@@ -137,12 +154,13 @@ func loadWordGroups(tx *gorm.DB) error {
 			return fmt.Errorf("failed to create group %s: %v", group.Name, result.Error)
 		}
 
-		// Associate words with group
+		// Associate existing words with group
 		for _, wordData := range groupData.Words {
 			var word models.Word
 			// Find the word by Hangul
 			if err := tx.Where("hangul = ?", wordData.Hangul).First(&word).Error; err != nil {
-				return fmt.Errorf("word %s not found: %v", wordData.Hangul, err)
+				log.Printf("Warning: Word %s not found for group %s", wordData.Hangul, groupName)
+				continue
 			}
 
 			// Associate word with group if not already associated
@@ -151,18 +169,18 @@ func loadWordGroups(tx *gorm.DB) error {
 			}
 		}
 
-		// Update WordsCount after creating associations
+		// Update WordsCount
 		var count int64
 		if err := tx.Model(&models.Word{}).
 			Joins("JOIN group_words ON group_words.word_id = words.id").
 			Where("group_words.word_group_id = ?", group.ID).
 			Count(&count).Error; err != nil {
-			return fmt.Errorf("failed to count words: %v", err)
+			return fmt.Errorf("failed to count words for group %s: %v", group.Name, err)
 		}
 
 		group.WordsCount = int(count)
 		if err := tx.Save(group).Error; err != nil {
-			return fmt.Errorf("failed to update word count: %v", err)
+			return fmt.Errorf("failed to update word count for group %s: %v", group.Name, err)
 		}
 	}
 

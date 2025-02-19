@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
+	"gorm.io/gorm"
 )
 
 // WordRepository defines the interface for word operations
@@ -9,6 +10,7 @@ type WordRepository interface {
 	ListWords(page, limit int) ([]models.Word, int64, error)
 	GetWord(id uint) (*models.Word, error)
 	GetWordsByGroup(groupID uint) ([]models.Word, error)
+	GetDB() *gorm.DB
 }
 
 // WordRepositoryImpl implements WordRepository
@@ -56,4 +58,8 @@ func (r *WordRepositoryImpl) GetWordsByGroup(groupID uint) ([]models.Word, error
 		return nil, err
 	}
 	return words, nil
+}
+
+func (r *WordRepositoryImpl) GetDB() *gorm.DB {
+	return r.db
 }

@@ -36,10 +36,8 @@ func (h *AdminHandler) ResetHistory(c *gin.Context) {
 
 		// Reset statistics for each word
 		for _, word := range words {
-			word.StudyStatistics = models.StudyStatistics{
-				CorrectCount: 0,
-				WrongCount:   0,
-			}
+			word.CorrectCount = 0
+			word.WrongCount = 0
 			if err := tx.Save(&word).Error; err != nil {
 				return fmt.Errorf("failed to reset statistics for word %d: %v", word.ID, err)
 			}

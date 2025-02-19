@@ -228,19 +228,31 @@ func createTestWord(db *gorm.DB, hangul string) (*models.Word, error) {
 	word := &models.Word{
 		Hangul:       hangul,
 		Romanization: "test",
-		English:      models.StringSlice{"test"},
 		Type:         "noun",
-		ExampleSentence: models.ExampleSentence{
-			Korean:  "Test Korean sentence",
-			English: "Test English sentence",
-		},
-		StudyStatistics: models.StudyStatistics{
-			CorrectCount: 0,
-			WrongCount:   0,
-		},
+		CorrectCount: 0,
+		WrongCount:   0,
 	}
 
 	if err := db.Create(word).Error; err != nil {
+		return nil, err
+	}
+
+	// Create test translation
+	translation := &models.Translation{
+		WordID:  word.ID,
+		English: "test",
+	}
+	if err := db.Create(translation).Error; err != nil {
+		return nil, err
+	}
+
+	// Create test sentence
+	sentence := &models.Sentence{
+		WordID:  word.ID,
+		Korean:  "Test Korean sentence",
+		English: "Test English sentence",
+	}
+	if err := db.Create(sentence).Error; err != nil {
 		return nil, err
 	}
 

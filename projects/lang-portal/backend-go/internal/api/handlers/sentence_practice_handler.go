@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/repository"
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +21,7 @@ func NewSentencePracticeHandler(repo repository.WordRepository) *SentencePractic
 // GetPracticeSentence returns a random sentence for practice
 func (h *SentencePracticeHandler) GetPracticeSentence(c *gin.Context) {
 	// Get a random word with example sentence
-	words, _, err := h.wordRepo.ListWords(1, 1)
+	words, _, err := h.wordRepo.ListWords(1, 10)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching practice sentence"})
 		return
@@ -31,14 +32,39 @@ func (h *SentencePracticeHandler) GetPracticeSentence(c *gin.Context) {
 		return
 	}
 
-	word := words[0]
+	// Select a random word from the fetched words
+	word := words[len(words)-1] // For now, just take the last one
+
+	// Preload translations and sentences
+	if err := h.wordRepo.GetDB().Preload("EnglishTranslations").Preload("Sentences").First(&word, word.ID).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error loading word details"})
+		return
+	}
+
+	// Get translations
+	var translations []string
+	for _, t := range word.EnglishTranslations {
+		translations = append(translations, t.English)
+	}
+
+	// Get first sentence if available
+	var sentence models.Sentence
+	if len(word.Sentences) > 0 {
+		sentence = word.Sentences[0]
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"word": gin.H{
+			"id":           word.ID,
 			"hangul":       word.Hangul,
 			"romanization": word.Romanization,
-			"english":      word.English,
+			"english":      translations,
+			"type":         word.Type,
 		},
-		"example_sentence": word.ExampleSentence,
+		"example_sentence": gin.H{
+			"korean":  sentence.Korean,
+			"english": sentence.English,
+		},
 	})
 }
 
@@ -50,27 +76,66 @@ func (h *SentencePracticeHandler) GetSentenceExamples(c *gin.Context) {
 		return
 	}
 
-	// Find word by Hangul
-	words, _, err := h.wordRepo.ListWords(1, 1)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching examples"})
-		return
-	}
-
-	if len(words) == 0 {
+	// Find word by Hangul and preload relations
+	var foundWord models.Word
+	if err := h.wordRepo.GetDB().
+		Preload("EnglishTranslations").
+		Preload("Sentences").
+		Where("hangul = ?", word).
+		First(&foundWord).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Word not found"})
 		return
 	}
 
-	// For now, just return the example sentence from the word
-	// In a real implementation, we would have multiple examples per word
+	// Get translations
+	var translations []string
+	for _, t := range foundWord.EnglishTranslations {
+		translations = append(translations, t.English)
+	}
+
+	// Collect all example sentences
+	var examples []gin.H
+	for i, sentence := range foundWord.Sentences {
+		examples = append(examples, gin.H{
+			"korean":  sentence.Korean,
+			"english": sentence.English,
+			"source":  i == 0 ? "primary" : "related",
+		})
+	}
+
+	// Get related words that contain this word in their sentences
+	var relatedWords []models.Word
+	if err := h.wordRepo.GetDB().
+		Preload("Sentences").
+		Joins("JOIN sentences ON sentences.word_id = words.id").
+		Where("sentences.korean LIKE ?", "%"+word+"%").
+		Where("words.id != ?", foundWord.ID).
+		Limit(5).
+		Find(&relatedWords).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching examples"})
+		return
+	}
+
+	// Add sentences from related words
+	for _, related := range relatedWords {
+		for _, sentence := range related.Sentences {
+			examples = append(examples, gin.H{
+				"korean":  sentence.Korean,
+				"english": sentence.English,
+				"source":  "related",
+			})
+		}
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"word": word,
-		"example_sentences": []gin.H{
-			{
-				"korean":  words[0].ExampleSentence.Korean,
-				"english": words[0].ExampleSentence.English,
-			},
+		"word": foundWord.Hangul,
+		"word_info": gin.H{
+			"id":           foundWord.ID,
+			"hangul":       foundWord.Hangul,
+			"romanization": foundWord.Romanization,
+			"english":      translations,
+			"type":         foundWord.Type,
 		},
+		"example_sentences": examples,
 	})
 }

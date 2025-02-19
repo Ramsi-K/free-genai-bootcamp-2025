@@ -27,6 +27,8 @@ func Initialize() error {
 
 	// Run migrations
 	err = DB.AutoMigrate(
+		&models.Translation{},
+		&models.Sentence{},
 		&models.Word{},
 		&models.WordGroup{},
 		&models.StudyActivity{},
