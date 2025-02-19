@@ -10,7 +10,6 @@
   "romanization": "hakgyo",
   "type": "noun",
   "english": ["school"],
-  "word_groups": ["School", "Education"],
   "example_sentence": {
     "korean": "그는 학교에서 저보다 한 학년 위였어요.",
     "english": "He was a year ahead of me in school."
@@ -209,7 +208,6 @@ This page displays all words available in the database.
       "english":[
           "school"
       ],
-      "word_groups" : [],
       "example_sentence":{
           "korean":"그는 학교에서 저보다 한 학년 위였어요.",
           "english":"He was a year ahead of me in school."
@@ -241,14 +239,19 @@ This page provides detailed information about a specific word.
   ```json
   {
     "id": 5,
+    "word": {
     "hangul": "학생",
     "romanization": "haksaeng",
-    "english": ["student"],
+    "english": ["student"],  
+    "example_sentence": {
+      "korean": "이 학생은 공부를 열심히 합니다.",
+      "english": "This student studies hard."
+  },
+  }
     "study_statistics": {
       "correct_count": 5,
       "wrong_count": 1
     },
-    "word_groups": ["학교", "교육"]
   }
   ```
 
@@ -321,6 +324,7 @@ This page allows users to practice constructing sentences using Korean vocabular
 - `GET /api/sentence_practice/examples` (Retrieves example sentences for learning)
   - Fetches example sentences for a given word.
   - Example Request: /api/sentence_practice/examples?word=학생
+  
   - Example Response:
 ```json
 {
