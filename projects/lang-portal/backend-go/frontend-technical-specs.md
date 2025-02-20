@@ -1,8 +1,11 @@
-## Frontend Technical Spec (English - Korean JSON Format)
+<!-- markdownlint-disable MD024 -->
 
-# **📌 JSON Data Structures**
+# Frontend Technical Spec (English - Korean JSON Format)
+
+## **📌 JSON Data Structures**
 
 ## Word Data Structure
+
 ```json
 {
   "id": 1,
@@ -24,6 +27,7 @@
 ```
 
 ## Word Group Data Structure
+
 ```json
 {
   "id": 1,
@@ -42,6 +46,7 @@
 ```
 
 ## Study Session Data Structure
+
 ```json
 {
   "id": 1,
@@ -56,6 +61,7 @@
 ```
 
 ## Study Activity Data Structure
+
 ```json
 {
   "id": 1,
@@ -92,7 +98,7 @@
 | `POST /api/reset_history`                   | Database (Tracked Data)      | Resets user study history                           | Deletes past sessions and progress |
 | `POST /api/full_reset`                      | Database (Tracked Data)      | Drops and reseeds all data                          | Full reset of learning progress |
 
-
+##
 
 ### Dashboard `/dashboard`
 
@@ -284,6 +290,7 @@ This page allows users to practice constructing sentences using Korean vocabular
 - `GET /api/sentence_practice`
   - Retrieves random sentences for practice from data_korean.json.
   - Example Response:
+
   ```json
   {
   "sentence_id": 12,
@@ -299,8 +306,6 @@ This page allows users to practice constructing sentences using Korean vocabular
   }
   ```
 
-
-
 - `POST /api/sentence_practice/attempt` (Submits user's sentence attempt for evaluation)
   - Submits a user's attempt at translating a sentence.
   - Example Request:
@@ -312,7 +317,9 @@ This page allows users to practice constructing sentences using Korean vocabular
 }
 
 ```
-  - Example Response:
+
+- Example Response:
+
 ```json
 {
   "correct": true,
@@ -326,6 +333,7 @@ This page allows users to practice constructing sentences using Korean vocabular
   - Example Request: /api/sentence_practice/examples?word=학생
   
   - Example Response:
+
 ```json
 {
 "word": "학생",
@@ -345,6 +353,7 @@ This page allows users to practice constructing sentences using Korean vocabular
 - GET /api/sentence_practice/statistics
 Retrieves the user's progress in sentence practice.
 Example Response:
+
 ```json
 {
   "total_sentences_attempted": 50,

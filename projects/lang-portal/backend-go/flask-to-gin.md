@@ -143,6 +143,7 @@ type StudyActivity struct {
 ```
 
 **Justification:**
+
 - Added all fields from frontend spec and JSON data
 - Proper GORM tags for validation and DB mapping
 - JSON storage for arrays and nested structures
@@ -193,6 +194,7 @@ func SetupRouter(h *handlers.Handler) *gin.Engine {
 ```
 
 **Justification:**
+
 - Complete API coverage matching frontend requirements
 - RESTful endpoint design
 - Proper route grouping
