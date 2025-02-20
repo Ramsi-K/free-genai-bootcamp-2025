@@ -154,26 +154,33 @@ func loadWordGroups(tx *gorm.DB) error {
 			return fmt.Errorf("failed to create group %s: %v", group.Name, result.Error)
 		}
 
-		// Associate existing words with group
+		// Associate words with group
 		for _, wordData := range groupData.Words {
-			var word models.Word
-			// Find the word by Hangul
-			if err := tx.Where("hangul = ?", wordData.Hangul).First(&word).Error; err != nil {
-				log.Printf("Warning: Word %s not found for group %s", wordData.Hangul, groupName)
-				continue
+			// Create a new GROUP_Word
+			groupWord := models.GROUP_Word{
+				WordGroupID:         group.ID,
+				Hangul:              wordData.Hangul,
+				Romanization:        wordData.Romanization,
+				EnglishTranslations: []models.GROUP_Translation{},
 			}
 
-			// Associate word with group if not already associated
-			if err := tx.Model(group).Association("Words").Append(&word); err != nil {
-				return fmt.Errorf("failed to associate word %s with group %s: %v", word.Hangul, group.Name, err)
+			// Create Translations
+			for _, eng := range wordData.English {
+				translation := models.GROUP_Translation{
+					English: eng,
+				}
+				groupWord.EnglishTranslations = append(groupWord.EnglishTranslations, translation)
+			}
+
+			if err := tx.Create(&groupWord).Error; err != nil {
+				return fmt.Errorf("failed to create word %s for group %s: %v", wordData.Hangul, group.Name, err)
 			}
 		}
 
 		// Update WordsCount
 		var count int64
-		if err := tx.Model(&models.Word{}).
-			Joins("JOIN group_words ON group_words.word_id = words.id").
-			Where("group_words.word_group_id = ?", group.ID).
+		if err := tx.Model(&models.GROUP_Word{}).
+			Where("word_group_id = ?", group.ID).
 			Count(&count).Error; err != nil {
 			return fmt.Errorf("failed to count words for group %s: %v", group.Name, err)
 		}

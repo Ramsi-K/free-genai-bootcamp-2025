@@ -86,13 +86,11 @@ func TestListGroups(t *testing.T) {
 			setupMock: func() {
 				mockRepo.On("ListGroups").Return([]models.WordGroup{
 					{
-						ID:          1,
 						Name:        "Group 1",
 						Description: "Description 1",
 						WordsCount:  2,
 					},
 					{
-						ID:          2,
 						Name:        "Group 2",
 						Description: "Description 2",
 						WordsCount:  3,
@@ -149,8 +147,8 @@ func TestGetGroup(t *testing.T) {
 			groupID: "1",
 			setupMock: func() {
 				mockRepo.On("GetGroup", uint(1)).Return(&models.WordGroup{
-					ID:   1,
-					Name: "Test Group",
+					Model: gorm.Model{ID: 1},
+					Name:  "Test Group",
 				}, nil)
 			},
 			expectedStatus: http.StatusOK,
@@ -304,9 +302,9 @@ func TestGroupHandler_Integration(t *testing.T) {
 					assert.NotEmpty(t, word.Hangul)
 					assert.NotEmpty(t, word.Romanization)
 					assert.NotEmpty(t, word.Type)
-					assert.NotEmpty(t, word.English)
-					assert.NotEmpty(t, word.ExampleSentence.Korean)
-					assert.NotEmpty(t, word.ExampleSentence.English)
+					assert.NotEmpty(t, word.EnglishTranslations)
+					assert.NotEmpty(t, word.Sentences[0].Korean)
+					assert.NotEmpty(t, word.Sentences[0].English)
 					assert.NotZero(t, word.CreatedAt)
 					assert.NotZero(t, word.UpdatedAt)
 				}

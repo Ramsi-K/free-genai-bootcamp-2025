@@ -48,7 +48,7 @@ func (h *SentencePracticeHandler) GetPracticeSentence(c *gin.Context) {
 	}
 
 	// Get first sentence if available
-	var sentence models.Sentence
+	var sentence models.ExampleSentence
 	if len(word.Sentences) > 0 {
 		sentence = word.Sentences[0]
 	}

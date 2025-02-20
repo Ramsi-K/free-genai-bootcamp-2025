@@ -25,6 +25,7 @@ type WordGroup struct {
 	Name        string       `json:"name"`
 	Description string       `json:"description"`
 	Words       []GROUP_Word `json:"words"`
+	WordsCount  int
 }
 
 type GROUP_Word struct {
