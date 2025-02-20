@@ -96,10 +96,14 @@ func (h *SentencePracticeHandler) GetSentenceExamples(c *gin.Context) {
 	// Collect all example sentences
 	var examples []gin.H
 	for i, sentence := range foundWord.Sentences {
+		source := "related" // Default value
+		if i == 0 {
+			source = "primary"
+		}
 		examples = append(examples, gin.H{
 			"korean":  sentence.Korean,
 			"english": sentence.English,
-			"source":  i == 0 ? "primary" : "related",
+			"source":  source,
 		})
 	}
 
