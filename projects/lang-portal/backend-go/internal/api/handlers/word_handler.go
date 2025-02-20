@@ -3,6 +3,9 @@ package handlers
 import (
 	"net/http"
 	"strconv"
+	"time"
+
+	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models" // Replace with your actual import path
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/repository"
 	"github.com/gin-gonic/gin"
@@ -54,4 +57,98 @@ func (h *WordHandler) GetWord(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, word)
+}
+
+func (h *WordHandler) CreateCorrectStudySession(c *gin.Context) {
+	id := c.Param("id")
+	wordID, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid word ID"})
+		return
+	}
+
+	var word models.Word
+	if err := h.wordRepo.GetDB().First(&word, wordID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Word not found"})
+		return
+	}
+
+	// Assuming you have a way to determine the ActivityID (e.g., from the request body)
+	// For now, let's hardcode it or get it from a query parameter
+	activityIDStr := c.DefaultQuery("activity_id", "1") // Default to activity ID 1
+	activityID, err := strconv.Atoi(activityIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid activity ID"})
+		return
+	}
+
+	studySession := models.StudySession{
+		WordID:     uint(wordID),
+		Correct:    true,
+		ActivityID: uint(activityID),
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+	}
+
+	if err := h.wordRepo.GetDB().Create(&studySession).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create study session"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Study session created"})
+}
+
+// CreateIncorrectStudySession creates a new study session record for an incorrect attempt
+func (h *WordHandler) CreateIncorrectStudySession(c *gin.Context) {
+	id := c.Param("id")
+	wordID, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid word ID"})
+		return
+	}
+
+	var word models.Word
+	if err := h.wordRepo.GetDB().First(&word, wordID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Word not found"})
+		return
+	}
+
+	// Assuming you have a way to determine the ActivityID (e.g., from the request body)
+	// For now, let's hardcode it or get it from a query parameter
+	activityIDStr := c.DefaultQuery("activity_id", "1") // Default to activity ID 1
+	activityID, err := strconv.Atoi(activityIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid activity ID"})
+		return
+	}
+
+	studySession := models.StudySession{
+		WordID:     uint(wordID),
+		Correct:    false, // changed to false
+		ActivityID: uint(activityID),
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+	}
+
+	if err := h.wordRepo.GetDB().Create(&studySession).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create study session"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Study session created"})
+}
+
+func (h *WordHandler) GetStudyStatistics(wordID uint) (int, int, error) {
+	var correctCount int64
+	var wrongCount int64
+
+	if err := h.wordRepo.GetDB().Model(&models.StudySession{}).Where("word_id = ? AND correct = ?", wordID, true).Count(&correctCount).Error; err != nil {
+		return 0, 0, err
+	}
+
+	if err := h.wordRepo.GetDB().Model(&models.StudySession{}).Where("word_id = ? AND correct = ?", wordID, false).Count(&wrongCount).Error; err != nil {
+		return 0, 0, err
+	}
+
+	return int(correctCount), int(wrongCount), nil
 }

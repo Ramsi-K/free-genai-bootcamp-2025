@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
 	"gorm.io/driver/sqlite"
@@ -277,49 +276,12 @@ func createTestActivity(db *gorm.DB, name string) (*models.StudyActivity, error)
 }
 
 // createTestStudySession creates a test study session
-func createTestStudySession(db *gorm.DB, groupID, activityID uint) (*models.StudySession, error) {
-	// Verify group exists
-	var group models.WordGroup
-	if err := db.First(&group, groupID).Error; err != nil {
-		return nil, fmt.Errorf("group not found: %v", err)
+func createTestStudySession(db *gorm.DB, wordID uint, correct bool) error {
+	studySession := models.StudySession{
+		WordID:  wordID,
+		Correct: correct,
 	}
-
-	// Verify activity exists
-	var activity models.StudyActivity
-	if err := db.First(&activity, activityID).Error; err != nil {
-		return nil, fmt.Errorf("activity not found: %v", err)
-	}
-
-	now := time.Now()
-	session := &models.StudySession{
-		GroupID:      groupID,
-		ActivityID:   activityID,
-		CorrectCount: 5,
-		WrongCount:   2,
-		CompletedAt:  now,
-		CreatedAt:    now,
-		UpdatedAt:    now,
-	}
-
-	if err := db.Create(session).Error; err != nil {
-		return nil, fmt.Errorf("failed to create study session: %v", err)
-	}
-
-	// Update word statistics for words in the group
-	var words []models.Word
-	if err := db.Model(&group).Association("Words").Find(&words); err != nil {
-		return nil, fmt.Errorf("failed to get group words: %v", err)
-	}
-
-	for _, word := range words {
-		word.StudyStatistics.CorrectCount += 2
-		word.StudyStatistics.WrongCount += 1
-		if err := db.Save(&word).Error; err != nil {
-			return nil, fmt.Errorf("failed to update word statistics: %v", err)
-		}
-	}
-
-	return session, nil
+	return db.Create(&studySession).Error
 }
 
 // resetTestDB resets the database to a clean state

@@ -35,6 +35,8 @@ func SetupRouter() *gin.Engine {
 		// Words endpoints
 		api.GET("/words", wordHandler.ListWords)
 		api.GET("/words/:id", wordHandler.GetWord)
+		api.POST("/words/:id/correct", wordHandler.CreateCorrectStudySession)
+		api.POST("/words/:id/incorrect", wordHandler.CreateIncorrectStudySession)
 
 		// Groups endpoints
 		api.GET("/groups", groupHandler.ListGroups)
