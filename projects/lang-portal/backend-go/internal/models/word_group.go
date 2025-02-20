@@ -4,29 +4,44 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
 	"gorm.io/gorm"
 )
 
 // JSON Structure
-type JSONWord struct {
-	Hangul       string   `json:"hangul"`
-	Romanization string   `json:"romanization"`
-	English      []string `json:"english"`
+type GROUP_Translation struct {
+	English string `json:"english"`
 }
 
-type JSONWordGroup struct {
-	Description string     `json:"description"`
-	Words       []JSONWord `json:"words"`
+type JSONWord struct {
+	Hangul       string              `json:"hangul"`
+	Romanization string              `json:"romanization"`
+	English      []GROUP_Translation `json:"english"`
+}
+
+type WordGroup struct {
+	gorm.Model
+	Name        string       `json:"name"`
+	Description string       `json:"description"`
+	Words       []GROUP_Word `json:"words"`
+}
+
+type GROUP_Word struct {
+	gorm.Model
+	WordGroupID         uint
+	Hangul              string              `json:"hangul"`
+	Romanization        string              `json:"romanization"`
+	EnglishTranslations []GROUP_Translation `json:"english"`
 }
 
 type JSONGroups struct {
-	Groups map[string]JSONWordGroup `json:"groups"`
+	Groups map[string]WordGroup `json:"groups"`
 }
 
 func SeedDatabase(db *gorm.DB, jsonFile string) error {
 	// 1. Read the JSON file
-	content, err := ioutil.ReadFile(jsonFile)
+	content, err := os.ReadFile(jsonFile)
 	if err != nil {
 		return fmt.Errorf("error reading JSON file: %w", err)
 	}
@@ -41,7 +56,7 @@ func SeedDatabase(db *gorm.DB, jsonFile string) error {
 	// 3. Iterate through the groups
 	for groupName, groupData := range jsonData.Groups {
 		// Create a WordGroup
-		wordGroup := models.WordGroup{
+		wordGroup := WordGroup{
 			Name:        groupName,
 			Description: groupData.Description,
 		}
@@ -49,15 +64,15 @@ func SeedDatabase(db *gorm.DB, jsonFile string) error {
 		// Iterate through the words
 		for _, jsonWord := range groupData.Words {
 			// Create a Word
-			word := models.Word{
+			word := GROUP_Word{
 				Hangul:       jsonWord.Hangul,
 				Romanization: jsonWord.Romanization,
 			}
 
 			// Create Translations
-			for _, englishTranslation := range jsonWord.English {
-				translation := models.Translation{
-					English: englishTranslation,
+			for _, english := range jsonWord.EnglishTranslations {
+				translation := GROUP_Translation{
+					English: english.English,
 				}
 				word.EnglishTranslations = append(word.EnglishTranslations, translation)
 			}
