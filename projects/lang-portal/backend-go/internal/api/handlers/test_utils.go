@@ -6,12 +6,15 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
+
+const testDBName = "test.db"
 
 // getSeedFilePath returns the absolute path to a seed file
 func getSeedFilePath(filename string) string {
@@ -30,20 +33,29 @@ func getSeedFilePath(filename string) string {
 	return filename // Return original as fallback
 }
 
-// setupTestDB creates an in-memory SQLite database for testing
+// setupTestDB initializes the test database
 func setupTestDB() (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Silent),
-		// Disable foreign key checks during resets
-		DisableForeignKeyConstraintWhenMigrating: true,
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold: time.Second,   // Slow SQL threshold
+			LogLevel:      logger.Silent, // Log level
+			Colorful:      false,         // Disable color
+		},
+	)
+
+	db, err := gorm.Open(sqlite.Open(testDBName), &gorm.Config{
+		Logger: newLogger,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	// Run initial migrations
-	if err := resetTestDB(db); err != nil {
-		return nil, err
+	// AutoMigrate will create tables, add missing columns, create indexes,
+	// and constrain foreign keys
+	err = db.AutoMigrate(&models.Word{}, &models.Translation{}, &models.Sentence{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to automigrate database: %w", err)
 	}
 
 	return db, nil
@@ -66,119 +78,117 @@ func setupTestDBWithSeedData() (*gorm.DB, error) {
 
 // loadSeedData loads initial data from JSON files
 func loadSeedData(db *gorm.DB) error {
-	// Load word groups data
-	wordGroupsPath := getSeedFilePath("word_groups.json")
-	wordGroupsData, err := os.ReadFile(wordGroupsPath)
-	if err != nil {
-		log.Printf("Warning: Could not read word_groups.json: %v", err)
-		// Create default group if file not found
-		group := &models.WordGroup{
-			Name:        "Test Group",
-			Description: "Test Description",
-			WordsCount:  0,
-		}
-		if err := db.Create(group).Error; err != nil {
+	if err := loadWordGroups(db); err != nil {
+		log.Printf("Warning: Could not load word groups: %v", err)
+		// Create default group if loading word groups fails
+		if err := createDefaultGroup(db); err != nil {
 			return fmt.Errorf("failed to create default group: %v", err)
-		}
-	} else {
-		var wordGroupsMap struct {
-			Groups map[string]struct {
-				Description string `json:"description"`
-				Words       []struct {
-					Hangul       string   `json:"hangul"`
-					Romanization string   `json:"romanization"`
-					English      []string `json:"english"`
-				} `json:"words"`
-			} `json:"groups"`
-		}
-
-		if err := json.Unmarshal(wordGroupsData, &wordGroupsMap); err != nil {
-			log.Printf("Warning: Could not parse word_groups.json: %v", err)
-		} else {
-			// Create word groups and their words
-			for groupName, groupData := range wordGroupsMap.Groups {
-				group := &models.WordGroup{
-					Name:        groupName,
-					Description: groupData.Description,
-					WordsCount:  len(groupData.Words),
-				}
-
-				if err := db.Create(group).Error; err != nil {
-					log.Printf("Warning: Failed to create group %s: %v", groupName, err)
-					continue
-				}
-
-				// Create words for this group
-				for _, wordData := range groupData.Words {
-					word := &models.Word{
-						Hangul:              wordData.Hangul,
-						Romanization:        wordData.Romanization,
-						EnglishTranslations: wordData.English,
-						Type:                "noun",
-						Sentences: []models.Sentence{
-							{
-								Korean:  "테스트 문장입니다.",
-								English: "This is a test sentence.",
-							},
-						},
-						CorrectCount: 0,
-						WrongCount:   0,
-					}
-
-					if err := db.Create(word).Error; err != nil {
-						log.Printf("Warning: Failed to create word %s: %v", wordData.Hangul, err)
-						continue
-					}
-
-					if err := db.Model(group).Association("Words").Append(word); err != nil {
-						log.Printf("Warning: Failed to associate word %s with group %s: %v", wordData.Hangul, groupName, err)
-					}
-				}
-			}
-		}
-	}
-
-	// Create default study activities if not loaded from file
-	activities := []models.StudyActivity{
-		{
-			Name:        "Flashcards",
-			Description: "Practice words with flashcards",
-			Type:        "flashcards",
-			Thumbnail:   "/images/flashcards.png",
-			LaunchURL:   "/study/flashcards",
-		},
-		{
-			Name:        "Multiple Choice",
-			Description: "Test your knowledge with multiple choice questions",
-			Type:        "quiz",
-			Thumbnail:   "/images/quiz.png",
-			LaunchURL:   "/study/quiz",
-		},
-		{
-			Name:        "Typing Practice",
-			Description: "Practice typing Korean words",
-			Type:        "typing",
-			Thumbnail:   "/images/typing.png",
-			LaunchURL:   "/study/typing",
-		},
-	}
-
-	for _, activity := range activities {
-		if err := db.Where(models.StudyActivity{Name: activity.Name}).
-			FirstOrCreate(&activity).Error; err != nil {
-			log.Printf("Warning: Failed to create activity %s: %v", activity.Name, err)
 		}
 	}
 
 	return nil
 }
 
-// cleanupTestDB closes the test database connection
-func cleanupTestDB(db *gorm.DB) {
-	sqlDB, err := db.DB()
-	if err == nil {
-		sqlDB.Close()
+// loadWordGroups loads word groups data from JSON file
+func loadWordGroups(db *gorm.DB) error {
+	wordGroupsPath := getSeedFilePath("word_groups.json")
+	wordGroupsData, err := os.ReadFile(wordGroupsPath)
+	if err != nil {
+		return fmt.Errorf("could not read word_groups.json: %v", err)
 	}
+
+	var wordGroupsMap struct {
+		Groups map[string]struct {
+			Description string `json:"description"`
+			Words       []struct {
+				Hangul       string   `json:"hangul"`
+				Romanization string   `json:"romanization"`
+				English      []string `json:"english"`
+			} `json:"words"`
+		} `json:"groups"`
+	}
+
+	if err := json.Unmarshal(wordGroupsData, &wordGroupsMap); err != nil {
+		return fmt.Errorf("could not parse word_groups.json: %v", err)
+	}
+
+	// Create word groups and their words
+	for groupName, groupData := range wordGroupsMap.Groups {
+		group := &models.WordGroup{
+			Name:        groupName,
+			Description: groupData.Description,
+			WordsCount:  len(groupData.Words),
+		}
+
+		if err := db.Create(group).Error; err != nil {
+			log.Printf("Warning: Failed to create group %s: %v", groupName, err)
+			continue
+		}
+
+		// Create words for this group
+		for _, wordData := range groupData.Words {
+			translations := make([]models.Translation, len(wordData.English))
+			for i, eng := range wordData.English {
+				translations[i] = models.Translation{
+					English: eng,
+				}
+			}
+
+			sentence := models.Sentence{
+				Korean:  "테스트 문장입니다.",
+				English: "This is a test sentence.",
+			}
+
+			word := &models.Word{
+				Hangul:              wordData.Hangul,
+				Romanization:        wordData.Romanization,
+				EnglishTranslations: translations,
+				Type:                "noun",
+				Sentences:           []models.Sentence{sentence},
+				CorrectCount:        0,
+				WrongCount:          0,
+			}
+
+			if err := db.Create(word).Error; err != nil {
+				log.Printf("Warning: Failed to create word %s: %v", wordData.Hangul, err)
+				continue
+			}
+
+			if err := db.Model(group).Association("Words").Append(word); err != nil {
+				log.Printf("Warning: Failed to associate word %s with group %s: %v", wordData.Hangul, groupName, err)
+			}
+		}
+	}
+
+	return nil
+}
+
+// createDefaultGroup creates a default word group
+func createDefaultGroup(db *gorm.DB) error {
+	group := &models.WordGroup{
+		Name:        "Test Group",
+		Description: "Test Description",
+		WordsCount:  0,
+	}
+	if err := db.Create(group).Error; err != nil {
+		return fmt.Errorf("failed to create default group: %v", err)
+	}
+	return nil
+}
+
+// cleanupTestDB closes the database and removes the test database file
+func cleanupTestDB(db *gorm.DB) error {
+	sqlDB, err := db.DB()
+	if err != nil {
+		return fmt.Errorf("failed to get sql db: %w", err)
+	}
+	if err := sqlDB.Close(); err != nil {
+		return fmt.Errorf("failed to close database: %w", err)
+	}
+	if err := os.Remove(testDBName); err != nil {
+		return fmt.Errorf("failed to remove test database file: %w", err)
+	}
+	return nil
 }
 
 // createTestGroup creates a test word group with optional words
@@ -222,35 +232,60 @@ func createTestGroup(db *gorm.DB, name string, words []models.Word) (*models.Wor
 	return group, nil
 }
 
-// createTestWord creates a test word
+type SentenceData struct {
+	Korean  string `json:"korean"`
+	English string `json:"english"`
+}
+
+type WordData struct {
+	Hangul       string       `json:"hangul"`
+	Romanization string       `json:"romanization"`
+	English      []string     `json:"english"`
+	Type         string       `json:"type"`
+	Sentence     SentenceData `json:"sentence"`
+	CorrectCount int          `json:"correct_count"`
+	WrongCount   int          `json:"wrong_count"`
+}
+
 func createTestWord(db *gorm.DB, hangul string) (*models.Word, error) {
-	word := &models.Word{
+	wordData := WordData{
 		Hangul:       hangul,
 		Romanization: "test",
+		English:      []string{"test"},
 		Type:         "noun",
+		Sentence: SentenceData{
+			Korean:  "테스트 문장입니다.",
+			English: "This is a test sentence.",
+		},
+		CorrectCount: 0,
+		WrongCount:   0,
 	}
 
-	if err := db.Create(word).Error; err != nil {
-		return nil, err
+	translations := make([]models.Translation, len(wordData.English))
+	for i, eng := range wordData.English {
+		translations[i] = models.Translation{
+			English: eng,
+		}
 	}
 
-	// Create test translation
-	translation := &models.Translation{
-		WordID:  word.ID,
-		English: "test",
-	}
-	if err := db.Create(translation).Error; err != nil {
-		return nil, err
+	sentence := models.Sentence{
+		Korean:  wordData.Sentence.Korean,
+		English: wordData.Sentence.English,
 	}
 
-	// Create test sentence
-	sentence := &models.Sentence{
-		WordID:  word.ID,
-		Korean:  "Test Korean sentence",
-		English: "Test English sentence",
+	word := &models.Word{
+		Hangul:              wordData.Hangul,
+		Romanization:        wordData.Romanization,
+		EnglishTranslations: translations,
+		Type:                wordData.Type,
+		Sentences:           []models.Sentence{sentence},
+		CorrectCount:        wordData.CorrectCount,
+		WrongCount:          wordData.WrongCount,
 	}
-	if err := db.Create(sentence).Error; err != nil {
-		return nil, err
+
+	result := db.Create(word)
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to create test word: %w", result.Error)
 	}
 
 	return word, nil
@@ -282,7 +317,7 @@ func createTestStudySession(db *gorm.DB, wordID uint, correct bool) error {
 	return db.Create(&studySession).Error
 }
 
-// resetTestDB resets the database to a clean state
+// resetTestDB drops all tables and recreates them
 func resetTestDB(db *gorm.DB) error {
 	// Drop all tables in correct order to avoid foreign key constraints
 	if err := db.Migrator().DropTable(
@@ -292,21 +327,15 @@ func resetTestDB(db *gorm.DB) error {
 		&models.Word{},
 		&models.WordGroup{},
 		&models.StudyActivity{},
+		&models.Translation{},
+		&models.Sentence{},
 	); err != nil {
 		return fmt.Errorf("failed to drop tables: %v", err)
 	}
-
-	// Run migrations
-	if err := db.AutoMigrate(
-		&models.Word{},
-		&models.WordGroup{},
-		&models.StudyActivity{},
-		&models.StudySession{},
-		&models.WordReviewItem{},
-	); err != nil {
-		return fmt.Errorf("failed to run migrations: %v", err)
+	err := db.AutoMigrate(&models.Word{}, &models.Translation{}, &models.Sentence{})
+	if err != nil {
+		return fmt.Errorf("failed to automigrate database: %w", err)
 	}
-
 	return nil
 }
 
