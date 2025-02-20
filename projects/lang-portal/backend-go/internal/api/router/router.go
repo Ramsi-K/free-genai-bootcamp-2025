@@ -4,12 +4,12 @@ import (
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/api/handlers"
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/api/middleware"
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/repository"
-	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/pkg/database"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // SetupRouter configures all the routes for our application
-func SetupRouter() *gin.Engine {
+func SetupRouter(database *gorm.DB) *gin.Engine {
 	r := gin.Default()
 
 	// Apply global middleware
@@ -18,16 +18,15 @@ func SetupRouter() *gin.Engine {
 	r.Use(middleware.RequestValidator())
 
 	// Initialize repositories
-	baseRepo := repository.NewBaseRepository(database.GetDB())
-	wordRepo := repository.NewWordRepository(baseRepo)
-	groupRepo := repository.NewGroupRepository(baseRepo)
-	activityRepo := repository.NewStudyActivityRepository(baseRepo)
+	wordRepo := repository.NewWordRepository(repository.NewBaseRepository(database))
+	groupRepo := repository.NewGroupRepository(repository.NewBaseRepository(database))
+	activityRepo := repository.NewStudyActivityRepository(repository.NewBaseRepository(database))
 
 	// Initialize handlers
 	wordHandler := handlers.NewWordHandler(wordRepo)
 	groupHandler := handlers.NewGroupHandler(groupRepo)
 	activityHandler := handlers.NewStudyActivityHandler(activityRepo)
-	adminHandler := handlers.NewAdminHandler(database.GetDB())
+	adminHandler := handlers.NewAdminHandler(database)
 
 	// API routes group
 	api := r.Group("/api")

@@ -111,18 +111,18 @@ func loadSeedData(db *gorm.DB) error {
 				// Create words for this group
 				for _, wordData := range groupData.Words {
 					word := &models.Word{
-						Hangul:       wordData.Hangul,
-						Romanization: wordData.Romanization,
-						English:      models.StringSlice(wordData.English),
-						Type:         "noun",
-						ExampleSentence: models.ExampleSentence{
-							Korean:  "테스트 문장입니다.",
-							English: "This is a test sentence.",
+						Hangul:              wordData.Hangul,
+						Romanization:        wordData.Romanization,
+						EnglishTranslations: wordData.English,
+						Type:                "noun",
+						Sentences: []models.Sentence{
+							{
+								Korean:  "테스트 문장입니다.",
+								English: "This is a test sentence.",
+							},
 						},
-						StudyStatistics: models.StudyStatistics{
-							CorrectCount: 0,
-							WrongCount:   0,
-						},
+						CorrectCount: 0,
+						WrongCount:   0,
 					}
 
 					if err := db.Create(word).Error; err != nil {
@@ -228,8 +228,6 @@ func createTestWord(db *gorm.DB, hangul string) (*models.Word, error) {
 		Hangul:       hangul,
 		Romanization: "test",
 		Type:         "noun",
-		CorrectCount: 0,
-		WrongCount:   0,
 	}
 
 	if err := db.Create(word).Error; err != nil {

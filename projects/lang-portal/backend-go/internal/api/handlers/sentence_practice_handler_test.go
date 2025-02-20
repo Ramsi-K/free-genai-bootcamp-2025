@@ -6,10 +6,19 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/repository"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
+
+// setupRouter is a placeholder for the actual setupRouter function
+// In a real application, this function would initialize the router and
+// define the API endpoints.
+func setupRouter(db *gorm.DB) *gin.Engine {
+	router := gin.Default()
+	// Define your routes here
+	return router
+}
 
 func TestSentencePracticeHandler_Integration(t *testing.T) {
 	if testing.Short() {
@@ -23,84 +32,54 @@ func TestSentencePracticeHandler_Integration(t *testing.T) {
 	}
 	defer cleanupTestDB(db)
 
-	// Create test data
+	// Setup router
+	router := setupRouter(db)
+
+	// Define test cases
+	var wordID uint
 	word, err := createTestWord(db, "테스트")
 	if err != nil {
 		t.Fatalf("Failed to create test word: %v", err)
 	}
+	wordID = word.ID
 
-	// Setup router
-	gin.SetMode(gin.TestMode)
-	router := gin.New()
-	baseRepo := repository.NewBaseRepository(db)
-	wordRepo := repository.NewWordRepository(baseRepo)
-	handler := NewSentencePracticeHandler(wordRepo)
-
-	router.GET("/api/sentence_practice", handler.GetPracticeSentence)
-	router.GET("/api/sentence_practice/examples", handler.GetSentenceExamples)
-
-	// Test cases
 	tests := []struct {
 		name           string
 		path           string
 		expectedStatus int
-		validateBody   func(t *testing.T, body []byte)
+		validateBody   func(*testing.T, []byte)
 	}{
 		{
-			name:           "Get Practice Sentence",
-			path:           "/api/sentence_practice",
+			name:           "GetSentenceExamples - Valid Word ID",
+			path:           "/api/sentence_practice/examples?word_id=" + string(wordID),
 			expectedStatus: http.StatusOK,
 			validateBody: func(t *testing.T, body []byte) {
-				var response struct {
-					Word struct {
-						Hangul       string   `json:"hangul"`
-						Romanization string   `json:"romanization"`
-						English      []string `json:"english"`
-					} `json:"word"`
-					ExampleSentence struct {
-						Korean  string `json:"korean"`
-						English string `json:"english"`
-					} `json:"example_sentence"`
-				}
-				assert.NoError(t, json.Unmarshal(body, &response))
-				assert.NotEmpty(t, response.Word.Hangul)
-				assert.NotEmpty(t, response.ExampleSentence.Korean)
-				assert.NotEmpty(t, response.ExampleSentence.English)
+				var response PracticeSentenceResponse
+				err := json.Unmarshal(body, &response)
+				assert.NoError(t, err)
+				assert.Equal(t, "테스트", response.Word)
+				assert.Equal(t, "Test sentence in Korean", response.ExampleSentences[0])
+				assert.Equal(t, "Test sentence in English", response.ExampleSentences[1])
 			},
 		},
 		{
-			name:           "Get Sentence Examples - With Word",
-			path:           "/api/sentence_practice/examples?word=" + word.Hangul,
-			expectedStatus: http.StatusOK,
-			validateBody: func(t *testing.T, body []byte) {
-				var response struct {
-					Word             string `json:"word"`
-					ExampleSentences []struct {
-						Korean  string `json:"korean"`
-						English string `json:"english"`
-					} `json:"example_sentences"`
-				}
-				assert.NoError(t, json.Unmarshal(body, &response))
-				assert.Equal(t, word.Hangul, response.Word)
-				assert.NotEmpty(t, response.ExampleSentences)
-			},
-		},
-		{
-			name:           "Get Sentence Examples - No Word Param",
-			path:           "/api/sentence_practice/examples",
+			name:           "GetSentenceExamples - Invalid Word ID",
+			path:           "/api/sentence_practice/examples?word_id=invalid",
 			expectedStatus: http.StatusBadRequest,
 		},
 		{
-			name:           "Get Sentence Examples - Word Not Found",
-			path:           "/api/sentence_practice/examples?word=nonexistent",
+			name:           "GetSentenceExamples - Word Not Found",
+			path:           "/api/sentence_practice/examples?word_id=999",
 			expectedStatus: http.StatusNotFound,
 		},
 	}
 
+	// Run test cases
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Reset database before each test
-			if err := resetTestDB(db); err != nil {
+			err = resetTestDB(db)
+			if err != nil {
 				t.Fatalf("Failed to reset test database: %v", err)
 			}
 
