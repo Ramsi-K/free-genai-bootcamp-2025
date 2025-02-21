@@ -1,3 +1,4 @@
+<!---markdownlint-ignore MD012 MD036-->
 # GenAI Bootcamp 2025 – Journal  
 
 ## Jump to what I was doing in
