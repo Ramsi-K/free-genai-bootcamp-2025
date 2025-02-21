@@ -8,11 +8,40 @@
 
 ## Week 1
 
+### Day 19: February 19, 2025
+
+Spent 10+ hours trying to fix the Go backend, but it was a frustrating loop of errors, misconfigurations, and unexpected issues.
+
+**Issues Faced:**
+
+- API endpoints were misaligned with frontend specs.
+- `word_groups.json` was not loading properly.
+- The database was not resetting correctly, causing duplicate/missing data.
+- Groups were not being linked correctly to words.
+- Pagination was broken, doubling the total word count.
+- Study activities were inconsistent, and some APIs didn't return expected data.
+- Error handling was unreliable across endpoints.
+
+**Attempts to Fix:**
+
+- Tried multiple prompts to get AI assistance, but fixes kept breaking other parts.
+- Verified JSON file loading and checked mappings.
+- Investigated test failures but couldn't fully resolve database contamination.
+- Considered a full rebuild instead of debugging endlessly.
+
+**Outcome:**
+
+💀 Got nowhere. The codebase is too messy—decided to create a new branch and start fresh rather than continue patching. Tomorrow, I'll focus on rebuilding the backend properly from the frontend + backend specs instead of fixing bad code.
+
+**Lessons Learned:**
+
+I've noticed that AI coding assistants often take you in circles—they apply quick fixes without fully understanding the deeper structural issues. I knew this, but I let it happen anyway, hoping for an easy path forward. Instead, I spent hours debugging patches that just introduced new problems. Sometimes, it's better to step back and rebuild from a solid foundation rather than trying to fix something that's fundamentally broken.
+
 ### Day 18: February 17, 2025  
 
-Today was a lighter day compared to yesterday's intense backend work. I finalized the **HagXwon logo**—both the **modern version and the color variations**—and I’m happy with how they turned out. I also spent time watching the backend testing video, and that’s when I realized I **completely forgot to implement the dashboard.** That hit hard because I thought I was done with backend, and now I have to go back and add it.  
+Today was a lighter day compared to yesterday's intense backend work. I finalized the **HagXwon logo**—both the **modern version and the color variations**—and I'm happy with how they turned out. I also spent time watching the backend testing video, and that's when I realized I **completely forgot to implement the dashboard.** That hit hard because I thought I was done with backend, and now I have to go back and add it.  
 
-Aside from that, I started drafting an **opinion piece on AI's Ouroboric Knowledge Loop** looking at how AI models are feeding off their own outputs and what that means for the future of knowledge generation. The piece isn’t finished yet, but I spent some time researching and structuring my thoughts.  
+Aside from that, I started drafting an **opinion piece on AI's Ouroboric Knowledge Loop** looking at how AI models are feeding off their own outputs and what that means for the future of knowledge generation. The piece isn't finished yet, but I spent some time researching and structuring my thoughts.  
 
 **Completed Work**  
 
@@ -22,9 +51,9 @@ Aside from that, I started drafting an **opinion piece on AI's Ouroboric Knowled
 
 ### Day 17: February 16, 2025  
 
-I first **converted the provided Go-Gin backend specs to Python-Flask**, adapting everything for **Korean language learning**. I didn’t build directly from Go-Gin because I **don’t know Go at all**, but I do know Python—even though I’ve never worked with Flask before. I figured **debugging Python errors** would be easier than dealing with **Go from scratch**, and it worked. By **breaking down the issues step by step**, I was able to fully implement the backend in **Flask before rebuilding it in Go-Gin**. In hindsight, trying to build from the **original Go-Gin specs** would have been a nightmare. By breaking it down into a structured approach, **Cursor AI was able to guide the entire process effectively**, even though I had no prior Go experience.  
+I first **converted the provided Go-Gin backend specs to Python-Flask**, adapting everything for **Korean language learning**. I didn't build directly from Go-Gin because I **don't know Go at all**, but I do know Python—even though I've never worked with Flask before. I figured **debugging Python errors** would be easier than dealing with **Go from scratch**, and it worked. By **breaking down the issues step by step**, I was able to fully implement the backend in **Flask before rebuilding it in Go-Gin**. In hindsight, trying to build from the **original Go-Gin specs** would have been a nightmare. By breaking it down into a structured approach, **Cursor AI was able to guide the entire process effectively**, even though I had no prior Go experience.  
 
-The setup took forever. Fixing database migrations, dependencies, and Go’s quirks (CGO, SQLite, GCC, environment paths) was exhausting. The biggest challenge was getting **make, GCC, and Go to work in the same environment**, but after multiple failed setups across **Windows, WSL, and MSYS2**, I finally got everything running. Once the backend was fully implemented, **testing became another battle**. The test cases were failing because of **duplicate data inserts and pagination mismatches**, which meant rewriting how test databases were structured. After several debugging rounds, all the tests finally passed, confirming that **the Go-Gin backend is fully functional**.  
+The setup took forever. Fixing database migrations, dependencies, and Go's quirks (CGO, SQLite, GCC, environment paths) was exhausting. The biggest challenge was getting **make, GCC, and Go to work in the same environment**, but after multiple failed setups across **Windows, WSL, and MSYS2**, I finally got everything running. Once the backend was fully implemented, **testing became another battle**. The test cases were failing because of **duplicate data inserts and pagination mismatches**, which meant rewriting how test databases were structured. After several debugging rounds, all the tests finally passed, confirming that **the Go-Gin backend is fully functional**.  
 
 **Completed Work**  
 
@@ -39,9 +68,9 @@ At this point, **both the Flask and Go-Gin backends are fully implemented and te
 
 ### Day 16: February 14, 2025  
 
-I spent most of the day trying to set up an **AI-assisted backend case study** to compare how different LLMs generate Flask API code. The goal was to structure an experiment that tracked how tools like **Copilot, Windsurf, and Cursor** handled backend tasks. But after hours of planning, I realized the setup was too complicated, and I wasn’t getting the results I needed. Ultimately, I dropped the idea.  
+I spent most of the day trying to set up an **AI-assisted backend case study** to compare how different LLMs generate Flask API code. The goal was to structure an experiment that tracked how tools like **Copilot, Windsurf, and Cursor** handled backend tasks. But after hours of planning, I realized the setup was too complicated, and I wasn't getting the results I needed. Ultimately, I dropped the idea.  
 
-Because of this, I didn’t watch any more of the backend lecture videos, and I didn’t write any code today.  
+Because of this, I didn't watch any more of the backend lecture videos, and I didn't write any code today.  
 
 **Completed Work**
 
@@ -50,15 +79,15 @@ Because of this, I didn’t watch any more of the backend lecture videos, and I 
 
 ### Day 15: February 13, 2025  
 
-Today was about **finalizing my backend understanding and preparing for implementation.** I wanted to start coding, but I needed to make sure I wasn’t going in blind.  
+Today was about **finalizing my backend understanding and preparing for implementation.** I wanted to start coding, but I needed to make sure I wasn't going in blind.  
 
 I started by **double-checking the missing API endpoints** that need to be implemented. There was some confusion about whether the homework was fully defined, so I spent time confirming that **the official documentation was incomplete** and that the real requirements were scattered across the livestreams and community discussions.  
 
 Once I had clarity, I realized that I still needed a proper **plan for execution**. I reviewed the backend structure again—specifically **how Flask Blueprints handle routing**—and went over **how to connect the frontend to the backend** using API calls.  
 
-At some point, I got sidetracked again when I found a **DRM restriction** on my Korean vocabulary book, which was frustrating because **it’s literally just a list of words, and I couldn’t even extract it properly.** This led me to look into **converting AZW3 files to TXT or JSON**, which ended up being way more annoying than expected. I tried multiple extraction methods, but nothing worked perfectly. Ultimately I was only able to copy over 200 words as the publisher has added copy restrictions on the book as well. I looked at other sources such as Anki and Quizlet and may end up using those instead.
+At some point, I got sidetracked again when I found a **DRM restriction** on my Korean vocabulary book, which was frustrating because **it's literally just a list of words, and I couldn't even extract it properly.** This led me to look into **converting AZW3 files to TXT or JSON**, which ended up being way more annoying than expected. I tried multiple extraction methods, but nothing worked perfectly. Ultimately I was only able to copy over 200 words as the publisher has added copy restrictions on the book as well. I looked at other sources such as Anki and Quizlet and may end up using those instead.
 
-Aside from that, I also thought more about my Level 5 project idea. The more I consider it, the more I realize I want **a visual-first language learning tool**, where flashcards use **images and videos instead of English translations**. I haven’t locked this in yet, but it’s definitely something I want to revisit once I finish the backend work.  
+Aside from that, I also thought more about my Level 5 project idea. The more I consider it, the more I realize I want **a visual-first language learning tool**, where flashcards use **images and videos instead of English translations**. I haven't locked this in yet, but it's definitely something I want to revisit once I finish the backend work.  
 
 By the end of the day, I had a clearer **execution plan for finishing the backend**, and I know exactly what I need to do next.  
 
@@ -72,13 +101,13 @@ By the end of the day, I had a clearer **execution plan for finishing the backen
 
 ### Day 14: February 12, 2025
 
-I spent the entire day on backend work, research, and trying to make sense of everything. I started with the official lecture videos(6+ hrs), trying to wrap my head around the project requirements, Flask, SQLite, and how everything connects. At some point, I realized that there was no way I could do Level 5. I don’t know enough about frontend, backend, or anything full-stack. Even getting Level 1 done would be a huge achievement at this point.
+I spent the entire day on backend work, research, and trying to make sense of everything. I started with the official lecture videos(6+ hrs), trying to wrap my head around the project requirements, Flask, SQLite, and how everything connects. At some point, I realized that there was no way I could do Level 5. I don't know enough about frontend, backend, or anything full-stack. Even getting Level 1 done would be a huge achievement at this point.
 
 Then I started thinking about Copilot and Cursor, since that is the entire project, and I realised that these tools offer drop down selections for different LLMs. That led me down a rabbit hole: which model is actually capable of coding, and in which languages does it return good quality code? I needed to know. So I ended up getting a bit sidetracked and wrote a nine-page research paper breaking it all down. I believed that this exploration would allow me to shoot for level 5 and grant the highest chance of success.
 
-After that, I tried to get back to the backend videos, but I was still confused. I took the backend and frontend specs and turned them into diagrams, hoping that seeing everything visually would help. It did, but not completely. I still felt lost. Then I started breaking down the codebase, going file by file, and finally understood that the backend is using Flask Blueprints. That’s why there were no `@app.route()` functions in `app.py`, and why I was feeling lost.
+After that, I tried to get back to the backend videos, but I was still confused. I took the backend and frontend specs and turned them into diagrams, hoping that seeing everything visually would help. It did, but not completely. I still felt lost. Then I started breaking down the codebase, going file by file, and finally understood that the backend is using Flask Blueprints. That's why there were no `@app.route()` functions in `app.py`, and why I was feeling lost.
 
-I still have ~5 hours of lecture videos left, but I think I’ve cleared my head around the backend enough to start implementation tomorrow. I also know I’m done for the day because I’m getting snappy at my favorite AI assistant.
+I still have ~5 hours of lecture videos left, but I think I've cleared my head around the backend enough to start implementation tomorrow. I also know I'm done for the day because I'm getting snappy at my favorite AI assistant.
 
 **Completed Work**
 
@@ -92,7 +121,7 @@ I still have ~5 hours of lecture videos left, but I think I’ve cleared my head
 
 ### Day 12 & 13: February 10-11, 2025
 
-I pulled an all-nighter and have been working for over 10 hours straight because I was falling behind in the bootcamp. I'm exhausted. Submitting the Sentence Constructor project made me realize something critical—I’ve spent too much time on theory and note-taking and not enough on practical application. While I’m proud of my GenAI notes and thrilled to have learned TOGAF, I should have focused on getting the practical work done first, submitted it, and then refined the theory later. Moving forward, my plan is to prioritize completing the minimum requirements first, then improve upon them instead of getting lost in details upfront.
+I pulled an all-nighter and have been working for over 10 hours straight because I was falling behind in the bootcamp. I'm exhausted. Submitting the Sentence Constructor project made me realize something critical—I've spent too much time on theory and note-taking and not enough on practical application. While I'm proud of my GenAI notes and thrilled to have learned TOGAF, I should have focused on getting the practical work done first, submitted it, and then refined the theory later. Moving forward, my plan is to prioritize completing the minimum requirements first, then improve upon them instead of getting lost in details upfront.
 
 Completed Work:
 
