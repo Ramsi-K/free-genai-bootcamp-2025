@@ -35,6 +35,7 @@ type Translation struct {
 type Sentence struct {
 	ID        uint      `gorm:"primaryKey" json:"id"`
 	WordID    uint      `gorm:"not null;index" json:"word_id"`
+	Word      Word      `gorm:"foreignKey:WordID" json:"word"`
 	Korean    string    `gorm:"not null" json:"korean"`
 	English   string    `gorm:"not null" json:"english"`
 	CreatedAt time.Time `json:"created_at"`

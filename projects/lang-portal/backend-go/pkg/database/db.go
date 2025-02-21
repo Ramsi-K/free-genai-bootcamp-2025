@@ -2,6 +2,7 @@ package database
 
 import (
 	"log"
+	"os"
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
 	"gorm.io/driver/sqlite"
@@ -15,12 +16,29 @@ var DB *gorm.DB
 func Initialize() error {
 	var err error
 
-	// Configure GORM with detailed logging
-	config := &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+	// Database URI
+	dbURI := os.Getenv("DATABASE_URL")
+	if dbURI == "" {
+		dbURI = "lang_portal.db" // Default SQLite file
 	}
 
-	DB, err = gorm.Open(sqlite.Open("lang_portal.db"), config)
+	// Configure logging
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold:             0,           // Disable slow SQL threshold
+			LogLevel:                  logger.Info, // Log level
+			IgnoreRecordNotFoundError: false,       // Ignore ErrRecordNotFound error
+			Colorful:                  true,        // Enable color
+		},
+	)
+
+	// Configure GORM with detailed logging
+	config := &gorm.Config{
+		Logger: newLogger,
+	}
+
+	DB, err = gorm.Open(sqlite.Open(dbURI), config)
 	if err != nil {
 		return err
 	}

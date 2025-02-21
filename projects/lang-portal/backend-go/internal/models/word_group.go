@@ -11,13 +11,15 @@ import (
 
 // JSON Structure
 type GROUP_Translation struct {
-	English string `json:"english"`
+	gorm.Model
+	GROUP_WordID uint   `json:"group_word_id"` // Foreign key for GROUP_Word
+	English      string `json:"english"`
 }
 
 type JSONWord struct {
-	Hangul       string              `json:"hangul"`
-	Romanization string              `json:"romanization"`
-	English      []GROUP_Translation `json:"english"`
+	Hangul       string   `json:"hangul"`
+	Romanization string   `json:"romanization"`
+	English      []string `json:"english"`
 }
 
 type WordGroup struct {
@@ -60,6 +62,7 @@ func SeedDatabase(db *gorm.DB, jsonFile string) error {
 		wordGroup := WordGroup{
 			Name:        groupName,
 			Description: groupData.Description,
+			Words:       []GROUP_Word{},
 		}
 
 		// Iterate through the words
@@ -71,9 +74,9 @@ func SeedDatabase(db *gorm.DB, jsonFile string) error {
 			}
 
 			// Create Translations
-			for _, english := range jsonWord.EnglishTranslations {
+			for _, englishStr := range jsonWord.English {
 				translation := GROUP_Translation{
-					English: english.English,
+					English: englishStr,
 				}
 				word.EnglishTranslations = append(word.EnglishTranslations, translation)
 			}
