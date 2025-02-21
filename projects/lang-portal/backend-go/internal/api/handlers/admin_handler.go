@@ -61,6 +61,8 @@ func (h *AdminHandler) FullReset(c *gin.Context) {
 		&models.StudySession{},
 		&models.WordReviewItem{},
 		"group_words", // Drop join table first
+		&models.GROUP_Word{},
+		&models.GROUP_Translation{},
 		&models.Word{},
 		&models.WordGroup{},
 		&models.StudyActivity{},
@@ -72,7 +74,11 @@ func (h *AdminHandler) FullReset(c *gin.Context) {
 	// Run migrations
 	if err := h.db.AutoMigrate(
 		&models.Word{},
+		&models.Translation{},
+		&models.Sentence{},
 		&models.WordGroup{},
+		&models.GROUP_Word{},
+		&models.GROUP_Translation{},
 		&models.StudyActivity{},
 		&models.StudySession{},
 		&models.WordReviewItem{},

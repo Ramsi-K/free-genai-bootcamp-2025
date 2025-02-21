@@ -229,3 +229,36 @@ func checkDBSchema(db *gorm.DB) (map[string]string, error) {
 
 	return columnMap, nil
 }
+
+// In your models/word_group.go file
+
+// AfterFind GORM hook to load associated words
+func (wg *WordGroup) AfterFind(tx *gorm.DB) error {
+	// Only try to preload if not already loaded
+	if wg.Words == nil {
+		// Use the tx instance that's already in the context
+		if err := tx.Preload("EnglishTranslations").Model(wg).Association("Words").Find(&wg.Words); err != nil {
+			return err
+		}
+
+		// Update the WordsCount if needed
+		if wg.WordsCount == 0 && len(wg.Words) > 0 {
+			wg.WordsCount = len(wg.Words)
+			// No need to update the database here, just the in-memory object
+		}
+	}
+
+	return nil
+}
+
+// AfterFind GORM hook to load associated translations
+func (w *GROUP_Word) AfterFind(tx *gorm.DB) error {
+	// Only try to preload if not already loaded
+	if w.EnglishTranslations == nil {
+		// Use the tx instance that's already in the context
+		if err := tx.Model(w).Association("EnglishTranslations").Find(&w.EnglishTranslations); err != nil {
+			return err
+		}
+	}
+	return nil
+}
