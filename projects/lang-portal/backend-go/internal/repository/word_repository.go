@@ -33,7 +33,7 @@ func (r *WordRepositoryImpl) ListWords(page, limit int) ([]models.Word, int64, e
 		return nil, 0, err
 	}
 
-	if err := r.db.Offset(offset).Limit(limit).Find(&words).Error; err != nil {
+	if err := r.db.Preload("EnglishTranslations").Offset(offset).Limit(limit).Find(&words).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -43,7 +43,7 @@ func (r *WordRepositoryImpl) ListWords(page, limit int) ([]models.Word, int64, e
 // GetWord retrieves a word by ID
 func (r *WordRepositoryImpl) GetWord(id uint) (*models.Word, error) {
 	var word models.Word
-	if err := r.db.First(&word, id).Error; err != nil {
+	if err := r.db.Preload("EnglishTranslations").First(&word, id).Error; err != nil {
 		return nil, err
 	}
 	return &word, nil

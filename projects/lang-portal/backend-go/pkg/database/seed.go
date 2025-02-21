@@ -105,6 +105,7 @@ func loadKoreanWords(tx *gorm.DB) error {
 		for _, eng := range wordData.English {
 			translation := &models.Translation{
 				WordID:  word.ID,
+				Hangul:  wordData.Hangul,
 				English: eng,
 			}
 			if err := tx.Where(models.Translation{WordID: word.ID, English: eng}).FirstOrCreate(&translation).Error; err != nil {
