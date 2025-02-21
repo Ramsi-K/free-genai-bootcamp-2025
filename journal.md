@@ -9,6 +9,14 @@
 
 ## Week 1
 
+### Day 21: February 21, 2025
+
+Successfully implemented database seeding for the core 2000 words, ensuring English translations and example sentences are stored correctly. Resolved handler file errors and completed the separation of JSON files into two databases for distinct tasks.
+
+Spent time debugging study sessions, study activity handling, and test utilities, ensuring smooth interaction with the backend. The word model was functioning correctly, but integrating the group model introduced new challenges; adjustments were made to maintain stability while keeping the data structured properly.
+
+Next steps involve refining API interactions to ensure they work seamlessly with the newly seeded data.
+
 ### Day 20: February 20, 2025  
 
 Attempted to use **Windsurf for debugging** but abandoned it due to excessive renaming and unhelpful refactoring. Recovered the **last known good commit** to revert Windsurf’s changes. With **Cursor credits exhausted**, switched to **Gemini (chat mode) for debugging**, following Andrew’s suggestion that Gemini should be strong in Go since Google developed both. Debugged issues manually with AI assistance where needed.  
