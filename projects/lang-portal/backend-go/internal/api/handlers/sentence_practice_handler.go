@@ -7,16 +7,18 @@ import (
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/repository"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // SentencePracticeHandler handles sentence practice-related requests
 type SentencePracticeHandler struct {
 	wordRepo repository.WordRepository
+	db       *gorm.DB
 }
 
 // NewSentencePracticeHandler creates a new sentence practice handler instance
-func NewSentencePracticeHandler(wordRepo repository.WordRepository) *SentencePracticeHandler {
-	return &SentencePracticeHandler{wordRepo: wordRepo}
+func NewSentencePracticeHandler(wordRepo repository.WordRepository, db *gorm.DB) *SentencePracticeHandler {
+	return &SentencePracticeHandler{wordRepo: wordRepo, db: db}
 }
 
 // PracticeSentenceResponse defines the structure for sentence practice response
@@ -25,13 +27,23 @@ type PracticeSentenceResponse struct {
 	ExampleSentences []string `json:"example_sentences"`
 }
 
-// GetPracticeSentence returns a practice sentence for a given word
-func (h *SentencePracticeHandler) GetPracticeSentence(c *gin.Context) {
+// GetSentencePractice returns a practice sentence for a given word
+func (h *SentencePracticeHandler) GetSentencePractice(c *gin.Context) {
 	c.JSON(http.StatusNotImplemented, gin.H{"error": "GetPracticeSentence not implemented"})
 }
 
-// GetSentenceExamples returns example sentences for a given word
-func (h *SentencePracticeHandler) GetSentenceExamples(c *gin.Context) {
+// PostSentencePracticeAttempt handles the sentence practice attempt endpoint
+func (h *SentencePracticeHandler) PostSentencePracticeAttempt(c *gin.Context) {
+	c.JSON(http.StatusNotImplemented, gin.H{"error": "PostSentencePracticeAttempt not implemented"})
+}
+
+// GetSentencePracticeStatistics handles the sentence practice statistics endpoint
+func (h *SentencePracticeHandler) GetSentencePracticeStatistics(c *gin.Context) {
+	c.JSON(http.StatusNotImplemented, gin.H{"error": "GetSentencePracticeStatistics not implemented"})
+}
+
+// GetSentencePracticeExamples returns example sentences for a given word
+func (h *SentencePracticeHandler) GetSentencePracticeExamples(c *gin.Context) {
 	wordIDStr := c.Query("word_id")
 	if wordIDStr == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Word ID parameter is required"})

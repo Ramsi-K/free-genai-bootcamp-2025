@@ -53,18 +53,16 @@ func TestAdminHandler_Integration(t *testing.T) {
 				}
 
 				word := models.Word{
-					Hangul:       "테스트",
-					Romanization: "test",
-					English:      models.StringSlice{"test"},
-					Type:         "noun",
-					ExampleSentence: models.ExampleSentence{
+					Hangul:              "테스트",
+					Romanization:        "test",
+					EnglishTranslations: []models.Translation{{English: "test"}},
+					Type:                "noun",
+					Sentences: []models.Sentence{{
 						Korean:  "테스트 문장입니다.",
 						English: "This is a test sentence.",
-					},
-					StudyStatistics: models.StudyStatistics{
-						CorrectCount: 5,
-						WrongCount:   2,
-					},
+					}},
+					CorrectCount: 5,
+					WrongCount:   2,
 				}
 				if err := db.Create(&word).Error; err != nil {
 					t.Fatalf("Failed to create test word: %v", err)
@@ -86,11 +84,11 @@ func TestAdminHandler_Integration(t *testing.T) {
 				}
 
 				session := models.StudySession{
-					GroupID:      group.ID,
-					ActivityID:   activity.ID,
-					CorrectCount: 5,
-					WrongCount:   2,
-					CompletedAt:  time.Now(),
+					WordGroupID:     &group.ID,
+					StudyActivityID: activity.ID,
+					CorrectCount:    5,
+					WrongCount:      2,
+					CompletedAt:     time.Now(),
 				}
 				if err := db.Create(&session).Error; err != nil {
 					t.Fatalf("Failed to create test session: %v", err)

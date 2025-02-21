@@ -27,6 +27,7 @@ func SetupRouter(database *gorm.DB) *gin.Engine {
 	groupHandler := handlers.NewGroupHandler(groupRepo)
 	activityHandler := handlers.NewStudyActivityHandler(activityRepo)
 	adminHandler := handlers.NewAdminHandler(database)
+	sentencePracticeHandler := handlers.NewSentencePracticeHandler(wordRepo, database)
 
 	// API routes group
 	api := r.Group("/api")
@@ -54,10 +55,10 @@ func SetupRouter(database *gorm.DB) *gin.Engine {
 		api.POST("/study_activities", activityHandler.CreateStudySession)
 
 		// Sentence practice endpoints
-		api.GET("/sentence_practice", nil)            // TODO: Implement handler
-		api.POST("/sentence_practice/attempt", nil)   // TODO: Implement handler
-		api.GET("/sentence_practice/examples", nil)   // TODO: Implement handler
-		api.GET("/sentence_practice/statistics", nil) // TODO: Implement handler
+		api.GET("/sentence_practice", sentencePracticeHandler.GetSentencePractice)
+		api.POST("/sentence_practice/attempt", sentencePracticeHandler.PostSentencePracticeAttempt)
+		api.GET("/sentence_practice/examples", sentencePracticeHandler.GetSentencePracticeExamples)
+		api.GET("/sentence_practice/statistics", sentencePracticeHandler.GetSentencePracticeStatistics)
 
 		// Admin endpoints
 		api.POST("/admin/reset/history", adminHandler.ResetHistory)

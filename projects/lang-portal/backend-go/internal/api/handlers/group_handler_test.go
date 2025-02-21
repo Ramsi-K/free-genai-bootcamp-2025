@@ -8,6 +8,7 @@ import (
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/repository"
+
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -231,7 +232,7 @@ func TestGroupHandler_Integration(t *testing.T) {
 		t.Fatalf("Failed to create test activity: %v", err)
 	}
 
-	session, err := createTestStudySession(db, group.ID, activity.ID)
+	session, err := createTestStudySession(db, group.ID, activity.ID, true)
 	if err != nil {
 		t.Fatalf("Failed to create test session: %v", err)
 	}
@@ -322,8 +323,8 @@ func TestGroupHandler_Integration(t *testing.T) {
 				assert.Len(t, response.Data, 1)
 				studySession := response.Data[0]
 				assert.Equal(t, session.ID, studySession.ID)
-				assert.Equal(t, session.GroupID, studySession.GroupID)
-				assert.Equal(t, session.ActivityID, studySession.ActivityID)
+				assert.Equal(t, session.WordGroupID, studySession.WordGroupID)
+				assert.Equal(t, session.StudyActivityID, studySession.StudyActivityID)
 				assert.Equal(t, session.CorrectCount, studySession.CorrectCount)
 				assert.Equal(t, session.WrongCount, studySession.WrongCount)
 			},
@@ -368,7 +369,7 @@ func TestGroupHandler_Integration(t *testing.T) {
 				t.Fatalf("Failed to create test activity: %v", err)
 			}
 
-			session, err = createTestStudySession(db, group.ID, activity.ID)
+			session, err = createTestStudySession(db, group.ID, activity.ID, true)
 			if err != nil {
 				t.Fatalf("Failed to create test session: %v", err)
 			}

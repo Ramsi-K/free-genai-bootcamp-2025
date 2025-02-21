@@ -14,7 +14,7 @@ func main() {
 	}
 
 	// Create and setup router
-	r := router.SetupRouter()
+	r := router.SetupRouter(database.GetDB())
 
 	// Start server
 	if err := r.Run(":8080"); err != nil {
