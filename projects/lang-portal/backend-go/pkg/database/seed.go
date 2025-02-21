@@ -32,6 +32,26 @@ type StudyActivitySeed struct {
 	URL          string `json:"url"`
 }
 
+type WordGroup struct {
+	gorm.Model
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	WordsCount  int
+}
+
+type GROUP_Word struct {
+	ID           uint   `gorm:"primarykey"`
+	WordGroupID  uint   `gorm:"index"`
+	Hangul       string `gorm:"type:text"`
+	Romanization string `gorm:"type:text"`
+}
+
+type GROUP_Translation struct {
+	ID           uint   `gorm:"primarykey"`
+	GROUP_WordID uint   `gorm:"index"`
+	English      string `gorm:"type:text"`
+}
+
 // getSeedFilePath returns the absolute path to a seed file
 func getSeedFilePath(filename string) string {
 	// Try different possible locations
@@ -142,6 +162,99 @@ func loadStudyActivities(tx *gorm.DB) error {
 	return nil
 }
 
+// Add this function to seed.go
+
+// loadGroupedWords loads word groups from word_groups.json
+func loadGroupedWords(tx *gorm.DB) error {
+	// Get the path to the word groups JSON file
+	jsonFile := getSeedFilePath("word_groups.json")
+
+	// Read the file
+	content, err := os.ReadFile(jsonFile)
+	if err != nil {
+		return fmt.Errorf("could not read word_groups.json: %v", err)
+	}
+
+	// Define the structure for parsed JSON
+	var jsonData struct {
+		Groups map[string]struct {
+			Description string `json:"description"`
+			Words       []struct {
+				Hangul       string      `json:"hangul"`
+				Romanization string      `json:"romanization"`
+				English      interface{} `json:"english"`
+			} `json:"words"`
+		} `json:"groups"`
+	}
+
+	// Parse the JSON
+	if err := json.Unmarshal(content, &jsonData); err != nil {
+		return fmt.Errorf("failed to parse word_groups.json: %v", err)
+	}
+
+	log.Printf("Loading %d word groups from word_groups.json", len(jsonData.Groups))
+
+	// Process each group
+	for groupName, groupData := range jsonData.Groups {
+		// Create the word group
+		wordGroup := models.WordGroup{
+			Name:        groupName,
+			Description: groupData.Description,
+			WordsCount:  len(groupData.Words),
+		}
+
+		if err := tx.Create(&wordGroup).Error; err != nil {
+			return fmt.Errorf("failed to create word group %s: %v", groupName, err)
+		}
+
+		// Process each word in this group
+		for _, wordData := range groupData.Words {
+			if len(wordData.Hangul) == 0 {
+				continue
+			}
+
+			// Create the group word
+			word := models.GROUP_Word{
+				WordGroupID:  wordGroup.ID,
+				Hangul:       wordData.Hangul,
+				Romanization: wordData.Romanization,
+			}
+
+			if err := tx.Create(&word).Error; err != nil {
+				return fmt.Errorf("failed to create word %s: %v", wordData.Hangul, err)
+			}
+
+			// Process English translations
+			switch englishValue := wordData.English.(type) {
+			case string:
+				translation := models.GROUP_Translation{
+					GROUP_WordID: word.ID,
+					English:      englishValue,
+				}
+				if err := tx.Create(&translation).Error; err != nil {
+					return fmt.Errorf("failed to create translation for word %s: %v", wordData.Hangul, err)
+				}
+			case []interface{}:
+				for _, item := range englishValue {
+					if str, ok := item.(string); ok {
+						translation := models.GROUP_Translation{
+							GROUP_WordID: word.ID,
+							English:      str,
+						}
+						if err := tx.Create(&translation).Error; err != nil {
+							return fmt.Errorf("failed to create translation for word %s: %v", wordData.Hangul, err)
+						}
+					}
+				}
+			}
+		}
+
+		log.Printf("Created word group '%s' with %d words", groupName, len(groupData.Words))
+	}
+
+	return nil
+}
+
 // SeedDB seeds the database with initial data
 func SeedDB(db *gorm.DB) error {
 	return db.Transaction(func(tx *gorm.DB) error {
@@ -150,9 +263,9 @@ func SeedDB(db *gorm.DB) error {
 			return fmt.Errorf("failed to load Korean words: %v", err)
 		}
 
-		// Then load word groups and associate words with groups
-		if err := models.SeedDatabase(tx, "seed/word_groups.json"); err != nil {
-			return fmt.Errorf("failed to seed word groups: %v", err)
+		// Then load word groups from word_groups.json
+		if err := loadGroupedWords(tx); err != nil {
+			return fmt.Errorf("failed to load word groups: %v", err)
 		}
 
 		// Finally, create default study activities

@@ -49,6 +49,8 @@ func Initialize() error {
 		&models.Sentence{},
 		&models.Word{},
 		&models.WordGroup{},
+		&models.GROUP_Word{},
+		&models.GROUP_Translation{},
 		&models.StudyActivity{},
 		&models.StudySession{},
 		&models.WordReviewItem{},
