@@ -118,8 +118,8 @@ func TestAdminHandler_Integration(t *testing.T) {
 				var words []models.Word
 				assert.NoError(t, db.Find(&words).Error)
 				for _, word := range words {
-					assert.Equal(t, 0, word.StudyStatistics.CorrectCount, "Expected word statistics to be reset")
-					assert.Equal(t, 0, word.StudyStatistics.WrongCount, "Expected word statistics to be reset")
+					assert.Equal(t, 0, word.CorrectCount, "Expected word statistics to be reset")
+					assert.Equal(t, 0, word.WrongCount, "Expected word statistics to be reset")
 				}
 
 				// Verify word-group associations are correct

@@ -83,15 +83,25 @@ func (h *WordHandler) CreateCorrectStudySession(c *gin.Context) {
 	}
 
 	studySession := models.StudySession{
-		WordID:     uint(wordID),
-		Correct:    true,
-		ActivityID: uint(activityID),
-		CreatedAt:  time.Now(),
-		UpdatedAt:  time.Now(),
+		StudyActivityID: uint(activityID),
+		CorrectCount:    0,
+		WrongCount:      0,
 	}
 
 	if err := h.wordRepo.GetDB().Create(&studySession).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create study session"})
+		return
+	}
+
+	wordReviewItem := models.WordReviewItem{
+		WordID:         uint(wordID),
+		StudySessionID: studySession.ID,
+		CorrectCount:   1,
+		CreatedAt:      time.Now(),
+	}
+
+	if err := h.wordRepo.GetDB().Create(&wordReviewItem).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create word review item"})
 		return
 	}
 
@@ -123,15 +133,26 @@ func (h *WordHandler) CreateIncorrectStudySession(c *gin.Context) {
 	}
 
 	studySession := models.StudySession{
-		WordID:     uint(wordID),
-		Correct:    false, // changed to false
-		ActivityID: uint(activityID),
-		CreatedAt:  time.Now(),
-		UpdatedAt:  time.Now(),
+		StudyActivityID: uint(activityID),
+		CompletedAt:     time.Now(),
+		CorrectCount:    0,
+		WrongCount:      0,
 	}
 
 	if err := h.wordRepo.GetDB().Create(&studySession).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create study session"})
+		return
+	}
+
+	wordReviewItem := models.WordReviewItem{
+		WordID:         uint(wordID),
+		StudySessionID: studySession.ID,
+		CorrectCount:   0,
+		CreatedAt:      time.Now(),
+	}
+
+	if err := h.wordRepo.GetDB().Create(&wordReviewItem).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create word review item"})
 		return
 	}
 

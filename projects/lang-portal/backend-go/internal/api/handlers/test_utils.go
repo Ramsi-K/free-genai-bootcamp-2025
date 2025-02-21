@@ -309,12 +309,24 @@ func createTestActivity(db *gorm.DB, name string) (*models.StudyActivity, error)
 }
 
 // createTestStudySession creates a test study session
-func createTestStudySession(db *gorm.DB, wordID uint, correct bool) error {
+func createTestStudySession(db *gorm.DB, groupID uint, activityID uint, correct bool) (*models.StudySession, error) {
 	studySession := models.StudySession{
-		WordID:  wordID,
-		Correct: correct,
+		StudyActivityID: activityID,
+		CorrectCount:    5,
+		WrongCount:      2,
+		WordGroupID:     &groupID,
+		CompletedAt:     time.Now(),
 	}
-	return db.Create(&studySession).Error
+
+	if correct {
+		studySession.CorrectCount = 1
+	}
+
+	if err := db.Create(&studySession).Error; err != nil {
+		return nil, err
+	}
+
+	return &studySession, nil
 }
 
 // resetTestDB drops all tables and recreates them

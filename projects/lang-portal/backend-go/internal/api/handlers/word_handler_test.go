@@ -168,8 +168,17 @@ func TestWordHandler_Integration(t *testing.T) {
 				}
 
 				assert.Len(t, studySessions, 1)
-				assert.Equal(t, uint(1), studySessions[0].WordID)
-				assert.Equal(t, true, studySessions[0].Correct)
+
+				// Retrieve the associated WordReviewItem
+				var wordReviewItem models.WordReviewItem
+				if err := db.Where("study_session_id = ?", studySessions[0].ID).First(&wordReviewItem).Error; err != nil {
+					t.Fatalf("Failed to find word review item: %v", err)
+				}
+
+				// Assert that the WordID and Correct values match the expected values
+				assert.Equal(t, uint(1), wordReviewItem.WordID)
+				// Correct is an integer (0 or 1)
+				assert.Equal(t, 1, wordReviewItem.CorrectCount)
 			},
 		},
 		{
@@ -201,8 +210,17 @@ func TestWordHandler_Integration(t *testing.T) {
 				}
 
 				assert.Len(t, studySessions, 1)
-				assert.Equal(t, uint(1), studySessions[0].WordID)
-				assert.Equal(t, false, studySessions[0].Correct)
+
+				// Retrieve the associated WordReviewItem
+				var wordReviewItem models.WordReviewItem
+				if err := db.Where("study_session_id = ?", studySessions[0].ID).First(&wordReviewItem).Error; err != nil {
+					t.Fatalf("Failed to find word review item: %v", err)
+				}
+
+				// Assert that the WordID and Correct values match the expected values
+				assert.Equal(t, uint(1), wordReviewItem.WordID)
+				// Correct is an integer (0 or 1)
+				assert.Equal(t, 0, wordReviewItem.CorrectCount)
 			},
 		},
 		{

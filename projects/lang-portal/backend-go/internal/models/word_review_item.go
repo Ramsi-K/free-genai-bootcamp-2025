@@ -11,6 +11,7 @@ type WordReviewItem struct {
 	Word           Word         `gorm:"foreignKey:WordID" json:"word,omitempty"`
 	StudySessionID uint         `gorm:"index" json:"study_session_id"`
 	StudySession   StudySession `gorm:"foreignKey:StudySessionID" json:"study_session,omitempty"`
-	Correct        bool         `gorm:"not null" json:"correct"`
+	CorrectCount   int          `json:"correct_count"`
+	WrongCount     int          `json:"wrong_count"`
 	CreatedAt      time.Time    `json:"created_at"`
 }

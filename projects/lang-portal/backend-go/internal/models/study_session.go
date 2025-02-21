@@ -2,15 +2,17 @@ package models
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
-// StudySession represents a single study session for a word
+// StudySession represents a study session
 type StudySession struct {
-	ID         uint          `gorm:"primaryKey" json:"id"`
-	WordID     uint          `gorm:"index" json:"word_id"` //  word id
-	Correct    bool          `json:"correct"`              //  attempt was correct
-	ActivityID uint          `gorm:"index" json:"activity_id"`
-	Activity   StudyActivity `gorm:"foreignKey:ActivityID" json:"activity,omitempty"`
-	CreatedAt  time.Time     `json:"created_at"`
-	UpdatedAt  time.Time     `json:"updated_at"`
+	gorm.Model
+	StudyActivityID uint          `json:"study_activity_id"`
+	StudyActivity   StudyActivity `gorm:"foreignKey:StudyActivityID" json:"study_activity"`
+	WordGroupID     *uint         `json:"word_group_id"` // Optional: ID of the word group being studied
+	CorrectCount    int           `json:"correct_count"`
+	WrongCount      int           `json:"wrong_count"`
+	CompletedAt     time.Time     `json:"completed_at"`
 }

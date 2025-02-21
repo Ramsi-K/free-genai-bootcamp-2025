@@ -66,11 +66,11 @@ func TestStudyActivityHandler_Integration(t *testing.T) {
 				return group, activity, nil
 			},
 			body: models.StudySession{
-				GroupID:      1, // Will be replaced with actual ID
-				ActivityID:   1, // Will be replaced with actual ID
-				CorrectCount: 8,
-				WrongCount:   2,
-				CompletedAt:  time.Now(),
+				WordGroupID:     &[]uint{1}[0], // Will be replaced with actual ID
+				StudyActivityID: 1,             // Will be replaced with actual ID
+				CorrectCount:    8,
+				WrongCount:      2,
+				CompletedAt:     time.Now(),
 			},
 			expectedStatus: http.StatusCreated,
 			validateBody: func(t *testing.T, body []byte, testData map[string]interface{}) {
@@ -126,11 +126,11 @@ func TestStudyActivityHandler_Integration(t *testing.T) {
 				return group, nil, nil
 			},
 			body: models.StudySession{
-				GroupID:      1,   // Will be replaced with actual ID
-				ActivityID:   999, // Non-existent activity
-				CorrectCount: 8,
-				WrongCount:   2,
-				CompletedAt:  time.Now(),
+				WordGroupID:     &[]uint{1}[0], // Will be replaced with actual ID
+				StudyActivityID: 999,           // Non-existent activity
+				CorrectCount:    8,
+				WrongCount:      2,
+				CompletedAt:     time.Now(),
 			},
 			expectedStatus: http.StatusNotFound,
 		},
@@ -146,11 +146,11 @@ func TestStudyActivityHandler_Integration(t *testing.T) {
 				return nil, activity, nil
 			},
 			body: models.StudySession{
-				GroupID:      999, // Non-existent group
-				ActivityID:   1,   // Will be replaced with actual ID
-				CorrectCount: 8,
-				WrongCount:   2,
-				CompletedAt:  time.Now(),
+				WordGroupID:     &[]uint{999}[0], // Non-existent group
+				StudyActivityID: 1,               // Will be replaced with actual ID
+				CorrectCount:    8,
+				WrongCount:      2,
+				CompletedAt:     time.Now(),
 			},
 			expectedStatus: http.StatusNotFound,
 		},
@@ -176,7 +176,7 @@ func TestStudyActivityHandler_Integration(t *testing.T) {
 					t.Fatalf("Failed to create test activity: %v", err)
 				}
 
-				session, err := createTestStudySession(db, group.ID, activity.ID)
+				session, err := createTestStudySession(db, group.ID, activity.ID, true)
 				if err != nil {
 					t.Fatalf("Failed to create test session: %v", err)
 				}
@@ -244,8 +244,8 @@ func TestStudyActivityHandler_Integration(t *testing.T) {
 
 					// Update request body with actual IDs if it's a StudySession
 					if sessionBody, ok := tt.body.(models.StudySession); ok {
-						sessionBody.GroupID = group.ID
-						sessionBody.ActivityID = activity.ID
+						sessionBody.WordGroupID = &group.ID
+						sessionBody.StudyActivityID = activity.ID
 						tt.body = sessionBody
 					}
 				}
