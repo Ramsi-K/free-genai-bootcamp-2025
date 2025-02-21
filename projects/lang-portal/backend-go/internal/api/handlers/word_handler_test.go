@@ -251,9 +251,9 @@ func TestWordHandler_Integration(t *testing.T) {
 				}
 
 				// Create test study sessions HERE, inside the setup function
-				createTestStudySession(db, word.ID, true)
-				createTestStudySession(db, word.ID, false)
-				createTestStudySession(db, word.ID, true)
+				createTestStudySession(db, 1, word.ID, true)
+				createTestStudySession(db, 1, word.ID, false)
+				createTestStudySession(db, 1, word.ID, true)
 			},
 			validateBody: func(t *testing.T, body []byte) {
 				repo := repository.NewWordRepository(repository.NewBaseRepository(db))
