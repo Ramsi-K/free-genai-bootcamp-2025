@@ -8,6 +8,23 @@
 
 ## Week 1
 
+### Day 20: February 20, 2025  
+
+Attempted to use **Windsurf for debugging** but abandoned it due to excessive renaming and unhelpful refactoring. Recovered the **last known good commit** to revert Windsurf’s changes. With **Cursor credits exhausted**, switched to **Gemini (chat mode) for debugging**, following Andrew’s suggestion that Gemini should be strong in Go since Google developed both. Debugged issues manually with AI assistance where needed.  
+
+**Observations:**  
+
+- AI-assisted coding is unreliable without proper IDE integration.  
+- Gemini was useful for debugging but lacked deep IDE support.  
+- **Windsurf was completely useless**, burning credits without solving real issues.
+- Opinion piece updates:
+  - **CAG (Code-Augmented Generation), RAG (Retrieval-Augmented Generation), and Fine-Tuning** → Explored how AI coding assistants rely on these techniques, but each has limitations:  
+    - **Fine-tuning locks knowledge into a model**, making it outdated when code changes.  
+    - **RAG dynamically retrieves relevant code**, but retrieval accuracy and context limits create issues.  
+    - **CAG injects real-time code snippets**, but effectiveness depends on proper indexing and high-quality retrieval.  
+  - **Impact on AI-generated software** → AI coding tools risk becoming self-referential, reinforcing bad practices from previous AI-generated code.  
+  - **Long-term sustainability** → Hybrid models combining **fine-tuning for stable patterns, RAG for adaptability, and CAG for real-time context** may be the best solution.  
+
 ### Day 19: February 19, 2025
 
 Spent 10+ hours trying to fix the Go backend, but it was a frustrating loop of errors, misconfigurations, and unexpected issues.
