@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"log"
+
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
 	"gorm.io/gorm"
 )
@@ -24,19 +26,28 @@ func NewWordRepository(base *BaseRepository) WordRepository {
 }
 
 // ListWords returns a paginated list of words
+// In word_repository.go
 func (r *WordRepositoryImpl) ListWords(page, limit int) ([]models.Word, int64, error) {
 	var words []models.Word
 	var total int64
 	offset := (page - 1) * limit
 
-	if err := r.db.Model(&models.Word{}).Count(&total).Error; err != nil {
+	// Ensure preloading works
+	query := r.db.Model(&models.Word{}).
+		Preload("EnglishTranslations").
+		Preload("Sentences")
+
+	if err := query.Count(&total).Error; err != nil {
+		log.Printf("Error counting words: %v", err)
 		return nil, 0, err
 	}
 
-	if err := r.db.Preload("EnglishTranslations").Offset(offset).Limit(limit).Find(&words).Error; err != nil {
+	if err := query.Offset(offset).Limit(limit).Find(&words).Error; err != nil {
+		log.Printf("Error finding words: %v", err)
 		return nil, 0, err
 	}
 
+	log.Printf("Found %d words, total %d", len(words), total)
 	return words, total, nil
 }
 

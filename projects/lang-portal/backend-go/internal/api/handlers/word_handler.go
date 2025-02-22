@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -21,16 +22,32 @@ func NewWordHandler(repo repository.WordRepository) *WordHandler {
 	return &WordHandler{wordRepo: repo}
 }
 
-// ListWords returns a paginated list of words
 func (h *WordHandler) ListWords(c *gin.Context) {
-	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	pageStr := c.DefaultQuery("page", "1")
+	limitStr := c.DefaultQuery("limit", "10")
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page <= 0 {
+		log.Printf("Invalid page parameter: %s", pageStr)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page parameter"})
+		return
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 {
+		log.Printf("Invalid limit parameter: %s", limitStr)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit parameter"})
+		return
+	}
 
 	words, total, err := h.wordRepo.ListWords(page, limit)
 	if err != nil {
+		log.Printf("Error fetching words: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching words"})
 		return
 	}
+
+	log.Printf("Retrieved %d words out of %d total", len(words), total)
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": words,
@@ -41,6 +58,27 @@ func (h *WordHandler) ListWords(c *gin.Context) {
 		},
 	})
 }
+
+// // ListWords returns a paginated list of words
+// func (h *WordHandler) ListWords(c *gin.Context) {
+// 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+// 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+
+// 	words, total, err := h.wordRepo.ListWords(page, limit)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching words"})
+// 		return
+// 	}
+
+// 	c.JSON(http.StatusOK, gin.H{
+// 		"data": words,
+// 		"meta": gin.H{
+// 			"current_page": page,
+// 			"per_page":     limit,
+// 			"total":        total,
+// 		},
+// 	})
+// }
 
 // GetWord returns details of a specific word
 func (h *WordHandler) GetWord(c *gin.Context) {

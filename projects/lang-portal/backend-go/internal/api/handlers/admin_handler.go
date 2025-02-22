@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
@@ -89,6 +90,7 @@ func (h *AdminHandler) FullReset(c *gin.Context) {
 
 	// Load seed data
 	if err := database.SeedDB(h.db); err != nil {
+		log.Printf("⚠️ SEEDING FAILED: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to load seed data: %v", err)})
 		return
 	}

@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
@@ -90,6 +91,7 @@ func (h *SentencePracticeHandler) GetSentencePractice(c *gin.Context) {
 }
 
 // PostSentencePracticeAttempt handles the sentence practice attempt endpoint
+
 func (h *SentencePracticeHandler) PostSentencePracticeAttempt(c *gin.Context) {
 	var request SentencePracticeRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -104,10 +106,11 @@ func (h *SentencePracticeHandler) PostSentencePracticeAttempt(c *gin.Context) {
 		return
 	}
 
-	// Find the matching sentence
+	// Find the matching sentence (using trimmed values)
 	var correctSentence string
 	for _, sentence := range word.Sentences {
-		if sentence.Korean == request.CorrectText || sentence.English == request.CorrectText {
+		if strings.TrimSpace(sentence.Korean) == strings.TrimSpace(request.CorrectText) ||
+			strings.TrimSpace(sentence.English) == strings.TrimSpace(request.CorrectText) {
 			correctSentence = request.CorrectText
 			break
 		}
@@ -118,35 +121,26 @@ func (h *SentencePracticeHandler) PostSentencePracticeAttempt(c *gin.Context) {
 		return
 	}
 
-	// Calculate similarity score (in a real app, you'd want a more sophisticated algorithm)
-	// This is a simple placeholder
-	isExactMatch := request.UserAnswer == correctSentence
+	// Calculate similarity score
+	isExactMatch := strings.TrimSpace(request.UserAnswer) == strings.TrimSpace(correctSentence)
 	var score float64 = 0
 	if isExactMatch {
 		score = 100
-	} else {
-		// Calculate a similarity score
-		// For a simple implementation, we'll just check if it contains the word
-		if len(request.UserAnswer) > 0 && request.UserAnswer != "" {
-			// Award a partial score based on length
-			score = float64(len(request.UserAnswer)) / float64(len(correctSentence)) * 80
-			if score > 80 {
-				score = 80 // Cap partial matches at 80%
-			}
+	} else if len(request.UserAnswer) > 0 {
+		score = float64(len(request.UserAnswer)) / float64(len(correctSentence)) * 80
+		if score > 80 {
+			score = 80
 		}
 	}
 
-	// Create study session record
-	isCorrect := score >= 80 // Consider 80% or higher as correct
+	isCorrect := score >= 80
 
-	// Create a study session
 	studySession := models.StudySession{
 		StudyActivityID: 1, // Assuming 1 is your sentence practice activity ID
 		CorrectCount:    0,
 		WrongCount:      0,
 		CompletedAt:     time.Now(),
 	}
-
 	if isCorrect {
 		studySession.CorrectCount = 1
 	} else {
@@ -158,14 +152,12 @@ func (h *SentencePracticeHandler) PostSentencePracticeAttempt(c *gin.Context) {
 		return
 	}
 
-	// Create word review record
 	wordReview := models.WordReviewItem{
 		WordID:         request.WordID,
 		StudySessionID: studySession.ID,
 		CorrectCount:   0,
 		CreatedAt:      time.Now(),
 	}
-
 	if isCorrect {
 		wordReview.CorrectCount = 1
 	}
@@ -175,22 +167,121 @@ func (h *SentencePracticeHandler) PostSentencePracticeAttempt(c *gin.Context) {
 		return
 	}
 
-	// Update word stats
 	if isCorrect {
 		h.db.Model(&word).Update("correct_count", gorm.Expr("correct_count + ?", 1))
 	} else {
 		h.db.Model(&word).Update("wrong_count", gorm.Expr("wrong_count + ?", 1))
 	}
 
-	// Prepare response
 	response := SentencePracticeAttemptResponse{
 		IsCorrect:     isCorrect,
 		Score:         score,
 		CorrectAnswer: correctSentence,
 	}
-
 	c.JSON(http.StatusOK, response)
 }
+
+// func (h *SentencePracticeHandler) PostSentencePracticeAttempt(c *gin.Context) {
+// 	var request SentencePracticeRequest
+// 	if err := c.ShouldBindJSON(&request); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format"})
+// 		return
+// 	}
+
+// 	// Get the word
+// 	word, err := h.wordRepo.GetWord(request.WordID)
+// 	if err != nil {
+// 		c.JSON(http.StatusNotFound, gin.H{"error": "Word not found"})
+// 		return
+// 	}
+
+// 	// Find the matching sentence
+// 	var correctSentence string
+// 	for _, sentence := range word.Sentences {
+// 		if sentence.Korean == request.CorrectText || sentence.English == request.CorrectText {
+// 			correctSentence = request.CorrectText
+// 			break
+// 		}
+// 	}
+
+// 	if correctSentence == "" {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Provided correct_text doesn't match any sentence for this word"})
+// 		return
+// 	}
+
+// 	// Calculate similarity score (in a real app, you'd want a more sophisticated algorithm)
+// 	// This is a simple placeholder
+// 	isExactMatch := request.UserAnswer == correctSentence
+// 	var score float64 = 0
+// 	if isExactMatch {
+// 		score = 100
+// 	} else {
+// 		// Calculate a similarity score
+// 		// For a simple implementation, we'll just check if it contains the word
+// 		if len(request.UserAnswer) > 0 && request.UserAnswer != "" {
+// 			// Award a partial score based on length
+// 			score = float64(len(request.UserAnswer)) / float64(len(correctSentence)) * 80
+// 			if score > 80 {
+// 				score = 80 // Cap partial matches at 80%
+// 			}
+// 		}
+// 	}
+
+// 	// Create study session record
+// 	isCorrect := score >= 80 // Consider 80% or higher as correct
+
+// 	// Create a study session
+// 	studySession := models.StudySession{
+// 		StudyActivityID: 1, // Assuming 1 is your sentence practice activity ID
+// 		CorrectCount:    0,
+// 		WrongCount:      0,
+// 		CompletedAt:     time.Now(),
+// 	}
+
+// 	if isCorrect {
+// 		studySession.CorrectCount = 1
+// 	} else {
+// 		studySession.WrongCount = 1
+// 	}
+
+// 	if err := h.db.Create(&studySession).Error; err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to record attempt"})
+// 		return
+// 	}
+
+// 	// Create word review record
+// 	wordReview := models.WordReviewItem{
+// 		WordID:         request.WordID,
+// 		StudySessionID: studySession.ID,
+// 		CorrectCount:   0,
+// 		CreatedAt:      time.Now(),
+// 	}
+
+// 	if isCorrect {
+// 		wordReview.CorrectCount = 1
+// 	}
+
+// 	if err := h.db.Create(&wordReview).Error; err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to record word review"})
+// 		return
+// 	}
+
+// 	// Update word stats
+// 	if isCorrect {
+// 		h.db.Model(&word).Update("correct_count", gorm.Expr("correct_count + ?", 1))
+// 	} else {
+// 		h.db.Model(&word).Update("wrong_count", gorm.Expr("wrong_count + ?", 1))
+// 	}
+
+// 	// Prepare response
+// 	response := SentencePracticeAttemptResponse{
+// 		IsCorrect:     isCorrect,
+// 		Score:         score,
+// 		CorrectAnswer: correctSentence,
+// 	}
+
+// 	c.JSON(http.StatusOK, response)
+// }
 
 // GetSentencePracticeStatistics handles the sentence practice statistics endpoint
 func (h *SentencePracticeHandler) GetSentencePracticeStatistics(c *gin.Context) {

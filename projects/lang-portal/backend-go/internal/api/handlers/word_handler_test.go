@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -20,6 +21,7 @@ func TestWordHandler_Integration(t *testing.T) {
 
 	// Setup
 	db, err := setupTestDB()
+	assert.NoError(t, err)
 	if err != nil {
 		t.Fatalf("Failed to setup test database: %v", err)
 	}
@@ -203,9 +205,18 @@ func TestWordHandler_Integration(t *testing.T) {
 
 			// Create test data
 			word1, err := createTestWord(db, "테스트1")
+			assert.NoError(t, err, "Failed to create test word")
 			if err != nil {
 				t.Fatalf("Failed to create test word: %v", err)
 			}
+			log.Printf("Created test word with ID: %d", word1.ID)
+
+			// More detailed assertions
+			assert.NotNil(t, word1, "Test word should not be nil")
+			assert.NotZero(t, word1.ID, "Test word should have a valid ID")
+			assert.NotEmpty(t, word1.Hangul, "Test word should have a Hangul value")
+			assert.NotEmpty(t, word1.English, "Test word should have English translations")
+			assert.NotEmpty(t, word1.Sentences, "Test word should have sentences")
 
 			_, err = createTestWord(db, "테스트2")
 			if err != nil {
