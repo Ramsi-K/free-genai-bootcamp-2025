@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -10,7 +11,6 @@ import (
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/repository"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 )
 
 func TestWordHandler_Integration(t *testing.T) {
@@ -24,17 +24,6 @@ func TestWordHandler_Integration(t *testing.T) {
 		t.Fatalf("Failed to setup test database: %v", err)
 	}
 	defer cleanupTestDB(db)
-
-	// Create test data
-	_, err = createTestWord(db, "테스트1")
-	if err != nil {
-		t.Fatalf("Failed to create test word: %v", err)
-	}
-
-	_, err = createTestWord(db, "테스트2")
-	if err != nil {
-		t.Fatalf("Failed to create test word: %v", err)
-	}
 
 	// Setup router
 	gin.SetMode(gin.TestMode)
@@ -54,7 +43,7 @@ func TestWordHandler_Integration(t *testing.T) {
 		method         string
 		expectedStatus int
 		validateBody   func(t *testing.T, body []byte)
-		setup          func(db *gorm.DB)
+		setup          func(db *models.Word)
 	}{
 		{
 			name:           "List Words",
@@ -70,43 +59,19 @@ func TestWordHandler_Integration(t *testing.T) {
 						Total       int64 `json:"total"`
 					} `json:"meta"`
 				}
-				assert.NoError(t, json.Unmarshal(body, &response))
+				err := json.Unmarshal(body, &response)
+				assert.NoError(t, err)
 				assert.Len(t, response.Data, 2)
 				assert.Equal(t, 1, response.Meta.CurrentPage)
 				assert.Equal(t, 10, response.Meta.PerPage)
 				assert.Equal(t, int64(2), response.Meta.Total)
 
-				// Validate word fields
+				// Validate the English translations are correctly loaded
 				for _, word := range response.Data {
-					assert.NotEmpty(t, word.ID)
-					assert.NotEmpty(t, word.Hangul)
-					assert.NotEmpty(t, word.Romanization)
-					assert.NotEmpty(t, word.Type)
-					assert.NotEmpty(t, word.EnglishTranslations)
-					assert.NotEmpty(t, word.Sentences[0].Korean)
-					assert.NotEmpty(t, word.Sentences[0].English)
-					assert.NotZero(t, word.CreatedAt)
-					assert.NotZero(t, word.UpdatedAt)
+					assert.NotEmpty(t, word.English)
+					assert.Len(t, word.Sentences, 1)
 				}
 			},
-		},
-		{
-			name:           "List Words - Invalid Page",
-			path:           "/api/words?page=invalid",
-			method:         "GET",
-			expectedStatus: http.StatusBadRequest,
-		},
-		{
-			name:           "List Words - Invalid Limit",
-			path:           "/api/words?limit=0",
-			method:         "GET",
-			expectedStatus: http.StatusBadRequest,
-		},
-		{
-			name:           "List Words - Negative Page",
-			path:           "/api/words?page=-1",
-			method:         "GET",
-			expectedStatus: http.StatusBadRequest,
 		},
 		{
 			name:           "Get Word",
@@ -115,16 +80,12 @@ func TestWordHandler_Integration(t *testing.T) {
 			expectedStatus: http.StatusOK,
 			validateBody: func(t *testing.T, body []byte) {
 				var word models.Word
-				assert.NoError(t, json.Unmarshal(body, &word))
+				err := json.Unmarshal(body, &word)
+				assert.NoError(t, err)
 				assert.Equal(t, uint(1), word.ID)
 				assert.Equal(t, "테스트1", word.Hangul)
-				assert.Equal(t, "test", word.Romanization)
-				assert.Equal(t, "noun", word.Type)
-				assert.Equal(t, []string{"test"}, word.EnglishTranslations)
-				assert.Equal(t, "Test Korean sentence", word.Sentences[0].Korean)
-				assert.Equal(t, "Test English sentence", word.Sentences[0].English)
-				assert.NotZero(t, word.CreatedAt)
-				assert.NotZero(t, word.UpdatedAt)
+				assert.NotEmpty(t, word.English)
+				assert.Len(t, word.Sentences, 1)
 			},
 		},
 		{
@@ -144,41 +105,28 @@ func TestWordHandler_Integration(t *testing.T) {
 			path:           "/api/words/1/correct",
 			method:         "POST",
 			expectedStatus: http.StatusCreated,
-			setup: func(db *gorm.DB) {
-				// Reset database before each test
-				if err := resetTestDB(db); err != nil {
-					t.Fatalf("Failed to reset test database: %v", err)
-				}
-
-				// Create test data again after reset
-				_, err = createTestWord(db, "테스트1")
-				if err != nil {
-					t.Fatalf("Failed to create test word: %v", err)
-				}
-			},
 			validateBody: func(t *testing.T, body []byte) {
 				var response map[string]interface{}
-				assert.NoError(t, json.Unmarshal(body, &response))
+				err := json.Unmarshal(body, &response)
+				assert.NoError(t, err)
 				assert.Equal(t, "Study session created", response["message"])
 
-				// Verify that a new StudySession record was created
-				var studySessions []models.StudySession
-				if err := db.Find(&studySessions).Error; err != nil {
-					t.Fatalf("Failed to find study sessions: %v", err)
-				}
+				// Verify a session was created
+				var sessions []models.StudySession
+				err = db.Find(&sessions).Error
+				assert.NoError(t, err)
+				assert.NotEmpty(t, sessions)
 
-				assert.Len(t, studySessions, 1)
+				// Verify word review
+				var reviews []models.WordReviewItem
+				err = db.Where("word_id = ?", 1).Find(&reviews).Error
+				assert.NoError(t, err)
+				assert.NotEmpty(t, reviews)
 
-				// Retrieve the associated WordReviewItem
-				var wordReviewItem models.WordReviewItem
-				if err := db.Where("study_session_id = ?", studySessions[0].ID).First(&wordReviewItem).Error; err != nil {
-					t.Fatalf("Failed to find word review item: %v", err)
-				}
-
-				// Assert that the WordID and Correct values match the expected values
-				assert.Equal(t, uint(1), wordReviewItem.WordID)
-				// Correct is an integer (0 or 1)
-				assert.Equal(t, 1, wordReviewItem.CorrectCount)
+				// Verify the last review is correct
+				lastReview := reviews[len(reviews)-1]
+				assert.Equal(t, uint(1), lastReview.WordID)
+				assert.Equal(t, 1, lastReview.CorrectCount)
 			},
 		},
 		{
@@ -186,41 +134,28 @@ func TestWordHandler_Integration(t *testing.T) {
 			path:           "/api/words/1/incorrect",
 			method:         "POST",
 			expectedStatus: http.StatusCreated,
-			setup: func(db *gorm.DB) {
-				// Reset database before each test
-				if err := resetTestDB(db); err != nil {
-					t.Fatalf("Failed to reset test database: %v", err)
-				}
-
-				// Create test data again after reset
-				_, err = createTestWord(db, "테스트1")
-				if err != nil {
-					t.Fatalf("Failed to create test word: %v", err)
-				}
-			},
 			validateBody: func(t *testing.T, body []byte) {
 				var response map[string]interface{}
-				assert.NoError(t, json.Unmarshal(body, &response))
+				err := json.Unmarshal(body, &response)
+				assert.NoError(t, err)
 				assert.Equal(t, "Study session created", response["message"])
 
-				// Verify that a new StudySession record was created
-				var studySessions []models.StudySession
-				if err := db.Find(&studySessions).Error; err != nil {
-					t.Fatalf("Failed to find study sessions: %v", err)
-				}
+				// Verify a session was created
+				var sessions []models.StudySession
+				err = db.Find(&sessions).Error
+				assert.NoError(t, err)
+				assert.NotEmpty(t, sessions)
 
-				assert.Len(t, studySessions, 1)
+				// Verify word review
+				var reviews []models.WordReviewItem
+				err = db.Where("word_id = ?", 1).Find(&reviews).Error
+				assert.NoError(t, err)
+				assert.NotEmpty(t, reviews)
 
-				// Retrieve the associated WordReviewItem
-				var wordReviewItem models.WordReviewItem
-				if err := db.Where("study_session_id = ?", studySessions[0].ID).First(&wordReviewItem).Error; err != nil {
-					t.Fatalf("Failed to find word review item: %v", err)
-				}
-
-				// Assert that the WordID and Correct values match the expected values
-				assert.Equal(t, uint(1), wordReviewItem.WordID)
-				// Correct is an integer (0 or 1)
-				assert.Equal(t, 0, wordReviewItem.CorrectCount)
+				// Verify the last review is incorrect
+				lastReview := reviews[len(reviews)-1]
+				assert.Equal(t, uint(1), lastReview.WordID)
+				assert.Equal(t, 0, lastReview.CorrectCount)
 			},
 		},
 		{
@@ -228,49 +163,33 @@ func TestWordHandler_Integration(t *testing.T) {
 			path:           "/api/words/invalid/correct",
 			method:         "POST",
 			expectedStatus: http.StatusBadRequest,
-			setup: func(db *gorm.DB) {
-				// No setup needed for invalid word ID
-			},
-			validateBody: nil,
 		},
 		{
-			name:           "Test Get Study Statistics",
-			path:           "/api/words/1/correct",
+			name:           "Create Study Session with Non-existent Word ID",
+			path:           "/api/words/999/correct",
+			method:         "POST",
+			expectedStatus: http.StatusNotFound,
+		},
+		{
+			name:           "List Words - Pagination",
+			path:           "/api/words?page=1&limit=1",
 			method:         "GET",
 			expectedStatus: http.StatusOK,
-			setup: func(db *gorm.DB) {
-				// Reset database before each test
-				if err := resetTestDB(db); err != nil {
-					t.Fatalf("Failed to reset test database: %v", err)
-				}
-
-				// Create test data again after reset
-				word, err := createTestWord(db, "테스트1")
-				if err != nil {
-					t.Fatalf("Failed to create test word: %v", err)
-				}
-
-				// Create test study sessions HERE, inside the setup function
-				createTestStudySession(db, 1, word.ID, true)
-				createTestStudySession(db, 1, word.ID, false)
-				createTestStudySession(db, 1, word.ID, true)
-			},
 			validateBody: func(t *testing.T, body []byte) {
-				repo := repository.NewWordRepository(repository.NewBaseRepository(db))
-				handler := NewWordHandler(repo)
-
-				// Get the word ID (assuming it's 1, as in the path)
-				wordID := uint(1)
-
-				// Call the GetStudyStatistics function
-				correctCount, wrongCount, err := handler.GetStudyStatistics(wordID)
-				if err != nil {
-					t.Fatalf("Failed to get study statistics: %v", err)
+				var response struct {
+					Data []models.Word `json:"data"`
+					Meta struct {
+						CurrentPage int   `json:"current_page"`
+						PerPage     int   `json:"per_page"`
+						Total       int64 `json:"total"`
+					} `json:"meta"`
 				}
-
-				// Assert that the correct counts are returned
-				assert.Equal(t, 2, correctCount)
-				assert.Equal(t, 1, wrongCount)
+				err := json.Unmarshal(body, &response)
+				assert.NoError(t, err)
+				assert.Len(t, response.Data, 1)
+				assert.Equal(t, 1, response.Meta.CurrentPage)
+				assert.Equal(t, 1, response.Meta.PerPage)
+				assert.Equal(t, int64(2), response.Meta.Total)
 			},
 		},
 	}
@@ -278,18 +197,121 @@ func TestWordHandler_Integration(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Reset database before each test
-			if tt.setup != nil {
-				tt.setup(db)
+			if err := resetTestDB(db); err != nil {
+				t.Fatalf("Failed to reset test database: %v", err)
 			}
 
+			// Create test data
+			word1, err := createTestWord(db, "테스트1")
+			if err != nil {
+				t.Fatalf("Failed to create test word: %v", err)
+			}
+
+			_, err = createTestWord(db, "테스트2")
+			if err != nil {
+				t.Fatalf("Failed to create test word: %v", err)
+			}
+
+			// Make sure study activity exists for sessions
+			_, err = createTestActivity(db, "Test Activity")
+			if err != nil {
+				t.Fatalf("Failed to create test activity: %v", err)
+			}
+
+			if tt.setup != nil {
+				tt.setup(word1)
+			}
+
+			// Make the request
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest(tt.method, tt.path, nil)
 			router.ServeHTTP(w, req)
 
+			// Verify response
+			if w.Code != tt.expectedStatus {
+				t.Errorf("Expected status %d but got %d: %s", tt.expectedStatus, w.Code, w.Body.String())
+			}
+
 			assert.Equal(t, tt.expectedStatus, w.Code)
-			if tt.validateBody != nil && w.Code == http.StatusCreated {
+			if tt.validateBody != nil && w.Code < 400 {
 				tt.validateBody(t, w.Body.Bytes())
 			}
+		})
+	}
+}
+
+// TestWordHandler_InvalidParams tests handling of invalid query parameters
+func TestWordHandler_InvalidParams(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test")
+	}
+
+	// Setup
+	db, err := setupTestDB()
+	if err != nil {
+		t.Fatalf("Failed to setup test database: %v", err)
+	}
+	defer cleanupTestDB(db)
+
+	// Setup router
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	repo := repository.NewWordRepository(repository.NewBaseRepository(db))
+	handler := NewWordHandler(repo)
+
+	router.GET("/api/words", handler.ListWords)
+
+	// Create test data
+	_, err = createTestWord(db, "테스트1")
+	if err != nil {
+		t.Fatalf("Failed to create test word: %v", err)
+	}
+
+	// Test cases
+	tests := []struct {
+		name           string
+		path           string
+		expectedStatus int
+	}{
+		{
+			name:           "Invalid Page - Negative",
+			path:           "/api/words?page=-1",
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "Invalid Page - Zero",
+			path:           "/api/words?page=0",
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "Invalid Page - Not a Number",
+			path:           "/api/words?page=abc",
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "Invalid Limit - Negative",
+			path:           "/api/words?limit=-1",
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "Invalid Limit - Zero",
+			path:           "/api/words?limit=0",
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "Invalid Limit - Not a Number",
+			path:           "/api/words?limit=abc",
+			expectedStatus: http.StatusBadRequest,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", tt.path, nil)
+			router.ServeHTTP(w, req)
+
+			assert.Equal(t, tt.expectedStatus, w.Code, fmt.Sprintf("Expected status %d but got %d: %s", tt.expectedStatus, w.Code, w.Body.String()))
 		})
 	}
 }

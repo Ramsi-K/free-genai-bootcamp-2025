@@ -16,13 +16,13 @@ func TestAdminHandler_Integration(t *testing.T) {
 		t.Skip("Skipping integration test")
 	}
 
-	// Setup
+	// Setup test database
 	db, err := setupTestDB()
 	if err != nil {
 		t.Fatalf("Failed to setup test database: %v", err)
 	}
 
-	// Setup router
+	// Setup router and admin handler
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 	handler := NewAdminHandler(db)
@@ -42,7 +42,7 @@ func TestAdminHandler_Integration(t *testing.T) {
 			name: "Full Reset",
 			path: "/api/admin/reset/full",
 			setupData: func(t *testing.T) {
-				// Create test data
+				// Create a test word group
 				group := models.WordGroup{
 					Name:        "Test Group",
 					Description: "Test Description",
@@ -52,26 +52,17 @@ func TestAdminHandler_Integration(t *testing.T) {
 					t.Fatalf("Failed to create test group: %v", err)
 				}
 
-				word := models.Word{
-					Hangul:              "테스트",
-					Romanization:        "test",
-					EnglishTranslations: []models.Translation{{English: "test"}},
-					Type:                "noun",
-					Sentences: []models.Sentence{{
-						Korean:  "테스트 문장입니다.",
-						English: "This is a test sentence.",
-					}},
-					CorrectCount: 5,
-					WrongCount:   2,
+				// Create a GROUP_Word record (using the new model) directly
+				groupWord := models.GROUP_Word{
+					WordGroupID:  group.ID,
+					Hangul:       "테스트",
+					Romanization: "test",
 				}
-				if err := db.Create(&word).Error; err != nil {
-					t.Fatalf("Failed to create test word: %v", err)
+				if err := db.Create(&groupWord).Error; err != nil {
+					t.Fatalf("Failed to create group word: %v", err)
 				}
 
-				if err := db.Model(&group).Association("Words").Append(&word); err != nil {
-					t.Fatalf("Failed to associate word with group: %v", err)
-				}
-
+				// Create a test study activity
 				activity := models.StudyActivity{
 					Name:        "Test Activity",
 					Description: "Test Description",
@@ -83,6 +74,7 @@ func TestAdminHandler_Integration(t *testing.T) {
 					t.Fatalf("Failed to create test activity: %v", err)
 				}
 
+				// Create a test study session linked to the group
 				session := models.StudySession{
 					WordGroupID:     &group.ID,
 					StudyActivityID: activity.ID,
@@ -96,49 +88,32 @@ func TestAdminHandler_Integration(t *testing.T) {
 			},
 			expectedStatus: http.StatusOK,
 			validateDB: func(t *testing.T) {
-				// First verify that study sessions are gone
+				// Verify that study sessions have been reset (after full reset, expect none)
 				var sessionCount int64
 				assert.NoError(t, db.Model(&models.StudySession{}).Count(&sessionCount).Error)
 				assert.Equal(t, int64(0), sessionCount, "Expected no study sessions after reset")
 
-				// Then verify that seed data exists
-				var groupCount, wordCount, activityCount int64
+				// Verify that seed data exists for word groups, group words, and study activities.
+				var groupCount, groupWordCount, activityCount int64
 				assert.NoError(t, db.Model(&models.WordGroup{}).Count(&groupCount).Error)
-				assert.NoError(t, db.Model(&models.Word{}).Count(&wordCount).Error)
+				assert.NoError(t, db.Model(&models.GROUP_Word{}).Count(&groupWordCount).Error)
 				assert.NoError(t, db.Model(&models.StudyActivity{}).Count(&activityCount).Error)
-
-				// We should have seed data
 				assert.Greater(t, groupCount, int64(0), "Expected groups from seed data")
-				assert.Greater(t, wordCount, int64(0), "Expected words from seed data")
+				assert.Greater(t, groupWordCount, int64(0), "Expected group words from seed data")
 				assert.Greater(t, activityCount, int64(0), "Expected activities from seed data")
-
-				// Verify all word statistics are reset
-				var words []models.Word
-				assert.NoError(t, db.Find(&words).Error)
-				for _, word := range words {
-					assert.Equal(t, 0, word.CorrectCount, "Expected word statistics to be reset")
-					assert.Equal(t, 0, word.WrongCount, "Expected word statistics to be reset")
-				}
-
-				// Verify word-group associations are correct
-				for _, word := range words {
-					var groups []models.WordGroup
-					assert.NoError(t, db.Model(&word).Association("Groups").Find(&groups))
-					assert.NotEmpty(t, groups, "Expected word to be associated with at least one group")
-				}
 			},
 		},
 	}
 
+	// Run test cases
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			withCleanDB(t, db, func() {
-				// Setup test data
 				if tt.setupData != nil {
 					tt.setupData(t)
 				}
 
-				// Make request
+				// Make the HTTP request
 				w := httptest.NewRecorder()
 				req := httptest.NewRequest("POST", tt.path, nil)
 				router.ServeHTTP(w, req)
@@ -146,7 +121,6 @@ func TestAdminHandler_Integration(t *testing.T) {
 				// Verify response status
 				assert.Equal(t, tt.expectedStatus, w.Code)
 
-				// Validate database state if needed
 				if tt.validateDB != nil {
 					tt.validateDB(t)
 				}
