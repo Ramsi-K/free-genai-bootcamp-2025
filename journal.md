@@ -9,6 +9,14 @@
 
 ## Week 1
 
+### Day 22: February 22, 2025
+
+Backend is fully up and running. All tables initialize correctly, and data is seeding independently. Curl tests confirmed that API endpoints are returning the correct outputs.
+
+- Word and group model tests are passing.
+- Backend data flow is stable.
+- Still debugging integration tests. Out of 61 total tests, 19 are failing, most likely due to database reset issues. Need to ensure a full clean reset between test runs before finalizing.
+
 ### Day 21: February 21, 2025
 
 Successfully implemented database seeding for the core 2000 words, ensuring English translations and example sentences are stored correctly. Resolved handler file errors and completed the separation of JSON files into two databases for distinct tasks.
