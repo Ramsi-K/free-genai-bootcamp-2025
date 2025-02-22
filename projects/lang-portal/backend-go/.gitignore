@@ -1,0 +1,54 @@
+# Binaries
+/{{your_project_name}}
+
+# Dependencies
+/vendor
+
+# Go modules
+go.sum
+
+# IDE specific files
+.idea/*
+.vscode/*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Test database
+test.db
+
+# Log files
+*.log
+
+# Env files
+.env
+
+# Temporary files
+*~
+\#*
+
+# Coverage files
+*.out
+*.cov
+
+# Ignore compiled object files
+*.o
+*.a
+
+# Ignore executables
+*.exe
+*.so
+*.dll
+
+# Ignore archives
+*.zip
+*.tar.gz
+*.7z
+*.rar
+
+# Ignore vim swap files
+*.swp
+
+# Ignore node_modules
+node_modules/
