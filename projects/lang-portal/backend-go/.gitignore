@@ -18,8 +18,14 @@ Thumbs.db
 # Test database
 test.db
 
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
 # Log files
 *.log
+*.txt
 
 # Env files
 .env
