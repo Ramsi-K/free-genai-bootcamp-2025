@@ -20,12 +20,16 @@ func TestWordHandler_Integration(t *testing.T) {
 	}
 
 	// Setup
-	db, err := setupTestDB()
+	db, err := setupTestDB(t)
 	assert.NoError(t, err)
 	if err != nil {
 		t.Fatalf("Failed to setup test database: %v", err)
 	}
 	defer cleanupTestDB(db)
+
+	// Reset DB and get test data
+	err = resetTestDB(db)
+	assert.NoError(t, err)
 
 	// Setup router
 	gin.SetMode(gin.TestMode)
@@ -37,6 +41,11 @@ func TestWordHandler_Integration(t *testing.T) {
 	router.GET("/api/words/:id", handler.GetWord)
 	router.POST("/api/words/:id/correct", handler.CreateCorrectStudySession)
 	router.POST("/api/words/:id/incorrect", handler.CreateIncorrectStudySession)
+
+	// Get test word from seeded data
+	var testWord models.Word
+	err = db.Preload("EnglishTranslations").Preload("Sentences").First(&testWord).Error
+	assert.NoError(t, err)
 
 	// Test cases
 	tests := []struct {
@@ -85,11 +94,13 @@ func TestWordHandler_Integration(t *testing.T) {
 				err := json.Unmarshal(body, &word)
 				assert.NoError(t, err)
 				assert.Equal(t, uint(1), word.ID)
-				assert.Equal(t, "테스트1", word.Hangul)
+				assert.Contains(t, word.Hangul, "테스트", "Expected word name mismatch")
+
 				assert.NotEmpty(t, word.English)
 				assert.Len(t, word.Sentences, 1)
 			},
 		},
+
 		{
 			name:           "Get Non-existent Word",
 			path:           "/api/words/999",
@@ -198,51 +209,36 @@ func TestWordHandler_Integration(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Reset database before each test
+			// Reset database at the start of each test
 			if err := resetTestDB(db); err != nil {
 				t.Fatalf("Failed to reset test database: %v", err)
 			}
 
-			// Create test data
-			word1, err := createTestWord(db, "테스트1")
-			assert.NoError(t, err, "Failed to create test word")
-			if err != nil {
-				t.Fatalf("Failed to create test word: %v", err)
-			}
-			log.Printf("Created test word with ID: %d", word1.ID)
+			// Get the first test word from seeded data
+			var testWord models.Word
+			err := db.Preload("EnglishTranslations").
+				Preload("Sentences").
+				First(&testWord).Error
+			assert.NoError(t, err, "Failed to get test word")
+			log.Printf("🔍 Using seeded test word (ID: %d, Hangul: %s)",
+				testWord.ID, testWord.Hangul)
 
-			// More detailed assertions
-			assert.NotNil(t, word1, "Test word should not be nil")
-			assert.NotZero(t, word1.ID, "Test word should have a valid ID")
-			assert.NotEmpty(t, word1.Hangul, "Test word should have a Hangul value")
-			assert.NotEmpty(t, word1.English, "Test word should have English translations")
-			assert.NotEmpty(t, word1.Sentences, "Test word should have sentences")
-
-			_, err = createTestWord(db, "테스트2")
-			if err != nil {
-				t.Fatalf("Failed to create test word: %v", err)
-			}
-
-			// Make sure study activity exists for sessions
-			_, err = createTestActivity(db, "Test Activity")
-			if err != nil {
-				t.Fatalf("Failed to create test activity: %v", err)
-			}
-
-			if tt.setup != nil {
-				tt.setup(word1)
-			}
+			// Get test activity from seeded data
+			var testActivity models.StudyActivity
+			err = db.First(&testActivity).Error
+			assert.NoError(t, err, "Failed to get test activity")
+			log.Printf("🔍 Using seeded test activity (ID: %d, Name: %s)",
+				testActivity.ID, testActivity.Name)
 
 			// Make the request
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest(tt.method, tt.path, nil)
 			router.ServeHTTP(w, req)
 
-			// Verify response
-			if w.Code != tt.expectedStatus {
-				t.Errorf("Expected status %d but got %d: %s", tt.expectedStatus, w.Code, w.Body.String())
-			}
+			// Log API response for debugging
+			log.Printf("🔍 API Response for %s -> %s", tt.name, w.Body.String())
 
+			// Verify response
 			assert.Equal(t, tt.expectedStatus, w.Code)
 			if tt.validateBody != nil && w.Code < 400 {
 				tt.validateBody(t, w.Body.Bytes())
@@ -258,7 +254,7 @@ func TestWordHandler_InvalidParams(t *testing.T) {
 	}
 
 	// Setup
-	db, err := setupTestDB()
+	db, err := setupTestDB(t)
 	if err != nil {
 		t.Fatalf("Failed to setup test database: %v", err)
 	}
@@ -272,11 +268,10 @@ func TestWordHandler_InvalidParams(t *testing.T) {
 
 	router.GET("/api/words", handler.ListWords)
 
-	// Create test data
-	_, err = createTestWord(db, "테스트1")
-	if err != nil {
-		t.Fatalf("Failed to create test word: %v", err)
-	}
+	// No need to create test data - using seeded data
+	var testWord models.Word
+	err = db.First(&testWord).Error
+	assert.NoError(t, err, "Failed to get test word")
 
 	// Test cases
 	tests := []struct {

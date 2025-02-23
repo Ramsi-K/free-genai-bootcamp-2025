@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/repository"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -18,23 +19,22 @@ func TestSentencePracticeHandler_Integration(t *testing.T) {
 		t.Skip("Skipping integration test")
 	}
 
-	// Setup test DB
-	db, err := setupTestDB()
+	// Setup test DB with seeded data
+	db, err := setupTestDB(t)
 	assert.NoError(t, err)
 	defer cleanupTestDB(db)
 
-	// Create a test word with at least one sentence.
-	// createTestWord is assumed to create a word along with at least one sentence.
-	word, err := createTestWord(db, "테스트")
-	assert.NoError(t, err)
-	assert.NotZero(t, word.ID)
-	assert.NotEmpty(t, word.Sentences)
-
-	// Setup router, repository, and handler
+	// Setup router with seeded data
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 	wordRepo := repository.NewWordRepository(repository.NewBaseRepository(db))
 	handler := NewSentencePracticeHandler(wordRepo, db)
+
+	// Get the first test word from the seeded data
+	var word models.Word
+	err = db.Preload("Sentences").First(&word).Error
+	assert.NoError(t, err)
+	assert.NotEmpty(t, word.Sentences)
 
 	// Register endpoints used in these tests
 	router.GET("/api/sentence_practice/examples", handler.GetSentencePracticeExamples)

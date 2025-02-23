@@ -277,3 +277,33 @@ func SeedDB(db *gorm.DB) error {
 		return nil
 	})
 }
+
+// ResetDB drops all tables and recreates them
+func ResetDB(db *gorm.DB) error {
+	// Drop tables in correct order (respecting foreign key constraints)
+	models := []interface{}{
+		&models.Translation{},
+		&models.Sentence{},
+		&models.WordReviewItem{},
+		&models.StudySession{},
+		&models.Word{},
+		&models.GROUP_Translation{},
+		&models.GROUP_Word{},
+		&models.WordGroup{},
+		&models.StudyActivity{},
+	}
+
+	// Drop all tables
+	for _, model := range models {
+		if err := db.Migrator().DropTable(model); err != nil {
+			return fmt.Errorf("failed to drop table for %T: %v", model, err)
+		}
+	}
+
+	// Recreate tables by auto-migrating all models
+	if err := db.AutoMigrate(models...); err != nil {
+		return fmt.Errorf("failed to recreate tables: %v", err)
+	}
+
+	return nil
+}

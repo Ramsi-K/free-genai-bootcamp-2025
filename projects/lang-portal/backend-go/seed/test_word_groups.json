@@ -1,0 +1,25 @@
+{
+    "groups": {
+      "Test Group": {
+        "description": "Test Description",
+        "words": [
+          {
+            "hangul": "테스트1",
+            "romanization": "teseuteu1",
+            "english": ["test1"]
+          },
+          {
+            "hangul": "테스트2",
+            "romanization": "teseuteu2",
+            "english": ["test2"]
+          },
+          {
+            "hangul": "테스트3",
+            "romanization": "teseuteu3",
+            "english": ["test3"]
+          }
+        ]
+      }
+    }
+  }
+  

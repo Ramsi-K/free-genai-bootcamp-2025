@@ -1,0 +1,18 @@
+{
+  "activities": [
+    {
+      "name": "Sentence Practice",
+      "description": "Practice forming Korean sentences - Testing",
+      "type": "sentence",
+      "thumbnail_url": "https://example.com/test-thumbnail.jpg",
+      "url": "/study/sentence-practice"
+    },
+    {
+      "name": "Word Review",
+      "description": "Review Korean vocabulary - Testing",
+      "type": "vocabulary",
+      "thumbnail_url": "https://example.com/test-thumbnail2.jpg",
+      "url": "/study/word-review"
+    }
+  ]
+}

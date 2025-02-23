@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
@@ -134,6 +136,24 @@ func TestListGroups(t *testing.T) {
 	}
 }
 
+func loadTestGroupData(t *testing.T) map[string]interface{} {
+	// Get the absolute path to the test JSON file
+	testDataPath := filepath.Join(".", "seed", "test_word_groups.json")
+
+	// Read the test data file
+	data, err := os.ReadFile(testDataPath)
+	if err != nil {
+		t.Fatalf("Failed to read test data: %v", err)
+	}
+
+	var testData map[string]interface{}
+	if err := json.Unmarshal(data, &testData); err != nil {
+		t.Fatalf("Failed to unmarshal test data: %v", err)
+	}
+
+	return testData
+}
+
 func TestGetGroup(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	mockRepo := new(MockGroupRepository)
@@ -207,37 +227,14 @@ func TestGroupHandler_Integration(t *testing.T) {
 	}
 
 	// Setup
-	db, err := setupTestDB()
-	if err != nil {
-		t.Fatalf("Failed to setup test database: %v", err)
-	}
+	db, err := setupTestDB(t)
+	assert.NoError(t, err)
 	defer cleanupTestDB(db)
 
-	// Create test data
-	word1, err := createTestWord(db, "테스트1")
-	if err != nil {
-		t.Fatalf("Failed to create test word: %v", err)
-	}
-
-	word2, err := createTestWord(db, "테스트2")
-	if err != nil {
-		t.Fatalf("Failed to create test word: %v", err)
-	}
-
-	group, err := createTestGroup(db, "Test Group", []models.Word{*word1, *word2})
-	if err != nil {
-		t.Fatalf("Failed to create test group: %v", err)
-	}
-
-	activity, err := createTestActivity(db, "Test Activity")
-	if err != nil {
-		t.Fatalf("Failed to create test activity: %v", err)
-	}
-
-	_, err = createTestStudySession(db, group.ID, activity.ID, true)
-	if err != nil {
-		t.Fatalf("Failed to create test session: %v", err)
-	}
+	// Get test group from seeded data
+	var testGroup models.WordGroup
+	err = db.Preload("Words").First(&testGroup).Error
+	assert.NoError(t, err)
 
 	// Setup router
 	gin.SetMode(gin.TestMode)

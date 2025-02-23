@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
@@ -57,43 +56,16 @@ func (h *AdminHandler) ResetHistory(c *gin.Context) {
 
 // FullReset drops and reseeds all data
 func (h *AdminHandler) FullReset(c *gin.Context) {
-	// Drop all tables
-	if err := h.db.Migrator().DropTable(
-		&models.StudySession{},
-		&models.WordReviewItem{},
-		"group_words", // Drop join table first
-		&models.GROUP_Word{},
-		&models.GROUP_Translation{},
-		&models.Word{},
-		&models.WordGroup{},
-		&models.StudyActivity{},
-	); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to drop tables: %v", err)})
+	if err := database.ResetDB(h.db); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Run migrations
-	if err := h.db.AutoMigrate(
-		&models.Word{},
-		&models.Translation{},
-		&models.Sentence{},
-		&models.WordGroup{},
-		&models.GROUP_Word{},
-		&models.GROUP_Translation{},
-		&models.StudyActivity{},
-		&models.StudySession{},
-		&models.WordReviewItem{},
-	); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to run migrations: %v", err)})
-		return
-	}
-
-	// Load seed data
+	// In tests, this will use test data, in production it uses main data
 	if err := database.SeedDB(h.db); err != nil {
-		log.Printf("⚠️ SEEDING FAILED: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to load seed data: %v", err)})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Database reset successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Database reset successful"})
 }
