@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
@@ -11,13 +12,16 @@ import (
 )
 
 func TestAdminHandler_Integration(t *testing.T) {
+	// Setup test environment
+	os.Setenv("GO_ENV", "test")
+	gin.SetMode(gin.TestMode)
+
 	// Setup
 	db, err := setupTestDB(t)
 	assert.NoError(t, err)
 	defer cleanupTestDB(db)
 
 	// Setup router
-	gin.SetMode(gin.TestMode)
 	router := gin.New()
 	handler := NewAdminHandler(db)
 	router.POST("/api/admin/reset", handler.FullReset)

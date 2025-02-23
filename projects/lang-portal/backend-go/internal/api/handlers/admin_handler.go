@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/pkg/database"
@@ -12,12 +13,18 @@ import (
 
 // AdminHandler handles administrative functions
 type AdminHandler struct {
-	db *gorm.DB
+	db        *gorm.DB
+	isTestEnv bool
 }
 
 // NewAdminHandler creates a new admin handler instance
 func NewAdminHandler(db *gorm.DB) *AdminHandler {
-	return &AdminHandler{db: db}
+	// Check if we're in test environment
+	isTest := os.Getenv("GO_ENV") == "test" || gin.Mode() == gin.TestMode
+	return &AdminHandler{
+		db:        db,
+		isTestEnv: isTest,
+	}
 }
 
 // ResetHistory resets user study history
@@ -61,8 +68,16 @@ func (h *AdminHandler) FullReset(c *gin.Context) {
 		return
 	}
 
-	// In tests, this will use test data, in production it uses main data
-	if err := database.SeedDB(h.db); err != nil {
+	var err error
+	if h.isTestEnv {
+		// Use test data for tests
+		err = database.SeedTestDB(h.db)
+	} else {
+		// Use production data for non-test environment
+		err = database.SeedDB(h.db)
+	}
+
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
