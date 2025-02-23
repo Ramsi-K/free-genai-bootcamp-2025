@@ -130,3 +130,20 @@ func (h *StudyActivityHandler) GetQuickStats(c *gin.Context) {
 
 	c.JSON(http.StatusOK, stats)
 }
+
+// GetStudySession returns details of a specific study session
+func (h *StudyActivityHandler) GetStudySession(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid study session ID"})
+		return
+	}
+
+	session, err := h.activityRepo.GetStudySession(uint(id))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Study session not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, session)
+}

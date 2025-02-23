@@ -20,6 +20,7 @@ type Word struct {
 	WrongCount          int           `gorm:"default:0" json:"wrong_count"`
 	CreatedAt           time.Time     `json:"created_at"`
 	UpdatedAt           time.Time     `json:"updated_at"`
+	Translations        []Translation `json:"-" gorm:"foreignKey:WordID"`
 }
 
 // Translation represents an English translation for a Korean word
@@ -47,11 +48,12 @@ type Sentence struct {
 
 // AfterFind GORM hook to convert EnglishTranslations to English string slice
 func (w *Word) AfterFind(tx *gorm.DB) error {
-	if len(w.EnglishTranslations) > 0 {
-		w.English = make([]string, len(w.EnglishTranslations))
-		for i, t := range w.EnglishTranslations {
-			w.English[i] = t.English
-		}
+	if err := tx.Model(w).Association("Translations").Find(&w.Translations); err != nil {
+		return err
+	}
+	w.English = make([]string, len(w.Translations))
+	for i, t := range w.Translations {
+		w.English[i] = t.English
 	}
 	return nil
 }

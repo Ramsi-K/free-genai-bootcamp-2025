@@ -12,18 +12,22 @@ import (
 
 // SeedTestDB seeds the test database with test data
 func SeedTestDB(db *gorm.DB) error {
-	// Drop and recreate tables first
-	if err := ResetDB(db); err != nil {
+	if err := ResetTestDB(db); err != nil {
 		return fmt.Errorf("failed to reset database: %v", err)
 	}
 
 	return db.Transaction(func(tx *gorm.DB) error {
-		// Load test word groups from test_word_groups.json
+		// Load individual words first (for word-based tests)
+		if err := loadTestKoreanWords(tx); err != nil {
+			return fmt.Errorf("failed to load test word: %v", err)
+		}
+
+		// Load word groups (completely separate from words)
 		if err := loadTestGroupedWords(tx); err != nil {
 			return fmt.Errorf("failed to load test word groups: %v", err)
 		}
 
-		// Load test study activities
+		// Load activities
 		if err := loadTestStudyActivities(tx); err != nil {
 			return fmt.Errorf("failed to load test study activities: %v", err)
 		}
@@ -88,7 +92,7 @@ func loadTestGroupedWords(tx *gorm.DB) error {
 	log.Printf("Loading test word groups from test_word_groups.json")
 
 	for groupName, groupData := range jsonData.Groups {
-		// Create the WordGroup
+		// Create WordGroup
 		wordGroup := models.WordGroup{
 			Name:        groupName,
 			Description: groupData.Description,
@@ -99,20 +103,12 @@ func loadTestGroupedWords(tx *gorm.DB) error {
 			return fmt.Errorf("failed to create test word group %s: %v", groupName, err)
 		}
 
-		// Process each word
 		for _, wordData := range groupData.Words {
-			// Create the regular Word entry
-			word := models.Word{
-				Hangul:       wordData.Hangul,
-				Romanization: wordData.Romanization,
-				Type:         "noun", // Default type for test data
+			if len(wordData.Hangul) == 0 {
+				continue
 			}
 
-			if err := tx.Create(&word).Error; err != nil {
-				return fmt.Errorf("failed to create test word %s: %v", wordData.Hangul, err)
-			}
-
-			// Create the GROUP_Word entry
+			// ONLY create GROUP_Word - NO Word creation
 			groupWord := models.GROUP_Word{
 				WordGroupID:  wordGroup.ID,
 				Hangul:       wordData.Hangul,
@@ -123,20 +119,9 @@ func loadTestGroupedWords(tx *gorm.DB) error {
 				return fmt.Errorf("failed to create test group word %s: %v", wordData.Hangul, err)
 			}
 
-			// Process English translations
+			// Handle GROUP_Translation
 			switch englishValue := wordData.English.(type) {
 			case string:
-				// Create Word translation
-				translation := models.Translation{
-					WordID:  word.ID,
-					Hangul:  wordData.Hangul,
-					English: englishValue,
-				}
-				if err := tx.Create(&translation).Error; err != nil {
-					return fmt.Errorf("failed to create test translation: %v", err)
-				}
-
-				// Create GROUP_Translation
 				groupTranslation := models.GROUP_Translation{
 					GROUP_WordID: groupWord.ID,
 					English:      englishValue,
@@ -144,21 +129,9 @@ func loadTestGroupedWords(tx *gorm.DB) error {
 				if err := tx.Create(&groupTranslation).Error; err != nil {
 					return fmt.Errorf("failed to create test group translation: %v", err)
 				}
-
 			case []interface{}:
 				for _, item := range englishValue {
 					if str, ok := item.(string); ok {
-						// Create Word translation
-						translation := models.Translation{
-							WordID:  word.ID,
-							Hangul:  wordData.Hangul,
-							English: str,
-						}
-						if err := tx.Create(&translation).Error; err != nil {
-							return fmt.Errorf("failed to create test translation: %v", err)
-						}
-
-						// Create GROUP_Translation
 						groupTranslation := models.GROUP_Translation{
 							GROUP_WordID: groupWord.ID,
 							English:      str,
@@ -170,8 +143,6 @@ func loadTestGroupedWords(tx *gorm.DB) error {
 				}
 			}
 		}
-
-		log.Printf("Created test word group '%s' with %d words", groupName, len(groupData.Words))
 	}
 
 	return nil
@@ -179,51 +150,62 @@ func loadTestGroupedWords(tx *gorm.DB) error {
 
 // loadTestKoreanWords loads individual words from test_word.json
 func loadTestKoreanWords(tx *gorm.DB) error {
-	dataPath := getSeedFilePath("test_word.json")
-	data, err := os.ReadFile(dataPath)
+	// Use getSeedFilePath helper instead of direct path
+	jsonFile := getSeedFilePath("test_word.json")
+	content, err := os.ReadFile(jsonFile)
 	if err != nil {
-		return fmt.Errorf("could not read test_word.json: %v", err)
+		return fmt.Errorf("failed to read test_word.json: %v", err)
 	}
 
-	var wordsData []KoreanWordData
-	if err := json.Unmarshal(data, &wordsData); err != nil {
+	var testWords []struct {
+		Hangul          string   `json:"hangul"`
+		Romanization    string   `json:"romanization"`
+		Type            string   `json:"type"`
+		English         []string `json:"english"`
+		ExampleSentence struct {
+			Korean  string `json:"korean"`
+			English string `json:"english"`
+		} `json:"example_sentence"`
+	}
+
+	if err := json.Unmarshal(content, &testWords); err != nil {
 		return fmt.Errorf("failed to parse test_word.json: %v", err)
 	}
 
-	for _, wordData := range wordsData {
-		word := &models.Word{
-			Hangul:       wordData.Hangul,
-			Romanization: wordData.Romanization,
-			Type:         wordData.Type,
-			CorrectCount: 0,
-			WrongCount:   0,
+	// Create words with their sentences
+	for _, tw := range testWords {
+		word := models.Word{
+			Hangul:       tw.Hangul,
+			Romanization: tw.Romanization,
+			Type:         tw.Type,
 		}
 
-		result := tx.Where(models.Word{Hangul: word.Hangul}).FirstOrCreate(&word)
-		if result.Error != nil {
-			return fmt.Errorf("failed to create test word %s: %v", word.Hangul, result.Error)
+		if err := tx.Create(&word).Error; err != nil {
+			return fmt.Errorf("failed to create test word: %v", err)
 		}
 
-		for _, eng := range wordData.English {
-			translation := &models.Translation{
+		// Create translations
+		for _, eng := range tw.English {
+			translation := models.Translation{
 				WordID:  word.ID,
-				Hangul:  wordData.Hangul,
 				English: eng,
 			}
-			if err := tx.Where(models.Translation{WordID: word.ID, English: eng}).FirstOrCreate(&translation).Error; err != nil {
-				return fmt.Errorf("failed to create test translation: %v", err)
+			if err := tx.Create(&translation).Error; err != nil {
+				return fmt.Errorf("failed to create translation: %v", err)
 			}
 		}
 
-		if wordData.ExampleSentence.Korean != "" && wordData.ExampleSentence.English != "" {
-			sentence := &models.Sentence{
+		// Create sentence if it exists
+		if tw.ExampleSentence.Korean != "" {
+			sentence := models.Sentence{
 				WordID:  word.ID,
-				Korean:  wordData.ExampleSentence.Korean,
-				English: wordData.ExampleSentence.English,
+				Korean:  tw.ExampleSentence.Korean,
+				English: tw.ExampleSentence.English,
 			}
-			if err := tx.Where(models.Sentence{WordID: word.ID, Korean: sentence.Korean}).FirstOrCreate(&sentence).Error; err != nil {
+			if err := tx.Create(&sentence).Error; err != nil {
 				return fmt.Errorf("failed to create test sentence: %v", err)
 			}
+			log.Printf("✅ Created test sentence for word %s: %s", word.Hangul, sentence.Korean)
 		}
 	}
 

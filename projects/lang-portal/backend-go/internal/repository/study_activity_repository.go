@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"time"
-
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
 )
 
@@ -34,17 +32,10 @@ func (r *StudyActivityRepository) GetActivity(id uint) (*models.StudyActivity, e
 	return &activity, nil
 }
 
-// CreateStudySession creates a new study session
-func (r *StudyActivityRepository) CreateStudySession(session *models.StudySession) error {
-	session.CreatedAt = time.Now()
-	session.UpdatedAt = time.Now()
-	return r.db.Create(session).Error
-}
-
-// GetLastStudySession retrieves the most recent study session
+// GetLastStudySession gets the most recent study session
 func (r *StudyActivityRepository) GetLastStudySession() (*models.StudySession, error) {
 	var session models.StudySession
-	if err := r.db.Preload("Group").Preload("Activity").
+	if err := r.db.Preload("StudyActivity").
 		Order("completed_at DESC").
 		First(&session).Error; err != nil {
 		return nil, err
@@ -52,23 +43,48 @@ func (r *StudyActivityRepository) GetLastStudySession() (*models.StudySession, e
 	return &session, nil
 }
 
-// GetStudyProgress retrieves overall study progress
+func (r *StudyActivityRepository) CreateStudySession(session *models.StudySession) error {
+	result := r.db.Create(session)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	// Load the related activity and word group
+	return r.db.Preload("StudyActivity").
+		Preload("WordGroup").
+		First(session, session.ID).Error
+}
+
+func (r *StudyActivityRepository) GetGroupStudySessions(groupID uint) ([]models.StudySession, error) {
+	var sessions []models.StudySession
+	err := r.db.Where("word_group_id = ?", groupID).
+		Preload("StudyActivity").
+		Order("created_at DESC").
+		Find(&sessions).Error
+	return sessions, err
+}
+
 func (r *StudyActivityRepository) GetStudyProgress() (map[string]interface{}, error) {
-	var totalWords int64
-	var studiedWords int64
-	var successRate float64
+	var stats struct {
+		TotalWords    int64   `json:"total_words"`
+		StudiedWords  int64   `json:"studied_words"`
+		SuccessRate   float64 `json:"success_rate"`
+		TotalSessions int64   `json:"total_sessions"`
+	}
 
-	if err := r.db.Model(&models.Word{}).Count(&totalWords).Error; err != nil {
+	// Get total words
+	if err := r.db.Model(&models.Word{}).Count(&stats.TotalWords).Error; err != nil {
 		return nil, err
 	}
 
+	// Get studied words (words with at least one review)
 	if err := r.db.Model(&models.Word{}).
-		Where("study_statistics->>'correct_count' > ?", 0).
-		Count(&studiedWords).Error; err != nil {
+		Where("correct_count > 0 OR wrong_count > 0").
+		Count(&stats.StudiedWords).Error; err != nil {
 		return nil, err
 	}
 
-	// Calculate success rate from study sessions
+	// Calculate success rate
 	var totalCorrect, totalAttempts int64
 	if err := r.db.Model(&models.StudySession{}).
 		Select("SUM(correct_count) as total_correct, SUM(correct_count + wrong_count) as total_attempts").
@@ -77,23 +93,28 @@ func (r *StudyActivityRepository) GetStudyProgress() (map[string]interface{}, er
 	}
 
 	if totalAttempts > 0 {
-		successRate = float64(totalCorrect) / float64(totalAttempts) * 100
+		stats.SuccessRate = float64(totalCorrect) / float64(totalAttempts) * 100
+	}
+
+	// Get total sessions
+	if err := r.db.Model(&models.StudySession{}).Count(&stats.TotalSessions).Error; err != nil {
+		return nil, err
 	}
 
 	return map[string]interface{}{
-		"total_words":    totalWords,
-		"studied_words":  studiedWords,
-		"success_rate":   successRate,
-		"total_correct":  totalCorrect,
-		"total_attempts": totalAttempts,
+		"total_words":    stats.TotalWords,
+		"studied_words":  stats.StudiedWords,
+		"success_rate":   stats.SuccessRate,
+		"total_sessions": stats.TotalSessions,
 	}, nil
 }
 
 // GetQuickStats retrieves quick learning statistics
-func (r *StudyActivityRepository) GetQuickStats() (map[string]interface{}, error) {
+func (r *StudyActivityRepository) GetQuickStats() (map[string]any, error) {
 	var totalSessions int64
 	var activeGroups int64
 	var successRate float64
+	var studiedGroups int64
 
 	if err := r.db.Model(&models.StudySession{}).Count(&totalSessions).Error; err != nil {
 		return nil, err
@@ -122,5 +143,15 @@ func (r *StudyActivityRepository) GetQuickStats() (map[string]interface{}, error
 		"total_sessions": totalSessions,
 		"active_groups":  activeGroups,
 		"success_rate":   successRate,
+		"studied_groups": studiedGroups,
 	}, nil
+}
+
+// GetStudySession retrieves a study session by ID
+func (r *StudyActivityRepository) GetStudySession(id uint) (*models.StudySession, error) {
+	var session models.StudySession
+	if err := r.db.Preload("StudyActivity").Preload("WordGroup").First(&session, id).Error; err != nil {
+		return nil, err
+	}
+	return &session, nil
 }

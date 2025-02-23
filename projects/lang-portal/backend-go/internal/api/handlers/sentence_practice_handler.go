@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -61,26 +61,41 @@ type SentencePracticeStatistics struct {
 
 // GetSentencePractice returns a practice sentence for a given word
 func (h *SentencePracticeHandler) GetSentencePractice(c *gin.Context) {
-	// Get a random word with sentence
+	// Set UTF-8 content type
+	c.Header("Content-Type", "application/json; charset=utf-8")
+
+	// Get a random word that has sentences
 	var word models.Word
-	result := h.db.Preload("Sentences").
-		Joins("JOIN sentences ON sentences.word_id = words.id").
+	result := h.db.Debug().
+		Table("words").
+		Joins("INNER JOIN sentences ON sentences.word_id = words.id").
 		Order("RANDOM()").
 		First(&word)
 
 	if result.Error != nil {
+		log.Printf("❌ No words with sentences found: %v", result.Error)
 		c.JSON(http.StatusNotFound, gin.H{"error": "No practice sentences available"})
 		return
 	}
 
-	// Make sure we have sentences
-	if len(word.Sentences) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "No example sentences for this word"})
+	// Get sentences for this word
+	var sentence struct {
+		Korean  string `json:"korean"`
+		English string `json:"english"`
+	}
+
+	if err := h.db.Debug().
+		Table("sentences").
+		Select("korean, english").
+		Where("word_id = ?", word.ID).
+		Order("RANDOM()"). // Get random sentence if multiple exist
+		First(&sentence).Error; err != nil {
+		log.Printf("❌ Error getting sentence: %v", err)
+		c.JSON(http.StatusNotFound, gin.H{"error": "No example sentences available"})
 		return
 	}
 
-	// Select the first sentence (or pick a random one if you prefer)
-	sentence := word.Sentences[0]
+	log.Printf("✅ Found practice sentence for word: %s", word.Hangul)
 
 	response := PracticeSentenceResponse{
 		Word:             word.Hangul,
@@ -181,108 +196,6 @@ func (h *SentencePracticeHandler) PostSentencePracticeAttempt(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// func (h *SentencePracticeHandler) PostSentencePracticeAttempt(c *gin.Context) {
-// 	var request SentencePracticeRequest
-// 	if err := c.ShouldBindJSON(&request); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format"})
-// 		return
-// 	}
-
-// 	// Get the word
-// 	word, err := h.wordRepo.GetWord(request.WordID)
-// 	if err != nil {
-// 		c.JSON(http.StatusNotFound, gin.H{"error": "Word not found"})
-// 		return
-// 	}
-
-// 	// Find the matching sentence
-// 	var correctSentence string
-// 	for _, sentence := range word.Sentences {
-// 		if sentence.Korean == request.CorrectText || sentence.English == request.CorrectText {
-// 			correctSentence = request.CorrectText
-// 			break
-// 		}
-// 	}
-
-// 	if correctSentence == "" {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Provided correct_text doesn't match any sentence for this word"})
-// 		return
-// 	}
-
-// 	// Calculate similarity score (in a real app, you'd want a more sophisticated algorithm)
-// 	// This is a simple placeholder
-// 	isExactMatch := request.UserAnswer == correctSentence
-// 	var score float64 = 0
-// 	if isExactMatch {
-// 		score = 100
-// 	} else {
-// 		// Calculate a similarity score
-// 		// For a simple implementation, we'll just check if it contains the word
-// 		if len(request.UserAnswer) > 0 && request.UserAnswer != "" {
-// 			// Award a partial score based on length
-// 			score = float64(len(request.UserAnswer)) / float64(len(correctSentence)) * 80
-// 			if score > 80 {
-// 				score = 80 // Cap partial matches at 80%
-// 			}
-// 		}
-// 	}
-
-// 	// Create study session record
-// 	isCorrect := score >= 80 // Consider 80% or higher as correct
-
-// 	// Create a study session
-// 	studySession := models.StudySession{
-// 		StudyActivityID: 1, // Assuming 1 is your sentence practice activity ID
-// 		CorrectCount:    0,
-// 		WrongCount:      0,
-// 		CompletedAt:     time.Now(),
-// 	}
-
-// 	if isCorrect {
-// 		studySession.CorrectCount = 1
-// 	} else {
-// 		studySession.WrongCount = 1
-// 	}
-
-// 	if err := h.db.Create(&studySession).Error; err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to record attempt"})
-// 		return
-// 	}
-
-// 	// Create word review record
-// 	wordReview := models.WordReviewItem{
-// 		WordID:         request.WordID,
-// 		StudySessionID: studySession.ID,
-// 		CorrectCount:   0,
-// 		CreatedAt:      time.Now(),
-// 	}
-
-// 	if isCorrect {
-// 		wordReview.CorrectCount = 1
-// 	}
-
-// 	if err := h.db.Create(&wordReview).Error; err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to record word review"})
-// 		return
-// 	}
-
-// 	// Update word stats
-// 	if isCorrect {
-// 		h.db.Model(&word).Update("correct_count", gorm.Expr("correct_count + ?", 1))
-// 	} else {
-// 		h.db.Model(&word).Update("wrong_count", gorm.Expr("wrong_count + ?", 1))
-// 	}
-
-// 	// Prepare response
-// 	response := SentencePracticeAttemptResponse{
-// 		IsCorrect:     isCorrect,
-// 		Score:         score,
-// 		CorrectAnswer: correctSentence,
-// 	}
-
-// 	c.JSON(http.StatusOK, response)
-// }
-
 // GetSentencePracticeStatistics handles the sentence practice statistics endpoint
 func (h *SentencePracticeHandler) GetSentencePracticeStatistics(c *gin.Context) {
 	// Get user ID if available (for future personalization)
@@ -356,34 +269,47 @@ func (h *SentencePracticeHandler) GetSentencePracticeStatistics(c *gin.Context) 
 
 // GetSentencePracticeExamples returns example sentences for a given word
 func (h *SentencePracticeHandler) GetSentencePracticeExamples(c *gin.Context) {
-	wordIDStr := c.Query("word_id")
-	if wordIDStr == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Word ID parameter is required"})
-		return
-	}
+	wordID := c.Query("word_id")
+	log.Printf("🔍 Getting examples for word ID: %s", wordID)
 
-	wordID, err := strconv.Atoi(wordIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid word ID"})
-		return
-	}
+	// Set UTF-8 content type
+	c.Header("Content-Type", "application/json; charset=utf-8")
 
-	word, err := h.wordRepo.GetWord(uint(wordID))
-	if err != nil {
+	// First verify the word exists
+	var word models.Word
+	if err := h.db.First(&word, wordID).Error; err != nil {
+		log.Printf("❌ Word not found: %v", err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Word not found"})
 		return
 	}
 
-	// Make sure we have sentences
-	if len(word.Sentences) == 0 {
+	// Directly query sentences table
+	var examples []struct {
+		Korean  string `json:"korean"`
+		English string `json:"english"`
+	}
+
+	result := h.db.Debug().
+		Table("sentences").
+		Select("korean, english").
+		Where("word_id = ?", wordID).
+		Find(&examples)
+
+	if result.Error != nil {
+		log.Printf("❌ Error querying sentences: %v", result.Error)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+		return
+	}
+
+	if len(examples) == 0 {
+		log.Printf("❌ No examples found for word: %s (ID: %s)", word.Hangul, wordID)
 		c.JSON(http.StatusNotFound, gin.H{"error": "No example sentences for this word"})
 		return
 	}
 
-	response := PracticeSentenceResponse{
-		Word:             word.Hangul,
-		ExampleSentences: []string{word.Sentences[0].Korean, word.Sentences[0].English},
-	}
-
-	c.JSON(http.StatusOK, response)
+	log.Printf("✅ Found %d examples for word: %s", len(examples), word.Hangul)
+	c.JSON(http.StatusOK, gin.H{
+		"word":     word.Hangul,
+		"examples": examples,
+	})
 }

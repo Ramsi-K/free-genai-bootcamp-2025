@@ -34,7 +34,8 @@ func TestSentencePracticeHandler_Integration(t *testing.T) {
 	var word models.Word
 	err = db.Preload("Sentences").First(&word).Error
 	assert.NoError(t, err)
-	assert.NotEmpty(t, word.Sentences)
+	assert.NotEmpty(t, word.Sentences, "Word should have one example sentence")
+	assert.Equal(t, "그 일은 그녀가 한 거예요.", word.Sentences[0].Korean, "Should have correct Korean sentence")
 
 	// Register endpoints used in these tests
 	router.GET("/api/sentence_practice/examples", handler.GetSentencePracticeExamples)
@@ -46,6 +47,14 @@ func TestSentencePracticeHandler_Integration(t *testing.T) {
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code, "Expected status 200 for Get_Sentence_Examples")
+
+	var response map[string]interface{}
+	err = json.NewDecoder(w.Body).Decode(&response)
+	assert.NoError(t, err)
+
+	examples, ok := response["examples"].([]interface{})
+	assert.True(t, ok)
+	assert.Len(t, examples, 1, "Should have exactly one example sentence")
 
 	// --- Test: Post Sentence Practice Attempt - Exact Match ---
 	exactAttempt := SentencePracticeRequest{

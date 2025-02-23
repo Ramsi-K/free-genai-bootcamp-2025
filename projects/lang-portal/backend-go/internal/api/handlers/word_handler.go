@@ -59,27 +59,6 @@ func (h *WordHandler) ListWords(c *gin.Context) {
 	})
 }
 
-// // ListWords returns a paginated list of words
-// func (h *WordHandler) ListWords(c *gin.Context) {
-// 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-// 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
-
-// 	words, total, err := h.wordRepo.ListWords(page, limit)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching words"})
-// 		return
-// 	}
-
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"data": words,
-// 		"meta": gin.H{
-// 			"current_page": page,
-// 			"per_page":     limit,
-// 			"total":        total,
-// 		},
-// 	})
-// }
-
 // GetWord returns details of a specific word
 func (h *WordHandler) GetWord(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)

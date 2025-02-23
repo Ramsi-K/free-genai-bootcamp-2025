@@ -6,9 +6,26 @@ import (
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
+
+func setupTestDB(t *testing.T) *gorm.DB {
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
+	require.NoError(t, err)
+
+	// Create tables
+	err = db.AutoMigrate(&models.Word{}, &models.Translation{}, &models.Sentence{}, &models.WordGroup{})
+	require.NoError(t, err)
+
+	// Clean any existing data
+	db.Exec("DELETE FROM words")
+	db.Exec("DELETE FROM translations")
+	db.Exec("DELETE FROM sentences")
+
+	return db
+}
 
 // TestWordModel tests the basic functionality of the Word model
 func TestWordModel(t *testing.T) {
@@ -32,12 +49,7 @@ func TestWordModel(t *testing.T) {
 // TestWordWithTranslation tests that translations are correctly associated with words
 func TestWordWithTranslation(t *testing.T) {
 	// Setup in-memory database
-	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
-	assert.NoError(t, err)
-
-	// Migrate tables
-	err = db.AutoMigrate(&models.Word{}, &models.Translation{})
-	assert.NoError(t, err)
+	db := setupTestDB(t)
 
 	// Create a word with translations
 	word := models.Word{
@@ -46,7 +58,7 @@ func TestWordWithTranslation(t *testing.T) {
 		Type:         "noun",
 	}
 
-	err = db.Create(&word).Error
+	err := db.Create(&word).Error
 	assert.NoError(t, err)
 	assert.NotZero(t, word.ID)
 
@@ -80,23 +92,17 @@ func TestWordWithTranslation(t *testing.T) {
 
 // TestWordWithSentences tests that sentences are correctly associated with words
 func TestWordWithSentences(t *testing.T) {
-	// Setup in-memory database
-	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
-	assert.NoError(t, err)
+	db := setupTestDB(t)
 
-	// Migrate tables
-	err = db.AutoMigrate(&models.Word{}, &models.Sentence{})
-	assert.NoError(t, err)
-
-	// Create a word with sentences
+	// Create a word with a unique hangul
 	word := models.Word{
-		Hangul:       "테스트",
-		Romanization: "teseuteu",
+		Hangul:       "테스트_문장", // Different hangul for this test
+		Romanization: "teseuteu_munjang",
 		Type:         "noun",
 	}
 
-	err = db.Create(&word).Error
-	assert.NoError(t, err)
+	err := db.Create(&word).Error
+	require.NoError(t, err)
 
 	// Create sentences
 	sentences := []models.Sentence{
@@ -114,31 +120,26 @@ func TestWordWithSentences(t *testing.T) {
 
 	for _, sentence := range sentences {
 		err = db.Create(&sentence).Error
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	}
 
 	// Retrieve the word with sentences
 	var retrievedWord models.Word
 	err = db.Preload("Sentences").First(&retrievedWord, word.ID).Error
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Check the sentences were loaded
 	assert.Len(t, retrievedWord.Sentences, 2)
-	assert.Equal(t, "이것은 테스트입니다.", retrievedWord.Sentences[0].Korean)
-	assert.Equal(t, "This is a test.", retrievedWord.Sentences[0].English)
-	assert.Equal(t, "테스트를 하고 있어요.", retrievedWord.Sentences[1].Korean)
-	assert.Equal(t, "I am testing.", retrievedWord.Sentences[1].English)
+	assert.Equal(t, sentences[0].Korean, retrievedWord.Sentences[0].Korean)
+	assert.Equal(t, sentences[0].English, retrievedWord.Sentences[0].English)
+	assert.Equal(t, sentences[1].Korean, retrievedWord.Sentences[1].Korean)
+	assert.Equal(t, sentences[1].English, retrievedWord.Sentences[1].English)
 }
 
 // TestAfterFind tests that the AfterFind hook correctly converts translations to the English field
 func TestAfterFind(t *testing.T) {
 	// Setup in-memory database
-	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
-	assert.NoError(t, err)
-
-	// Migrate tables
-	err = db.AutoMigrate(&models.Word{}, &models.Translation{})
-	assert.NoError(t, err)
+	db := setupTestDB(t)
 
 	// Create a word with translations
 	word := models.Word{
@@ -147,7 +148,7 @@ func TestAfterFind(t *testing.T) {
 		Type:         "noun",
 	}
 
-	err = db.Create(&word).Error
+	err := db.Create(&word).Error
 	assert.NoError(t, err)
 
 	// Create translations
@@ -182,12 +183,7 @@ func TestAfterFind(t *testing.T) {
 // TestWordStatistics tests that correct and wrong counts are properly updated
 func TestWordStatistics(t *testing.T) {
 	// Setup in-memory database
-	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
-	assert.NoError(t, err)
-
-	// Migrate tables
-	err = db.AutoMigrate(&models.Word{})
-	assert.NoError(t, err)
+	db := setupTestDB(t)
 
 	// Create a word
 	word := models.Word{
@@ -198,7 +194,7 @@ func TestWordStatistics(t *testing.T) {
 		WrongCount:   0,
 	}
 
-	err = db.Create(&word).Error
+	err := db.Create(&word).Error
 	assert.NoError(t, err)
 
 	// Increment correct count
@@ -220,15 +216,9 @@ func TestWordStatistics(t *testing.T) {
 }
 
 // TestWordCreatedUpdatedAt tests that created_at and updated_at fields are set
-// TestWordCreatedUpdatedAt tests that created_at and updated_at fields are set
 func TestWordCreatedUpdatedAt(t *testing.T) {
 	// Setup in-memory database
-	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
-	assert.NoError(t, err)
-
-	// Migrate tables
-	err = db.AutoMigrate(&models.Word{})
-	assert.NoError(t, err)
+	db := setupTestDB(t)
 
 	// Create a word
 	word := models.Word{
@@ -240,7 +230,7 @@ func TestWordCreatedUpdatedAt(t *testing.T) {
 	// Get current time for comparison
 	beforeCreate := time.Now().Add(-time.Second)
 
-	err = db.Create(&word).Error
+	err := db.Create(&word).Error
 	assert.NoError(t, err)
 
 	// Check timestamps

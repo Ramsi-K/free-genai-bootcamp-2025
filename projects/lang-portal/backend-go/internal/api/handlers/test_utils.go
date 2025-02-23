@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"testing"
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
@@ -133,4 +135,90 @@ func withCleanDB(t *testing.T, db *gorm.DB, testFunc func()) {
 	if err := tx.Rollback().Error; err != nil {
 		t.Fatalf("Failed to rollback: %v", err)
 	}
+}
+
+func SeedTestDB(db *gorm.DB) error {
+	// Drop and recreate tables first
+	if err := resetTestDB(db); err != nil {
+		return fmt.Errorf("failed to reset database: %v", err)
+	}
+
+	return db.Transaction(func(tx *gorm.DB) error {
+		// Load test words from test_word.json
+		if err := loadTestWords(tx); err != nil {
+			return fmt.Errorf("failed to load test words: %v", err)
+		}
+
+		// Load test study activities
+		if err := loadTestStudyActivities(tx); err != nil {
+			return fmt.Errorf("failed to load test study activities: %v", err)
+		}
+
+		return nil
+	})
+}
+
+func loadTestWords(tx *gorm.DB) error {
+	jsonFile := "test_word.json"
+	content, err := os.ReadFile(jsonFile)
+	if err != nil {
+		return fmt.Errorf("could not read %s: %v", jsonFile, err)
+	}
+
+	var words []models.Word
+	if err := json.Unmarshal(content, &words); err != nil {
+		return fmt.Errorf("failed to parse %s: %v", jsonFile, err)
+	}
+
+	for _, word := range words {
+		if err := tx.Create(&word).Error; err != nil {
+			return fmt.Errorf("failed to create test word %s: %v", word.Hangul, err)
+		}
+	}
+
+	return nil
+}
+
+func loadTestStudyActivities(tx *gorm.DB) error {
+	jsonFile := "test_study_activities.json"
+	content, err := os.ReadFile(jsonFile)
+	if err != nil {
+		return fmt.Errorf("could not read %s: %v", jsonFile, err)
+	}
+
+	var activities []models.StudyActivity
+	if err := json.Unmarshal(content, &activities); err != nil {
+		return fmt.Errorf("failed to parse %s: %v", jsonFile, err)
+	}
+
+	for _, activity := range activities {
+		if err := tx.Create(&activity).Error; err != nil {
+			return fmt.Errorf("failed to create test study activity %s: %v", activity.Name, err)
+		}
+	}
+
+	return nil
+}
+
+func setupTestData(db *gorm.DB) (*TestData, error) {
+	// Reset and seed database
+	if err := database.SeedTestDB(db); err != nil {
+		return nil, fmt.Errorf("failed to seed test database: %v", err)
+	}
+
+	// Get the test word from test_word.json data
+	var testWord models.Word
+	if err := db.Preload("Translations").
+		Preload("Sentences").
+		Where("hangul = ?", "거").
+		First(&testWord).Error; err != nil {
+		return nil, fmt.Errorf("failed to get test word: %v", err)
+	}
+
+	// ... rest of setup ...
+
+	return &TestData{
+		TestWord1: &testWord,
+		// ... other fields ...
+	}, nil
 }

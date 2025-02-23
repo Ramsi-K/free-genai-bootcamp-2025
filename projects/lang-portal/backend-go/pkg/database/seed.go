@@ -307,3 +307,24 @@ func ResetDB(db *gorm.DB) error {
 
 	return nil
 }
+
+func SeedDatabase(db *gorm.DB) error {
+	// After seeding words and sentences
+	var count int64
+	if err := db.Model(&models.Sentence{}).Count(&count).Error; err != nil {
+		log.Printf("❌ Error counting sentences: %v", err)
+	}
+	log.Printf("✅ Total sentences in database: %d", count)
+
+	// Check word-sentence relationships
+	var words []models.Word
+	if err := db.Preload("Sentences").Find(&words).Error; err != nil {
+		log.Printf("❌ Error loading words with sentences: %v", err)
+	}
+	for _, w := range words {
+		log.Printf("Word ID: %d, Hangul: %s, Sentence count: %d",
+			w.ID, w.Hangul, len(w.Sentences))
+	}
+
+	return nil
+}

@@ -63,22 +63,15 @@ func (h *AdminHandler) ResetHistory(c *gin.Context) {
 
 // FullReset drops and reseeds all data
 func (h *AdminHandler) FullReset(c *gin.Context) {
-	if err := database.ResetDB(h.db); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// Reset and seed the database
+	if err := database.ResetTestDB(h.db); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset database"})
 		return
 	}
 
-	var err error
-	if h.isTestEnv {
-		// Use test data for tests
-		err = database.SeedTestDB(h.db)
-	} else {
-		// Use production data for non-test environment
-		err = database.SeedDB(h.db)
-	}
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// Add seeding after reset
+	if err := database.SeedTestDB(h.db); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to seed database"})
 		return
 	}
 

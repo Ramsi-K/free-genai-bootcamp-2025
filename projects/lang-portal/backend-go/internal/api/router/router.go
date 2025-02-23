@@ -52,7 +52,8 @@ func SetupRouter(database *gorm.DB) *gin.Engine {
 		// Study activities endpoints
 		api.GET("/study_activities", activityHandler.ListActivities)
 		api.GET("/study_activities/:id", activityHandler.GetActivity)
-		api.POST("/study_activities", activityHandler.CreateStudySession)
+		api.POST("/study/sessions", activityHandler.CreateStudySession) // Updated path
+		api.GET("/study/sessions/:id", activityHandler.GetStudySession) // New endpoint
 
 		// Sentence practice endpoints
 		api.GET("/sentence_practice", sentencePracticeHandler.GetSentencePractice)

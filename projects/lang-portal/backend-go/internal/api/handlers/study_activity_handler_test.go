@@ -109,7 +109,7 @@ func TestStudyActivityHandler_Integration(t *testing.T) {
 			body: func(data map[string]any) models.StudySession {
 				return models.StudySession{
 					StudyActivityID: data["activity_id"].(uint),
-					WordGroupID:     &[]uint{data["group_id"].(uint)}[0],
+					WordGroupID:     data["group_id"].(uint),
 					CorrectCount:    8,
 					WrongCount:      2,
 					CompletedAt:     time.Now(),
@@ -140,7 +140,7 @@ func TestStudyActivityHandler_Integration(t *testing.T) {
 			body: func(data map[string]any) models.StudySession {
 				return models.StudySession{
 					StudyActivityID: 999, // Non-existent activity
-					WordGroupID:     &[]uint{data["group_id"].(uint)}[0],
+					WordGroupID:     []uint{data["group_id"].(uint)}[0],
 					CorrectCount:    8,
 					WrongCount:      2,
 					CompletedAt:     time.Now(),
@@ -164,7 +164,7 @@ func TestStudyActivityHandler_Integration(t *testing.T) {
 				invalidID := uint(999)
 				return models.StudySession{
 					StudyActivityID: data["activity_id"].(uint),
-					WordGroupID:     &invalidID,
+					WordGroupID:     invalidID,
 					CorrectCount:    8,
 					WrongCount:      2,
 					CompletedAt:     time.Now(),
@@ -198,7 +198,7 @@ func TestStudyActivityHandler_Integration(t *testing.T) {
 				// Create 3 study sessions
 				for i := 0; i < 3; i++ {
 					session := models.StudySession{
-						WordGroupID:     &group.ID,
+						WordGroupID:     group.ID,
 						StudyActivityID: activity.ID,
 						CorrectCount:    int(i + 1),
 						WrongCount:      int(i),
