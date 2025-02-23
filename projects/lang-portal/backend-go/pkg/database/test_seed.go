@@ -88,6 +88,7 @@ func loadTestGroupedWords(tx *gorm.DB) error {
 	log.Printf("Loading test word groups from test_word_groups.json")
 
 	for groupName, groupData := range jsonData.Groups {
+		// Create the WordGroup
 		wordGroup := models.WordGroup{
 			Name:        groupName,
 			Description: groupData.Description,
@@ -98,39 +99,72 @@ func loadTestGroupedWords(tx *gorm.DB) error {
 			return fmt.Errorf("failed to create test word group %s: %v", groupName, err)
 		}
 
+		// Process each word
 		for _, wordData := range groupData.Words {
-			if len(wordData.Hangul) == 0 {
-				continue
-			}
-
-			word := models.GROUP_Word{
-				WordGroupID:  wordGroup.ID,
+			// Create the regular Word entry
+			word := models.Word{
 				Hangul:       wordData.Hangul,
 				Romanization: wordData.Romanization,
+				Type:         "noun", // Default type for test data
 			}
 
 			if err := tx.Create(&word).Error; err != nil {
 				return fmt.Errorf("failed to create test word %s: %v", wordData.Hangul, err)
 			}
 
+			// Create the GROUP_Word entry
+			groupWord := models.GROUP_Word{
+				WordGroupID:  wordGroup.ID,
+				Hangul:       wordData.Hangul,
+				Romanization: wordData.Romanization,
+			}
+
+			if err := tx.Create(&groupWord).Error; err != nil {
+				return fmt.Errorf("failed to create test group word %s: %v", wordData.Hangul, err)
+			}
+
+			// Process English translations
 			switch englishValue := wordData.English.(type) {
 			case string:
-				translation := models.GROUP_Translation{
-					GROUP_WordID: word.ID,
-					English:      englishValue,
+				// Create Word translation
+				translation := models.Translation{
+					WordID:  word.ID,
+					Hangul:  wordData.Hangul,
+					English: englishValue,
 				}
 				if err := tx.Create(&translation).Error; err != nil {
 					return fmt.Errorf("failed to create test translation: %v", err)
 				}
+
+				// Create GROUP_Translation
+				groupTranslation := models.GROUP_Translation{
+					GROUP_WordID: groupWord.ID,
+					English:      englishValue,
+				}
+				if err := tx.Create(&groupTranslation).Error; err != nil {
+					return fmt.Errorf("failed to create test group translation: %v", err)
+				}
+
 			case []interface{}:
 				for _, item := range englishValue {
 					if str, ok := item.(string); ok {
-						translation := models.GROUP_Translation{
-							GROUP_WordID: word.ID,
-							English:      str,
+						// Create Word translation
+						translation := models.Translation{
+							WordID:  word.ID,
+							Hangul:  wordData.Hangul,
+							English: str,
 						}
 						if err := tx.Create(&translation).Error; err != nil {
 							return fmt.Errorf("failed to create test translation: %v", err)
+						}
+
+						// Create GROUP_Translation
+						groupTranslation := models.GROUP_Translation{
+							GROUP_WordID: groupWord.ID,
+							English:      str,
+						}
+						if err := tx.Create(&groupTranslation).Error; err != nil {
+							return fmt.Errorf("failed to create test group translation: %v", err)
 						}
 					}
 				}

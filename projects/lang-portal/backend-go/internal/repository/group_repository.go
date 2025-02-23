@@ -55,10 +55,10 @@ func (r *GroupRepositoryImpl) GetGroupWithWords(id uint) (*models.WordGroup, err
 // GetGroupStudySessions retrieves study sessions for a group
 func (r *GroupRepositoryImpl) GetGroupStudySessions(groupID uint) ([]models.StudySession, error) {
 	var sessions []models.StudySession
-	if err := r.db.Where("group_id = ?", groupID).
-		Preload("Activity").
-		Order("completed_at DESC").
-		Find(&sessions).Error; err != nil {
+	if err := r.db.Where("word_group_id = ?", groupID). // Changed from group_id to word_group_id
+								Preload("Activity").
+								Order("completed_at DESC").
+								Find(&sessions).Error; err != nil {
 		return nil, err
 	}
 	return sessions, nil
