@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"bytes"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -108,30 +110,67 @@ func (h *SentencePracticeHandler) GetSentencePractice(c *gin.Context) {
 // PostSentencePracticeAttempt handles the sentence practice attempt endpoint
 
 func (h *SentencePracticeHandler) PostSentencePracticeAttempt(c *gin.Context) {
+	// Set UTF-8 header with BOM
+	c.Header("Content-Type", "application/json; charset=utf-8")
+
+	// Log raw request body
+	body, _ := c.GetRawData()
+	log.Printf("Raw request body: %s", string(body))
+
+	// Reset request body for binding
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
+
 	var request SentencePracticeRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("DEBUG: JSON binding error: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format"})
 		return
 	}
 
-	// Get the word
+	log.Printf("DEBUG: Parsed request: %+v", request)
+
+	// Get the word with sentences
 	word, err := h.wordRepo.GetWord(request.WordID)
 	if err != nil {
+		log.Printf("DEBUG: Word fetch error: %v", err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Word not found"})
 		return
 	}
+	log.Printf("DEBUG: Found word: %s (ID: %d)", word.Hangul, word.ID)
 
-	// Find the matching sentence (using trimmed values)
+	// Check if word has sentences
+	if len(word.Sentences) == 0 {
+		log.Printf("DEBUG: Word has no sentences")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No sentences available for this word"})
+		return
+	}
+
+	log.Printf("DEBUG: Word has %d sentences", len(word.Sentences))
+	for i, s := range word.Sentences {
+		log.Printf("DEBUG: Sentence %d: Korean=[%s], English=[%s]", i+1, s.Korean, s.English)
+	}
+
+	// Print sentences
+	for i, s := range word.Sentences {
+		log.Printf("DEBUG: Sentence %d: %+v", i, s)
+	}
+
+	// Compare sentences
 	var correctSentence string
 	for _, sentence := range word.Sentences {
-		if strings.TrimSpace(sentence.Korean) == strings.TrimSpace(request.CorrectText) ||
-			strings.TrimSpace(sentence.English) == strings.TrimSpace(request.CorrectText) {
-			correctSentence = request.CorrectText
+		trimmedKorean := strings.TrimSpace(sentence.Korean)
+		trimmedCorrect := strings.TrimSpace(request.CorrectText)
+		log.Printf("DEBUG: Comparing [%s] with [%s]", trimmedKorean, trimmedCorrect)
+
+		if trimmedKorean == trimmedCorrect {
+			correctSentence = sentence.Korean
+			log.Printf("DEBUG: Found matching sentence!")
 			break
 		}
 	}
 
 	if correctSentence == "" {
+		log.Printf("DEBUG: No matching sentence found")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Provided correct_text doesn't match any sentence for this word"})
 		return
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
 	"gorm.io/gorm"
@@ -32,6 +33,21 @@ func SeedTestDB(db *gorm.DB) error {
 			return fmt.Errorf("failed to load test study activities: %v", err)
 		}
 
+		// Load study sessions
+		if err := loadTestStudySessions(tx); err != nil {
+			return fmt.Errorf("failed to load test study sessions: %v", err)
+		}
+
+		// Load study progress
+		if err := loadTestStudyProgress(tx); err != nil {
+			return fmt.Errorf("failed to load test study progress: %v", err)
+		}
+
+		// Load quick stats
+		if err := loadTestQuickStats(tx); err != nil {
+			return fmt.Errorf("failed to load test quick stats: %v", err)
+		}
+
 		return nil
 	})
 }
@@ -49,6 +65,8 @@ func ResetTestDB(db *gorm.DB) error {
 		&models.GROUP_Word{},
 		&models.WordGroup{},
 		&models.StudyActivity{},
+		&models.StudyProgress{}, // Add this
+		&models.QuickStats{},    // Add this
 	}
 
 	// Drop all tables
@@ -248,6 +266,93 @@ func loadTestStudyActivities(tx *gorm.DB) error {
 			return fmt.Errorf("failed to create test activity %s: %v", activity.Name, err)
 		}
 		log.Printf("✅ Created test activity: %s", activity.Name)
+	}
+
+	return nil
+}
+
+func loadTestStudySessions(tx *gorm.DB) error {
+	jsonFile := getSeedFilePath("test_study_sessions.json")
+	data, err := os.ReadFile(jsonFile)
+	if err != nil {
+		return fmt.Errorf("could not read test_study_sessions.json: %v", err)
+	}
+
+	var sessionsData struct {
+		StudySessions []models.StudySession `json:"study_sessions"`
+	}
+
+	if err := json.Unmarshal(data, &sessionsData); err != nil {
+		return fmt.Errorf("failed to parse test_study_sessions.json: %v", err)
+	}
+
+	for _, session := range sessionsData.StudySessions {
+		if err := tx.Create(&session).Error; err != nil {
+			return fmt.Errorf("failed to create test study session: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func loadTestStudyProgress(tx *gorm.DB) error {
+	jsonFile := getSeedFilePath("test_study_progress.json")
+	data, err := os.ReadFile(jsonFile)
+	if err != nil {
+		return fmt.Errorf("could not read test_study_progress.json: %v", err)
+	}
+
+	var progressData struct {
+		StudyProgress []models.StudyProgress `json:"study_progress"`
+	}
+
+	if err := json.Unmarshal(data, &progressData); err != nil {
+		return fmt.Errorf("failed to parse test_study_progress.json: %v", err)
+	}
+
+	for _, progress := range progressData.StudyProgress {
+		if err := tx.Create(&progress).Error; err != nil {
+			return fmt.Errorf("failed to create test study progress: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func loadTestQuickStats(tx *gorm.DB) error {
+	jsonFile := getSeedFilePath("test_quick_stats.json")
+	data, err := os.ReadFile(jsonFile)
+	if err != nil {
+		return fmt.Errorf("could not read test_quick_stats.json: %v", err)
+	}
+
+	var statsData struct {
+		QuickStats []models.QuickStats `json:"quick_stats"`
+	}
+
+	if err := json.Unmarshal(data, &statsData); err != nil {
+		return fmt.Errorf("failed to parse test_quick_stats.json: %v", err)
+	}
+
+	for _, stats := range statsData.QuickStats {
+		if err := tx.Create(&stats).Error; err != nil {
+			return fmt.Errorf("failed to create test quick stats: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func loadTestData(filename string, v interface{}) error {
+	jsonFile := filepath.Join("seed", filename)
+	data, err := os.ReadFile(jsonFile)
+	if err != nil {
+		return fmt.Errorf("could not read %s: %v", filename, err)
+	}
+
+	// Unmarshal JSON data into the provided interface
+	if err := json.Unmarshal(data, v); err != nil {
+		return fmt.Errorf("failed to parse %s: %v", filename, err)
 	}
 
 	return nil

@@ -54,6 +54,8 @@ func Initialize() error {
 		&models.StudyActivity{},
 		&models.StudySession{},
 		&models.WordReviewItem{},
+		&models.StudyProgress{},
+		&models.QuickStats{},
 	)
 	if err != nil {
 		return err

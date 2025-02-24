@@ -54,8 +54,9 @@ func (r *WordRepositoryImpl) ListWords(page, limit int) ([]models.Word, int64, e
 // GetWord retrieves a word by ID
 func (r *WordRepositoryImpl) GetWord(id uint) (*models.Word, error) {
 	var word models.Word
-	if err := r.db.Preload("EnglishTranslations").First(&word, id).Error; err != nil {
-		return nil, err
+	result := r.db.Preload("Sentences").First(&word, id)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 	return &word, nil
 }
