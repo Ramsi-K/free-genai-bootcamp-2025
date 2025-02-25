@@ -1,0 +1,19 @@
+require_relative 'main.rb'
+
+task :word do
+  Text2Voice.synth(
+    text: '大味', 
+    audio_path: 'public/audio/jp/ooaji.mp3',
+    client: Text2Voice.client,
+    voiceid: 'Tomoko'
+  )
+end
+
+task :txt2voice do
+  Text2Voice.run(
+    data_path: 'public/src/datadata_verbs.json', 
+    output_path: 'public/audio',
+    voiceid: ['Tomoko','Salli'],
+    override: true
+  )
+end
