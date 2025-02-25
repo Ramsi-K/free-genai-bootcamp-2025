@@ -1,0 +1,11 @@
+{
+    "quick_stats": [
+      {
+        "id": 1,
+        "groups_studied": 2,
+        "total_sessions": 10,
+        "correct_answers": 45,
+        "wrong_answers": 15
+      }
+    ]
+  }

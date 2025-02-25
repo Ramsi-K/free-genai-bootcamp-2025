@@ -1,26 +1,60 @@
 # Binaries
-bin/
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+/{{your_project_name}}
 
-# Test binary, built with `go test -c`
-*.test
+# Dependencies
+/vendor
 
-# Output of the go coverage tool
-*.out
-
-# Database
-instance/
-*.db
+# Go modules
+go.sum
 
 # IDE specific files
-.idea/
-.vscode/
-*.swp
-*.swo
+.idea/*
+.vscode/*
 
-# OS specific files
-.DS_Store 
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Test database
+test.db
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Log files
+*.log
+*.txt
+
+# Env files
+.env
+
+# Temporary files
+*~
+\#*
+
+# Coverage files
+*.out
+*.cov
+
+# Ignore compiled object files
+*.o
+*.a
+
+# Ignore executables
+*.exe
+*.so
+*.dll
+
+# Ignore archives
+*.zip
+*.tar.gz
+*.7z
+*.rar
+
+# Ignore vim swap files
+*.swp
+
+# Ignore node_modules
+node_modules/

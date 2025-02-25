@@ -1,0 +1,27 @@
+[
+    {
+        "hangul": "학교",
+        "group_names": ["School", "Education", "Basic Words"]
+    },
+    {
+        "hangul": "사과",
+        "group_names": ["Food", "Fruits", "Basic Words"]
+    },
+    {
+        "hangul": "게임",
+        "group_names": ["Entertainment", "Technology", "Basic Words"]
+    },
+    {
+        "hangul": "국제",
+        "group_names": ["Business", "Global", "Advanced Words"]
+    },
+    {
+        "hangul": "그룹",
+        "group_names": ["Basic Words", "General"]
+    },
+    {
+        "hangul": "인생",
+        "group_names": ["Philosophy", "Advanced Words"]
+    }
+]
+  

@@ -2,31 +2,31 @@ package main
 
 import (
 	"log"
-	"os"
 
-	"github.com/Ramsi-K/free-genai-bootcamp-2025/projects/lang-portal/backend-go/internal/api/router"
-	"github.com/Ramsi-K/free-genai-bootcamp-2025/projects/lang-portal/backend-go/pkg/database"
+	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/api/router"
+	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
+	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/pkg/database"
 )
 
 func main() {
-	// Setup database
-	db, err := database.SetupDB()
+	// Initialize database
+	err := database.Initialize()
 	if err != nil {
-		log.Fatalf("Failed to setup database: %v", err)
+		log.Fatalf("Failed to initialize database: %v", err)
 	}
 
-	// Setup router
+	db := database.GetDB()
+	// AutoMigrate will create/update tables based on your models
+	err = db.AutoMigrate(&models.WordGroup{}, &models.GROUP_Word{}, &models.GROUP_Translation{})
+	if err != nil {
+		log.Fatalf("Failed to auto-migrate database: %v", err)
+	}
+
+	// Create and setup router
 	r := router.SetupRouter(db)
 
-	// Get port from environment or use default
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
 	// Start server
-	log.Printf("Server starting on port %s...", port)
-	if err := r.Run(":" + port); err != nil {
+	if err := r.Run(":8080"); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }

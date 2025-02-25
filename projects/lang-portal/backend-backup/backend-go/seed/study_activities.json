@@ -1,0 +1,26 @@
+[
+  {"name": "Typing Tutor", "url": "http://localhost:8080", "preview_url": "/assets/study_activities/typing-tutor.png"},
+  {
+    "name": "Flashcards",
+    "description": "Practice words with flashcards",
+    "type": "flashcards",
+    "thumbnail_url": "/images/flashcards.png",
+    "url": "http://localhost:8080/study-activities/flashcards"
+  },
+  {
+    "name": "Multiple Choice",
+    "description": "Test your knowledge with multiple choice questions",
+    "type": "multiple_choice",
+    "thumbnail_url": "/images/multiple_choice.png",
+    "url": "http://localhost:8080/study-activities/multiple-choice"
+  },
+  {
+    "name": "Sentence Practice",
+    "description": "Practice using words in sentences",
+    "type": "sentence_practice",
+    "thumbnail_url": "/images/sentence_practice.png",
+    "url": "http://localhost:8080/study-activities/sentence-practice"
+  }
+
+  
+]

@@ -1,0 +1,65 @@
+いい (good)
+良い (good)
+古い (old)
+忙しい (busy)
+新しい (new)
+悪い (bad)
+悲しい (sad)
+嬉しい (glad)
+太い (fat)
+細い (thin)
+面白い (interesting)
+同じ (same)
+汚い (dirty)
+綺麗 (pretty; clean)
+暑い (hot, climate)
+寒い (cold, climate)
+好き (to like)
+涼しい (cool)
+好きじゃない (to dislike)
+おいしい (tasty)
+大好き (to love)
+辛い (spicy)
+大味 (bland)
+凄い (awesome)
+素晴らしい (wonderful)
+狭い (narrow/cramped)
+優しい (kind)
+近い (near; close)
+つまらない (boring)
+遠い (far)
+有名 (famous)
+長い (long)
+広い (wide/spacious)
+低い (low)
+変 (strange)
+短い (short)
+高い (expensive)
+小さい (small)
+安い (cheap)
+大きい (large/big)
+楽しい (たのしい) – fun
+強い (つよい) – strong
+弱い (よわい) – weak
+明るい (あかるい) – bright, cheerful
+暗い (くらい) – dark, gloomy
+重い (おもい) – heavy
+軽い (かるい) – light (in weight)
+早い (はやい) – fast, early
+遅い (おそい) – slow, late
+痛い (いたい) – painful
+広がった (ひろがった) – spread out, wide
+苦い (にがい) – bitter
+甘い (あまい) – sweet
+固い (かたい) – hard, solid
+柔らかい (やわらかい) – soft
+珍しい (めずらしい) – rare, unusual
+怖い (こわい) – scary, frightening
+うるさい – noisy, annoying
+静か (しずか) – quiet, calm
+暑い (あつい) – hot (objects)
+冷たい (つめたい) – cold (objects)
+汚れた (よごれた) – dirty, stained
+美しい (うつくしい) – beautiful
+楽な (らくな) – easy, comfortable
+偉い (えらい) – great, admirable

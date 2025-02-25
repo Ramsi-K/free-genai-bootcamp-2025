@@ -3,15 +3,16 @@ package database
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
-	"github.com/Ramsi-K/free-genai-bootcamp-2025/projects/lang-portal/backend-go/internal/models"
-
+	"github.com/gen-ai-bootcamp-2025/lang-portal/backend-go/internal/models"
 	"gorm.io/gorm"
 )
 
-type WordData struct {
+// KoreanWordData represents the structure of data_korean.json
+type KoreanWordData struct {
 	Hangul          string   `json:"hangul"`
 	Romanization    string   `json:"romanization"`
 	Type            string   `json:"type"`
@@ -22,206 +23,307 @@ type WordData struct {
 	} `json:"example_sentence"`
 }
 
-// LoadSeedData is the main entry point for seeding the database
-func LoadSeedData(db *gorm.DB) error {
-	// Create Core Korean group
-	group := models.Group{
-		Name: "Core Korean",
-	}
-	if err := db.FirstOrCreate(&group, models.Group{Name: "Core Korean"}).Error; err != nil {
-		return fmt.Errorf("failed to create core group: %v", err)
-	}
-
-	// Read and parse words data using absolute path
-	wordFilePath := filepath.Join("seed", "data_korean.json")
-	absWordFilePath, err := filepath.Abs(wordFilePath)
-	if err != nil {
-		return fmt.Errorf("error obtaining absolute path for data_korean.json: %v", err)
-	}
-	data, err := os.ReadFile(absWordFilePath)
-	if err != nil {
-		return fmt.Errorf("failed to read seed data from %s: %v", absWordFilePath, err)
-	}
-
-	var words []WordData
-	if err := json.Unmarshal(data, &words); err != nil {
-		return fmt.Errorf("failed to parse seed data: %v", err)
-	}
-
-	fmt.Printf("Successfully loaded %d words from %s\n", len(words), absWordFilePath)
-
-	// Begin transaction
-	tx := db.Begin()
-	if tx.Error != nil {
-		return fmt.Errorf("failed to begin transaction: %v", tx.Error)
-	}
-
-	// Insert words using correct JSON field 'Example'
-	for _, wordData := range words {
-		word := models.Word{
-			Hangul:       wordData.Hangul,
-			Romanization: wordData.Romanization,
-			English:      wordData.English,
-			Type:         wordData.Type,
-			ExampleSentence: models.Example{
-				Korean:  wordData.ExampleSentence.Korean,
-				English: wordData.ExampleSentence.English,
-			},
-		}
-
-		if err := tx.Create(&word).Error; err != nil {
-			tx.Rollback()
-			return fmt.Errorf("failed to create word: %v", err)
-		}
-	}
-
-	return tx.Commit().Error
+// StudyActivitySeed represents the structure of study_activities.json
+type StudyActivitySeed struct {
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Type         string `json:"type"`
+	ThumbnailURL string `json:"thumbnail_url"`
+	URL          string `json:"url"`
 }
 
-// SeedDatabase handles the actual seeding process
-func SeedDatabase(db *gorm.DB, dataDir string) error {
-	// Begin transaction
-	tx := db.Begin()
-	if tx.Error != nil {
-		return tx.Error
+type WordGroup struct {
+	gorm.Model
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	WordsCount  int
+}
+
+type GROUP_Word struct {
+	ID           uint   `gorm:"primarykey"`
+	WordGroupID  uint   `gorm:"index"`
+	Hangul       string `gorm:"type:text"`
+	Romanization string `gorm:"type:text"`
+}
+
+type GROUP_Translation struct {
+	ID           uint   `gorm:"primarykey"`
+	GROUP_WordID uint   `gorm:"index"`
+	English      string `gorm:"type:text"`
+}
+
+// getSeedFilePath returns the absolute path to a seed file
+func getSeedFilePath(filename string) string {
+	// Try different possible locations
+	possiblePaths := []string{
+		fmt.Sprintf("seed/%s", filename),
+		fmt.Sprintf("../../seed/%s", filename),
+		fmt.Sprintf("../../../seed/%s", filename),
 	}
 
-	// Clean existing data
-	if err := cleanDatabase(tx); err != nil {
-		tx.Rollback()
-		return err
+	for _, path := range possiblePaths {
+		if _, err := os.Stat(path); err == nil {
+			return path
+		}
 	}
+	return filename // Return original as fallback
+}
 
-	// Load and seed words
-	words, err := loadWords(dataDir)
+// loadKoreanWords loads the main vocabulary from data_korean.json
+func loadKoreanWords(tx *gorm.DB) error {
+	// Load Korean words data
+	dataPath := getSeedFilePath("data_korean.json")
+	data, err := os.ReadFile(filepath.Clean(dataPath))
 	if err != nil {
-		tx.Rollback()
-		return fmt.Errorf("failed to load words: %v", err)
+		return fmt.Errorf("could not read data_korean.json: %v", err)
 	}
+
+	var wordsData []KoreanWordData
+	if err := json.Unmarshal(data, &wordsData); err != nil {
+		return fmt.Errorf("failed to parse data_korean.json: %v", err)
+	}
+
+	log.Printf("Loading %d Korean words from data_korean.json", len(wordsData))
 
 	// Create words
-	for _, wordData := range words {
-		word := models.Word{
+	for _, wordData := range wordsData {
+		word := &models.Word{
 			Hangul:       wordData.Hangul,
 			Romanization: wordData.Romanization,
 			Type:         wordData.Type,
-			English:      wordData.English,
-			ExampleSentence: models.Example{
+			CorrectCount: 0,
+			WrongCount:   0,
+		}
+
+		// Create word if it doesn't exist
+		result := tx.Where(models.Word{Hangul: word.Hangul}).FirstOrCreate(&word)
+		if result.Error != nil {
+			return fmt.Errorf("failed to create word %s: %v", word.Hangul, result.Error)
+		}
+
+		// Create translations
+		for _, eng := range wordData.English {
+			translation := &models.Translation{
+				WordID:  word.ID,
+				Hangul:  wordData.Hangul,
+				English: eng,
+			}
+			if err := tx.Where(models.Translation{WordID: word.ID, English: eng}).FirstOrCreate(&translation).Error; err != nil {
+				return fmt.Errorf("failed to create translation for word %s: %v", word.Hangul, err)
+			}
+		}
+
+		// Create example sentence
+		if wordData.ExampleSentence.Korean != "" && wordData.ExampleSentence.English != "" {
+			sentence := &models.Sentence{
+				WordID:  word.ID,
 				Korean:  wordData.ExampleSentence.Korean,
 				English: wordData.ExampleSentence.English,
-			},
-		}
-
-		if err := tx.Create(&word).Error; err != nil {
-			tx.Rollback()
-			return fmt.Errorf("failed to create word %s: %v", word.Hangul, err)
+			}
+			if err := tx.Where(models.Sentence{WordID: word.ID, Korean: sentence.Korean}).FirstOrCreate(&sentence).Error; err != nil {
+				return fmt.Errorf("failed to create sentence for word %s: %v", word.Hangul, err)
+			}
 		}
 	}
 
-	// Create default study activities
-	activities := []models.StudyActivity{
-		{
-			Name:         "Flashcards",
-			Description:  "Practice words with flashcards",
-			Type:         "flashcards",
-			ThumbnailURL: "/images/flashcards.png",
-			URL:          "http://localhost:8080/study-activities/flashcards",
-		},
-		{
-			Name:         "Multiple Choice",
-			Description:  "Test your knowledge with multiple choice questions",
-			Type:         "multiple_choice",
-			ThumbnailURL: "/images/multiple_choice.png",
-			URL:          "http://localhost:8080/study-activities/multiple-choice",
-		},
-		{
-			Name:         "Sentence Practice",
-			Description:  "Practice using words in sentences",
-			Type:         "sentence_practice",
-			ThumbnailURL: "/images/sentence_practice.png",
-			URL:          "http://localhost:8080/study-activities/sentence-practice",
-		},
+	return nil
+}
+
+// loadStudyActivities creates default study activities
+func loadStudyActivities(tx *gorm.DB) error {
+	// Load study activities data
+	dataPath := getSeedFilePath("study_activities.json")
+	data, err := os.ReadFile(filepath.Clean(dataPath))
+	if err != nil {
+		return fmt.Errorf("could not read study_activities.json: %v", err)
 	}
 
-	for _, activity := range activities {
-		if err := tx.Create(&activity).Error; err != nil {
-			tx.Rollback()
+	var activitiesData []StudyActivitySeed
+	if err := json.Unmarshal(data, &activitiesData); err != nil {
+		return fmt.Errorf("failed to parse study_activities.json: %v", err)
+	}
+
+	log.Printf("Loading %d study activities from study_activities.json", len(activitiesData))
+
+	for _, activityData := range activitiesData {
+		activity := models.StudyActivity{
+			Name:        activityData.Name,
+			Description: activityData.Description,
+			Type:        activityData.Type,
+			Thumbnail:   activityData.ThumbnailURL,
+			LaunchURL:   activityData.URL,
+		}
+
+		if err := tx.Where(models.StudyActivity{Name: activity.Name}).
+			FirstOrCreate(&activity).Error; err != nil {
 			return fmt.Errorf("failed to create activity %s: %v", activity.Name, err)
 		}
 	}
 
-	return tx.Commit().Error
-}
-
-func cleanDatabase(tx *gorm.DB) error {
-	// Clean up tables using Unscoped() to permanently delete rows
-	models := []interface{}{
-		&models.Word{},
-		&models.StudyActivity{},
-		&models.StudySession{},
-		&models.WordReview{},
-		&models.SentencePracticeAttempt{},
-	}
-
-	for _, model := range models {
-		if err := tx.Session(&gorm.Session{AllowGlobalUpdate: true}).Unscoped().Delete(model).Error; err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
-func loadWords(dataDir string) ([]WordData, error) {
-	wordPath := filepath.Join(dataDir, "data_korean.json")
-	absPath, err := filepath.Abs(wordPath)
+// Add this function to seed.go
+
+// loadGroupedWords loads word groups from word_groups.json
+func loadGroupedWords(tx *gorm.DB) error {
+	// Get the path to the word groups JSON file
+	jsonFile := getSeedFilePath("word_groups.json")
+
+	// Read the file
+	content, err := os.ReadFile(jsonFile)
 	if err != nil {
-		return nil, fmt.Errorf("error obtaining absolute path for data_korean.json: %v", err)
-	}
-	file, err := os.ReadFile(absPath)
-	if err != nil {
-		return nil, fmt.Errorf("error reading data_korean.json from %s: %v", absPath, err)
+		return fmt.Errorf("could not read word_groups.json: %v", err)
 	}
 
-	var words []WordData
-	if err := json.Unmarshal(file, &words); err != nil {
-		return nil, fmt.Errorf("error unmarshaling data_korean.json: %v", err)
+	// Define the structure for parsed JSON
+	var jsonData struct {
+		Groups map[string]struct {
+			Description string `json:"description"`
+			Words       []struct {
+				Hangul       string      `json:"hangul"`
+				Romanization string      `json:"romanization"`
+				English      interface{} `json:"english"`
+			} `json:"words"`
+		} `json:"groups"`
 	}
 
-	fmt.Printf("Successfully loaded %d words from %s\n", len(words), absPath)
-	return words, nil
+	// Parse the JSON
+	if err := json.Unmarshal(content, &jsonData); err != nil {
+		return fmt.Errorf("failed to parse word_groups.json: %v", err)
+	}
+
+	log.Printf("Loading %d word groups from word_groups.json", len(jsonData.Groups))
+
+	// Process each group
+	for groupName, groupData := range jsonData.Groups {
+		// Create the word group
+		wordGroup := models.WordGroup{
+			Name:        groupName,
+			Description: groupData.Description,
+			WordsCount:  len(groupData.Words),
+		}
+
+		if err := tx.Create(&wordGroup).Error; err != nil {
+			return fmt.Errorf("failed to create word group %s: %v", groupName, err)
+		}
+
+		// Process each word in this group
+		for _, wordData := range groupData.Words {
+			if len(wordData.Hangul) == 0 {
+				continue
+			}
+
+			// Create the group word
+			word := models.GROUP_Word{
+				WordGroupID:  wordGroup.ID,
+				Hangul:       wordData.Hangul,
+				Romanization: wordData.Romanization,
+			}
+
+			if err := tx.Create(&word).Error; err != nil {
+				return fmt.Errorf("failed to create word %s: %v", wordData.Hangul, err)
+			}
+
+			// Process English translations
+			switch englishValue := wordData.English.(type) {
+			case string:
+				translation := models.GROUP_Translation{
+					GROUP_WordID: word.ID,
+					English:      englishValue,
+				}
+				if err := tx.Create(&translation).Error; err != nil {
+					return fmt.Errorf("failed to create translation for word %s: %v", wordData.Hangul, err)
+				}
+			case []interface{}:
+				for _, item := range englishValue {
+					if str, ok := item.(string); ok {
+						translation := models.GROUP_Translation{
+							GROUP_WordID: word.ID,
+							English:      str,
+						}
+						if err := tx.Create(&translation).Error; err != nil {
+							return fmt.Errorf("failed to create translation for word %s: %v", wordData.Hangul, err)
+						}
+					}
+				}
+			}
+		}
+
+		log.Printf("Created word group '%s' with %d words", groupName, len(groupData.Words))
+	}
+
+	return nil
 }
 
-// SeedTestData inserts test data into the database
-func SeedTestData(db *gorm.DB) error {
-	// Create test words
-	words := []models.Word{
-		{
-			Hangul:       "학교",
-			Romanization: "hakgyo",
-			English:      []string{"school"},
-			Type:         "noun",
-			ExampleSentence: models.Example{
-				Korean:  "나는 학교에 갑니다",
-				English: "I go to school",
-			},
-		},
-		{
-			Hangul:       "사과",
-			Romanization: "sagwa",
-			English:      []string{"apple"},
-			Type:         "noun",
-			ExampleSentence: models.Example{
-				Korean:  "사과를 먹습니다",
-				English: "I eat an apple",
-			},
-		},
+// SeedDB seeds the database with initial data
+func SeedDB(db *gorm.DB) error {
+	return db.Transaction(func(tx *gorm.DB) error {
+		// First load all Korean words from data_korean.json
+		if err := loadKoreanWords(tx); err != nil {
+			return fmt.Errorf("failed to load Korean words: %v", err)
+		}
+
+		// Then load word groups from word_groups.json
+		if err := loadGroupedWords(tx); err != nil {
+			return fmt.Errorf("failed to load word groups: %v", err)
+		}
+
+		// Finally, create default study activities
+		if err := loadStudyActivities(tx); err != nil {
+			return fmt.Errorf("failed to load study activities: %v", err)
+		}
+
+		return nil
+	})
+}
+
+// ResetDB drops all tables and recreates them
+func ResetDB(db *gorm.DB) error {
+	// Drop tables in correct order (respecting foreign key constraints)
+	models := []interface{}{
+		&models.Translation{},
+		&models.Sentence{},
+		&models.WordReviewItem{},
+		&models.StudySession{},
+		&models.Word{},
+		&models.GROUP_Translation{},
+		&models.GROUP_Word{},
+		&models.WordGroup{},
+		&models.StudyActivity{},
 	}
 
-	// Insert words into database
-	for _, word := range words {
-		if err := db.Create(&word).Error; err != nil {
-			return err
+	// Drop all tables
+	for _, model := range models {
+		if err := db.Migrator().DropTable(model); err != nil {
+			return fmt.Errorf("failed to drop table for %T: %v", model, err)
 		}
+	}
+
+	// Recreate tables by auto-migrating all models
+	if err := db.AutoMigrate(models...); err != nil {
+		return fmt.Errorf("failed to recreate tables: %v", err)
+	}
+
+	return nil
+}
+
+func SeedDatabase(db *gorm.DB) error {
+	// After seeding words and sentences
+	var count int64
+	if err := db.Model(&models.Sentence{}).Count(&count).Error; err != nil {
+		log.Printf("❌ Error counting sentences: %v", err)
+	}
+	log.Printf("✅ Total sentences in database: %d", count)
+
+	// Check word-sentence relationships
+	var words []models.Word
+	if err := db.Preload("Sentences").Find(&words).Error; err != nil {
+		log.Printf("❌ Error loading words with sentences: %v", err)
+	}
+	for _, w := range words {
+		log.Printf("Word ID: %d, Hangul: %s, Sentence count: %d",
+			w.ID, w.Hangul, len(w.Sentences))
 	}
 
 	return nil

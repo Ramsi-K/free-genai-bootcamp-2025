@@ -1,0 +1,15 @@
+[{
+    "hangul":"거",
+    "romanization":"thisistest",
+    "type":"noun",
+    "english":[
+        "thing",
+        "that which",
+        "what"
+    ],
+      
+    "example_sentence":{
+        "korean":"그 일은 그녀가 한 거예요.",
+        "english":"That is what she did with the testing."
+    }
+}]
