@@ -55,17 +55,6 @@ Attempted to use **Windsurf for debugging** but abandoned it due to excessive re
 
 **Observations:**
 
-- AI-assisted coding is unreliable without proper IDE integration.
-- Gemini was useful for debugging but lacked deep IDE support.
-- **Windsurf was completely useless**, burning credits without solving real issues.
-- Opinion piece updates:
-  - **CAG (Code-Augmented Generation), RAG (Retrieval-Augmented Generation), and Fine-Tuning** → Explored how AI coding assistants rely on these techniques, but each has limitations:
-    - **Fine-tuning locks knowledge into a model**, making it outdated when code changes.
-    - **RAG dynamically retrieves relevant code**, but retrieval accuracy and context limits create issues.
-    - **CAG injects real-time code snippets**, but effectiveness depends on proper indexing and high-quality retrieval.
-  - **Impact on AI-generated software** → AI coding tools risk becoming self-referential, reinforcing bad practices from previous AI-generated code.
-  - **Long-term sustainability** → Hybrid models combining **fine-tuning for stable patterns, RAG for adaptability, and CAG for real-time context** may be the best solution.
-
 ### Day 19: February 19, 2025
 
 Spent 10+ hours trying to fix the Go backend, but it was a frustrating loop of errors, misconfigurations, and unexpected issues.
@@ -95,11 +84,69 @@ Spent 10+ hours trying to fix the Go backend, but it was a frustrating loop of e
 
 I've noticed that AI coding assistants often take you in circles—they apply quick fixes without fully understanding the deeper structural issues. I knew this, but I let it happen anyway, hoping for an easy path forward. Instead, I spent hours debugging patches that just introduced new problems. Sometimes, it's better to step back and rebuild from a solid foundation rather than trying to fix something that's fundamentally broken.
 
+### Day 18: February 17, 2025  
+
+Today was a lighter day compared to yesterday's intense backend work. I finalized the **HagXwon logo**—both the **modern version and the color variations**—and I'm happy with how they turned out. I also spent time watching the backend testing video, and that's when I realized I **completely forgot to implement the dashboard.** That hit hard because I thought I was done with backend, and now I have to go back and add it.  
+
+Aside from that, I started drafting an **opinion piece on AI's Ouroboric Knowledge Loop** looking at how AI models are feeding off their own outputs and what that means for the future of knowledge generation. The piece isn't finished yet, but I spent some time researching and structuring my thoughts.  
+
+
+- AI-assisted coding is unreliable without proper IDE integration.
+- Gemini was useful for debugging but lacked deep IDE support.
+- **Windsurf was completely useless**, burning credits without solving real issues.
+- Opinion piece updates:
+  - **CAG (Code-Augmented Generation), RAG (Retrieval-Augmented Generation), and Fine-Tuning** → Explored how AI coding assistants rely on these techniques, but each has limitations:
+    - **Fine-tuning locks knowledge into a model**, making it outdated when code changes.
+    - **RAG dynamically retrieves relevant code**, but retrieval accuracy and context limits create issues.
+    - **CAG injects real-time code snippets**, but effectiveness depends on proper indexing and high-quality retrieval.
+  - **Impact on AI-generated software** → AI coding tools risk becoming self-referential, reinforcing bad practices from previous AI-generated code.
+  - **Long-term sustainability** → Hybrid models combining **fine-tuning for stable patterns, RAG for adaptability, and CAG for real-time context** may be the best solution.
+
+### Day 19: February 19, 2025
+
+Spent 10+ hours trying to fix the Go backend, but it was a frustrating loop of errors, misconfigurations, and unexpected issues.
+
+**Issues Faced:**
+
+- API endpoints were misaligned with frontend specs.
+- `word_groups.json` was not loading properly.
+- The database was not resetting correctly, causing duplicate/missing data.
+- Groups were not being linked correctly to words.
+- Pagination was broken, doubling the total word count.
+- Study activities were inconsistent, and some APIs didn't return expected data.
+- Error handling was unreliable across endpoints.
+
+I first **converted the provided Go-Gin backend specs to Python-Flask**, adapting everything for **Korean language learning**. I didn't build directly from Go-Gin because I **don't know Go at all**, but I do know Python—even though I've never worked with Flask before. I figured **debugging Python errors** would be easier than dealing with **Go from scratch**, and it worked. By **breaking down the issues step by step**, I was able to fully implement the backend in **Flask before rebuilding it in Go-Gin**. In hindsight, trying to build from the **original Go-Gin specs** would have been a nightmare. By breaking it down into a structured approach, **Cursor AI was able to guide the entire process effectively**, even though I had no prior Go experience.  
+
+The setup took forever. Fixing database migrations, dependencies, and Go's quirks (CGO, SQLite, GCC, environment paths) was exhausting. The biggest challenge was getting **make, GCC, and Go to work in the same environment**, but after multiple failed setups across **Windows, WSL, and MSYS2**, I finally got everything running. Once the backend was fully implemented, **testing became another battle**. The test cases were failing because of **duplicate data inserts and pagination mismatches**, which meant rewriting how test databases were structured. After several debugging rounds, all the tests finally passed, confirming that **the Go-Gin backend is fully functional**.  
+
+
+**Attempts to Fix:**
+
+- Tried multiple prompts to get AI assistance, but fixes kept breaking other parts.
+- Verified JSON file loading and checked mappings.
+- Investigated test failures but couldn't fully resolve database contamination.
+- Considered a full rebuild instead of debugging endlessly.
+
+**Outcome:**
+
+💀 Got nowhere. The codebase is too messy—decided to create a new branch and start fresh rather than continue patching. Tomorrow, I'll focus on rebuilding the backend properly from the frontend + backend specs instead of fixing bad code.
+
+
+**Lessons Learned:**
+
+I've noticed that AI coding assistants often take you in circles—they apply quick fixes without fully understanding the deeper structural issues. I knew this, but I let it happen anyway, hoping for an easy path forward. Instead, I spent hours debugging patches that just introduced new problems. Sometimes, it's better to step back and rebuild from a solid foundation rather than trying to fix something that's fundamentally broken.
+
 ### Day 18: February 17, 2025
 
 Today was a lighter day compared to yesterday's intense backend work. I finalized the **HagXwon logo**—both the **modern version and the color variations**—and I'm happy with how they turned out. I also spent time watching the backend testing video, and that's when I realized I **completely forgot to implement the dashboard.** That hit hard because I thought I was done with backend, and now I have to go back and add it.
 
 Aside from that, I started drafting an **opinion piece on AI's Ouroboric Knowledge Loop** looking at how AI models are feeding off their own outputs and what that means for the future of knowledge generation. The piece isn't finished yet, but I spent some time researching and structuring my thoughts.
+
+I spent most of the day trying to set up an **AI-assisted backend case study** to compare how different LLMs generate Flask API code. The goal was to structure an experiment that tracked how tools like **Copilot, Windsurf, and Cursor** handled backend tasks. But after hours of planning, I realized the setup was too complicated, and I wasn't getting the results I needed. Ultimately, I dropped the idea.  
+
+Because of this, I didn't watch any more of the backend lecture videos, and I didn't write any code today.  
+
 
 **Completed Work**
 
@@ -110,6 +157,8 @@ Aside from that, I started drafting an **opinion piece on AI's Ouroboric Knowled
 ### Day 17: February 16, 2025
 
 I first **converted the provided Go-Gin backend specs to Python-Flask**, adapting everything for **Korean language learning**. I didn't build directly from Go-Gin because I **don't know Go at all**, but I do know Python—even though I've never worked with Flask before. I figured **debugging Python errors** would be easier than dealing with **Go from scratch**, and it worked. By **breaking down the issues step by step**, I was able to fully implement the backend in **Flask before rebuilding it in Go-Gin**. In hindsight, trying to build from the **original Go-Gin specs** would have been a nightmare. By breaking it down into a structured approach, **Cursor AI was able to guide the entire process effectively**, even though I had no prior Go experience.
+
+Today was about **finalizing my backend understanding and preparing for implementation.** I wanted to start coding, but I needed to make sure I wasn't going in blind.  
 
 The setup took forever. Fixing database migrations, dependencies, and Go's quirks (CGO, SQLite, GCC, environment paths) was exhausting. The biggest challenge was getting **make, GCC, and Go to work in the same environment**, but after multiple failed setups across **Windows, WSL, and MSYS2**, I finally got everything running. Once the backend was fully implemented, **testing became another battle**. The test cases were failing because of **duplicate data inserts and pagination mismatches**, which meant rewriting how test databases were structured. After several debugging rounds, all the tests finally passed, confirming that **the Go-Gin backend is fully functional**.
 
@@ -122,6 +171,7 @@ The setup took forever. Fixing database migrations, dependencies, and Go's quirk
 - **Successfully ran database migrations.**
 - **Debugged and passed all backend tests.**
 
+
 At this point, **both the Flask and Go-Gin backends are fully implemented and tested**. Next, I need to decide between **frontend integration or OPEA**.
 
 ### Day 16: February 14, 2025
@@ -131,6 +181,11 @@ I spent most of the day trying to set up an **AI-assisted backend case study** t
 Because of this, I didn't watch any more of the backend lecture videos, and I didn't write any code today.
 
 **Completed Work**
+
+At some point, I got sidetracked again when I found a **DRM restriction** on my Korean vocabulary book, which was frustrating because **it's literally just a list of words, and I couldn't even extract it properly.** This led me to look into **converting AZW3 files to TXT or JSON**, which ended up being way more annoying than expected. I tried multiple extraction methods, but nothing worked perfectly. Ultimately I was only able to copy over 200 words as the publisher has added copy restrictions on the book as well. I looked at other sources such as Anki and Quizlet and may end up using those instead.
+
+Aside from that, I also thought more about my Level 5 project idea. The more I consider it, the more I realize I want **a visual-first language learning tool**, where flashcards use **images and videos instead of English translations**. I haven't locked this in yet, but it's definitely something I want to revisit once I finish the backend work.  
+
 
 - **Planned an AI-assisted backend coding case study** (but scrapped it).
 - **Reviewed different prompting strategies for AI coding tools.**
