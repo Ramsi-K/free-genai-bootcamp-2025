@@ -9,6 +9,19 @@
 
 ## Week 1
 
+### Day 23-24: February 23-24, 2025
+
+Final stretch of the Lang Portal backend. After weeks of AI-assisted development, the system was functional, with 100% of model tests and 75% of handler integration tests passing, enough to meet the bootcamp requirement. The remaining issues were all tied to study session and activity tracking:
+
+- **Study session** relations were inconsistent (group_id missing, incorrect state tracking).
+- **Quick stats** calculations were unreliable (progress tracking errors).
+- **Sentence practice** validation was failing (exact/partial match mismatches).
+- **Study session** integration tests weren’t returning expected values.
+
+Tried fixing these, but each attempted solution broke something else. After hours of debugging AI-generated logic, it became clear that this backend wasn’t something I even understood. Every line of code had been written by an AI assistant, without manual research, external docs, or traditional debugging.
+
+*Final decision:* Leaving the last stable commit. No forced fixes, no artificial patches. The experiment is done. AI can accelerate coding, but it can’t replace deep system understanding.
+
 ### Day 22: February 22, 2025
 
 Backend is fully up and running. All tables initialize correctly, and data is seeding independently. Curl tests confirmed that API endpoints are returning the correct outputs.
