@@ -2,6 +2,32 @@
 
 This REST API backend powers a structured Korean language learning platform, enabling users to study vocabulary through interactive study sessions, sentence practice, and real-time progress tracking. The system supports personalized study activities, real-time analytics, and a scalable API architecture.
 
+## Index
+
+- [Data Sources](#data-sources)
+- [Tech Stack](#tech-stack)
+- [Installation & Setup](#installation--setup)
+  - [Prerequisites](#prerequisites)
+  - [Local Setup](#local-setup)
+  - [Database Setup](#database-setup)
+- [API Endpoints](#api-endpoints)
+  - [Words](#words)
+  - [Groups](#groups)
+  - [Dashboard](#dashboard)
+  - [Study Activities](#study-activities)
+  - [Sentence Practice](#sentence-practice)
+  - [Admin](#admin)
+- [Database Schema](#database-schema)
+  - [Core Tables](#core-tables)
+  - [Key Relationships](#key-relationships)
+  - [Schema Notes](#schema-notes)
+- [System Architecture](#system-architecture)
+- [Testing](#testing)
+- [Learnings & AI-Assisted Development](#learnings--ai-assisted-development)
+- [Future Improvements](#future-improvements)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Data Sources
 
 The application uses two main data sources:
