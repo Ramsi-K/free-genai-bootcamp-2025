@@ -1,7 +1,5 @@
 # OPEA Architecture Overview
 
-# OPEA Architecture Overview
-
 ## 📌 Index
 
 1. 🔹 [Core Components](#1--core-components)
