@@ -1,12 +1,12 @@
-## **High-Level Overview of OPEA**
+# **High-Level Overview of OPEA**
 
-### **What is OPEA?**
+## **What is OPEA?**
 
 OPEA (**Open Platform for Enterprise AI**) is an **open-source AI deployment framework** designed to **run large language models (LLMs) and AI services locally or in private infrastructure** instead of relying on cloud-based APIs.
 
 OPEA is built with **modularity, scalability, and flexibility in mind**, enabling organizations to **deploy and orchestrate AI models using Docker and Kubernetes** while keeping data private and reducing dependency on third-party cloud providers.
 
-### **Why was OPEA created?**
+## **Why was OPEA created?**
 
 Organizations face **several major challenges** when implementing AI at scale:
 
@@ -16,7 +16,7 @@ Organizations face **several major challenges** when implementing AI at scale:
 4. **Difficulty Scaling AI from Proof-of-Concept to Production** 🚀 → Many projects fail to move beyond early-stage testing.
 5. **Governance & Compliance Challenges** 📜 → Organizations need **responsible AI frameworks** for model lifecycle management.
 
-### **What problems does OPEA solve?**
+## **What problems does OPEA solve?**
 
 ✅ **Self-hosted AI models** – Run Llama 3, Mistral, Falcon, and other LLMs locally.  
 ✅ **AI modularity** – Deploy **only the components you need** (chatbots, search, translation, summarization, etc.).  
@@ -25,7 +25,7 @@ Organizations face **several major challenges** when implementing AI at scale:
 ✅ **Integration-ready** – Works with existing **databases, message queues (Kafka, RabbitMQ), and APIs**.  
 ✅ **Governance & Security** – Provides tools for AI lifecycle management, monitoring, and access control.
 
-### **Key Features of OPEA**
+## **Key Features of OPEA**
 
 🔹 **Containerized AI Deployment** – Uses **Docker & Kubernetes** for easy deployment.  
 🔹 **Microservice Architecture** – Each AI service runs independently, making scaling flexible.  
@@ -35,7 +35,7 @@ Organizations face **several major challenges** when implementing AI at scale:
 🔹 **Observability & Monitoring** – Tools for tracking AI model performance and system behavior.  
 🔹 **Standardized AI Governance** – Security controls, model tracking, and compliance tools.
 
-### **Who Would Use OPEA?**
+## **Who Would Use OPEA?**
 
 OPEA is designed for:  
 ✔️ **Developers & AI Engineers** – Building AI-powered applications.  
@@ -45,3 +45,7 @@ OPEA is designed for:
 ✔️ **Governance & Compliance Teams** – Ensuring responsible AI practices.  
 ✔️ **Enterprise Architects** – Standardizing AI deployment across an organization.  
 ✔️ **Government & Healthcare** – AI applications with **strict data privacy needs**.
+
+---
+
+_Made by Ramsi K. – Part of the GenAI Bootcamp 2025 repository._
