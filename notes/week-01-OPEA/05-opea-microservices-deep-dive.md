@@ -175,7 +175,7 @@ A financial services AI platform moved from monolithic PostgreSQL to specialized
 
 OPEA implements a tiered architecture for inference workloads:
 
-```
+```text
 API Gateway ➡️ Orchestrator ➡️ GPU Workers
      ⬇️            ⬇️              ⬇️
 Authentication   Request Queue   Model Cache
@@ -392,7 +392,7 @@ flowchart TB
 
 ### 🏭 Event Processing Architecture
 
-```
+```text
 Dataset Events → Training Events → Evaluation Events
        ⬇️              ⬇️               ⬇️
             Event Store/Message Bus
@@ -743,7 +743,7 @@ flowchart TB
 
 ### 🔄 Resilience Architecture Flow
 
-```
+```text
 Client Request → Circuit Breaker → Primary Model
        ↓              ↓
 Fallback Strategy → Cached Response
@@ -963,7 +963,7 @@ Enterprise AI platforms require sophisticated deployment patterns to manage risk
 
 **Shadow Deployment Architecture**:
 
-```
+```text
 Client Request → Primary Model → Response to Client
       ↓
 Shadow Model (Evaluation Only) → Comparison Metrics
@@ -989,7 +989,7 @@ Shadow Model (Evaluation Only) → Comparison Metrics
 
 ### 🚢 Progressive Deployment for ML Models
 
-```
+```text
 Shadow Deployment → Canary Testing → Blue/Green Deployment → Full Deployment
         ↓                  ↓                   ↓                    ↓
 Compare Predictions   User Feedback       Quick Rollback      Continuous Monitoring
@@ -1166,7 +1166,7 @@ ML systems require specialized CI/CD pipelines that handle both code and model a
 
 When deciding whether to split or merge microservices in OPEA:
 
-```
+```text
 Is the component independently deployable?
 ├── YES → Does it have its own data storage needs?
 │         ├── YES → Does it scale independently?
@@ -1190,7 +1190,7 @@ Is the component independently deployable?
 
 ### 🧩 When to Use Event Sourcing vs. Traditional Storage
 
-```
+```text
 Does your use case require complete history and auditability?
 ├── YES → Is temporal query capability important?
 │         ├── YES → Is rebuild/replay capability needed?
