@@ -4,11 +4,28 @@
 
 ## Jump to what I was doing in
 
+- [Week 4](#week-4)
+- [Week 3](#week-3)
+- [Week 2](#week-2)
 - [Week 1](#week-1)
 - [Week 0](#week-0)
 - [Pre-bootcamp](#pre-bootcamp-prep)
 
-## Week 1
+## Week 4
+
+### Day 30: March 2, 2025
+
+## Week 3
+
+### Day 28-29: February 28 - March 1 2025
+
+I focused on documenting key backend, database, and containerization concepts as part of my bootcamp work. I structured my notes across three main areas.
+
+- For backend development, I covered REST APIs, request-response structure, Flask routing, and deployment basics. I also documented best practices for secure API design and production deployment using Gunicorn/Uvicorn.
+- For database management, I explored SQLite3 basics, SQLAlchemy ORM, and data migrations. I created ChromaDB-specific notes, including a real-world use case for AI-driven vocabulary retrieval, and compared vector databases like Pinecone, Qdrant, and Weaviate.
+- For containers and Docker, I documented Docker fundamentals, how to write a Dockerfile for Flask, and container security best practices. I also explained Docker Compose for multi-container applications, covering networking and environment management.
+
+This documentation will help in deploying my OPEA-integrated Flask backend, ensuring scalability, security, and AI-powered functionality.
 
 ### Day 26-27: February 26-27, 2025
 
@@ -23,6 +40,8 @@ Spent time finalizing documentation—updated the backend README, Lang Portal RE
 Started watching OPEA videos and taking short notes. The concepts look complex, but breaking it down should help before diving into implementation. The next focus is shifting to OPEA and the remaining bootcamp projects.
 
 Not a heavy coding day, but a necessary one. Now, moving forward.
+
+## Week 2
 
 ### Day 23-24: February 23-24, 2025
 
@@ -173,6 +192,8 @@ The setup took forever. Fixing database migrations, dependencies, and Go's quirk
 
 At this point, **both the Flask and Go-Gin backends are fully implemented and tested**. Next, I need to decide between **frontend integration or OPEA**.
 
+## Week 1
+
 ### Day 16: February 14, 2025
 
 I spent most of the day trying to set up an **AI-assisted backend case study** to compare how different LLMs generate Flask API code. The goal was to structure an experiment that tracked how tools like **Copilot, Windsurf, and Cursor** handled backend tasks. But after hours of planning, I realized the setup was too complicated, and I wasn't getting the results I needed. Ultimately, I dropped the idea.
@@ -228,13 +249,11 @@ I still have ~5 hours of lecture videos left, but I think I've cleared my head a
 - Created multiple diagrams to visualize the backend structure and API interactions.
 - Broke down the codebase and figured out that the backend uses Flask Blueprints, finally making sense of how everything is structured.
 
-## Week 0
-
 ### Day 12 & 13: February 10-11, 2025
 
 I pulled an all-nighter and have been working for over 10 hours straight because I was falling behind in the bootcamp. I'm exhausted. Submitting the Sentence Constructor project made me realize something critical—I've spent too much time on theory and note-taking and not enough on practical application. While I'm proud of my GenAI notes and thrilled to have learned TOGAF, I should have focused on getting the practical work done first, submitted it, and then refined the theory later. Moving forward, my plan is to prioritize completing the minimum requirements first, then improve upon them instead of getting lost in details upfront.
 
-Completed Work:
+**Completed Work:**
 
 - Finalized and submitted the Sentence Constructor Project, completing the README, technical uncertainties, refined prompt results, and full documentation.
 - Tested and iterated prompts across multiple AI models, improving structured hinting, guided learning, and response enforcement.
@@ -246,6 +265,8 @@ Completed Work:
 
 **Big Takeaway:**
 I should have completed the practical requirements first and then refined the theory at my own pace. For the next week, my priority is execution—getting things done first and improving later. No more getting stuck in details. Time to adapt and move forward.
+
+## Week 0
 
 ### Day 11: February 9, 2025
 
@@ -325,7 +346,7 @@ I should have completed the practical requirements first and then refined the th
 - Debugged **math rendering issues**, ensuring proper display of formulas.
 - Next focus: **BERT and fine-tuning techniques**.
 
-### Day 3: January 30, 2025\*\*
+### Day 3: January 30, 2025
 
 - Completed detailed notes on **AI vs. Generative AI**, focusing on key differences, use cases, and impact.
 - Wrote structured documentation on **Large Language Models (LLMs)**, covering foundational models, embeddings, transformers, and real-world applications.
@@ -333,14 +354,14 @@ I should have completed the practical requirements first and then refined the th
 - Fixed **Mermaid diagrams and math rendering issues**, ensuring all visuals are properly formatted.
 - Preparing for the next topic: **Tokenization & NLP fundamentals** in GenAI.
 
-### Day 2: January 28, 2025\*\*
+### Day 2: January 28, 2025
 
 - Worked through **GenAI Essentials**, covering **AI vs. GenAI**, **LLMs**, and **transformers**.
 - Structured my **Week 00 folder**, adding separate **note files** for key topics.
 - Created a **README for Week 00** summarizing key topics and indexing notes.
 - Ensured **repo structure is scalable** for future weeks of the bootcamp.
 
-### Day 1: January 27, 2025\*\*
+### Day 1: January 27, 2025
 
 - Explored the **bootcamp structure, expectations, and requirements**.
 - Set up the **GitHub repository** and planned the **organization of notes and projects**.
