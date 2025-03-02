@@ -4,11 +4,32 @@
 
 ## Jump to what I was doing in
 
+- [Week 4](#week-4)
+- [Week 3](#week-3)
+- [Week 2](#week-2)
 - [Week 1](#week-1)
 - [Week 0](#week-0)
 - [Pre-bootcamp](#pre-bootcamp-prep)
 
-## Week 1
+## Week 4
+
+### Day 30: March 2, 2025
+
+## Week 3
+
+### Day 28-29: February 28 - March 1 2025
+
+I focused on documenting key backend, database, and containerization concepts as part of my bootcamp work. I structured my notes across three main areas.
+
+- For backend development, I covered REST APIs, request-response structure, Flask routing, and deployment basics. I also documented best practices for secure API design and production deployment using Gunicorn/Uvicorn.
+- For database management, I explored SQLite3 basics, SQLAlchemy ORM, and data migrations. I created ChromaDB-specific notes, including a real-world use case for AI-driven vocabulary retrieval, and compared vector databases like Pinecone, Qdrant, and Weaviate.
+- For containers and Docker, I documented Docker fundamentals, how to write a Dockerfile for Flask, and container security best practices. I also explained Docker Compose for multi-container applications, covering networking and environment management.
+
+This documentation will help in deploying my OPEA-integrated Flask backend, ensuring scalability, security, and AI-powered functionality.
+
+### Day 26-27: February 26-27, 2025
+
+Added notes on OPEA microservices and megaservices, including a deep dive into microservices architecture, performance optimizations, advanced communication protocols, and deployment strategies. Expanded documentation on OPEA ecosystem and alternatives, data flow patterns, and major challenges and best practices. Structured comparisons for microservices vs. megaservices and created an in-depth breakdown of megaservice architecture. Made minor edits across multiple sections to improve clarity and consistency.
 
 ### Day 25: February 25, 2025
 
@@ -19,6 +40,8 @@ Spent time finalizing documentation—updated the backend README, Lang Portal RE
 Started watching OPEA videos and taking short notes. The concepts look complex, but breaking it down should help before diving into implementation. The next focus is shifting to OPEA and the remaining bootcamp projects.
 
 Not a heavy coding day, but a necessary one. Now, moving forward.
+
+## Week 2
 
 ### Day 23-24: February 23-24, 2025
 
@@ -84,12 +107,11 @@ Spent 10+ hours trying to fix the Go backend, but it was a frustrating loop of e
 
 I've noticed that AI coding assistants often take you in circles—they apply quick fixes without fully understanding the deeper structural issues. I knew this, but I let it happen anyway, hoping for an easy path forward. Instead, I spent hours debugging patches that just introduced new problems. Sometimes, it's better to step back and rebuild from a solid foundation rather than trying to fix something that's fundamentally broken.
 
-### Day 18: February 17, 2025  
+### Day 18: February 17, 2025
 
-Today was a lighter day compared to yesterday's intense backend work. I finalized the **HagXwon logo**—both the **modern version and the color variations**—and I'm happy with how they turned out. I also spent time watching the backend testing video, and that's when I realized I **completely forgot to implement the dashboard.** That hit hard because I thought I was done with backend, and now I have to go back and add it.  
+Today was a lighter day compared to yesterday's intense backend work. I finalized the **HagXwon logo**—both the **modern version and the color variations**—and I'm happy with how they turned out. I also spent time watching the backend testing video, and that's when I realized I **completely forgot to implement the dashboard.** That hit hard because I thought I was done with backend, and now I have to go back and add it.
 
-Aside from that, I started drafting an **opinion piece on AI's Ouroboric Knowledge Loop** looking at how AI models are feeding off their own outputs and what that means for the future of knowledge generation. The piece isn't finished yet, but I spent some time researching and structuring my thoughts.  
-
+Aside from that, I started drafting an **opinion piece on AI's Ouroboric Knowledge Loop** looking at how AI models are feeding off their own outputs and what that means for the future of knowledge generation. The piece isn't finished yet, but I spent some time researching and structuring my thoughts.
 
 - AI-assisted coding is unreliable without proper IDE integration.
 - Gemini was useful for debugging but lacked deep IDE support.
@@ -116,10 +138,9 @@ Spent 10+ hours trying to fix the Go backend, but it was a frustrating loop of e
 - Study activities were inconsistent, and some APIs didn't return expected data.
 - Error handling was unreliable across endpoints.
 
-I first **converted the provided Go-Gin backend specs to Python-Flask**, adapting everything for **Korean language learning**. I didn't build directly from Go-Gin because I **don't know Go at all**, but I do know Python—even though I've never worked with Flask before. I figured **debugging Python errors** would be easier than dealing with **Go from scratch**, and it worked. By **breaking down the issues step by step**, I was able to fully implement the backend in **Flask before rebuilding it in Go-Gin**. In hindsight, trying to build from the **original Go-Gin specs** would have been a nightmare. By breaking it down into a structured approach, **Cursor AI was able to guide the entire process effectively**, even though I had no prior Go experience.  
+I first **converted the provided Go-Gin backend specs to Python-Flask**, adapting everything for **Korean language learning**. I didn't build directly from Go-Gin because I **don't know Go at all**, but I do know Python—even though I've never worked with Flask before. I figured **debugging Python errors** would be easier than dealing with **Go from scratch**, and it worked. By **breaking down the issues step by step**, I was able to fully implement the backend in **Flask before rebuilding it in Go-Gin**. In hindsight, trying to build from the **original Go-Gin specs** would have been a nightmare. By breaking it down into a structured approach, **Cursor AI was able to guide the entire process effectively**, even though I had no prior Go experience.
 
-The setup took forever. Fixing database migrations, dependencies, and Go's quirks (CGO, SQLite, GCC, environment paths) was exhausting. The biggest challenge was getting **make, GCC, and Go to work in the same environment**, but after multiple failed setups across **Windows, WSL, and MSYS2**, I finally got everything running. Once the backend was fully implemented, **testing became another battle**. The test cases were failing because of **duplicate data inserts and pagination mismatches**, which meant rewriting how test databases were structured. After several debugging rounds, all the tests finally passed, confirming that **the Go-Gin backend is fully functional**.  
-
+The setup took forever. Fixing database migrations, dependencies, and Go's quirks (CGO, SQLite, GCC, environment paths) was exhausting. The biggest challenge was getting **make, GCC, and Go to work in the same environment**, but after multiple failed setups across **Windows, WSL, and MSYS2**, I finally got everything running. Once the backend was fully implemented, **testing became another battle**. The test cases were failing because of **duplicate data inserts and pagination mismatches**, which meant rewriting how test databases were structured. After several debugging rounds, all the tests finally passed, confirming that **the Go-Gin backend is fully functional**.
 
 **Attempts to Fix:**
 
@@ -132,7 +153,6 @@ The setup took forever. Fixing database migrations, dependencies, and Go's quirk
 
 💀 Got nowhere. The codebase is too messy—decided to create a new branch and start fresh rather than continue patching. Tomorrow, I'll focus on rebuilding the backend properly from the frontend + backend specs instead of fixing bad code.
 
-
 **Lessons Learned:**
 
 I've noticed that AI coding assistants often take you in circles—they apply quick fixes without fully understanding the deeper structural issues. I knew this, but I let it happen anyway, hoping for an easy path forward. Instead, I spent hours debugging patches that just introduced new problems. Sometimes, it's better to step back and rebuild from a solid foundation rather than trying to fix something that's fundamentally broken.
@@ -143,10 +163,9 @@ Today was a lighter day compared to yesterday's intense backend work. I finalize
 
 Aside from that, I started drafting an **opinion piece on AI's Ouroboric Knowledge Loop** looking at how AI models are feeding off their own outputs and what that means for the future of knowledge generation. The piece isn't finished yet, but I spent some time researching and structuring my thoughts.
 
-I spent most of the day trying to set up an **AI-assisted backend case study** to compare how different LLMs generate Flask API code. The goal was to structure an experiment that tracked how tools like **Copilot, Windsurf, and Cursor** handled backend tasks. But after hours of planning, I realized the setup was too complicated, and I wasn't getting the results I needed. Ultimately, I dropped the idea.  
+I spent most of the day trying to set up an **AI-assisted backend case study** to compare how different LLMs generate Flask API code. The goal was to structure an experiment that tracked how tools like **Copilot, Windsurf, and Cursor** handled backend tasks. But after hours of planning, I realized the setup was too complicated, and I wasn't getting the results I needed. Ultimately, I dropped the idea.
 
-Because of this, I didn't watch any more of the backend lecture videos, and I didn't write any code today.  
-
+Because of this, I didn't watch any more of the backend lecture videos, and I didn't write any code today.
 
 **Completed Work**
 
@@ -158,7 +177,7 @@ Because of this, I didn't watch any more of the backend lecture videos, and I di
 
 I first **converted the provided Go-Gin backend specs to Python-Flask**, adapting everything for **Korean language learning**. I didn't build directly from Go-Gin because I **don't know Go at all**, but I do know Python—even though I've never worked with Flask before. I figured **debugging Python errors** would be easier than dealing with **Go from scratch**, and it worked. By **breaking down the issues step by step**, I was able to fully implement the backend in **Flask before rebuilding it in Go-Gin**. In hindsight, trying to build from the **original Go-Gin specs** would have been a nightmare. By breaking it down into a structured approach, **Cursor AI was able to guide the entire process effectively**, even though I had no prior Go experience.
 
-Today was about **finalizing my backend understanding and preparing for implementation.** I wanted to start coding, but I needed to make sure I wasn't going in blind.  
+Today was about **finalizing my backend understanding and preparing for implementation.** I wanted to start coding, but I needed to make sure I wasn't going in blind.
 
 The setup took forever. Fixing database migrations, dependencies, and Go's quirks (CGO, SQLite, GCC, environment paths) was exhausting. The biggest challenge was getting **make, GCC, and Go to work in the same environment**, but after multiple failed setups across **Windows, WSL, and MSYS2**, I finally got everything running. Once the backend was fully implemented, **testing became another battle**. The test cases were failing because of **duplicate data inserts and pagination mismatches**, which meant rewriting how test databases were structured. After several debugging rounds, all the tests finally passed, confirming that **the Go-Gin backend is fully functional**.
 
@@ -171,8 +190,9 @@ The setup took forever. Fixing database migrations, dependencies, and Go's quirk
 - **Successfully ran database migrations.**
 - **Debugged and passed all backend tests.**
 
-
 At this point, **both the Flask and Go-Gin backends are fully implemented and tested**. Next, I need to decide between **frontend integration or OPEA**.
+
+## Week 1
 
 ### Day 16: February 14, 2025
 
@@ -184,8 +204,7 @@ Because of this, I didn't watch any more of the backend lecture videos, and I di
 
 At some point, I got sidetracked again when I found a **DRM restriction** on my Korean vocabulary book, which was frustrating because **it's literally just a list of words, and I couldn't even extract it properly.** This led me to look into **converting AZW3 files to TXT or JSON**, which ended up being way more annoying than expected. I tried multiple extraction methods, but nothing worked perfectly. Ultimately I was only able to copy over 200 words as the publisher has added copy restrictions on the book as well. I looked at other sources such as Anki and Quizlet and may end up using those instead.
 
-Aside from that, I also thought more about my Level 5 project idea. The more I consider it, the more I realize I want **a visual-first language learning tool**, where flashcards use **images and videos instead of English translations**. I haven't locked this in yet, but it's definitely something I want to revisit once I finish the backend work.  
-
+Aside from that, I also thought more about my Level 5 project idea. The more I consider it, the more I realize I want **a visual-first language learning tool**, where flashcards use **images and videos instead of English translations**. I haven't locked this in yet, but it's definitely something I want to revisit once I finish the backend work.
 
 - **Planned an AI-assisted backend coding case study** (but scrapped it).
 - **Reviewed different prompting strategies for AI coding tools.**
@@ -230,13 +249,11 @@ I still have ~5 hours of lecture videos left, but I think I've cleared my head a
 - Created multiple diagrams to visualize the backend structure and API interactions.
 - Broke down the codebase and figured out that the backend uses Flask Blueprints, finally making sense of how everything is structured.
 
-## Week 0
-
 ### Day 12 & 13: February 10-11, 2025
 
 I pulled an all-nighter and have been working for over 10 hours straight because I was falling behind in the bootcamp. I'm exhausted. Submitting the Sentence Constructor project made me realize something critical—I've spent too much time on theory and note-taking and not enough on practical application. While I'm proud of my GenAI notes and thrilled to have learned TOGAF, I should have focused on getting the practical work done first, submitted it, and then refined the theory later. Moving forward, my plan is to prioritize completing the minimum requirements first, then improve upon them instead of getting lost in details upfront.
 
-Completed Work:
+**Completed Work:**
 
 - Finalized and submitted the Sentence Constructor Project, completing the README, technical uncertainties, refined prompt results, and full documentation.
 - Tested and iterated prompts across multiple AI models, improving structured hinting, guided learning, and response enforcement.
@@ -248,6 +265,8 @@ Completed Work:
 
 **Big Takeaway:**
 I should have completed the practical requirements first and then refined the theory at my own pace. For the next week, my priority is execution—getting things done first and improving later. No more getting stuck in details. Time to adapt and move forward.
+
+## Week 0
 
 ### Day 11: February 9, 2025
 
@@ -327,7 +346,7 @@ I should have completed the practical requirements first and then refined the th
 - Debugged **math rendering issues**, ensuring proper display of formulas.
 - Next focus: **BERT and fine-tuning techniques**.
 
-### Day 3: January 30, 2025\*\*
+### Day 3: January 30, 2025
 
 - Completed detailed notes on **AI vs. Generative AI**, focusing on key differences, use cases, and impact.
 - Wrote structured documentation on **Large Language Models (LLMs)**, covering foundational models, embeddings, transformers, and real-world applications.
@@ -335,14 +354,14 @@ I should have completed the practical requirements first and then refined the th
 - Fixed **Mermaid diagrams and math rendering issues**, ensuring all visuals are properly formatted.
 - Preparing for the next topic: **Tokenization & NLP fundamentals** in GenAI.
 
-### Day 2: January 28, 2025\*\*
+### Day 2: January 28, 2025
 
 - Worked through **GenAI Essentials**, covering **AI vs. GenAI**, **LLMs**, and **transformers**.
 - Structured my **Week 00 folder**, adding separate **note files** for key topics.
 - Created a **README for Week 00** summarizing key topics and indexing notes.
 - Ensured **repo structure is scalable** for future weeks of the bootcamp.
 
-### Day 1: January 27, 2025\*\*
+### Day 1: January 27, 2025
 
 - Explored the **bootcamp structure, expectations, and requirements**.
 - Set up the **GitHub repository** and planned the **organization of notes and projects**.
