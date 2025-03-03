@@ -1,4 +1,4 @@
-version: '3'
+version: '5'
 
 services:
   vllm-server:
@@ -10,8 +10,13 @@ services:
       - './data:/data'
     shm_size: 1g
     environment:
-      - LLM_MODEL_ID=microsoft/phi-2
-    command: --model microsoft/phi-2 --host 0.0.0.0 --port 80
+      - LLM_MODEL_ID=deepseek-ai/deepseek-coder-1.3b-instruct
+    command: --model deepseek-ai/deepseek-coder-1.3b-instruct --host 0.0.0.0 --port 80
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:80/health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   korean-vocab-importer:
     build:
@@ -23,7 +28,8 @@ services:
     environment:
       - VLLM_SERVICE_URL=http://vllm-server:80
     depends_on:
-      - vllm-server
+      vllm-server:
+        condition: service_healthy
     restart: unless-stopped
 
 networks:
