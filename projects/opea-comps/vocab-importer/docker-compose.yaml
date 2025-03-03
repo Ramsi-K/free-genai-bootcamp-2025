@@ -1,22 +1,23 @@
-version: '5'
-
 services:
-  vllm-server:
-    image: opea/vllm:latest
-    container_name: vllm-server
+  ollama-server:
+    image: ollama/ollama:latest
+    container_name: ollama-server
     ports:
-      - '8008:80'
+      - '${LLM_ENDPOINT_PORT:-11434}:11434'
     volumes:
-      - './data:/data'
-    shm_size: 1g
+      - ollama-data:/root/.ollama
     environment:
-      - LLM_MODEL_ID=deepseek-ai/deepseek-coder-1.3b-instruct
-    command: --model deepseek-ai/deepseek-coder-1.3b-instruct --host 0.0.0.0 --port 80
+      - no_proxy=${no_proxy}
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+      - LLM_MODEL_ID=${LLM_MODEL_ID}
+      - host_ip=${host_ip}
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:80/health']
+      test: ['CMD', 'curl', '-f', 'http://localhost:11434/api/version']
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 3
+      start_period: 5s
 
   korean-vocab-importer:
     build:
@@ -26,11 +27,22 @@ services:
     ports:
       - '8000:8000'
     environment:
-      - VLLM_SERVICE_URL=http://vllm-server:80
-    depends_on:
-      vllm-server:
-        condition: service_healthy
-    restart: unless-stopped
+      - VLLM_SERVICE_URL=http://ollama-server:11434
+      - MODEL_NAME=${LLM_MODEL_ID:-llama3.2:1b}
+    restart: on-failure
+    command: >
+      sh -c "
+      echo 'Waiting for Ollama server...' &&
+      until curl -s http://ollama-server:11434/api/version > /dev/null; do
+        echo 'Ollama server is starting...' &&
+        sleep 2;
+      done &&
+      echo 'Ollama server is up! Starting the application...' &&
+      python3 -m uvicorn app:app --host 0.0.0.0 --port 8000
+      "
+
+volumes:
+  ollama-data:
 
 networks:
   default:
