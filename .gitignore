@@ -9,3 +9,6 @@ assets/
 
 #ignore .spec files
 .specstory/
+
+#ignore env files
+.env

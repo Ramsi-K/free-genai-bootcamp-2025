@@ -1,0 +1,46 @@
+services:
+  ollama-server:
+    image: ollama/ollama
+    container_name: ollama-server
+    ports:
+      - '${LLM_ENDPOINT_PORT:-8008}:11434'
+    volumes:
+      - ollama-data:/root/.ollama
+      - ./app.py:/app.py
+      - ./static:/static
+      - ./data:/data
+
+    environment:
+      no_proxy: '${no_proxy}'
+      http_proxy: '${http_proxy}'
+      https_proxy: '${https_proxy}'
+      LLM_MODEL_ID: '${LLM_MODEL_ID}'
+      host_ip: '${host_ip}'
+
+  korean-vocab-importer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: korean-vocab-importer
+    ports:
+      - '8000:8000'
+    environment:
+      - OLLAMA_URL=http://ollama-server:11434
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./app.py:/app/app.py
+      - ./static:/app/static
+    depends_on:
+      - ollama-server
+    restart: on-failure
+    # Command override for more verbose output
+    command: bash -c "python -u app.py"
+
+volumes:
+  ollama-data:
+
+networks:
+  default:
+    driver: bridge
