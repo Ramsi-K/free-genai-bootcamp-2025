@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  vllm-server:
+    image: opea/vllm:latest
+    container_name: vllm-server
+    ports:
+      - '8008:80'
+    volumes:
+      - './data:/data'
+    shm_size: 1g
+    environment:
+      - LLM_MODEL_ID=microsoft/phi-2
+    command: --model microsoft/phi-2 --host 0.0.0.0 --port 80
+
+  korean-vocab-importer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: korean-vocab-importer
+    ports:
+      - '8000:8000'
+    environment:
+      - VLLM_SERVICE_URL=http://vllm-server:80
+    depends_on:
+      - vllm-server
+    restart: unless-stopped
+
+networks:
+  default:
+    driver: bridge
