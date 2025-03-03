@@ -1,23 +1,17 @@
 services:
   ollama-server:
-    image: ollama/ollama:latest
+    image: ollama/ollama
     container_name: ollama-server
     ports:
-      - '${LLM_ENDPOINT_PORT:-11434}:11434'
+      - '${LLM_ENDPOINT_PORT:-8008}:11434'
     volumes:
       - ollama-data:/root/.ollama
     environment:
-      - no_proxy=${no_proxy}
-      - http_proxy=${http_proxy}
-      - https_proxy=${https_proxy}
-      - LLM_MODEL_ID=${LLM_MODEL_ID}
-      - host_ip=${host_ip}
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:11434/api/version']
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
+      no_proxy: '${no_proxy}'
+      http_proxy: '${http_proxy}'
+      https_proxy: '${https_proxy}'
+      LLM_MODEL_ID: '${LLM_MODEL_ID}'
+      host_ip: '${host_ip}'
 
   korean-vocab-importer:
     build:
@@ -27,19 +21,15 @@ services:
     ports:
       - '8000:8000'
     environment:
-      - VLLM_SERVICE_URL=http://ollama-server:11434
-      - MODEL_NAME=${LLM_MODEL_ID:-llama3.2:1b}
+      - OLLAMA_URL=http://ollama-server:11434
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - ollama-server
     restart: on-failure
-    command: >
-      sh -c "
-      echo 'Waiting for Ollama server...' &&
-      until curl -s http://ollama-server:11434/api/version > /dev/null; do
-        echo 'Ollama server is starting...' &&
-        sleep 2;
-      done &&
-      echo 'Ollama server is up! Starting the application...' &&
-      python3 -m uvicorn app:app --host 0.0.0.0 --port 8000
-      "
+    # Command override for more verbose output
+    command: bash -c "python -u app.py"
 
 volumes:
   ollama-data:

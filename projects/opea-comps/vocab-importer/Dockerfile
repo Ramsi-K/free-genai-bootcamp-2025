@@ -9,4 +9,9 @@ COPY app.py .
 
 EXPOSE 8000
 
-CMD ["python", "app.py"]
+# Print Python version and installed packages for debugging
+RUN python --version
+RUN pip list
+
+# Use -u flag for unbuffered output and add more verbosity
+CMD ["python", "-u", "app.py"]
