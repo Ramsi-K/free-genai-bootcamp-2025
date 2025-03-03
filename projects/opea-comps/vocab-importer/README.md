@@ -1,55 +1,42 @@
 # Korean Vocabulary Importer
 
-This project is part of the GenAI Bootcamp 2025, implementing a vocabulary generator and importer microservice using OPEA components and vLLM for local model serving.
+This project is part of the GenAI Bootcamp 2025, implementing a vocabulary generator and importer using Ollama for local model serving.
 
 ## Project Overview
 
-The Korean Vocabulary Importer is a web service that:
+The Korean Vocabulary Importer is a web application that:
 
-- Generates Korean vocabulary words for specific themes
-- Exports vocabulary groups to JSON format
-- Imports vocabulary from JSON files
-- Integrates with OPEA's vLLM service for LLM-based vocabulary generation
+- Generates Korean vocabulary words for specific themes using local LLMs
+- Displays generated vocabulary in a user-friendly interface
+- Saves vocabulary data to JSON files
+- Leverages Ollama for efficient local model inference
 
 This implementation follows the Level 200 "Vocab Importer" project requirements from the bootcamp curriculum:
 
 - Creates an internal tool to generate vocabulary
 - Exports generated vocabulary to JSON for later import
-- Imports JSON files
-- Uses an LLM (via OPEA's vLLM component)
+- Uses a local LLM serving the model via OPEA
 
 ## Architecture
 
-This project demonstrates two possible architectural approaches:
+The project uses a containerized approach with two main components:
 
-### Microservice Architecture
+1. **Ollama Server**: A lightweight inference server for running LLMs locally
+2. **Flask Web Application**: A simple web service that communicates with Ollama and provides a user interface
 
-In this approach, the vocabulary importer is deployed separately from the vLLM service, with each service having its own Docker container, build process, and lifecycle.
-
-Benefits:
-
-- Clear separation of concerns
-- Independent versioning and deployment
-- Follows the OPEA component architecture philosophy
-
-### Megaservice Architecture (Implemented)
-
-This project implements the "megaservice" approach, where multiple services are orchestrated together using a single Docker Compose file.
-
-Benefits:
-
-- Simpler deployment (one command starts everything)
-- Services can easily communicate with each other
-- Aligned with the bootcamp's goal to "construct your own Mega-service"
+Both components are orchestrated together using Docker Compose, making deployment straightforward.
 
 ## Project Structure
 
 ```text
 vocab-importer/
-├── app.py                # FastAPI application
+├── app.py                # Flask application
+├── static/               # Static files for the web UI
+│   └── index.html        # Main web interface
+├── data/                 # Directory for saved vocabulary files
 ├── requirements.txt      # Python dependencies
 ├── Dockerfile            # Instructions to build the Docker image
-└── docker-compose.yml    # Configuration for running services
+└── docker-compose.yaml   # Configuration for running services
 ```
 
 ## Korean Vocabulary Structure
@@ -75,14 +62,19 @@ The vocabulary follows this structure:
 
 ```json
 {
-  "name": "Food and Cuisine",
-  "description": "Words related to Korean food and cuisine",
+  "name": "Food",
+  "description": "Words related to Food in Korean",
+  "model_used": "llama3:latest",
   "words": [
     {
       "hangul": "김치",
       "romanization": "gimchi",
-      "english": ["kimchi"],
-      "type": "noun"
+      "type": "noun",
+      "english": ["kimchi", "fermented cabbage"],
+      "example_sentence": {
+        "korean": "한국 사람들은 매일 김치를 먹어요.",
+        "english": "Korean people eat kimchi every day."
+      }
     }
     // More words...
   ]
@@ -100,9 +92,32 @@ The vocabulary follows this structure:
 docker-compose up -d
 ```
 
-## Usage
+The application will be available at http://localhost:8000
 
-Once the services are running, you can interact with the API using these curl commands:
+## Using the Web Interface
+
+1. Open your browser and go to http://localhost:8000
+2. Select a model from the dropdown menu (the available models will be loaded from Ollama)
+3. Enter a theme for vocabulary generation (e.g., "Food", "Travel", "Shopping")
+4. Specify the number of words to generate
+5. Click "Generate Vocabulary"
+6. Once the vocabulary is generated, click "Save as JSON" to save it to the data folder
+
+## API Endpoints
+
+You can also interact with the API using curl commands:
+
+### Check service health
+
+```bash
+curl http://localhost:8000/health
+```
+
+### List available models
+
+```bash
+curl http://localhost:8000/models
+```
 
 ### Generate Korean vocabulary for a theme
 
@@ -110,22 +125,22 @@ Once the services are running, you can interact with the API using these curl co
 curl -X POST http://localhost:8000/generate \
   -H "Content-Type: application/json" \
   -d '{
-    "theme": "Food and Cuisine",
-    "count": 10,
-    "include_example_sentences": true
+    "theme": "Food",
+    "count": 5,
+    "model": "llama3:latest"
   }'
 ```
 
 ### List all vocabulary groups
 
 ```bash
-curl -X GET http://localhost:8000/groups
+curl http://localhost:8000/groups
 ```
 
 ### Export a vocabulary group
 
 ```bash
-curl -X GET http://localhost:8000/export/0 > korean_food_vocab.json
+curl http://localhost:8000/export/0
 ```
 
 ### Import a vocabulary group
@@ -136,48 +151,38 @@ curl -X POST http://localhost:8000/import \
   -d @korean_food_vocab.json
 ```
 
-### Check service health
+### Save vocabulary to data folder
 
 ```bash
-curl -X GET http://localhost:8000/health
+curl -X POST http://localhost:8000/save \
+  -H "Content-Type: application/json" \
+  -d @vocab_data.json
 ```
 
-## Technical Details
+## Models
 
-### Components
+The application uses Ollama to serve local LLMs. Some models that work well with this application include:
 
-1. **vLLM Service**
+- llama3:latest
+- llama3.2:1b
+- phi:latest
 
-   - Serves the LLM model (default: meta-llama/Llama-2-7b-chat-hf)
-   - Provides an API compatible with OpenAI's completions API
-   - Runs as a Docker container from the OPEA project
+You can add more models to Ollama using the `ollama pull` command from the host machine. For details see [Ollama Implementation](../ollama/README.md)
 
-2. **Vocabulary Importer Service**
-   - FastAPI application for generating and managing vocabulary
-   - Connects to the vLLM service for LLM-based generation
-   - Provides endpoints for generating, listing, exporting, and importing vocabulary
+## Example Korean Vocabulary Themes
 
-### Integration
+Here are some example themes for Korean vocabulary:
 
-The services are integrated through Docker networking, with the vocabulary importer service communicating with the vLLM service using HTTP requests.
-
-### Environment Variables
-
-The following environment variables can be used to configure the services:
-
-- `REGISTRY`: Docker registry for vLLM image (default: opea)
-- `TAG`: Docker image tag (default: latest)
-- `LLM_ENDPOINT_PORT`: Port for the vLLM service (default: 8008)
-- `DATA_PATH`: Path for data volumes (default: ./data)
-- `LLM_MODEL_ID`: ID of the model to use (default: meta-llama/Llama-2-7b-chat-hf)
-
-## Notes on OPEA Components
-
-This project uses the Open Platform for Enterprise AI (OPEA) components, specifically the vLLM component for serving language models.
-
-The vLLM component is containerized and provides an API for generating text completions, which we leverage for vocabulary generation.
-
-For more information on OPEA components, see the [GenAIComps GitHub repository](https://github.com/opea-project/GenAIComps).
+1. Food and Cuisine
+2. Shopping
+3. Travel and Transportation
+4. Family and Relationships
+5. Time and Calendar
+6. School and Education
+7. Numbers and Counting
+8. Colors and Appearance
+9. Weather and Seasons
+10. Sports and Activities
 
 ## Example Korean Vocabulary Groups
 

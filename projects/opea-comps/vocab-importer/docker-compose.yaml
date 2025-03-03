@@ -6,6 +6,10 @@ services:
       - '${LLM_ENDPOINT_PORT:-8008}:11434'
     volumes:
       - ollama-data:/root/.ollama
+      - ./app.py:/app.py
+      - ./static:/static
+      - ./data:/data
+
     environment:
       no_proxy: '${no_proxy}'
       http_proxy: '${http_proxy}'
@@ -25,6 +29,9 @@ services:
       - FLASK_ENV=development
       - FLASK_DEBUG=1
       - PYTHONUNBUFFERED=1
+    volumes:
+      - ./app.py:/app/app.py
+      - ./static:/app/static
     depends_on:
       - ollama-server
     restart: on-failure

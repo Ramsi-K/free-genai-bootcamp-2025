@@ -6,12 +6,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py .
+COPY static/ static/
 
 EXPOSE 8000
 
-# Print Python version and installed packages for debugging
-RUN python --version
-RUN pip list
-
-# Use -u flag for unbuffered output and add more verbosity
-CMD ["python", "-u", "app.py"]
+CMD ["python", "app.py"]
