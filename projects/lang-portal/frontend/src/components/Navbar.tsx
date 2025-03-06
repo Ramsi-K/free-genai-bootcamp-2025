@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Moon, Sun, Menu, Atom } from 'lucide-react';
+import { Moon, Sun, Menu, Settings } from 'lucide-react';
 import { useThemeStore } from '../store/theme';
 import { cn } from '../lib/utils';
+import HagXwonLogo from './HagXwonLogo';
 
 export default function Navbar() {
   const { theme, toggleTheme } = useThemeStore();
@@ -13,13 +14,13 @@ export default function Navbar() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center space-x-3">
-            <Atom className="h-8 w-8 text-[#4A90E2]" />
+            <HagXwonLogo variant="gradient" size="md" />
             <span className="text-2xl font-bold neon-text">
               HagXwon
             </span>
           </Link>
 
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-1">
             <Link
               to="/word-practice"
               className="btn-futuristic text-foreground/80 hover:text-foreground"
@@ -38,12 +39,24 @@ export default function Navbar() {
             >
               Sentence Practice
             </Link>
+            <Link
+              to="/study-history"
+              className="btn-futuristic text-foreground/80 hover:text-foreground"
+            >
+              Study History
+            </Link>
+            <Link
+              to="/admin"
+              className="btn-futuristic text-foreground/80 hover:text-foreground"
+            >
+              Admin
+            </Link>
           </div>
 
           <div className="flex items-center space-x-4">
             <button
               onClick={toggleTheme}
-              className="hud-element p-2"
+              className="hud-element p-2 rounded-full"
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? (
@@ -53,7 +66,7 @@ export default function Navbar() {
               )}
             </button>
             <button
-              className="md:hidden hud-element p-2"
+              className="md:hidden hud-element p-2 rounded-full"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -74,20 +87,37 @@ export default function Navbar() {
           <Link
             to="/word-practice"
             className="block px-3 py-2 btn-futuristic rounded-md"
+            onClick={() => setIsMenuOpen(false)}
           >
             Word Practice
           </Link>
           <Link
             to="/listening-practice"
             className="block px-3 py-2 btn-futuristic rounded-md"
+            onClick={() => setIsMenuOpen(false)}
           >
             Listening Practice
           </Link>
           <Link
             to="/sentence-practice"
             className="block px-3 py-2 btn-futuristic rounded-md"
+            onClick={() => setIsMenuOpen(false)}
           >
             Sentence Practice
+          </Link>
+          <Link
+            to="/study-history"
+            className="block px-3 py-2 btn-futuristic rounded-md"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Study History
+          </Link>
+          <Link
+            to="/admin"
+            className="block px-3 py-2 btn-futuristic rounded-md"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Admin
           </Link>
         </div>
       </div>
