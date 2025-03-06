@@ -11,6 +11,8 @@ interface WordsState {
   recentWords: Word[];
   isLoading: boolean;
   error: string | null;
+  semanticSearchResults: Word[];
+  semanticSearchLoading: boolean;
   
   // Actions
   fetchWordsByTopikLevel: (level: number) => Promise<void>;
@@ -19,6 +21,8 @@ interface WordsState {
   removeSavedWord: (wordId: number) => void;
   addToRecent: (word: Word) => void;
   clearRecentWords: () => void;
+  semanticSearch: (query: string) => Promise<void>;
+  clearSearchResults: () => void;
 }
 
 export const useWordsStore = create<WordsState>()(
@@ -29,6 +33,8 @@ export const useWordsStore = create<WordsState>()(
       recentWords: [],
       isLoading: false,
       error: null,
+      semanticSearchResults: [],
+      semanticSearchLoading: false,
       
       fetchWordsByTopikLevel: async (level: number) => {
         set({ isLoading: true, error: null });
@@ -108,6 +114,21 @@ export const useWordsStore = create<WordsState>()(
       clearRecentWords: () => {
         set({ recentWords: [] });
       },
+      
+      semanticSearch: async (query: string) => {
+        set({ semanticSearchLoading: true });
+        try {
+          const results = await semanticSearch(query);
+          set({ semanticSearchResults: results, semanticSearchLoading: false });
+        } catch (error) {
+          set({ 
+            error: error instanceof Error ? error.message : 'Semantic search failed',
+            semanticSearchLoading: false 
+          });
+        }
+      },
+      
+      clearSearchResults: () => set({ semanticSearchResults: [] }),
     }),
     {
       name: 'words-storage', // Name for the localStorage key

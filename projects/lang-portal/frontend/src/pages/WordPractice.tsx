@@ -296,6 +296,30 @@ const WordPractice: React.FC = () => {
     }
   }, [currentWord, settings.autoPlayAudio, showSearchResults]);
 
+  // Preload next word
+  useEffect(() => {
+    const nextIndex = (currentWordIndex + 1) % filteredWords.length;
+    const nextWord = filteredWords[nextIndex];
+    if (nextWord) {
+      const audio = new Audio();
+      audio.src = `path/to/pronunciations/${nextWord.id}.mp3`; // Adjust path as needed
+      audio.preload = 'auto';
+    }
+  }, [currentWordIndex, filteredWords]);
+  
+  // Persist session state
+  useEffect(() => {
+    const sessionState = {
+      practiceMode,
+      selectedLevel,
+      currentWordIndex,
+      correctCount,
+      incorrectCount,
+      elapsedTime,
+    };
+    sessionStorage.setItem('word-practice-state', JSON.stringify(sessionState));
+  }, [practiceMode, selectedLevel, currentWordIndex, correctCount, incorrectCount, elapsedTime]);
+
   // Format time display
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
