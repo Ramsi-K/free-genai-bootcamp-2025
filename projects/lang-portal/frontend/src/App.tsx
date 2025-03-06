@@ -21,6 +21,8 @@ function App() {
               <Route path="/word-practice" element={<WordPractice />} />
               <Route path="/listening-practice" element={<ListeningPractice />} />
               <Route path="/sentence-practice" element={<SentencePractice />} />
+              <Route path="/study-history" element={<StudyHistoryPage />} />
+              <Route path="/admin" element={<AdminPage />} />
             </Routes>
           </main>
         </div>

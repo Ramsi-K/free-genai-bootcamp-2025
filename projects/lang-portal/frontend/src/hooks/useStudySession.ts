@@ -11,6 +11,8 @@ export function useStudySession(sessionType: 'word' | 'listening' | 'sentence' |
   const [elapsedTime, setElapsedTime] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [incorrectCount, setIncorrectCount] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [lastStudyDate, setLastStudyDate] = useLocalStorage<string>('last-study-date', '');
   
   // Store study records in local storage
   const [studyHistory, setStudyHistory] = useLocalStorage<StudyRecord[]>('study-history', []);
@@ -25,6 +27,22 @@ export function useStudySession(sessionType: 'word' | 'listening' | 'sentence' |
     
     return () => clearInterval(timer);
   }, [sessionStartTime]);
+  
+  // Check and update streak
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    if (lastStudyDate) {
+      const lastDate = new Date(lastStudyDate);
+      const diff = Math.floor((Date.now() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+      
+      if (diff === 1) {
+        setStreak(prev => prev + 1);
+      } else if (diff > 1) {
+        setStreak(0);
+      }
+    }
+    setLastStudyDate(today);
+  }, [lastStudyDate]);
   
   // Record study attempt
   const recordAttempt = useCallback(
@@ -84,5 +102,7 @@ export function useStudySession(sessionType: 'word' | 'listening' | 'sentence' |
     incorrectCount,
     recordAttempt,
     endSession,
+    streak,
+    sessionProgress: (correctCount / (correctCount + incorrectCount || 1)) * 100,
   };
 }
