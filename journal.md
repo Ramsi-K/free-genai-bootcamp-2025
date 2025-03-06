@@ -13,6 +13,23 @@
 
 ## Week 4
 
+### Day 34: March 6, 2025
+
+Finished the relevant lectures for Listening learning app and spent the remainder of the day on frontend development from scratch. I used chatgpt, bolt, and then Claude and copilot.
+Added a comprehensive test suite to improve stability.
+Finalized frontend structure and added a comprehensive test suite to the project. Submitted week 1 form.
+
+### Day 32-33: March 4-5, 2025
+
+Caught up on the official lectures on OPEA implementations, megaservice, troubleshooting and the Listening Learning App.
+Took detailed notes on service orchestration, AI model integration, and megaservice workflows.
+I want to build a megaservice and spent time understanding how to make it work.
+
+### Day 31: March 3, 2025
+
+Focused on OPEA architecture, refining the structure of microservices and megaservices. Implemented the Ollama-based microservice for structured query generation.
+Worked on the Vocab Importer, setting up a Flask app running on Docker and successfully connecting it to Ollama for generating grouped word responses.
+
 ### Day 30: March 2, 2025
 
 - Continued working on OPEA microservices and megaservices, focusing on integrating different models with Ollama. Successfully configured multiple models to run within the same environment, improving flexibility for AI-powered language tasks.
