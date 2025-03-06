@@ -1,0 +1,35 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: white;
+    color: black;
+    text-align: center;
+    transition: background 0.3s, color 0.3s;
+}
+.dark-mode {
+    background-color: #1e1e1e !important;
+    color: white !important;
+}
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: #4A90E2;
+    color: white;
+}
+button {
+    padding: 10px;
+    cursor: pointer;
+    border: none;
+    background-color: #357ABD;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+}
+button:hover {
+    background-color: #255a9b;
+}
+.content {
+    padding: 50px;
+}
