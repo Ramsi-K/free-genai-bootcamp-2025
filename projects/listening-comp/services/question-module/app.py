@@ -9,11 +9,24 @@ import requests
 import numpy as np
 import chromadb
 from chromadb.utils import embedding_functions
-import ollama
+import asyncio
+import torch
+from functools import wraps
+
+# Import OPEA components
+from comps import MicroService, ServiceOrchestrator, ServiceType, ServiceRoleType
+from comps.cores.proto.api_protocol import (
+    ChatCompletionRequest,
+    ChatCompletionResponse,
+    ChatCompletionResponseChoice,
+    ChatMessage,
+    UsageInfo,
+)
+from comps.cores.proto.docarray import LLMParams, RerankerParms, RetrieverParms
+from comps.cores.mega.utils import handle_message
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain_community.llms import Ollama
-from langchain.text_splitter import CharacterTextSplitter
 
 app = Flask(__name__)
 CORS(app)
@@ -27,12 +40,79 @@ DATA_DIR = os.environ.get('DATA_DIR', '/shared/data')
 CHROMA_DIR = os.environ.get('CHROMA_DIR', '/shared/data/chroma')
 OLLAMA_HOST = os.environ.get('OLLAMA_HOST', 'http://ollama:11434')
 LLM_MODEL = os.environ.get('LLM_MODEL', 'llama3:8b')
-TEI_HOST = os.environ.get('TEI_HOST', 'http://tei-embedding-service')
-TEI_PORT = os.environ.get('TEI_PORT', '80')
+
+# GPU Configuration
+USE_GPU = os.environ.get('USE_GPU', 'true').lower() == 'true'
+if USE_GPU and torch.cuda.is_available():
+    DEVICE = torch.device("cuda")
+    logger.info("Using GPU for LLM/Embedding processing")
+else:
+    DEVICE = torch.device("cpu")
+    logger.info("Using CPU for LLM/Embedding processing")
 
 # Create directories
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(CHROMA_DIR, exist_ok=True)
+
+# Initialize ServiceOrchestrator with GPU config
+service_orchestrator = ServiceOrchestrator(device=DEVICE)
+
+# Define OPEA microservices
+llm_service = MicroService(
+    name="llm",
+    host=OLLAMA_HOST.replace("http://", ""),  # Remove http:// prefix
+    port=11434,
+    endpoint="/api/generate",
+    use_remote_service=True,
+    service_type=ServiceType.LLM,
+    device=DEVICE
+)
+
+# Only add LLM service
+service_orchestrator.add(llm_service)
+
+# Add proper error handling for service operations
+def safe_service_operation(func):
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        try:
+            return await func(*args, **kwargs)
+        except ServiceException as e:
+            logger.error(f"Service operation failed: {str(e)}")
+            raise
+    return wrapper
+
+# Define alignment functions similar to ChatQnA
+@safe_service_operation
+async def align_inputs(self, inputs, cur_node, runtime_graph, llm_parameters_dict, **kwargs):
+    if self.services[cur_node].service_type == ServiceType.EMBEDDING:
+        inputs["inputs"] = inputs["text"]
+        del inputs["text"]
+    elif self.services[cur_node].service_type == ServiceType.LLM:
+        next_inputs = {}
+        next_inputs["model"] = LLM_MODEL
+        next_inputs["prompt"] = inputs["text"]
+        next_inputs["stream"] = False
+        next_inputs["temperature"] = llm_parameters_dict.get("temperature", 0.7)
+        next_inputs["max_tokens"] = llm_parameters_dict.get("max_tokens", 512)
+        inputs = next_inputs
+    return inputs
+
+@safe_service_operation
+async def align_outputs(self, data, cur_node, inputs, runtime_graph, llm_parameters_dict, **kwargs):
+    next_data = {}
+    if self.services[cur_node].service_type == ServiceType.EMBEDDING:
+        assert isinstance(data, list)
+        next_data = {"text": inputs["inputs"], "embedding": data[0]}
+    elif self.services[cur_node].service_type == ServiceType.LLM:
+        next_data["text"] = data.get("response", "")
+    else:
+        next_data = data
+    return next_data
+
+# Assign alignment functions
+ServiceOrchestrator.align_inputs = align_inputs
+ServiceOrchestrator.align_outputs = align_outputs
 
 # Setup ChromaDB
 def setup_chroma():
@@ -66,15 +146,6 @@ try:
 except Exception as e:
     logger.error(f"Failed to initialize ChromaDB: {e}")
     # We'll try to initialize later
-
-# Setup Ollama
-def get_ollama_client():
-    try:
-        ollama_client = Ollama(base_url=OLLAMA_HOST, model=LLM_MODEL)
-        return ollama_client
-    except Exception as e:
-        logger.error(f"Error setting up Ollama: {e}")
-        return None
 
 # Question generation prompt template
 question_template = """
@@ -110,7 +181,7 @@ question_template = """
 반드시 위의 형식으로 응답해야 합니다. 질문과 선택지는 모두 한국어로 작성하세요.
 """
 
-# Define the prompt template
+# Define the prompt template for LLM
 prompt = PromptTemplate(
     input_variables=["text"],
     template=question_template
@@ -247,7 +318,7 @@ def search_transcripts():
 
 @app.route('/api/generate-questions/<video_id>', methods=['POST'])
 def generate_questions(video_id):
-    """Generate questions for a specific video or segment."""
+    """Generate questions for a specific video or segment using OPEA."""
     try:
         data = request.json or {}
         segment_ids = data.get('segment_ids', [])
@@ -264,14 +335,6 @@ def generate_questions(video_id):
         if not segments:
             return jsonify({'error': 'No segments found in video data'}), 400
         
-        # Get Ollama client
-        ollama_client = get_ollama_client()
-        if not ollama_client:
-            return jsonify({'error': 'Failed to connect to Ollama service'}), 500
-        
-        # Create LangChain
-        chain = LLMChain(llm=ollama_client, prompt=prompt)
-        
         # If specific segments are requested, use them
         if segment_ids:
             selected_segments = [segments[int(idx)] for idx in segment_ids if int(idx) < len(segments)]
@@ -282,17 +345,42 @@ def generate_questions(video_id):
             else:
                 selected_segments = random.sample(segments, num_questions)
         
-        # Generate questions
+        # Generate questions using OPEA
         questions = []
         for segment in selected_segments:
             try:
                 segment_text = segment['text']
+                prompt_text = question_template.format(text=segment_text)
                 
-                # Call the LLM chain
-                result = chain.run(text=segment_text)
+                # Set up LLM parameters
+                llm_parameters = LLMParams(
+                    max_tokens=512,
+                    temperature=0.7,
+                    top_p=0.95,
+                    stream=False,
+                )
+                
+                # Create async loop for OPEA
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                
+                # Schedule the OPEA orchestration
+                result_dict, runtime_graph = loop.run_until_complete(
+                    service_orchestrator.schedule(
+                        initial_inputs={"text": prompt_text},
+                        llm_parameters=llm_parameters
+                    )
+                )
+                
+                # Close the loop
+                loop.close()
+                
+                # Get result from the last node
+                last_node = runtime_graph.all_leaves()[-1]
+                response = result_dict[last_node]["text"]
                 
                 # Extract JSON from response
-                json_part = result.strip()
+                json_part = response.strip()
                 if "```json" in json_part:
                     json_part = json_part.split("```json")[1].split("```")[0].strip()
                 

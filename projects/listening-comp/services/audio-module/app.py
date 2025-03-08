@@ -11,7 +11,16 @@ import requests
 import soundfile as sf
 from pydub import AudioSegment
 import torch
+import asyncio
 from transformers import AutoProcessor, AutoModel
+
+# Import OPEA components
+from comps import MicroService, ServiceOrchestrator, ServiceType, ServiceRoleType
+from comps.cores.proto.api_protocol import (
+    TTSRequest,
+    TTSResponse,
+    ServiceException
+)
 
 app = Flask(__name__)
 CORS(app)
@@ -24,6 +33,7 @@ logger = logging.getLogger(__name__)
 DATA_DIR = os.environ.get('DATA_DIR', '/shared/data')
 AUDIO_DIR = os.environ.get('AUDIO_DIR', '/shared/data/audio')
 USE_GPU = os.environ.get('USE_GPU', 'true').lower() == 'true'
+TTS_MODEL = os.environ.get('TTS_MODEL', 'PixelCat/melotts-korean-base')
 
 # Create directories
 os.makedirs(DATA_DIR, exist_ok=True)
@@ -37,13 +47,39 @@ else:
     DEVICE = torch.device("cpu")
     logger.info("Using CPU for audio processing")
 
+# Initialize ServiceOrchestrator for OPEA
+service_orchestrator = ServiceOrchestrator()
+
+# Define service dependencies and configurations
+tts_config = {
+    "model": TTS_MODEL,
+    "device": DEVICE,
+    "sample_rate": 24000
+}
+
+# Initialize TTS service as an OPEA MicroService
+tts_service = MicroService(
+    name="tts_service",
+    service_role=ServiceRoleType.PROCESSOR,  # Changed from STANDALONE
+    host="0.0.0.0",
+    port=5002,
+    endpoint="/api/tts",
+    input_datatype=TTSRequest,
+    output_datatype=TTSResponse,
+    device=DEVICE,
+    use_remote_service=False,
+    config=tts_config
+)
+
+# Add service to orchestrator
+service_orchestrator.add(tts_service)
+
 # Initialize TTS model
 def initialize_tts_model():
     try:
         # Try to load MeloTTS for Korean TTS
-        # If MeloTTS is not available, we'll use a fallback method
-        processor = AutoProcessor.from_pretrained("PixelCat/melotts-korean-base")
-        model = AutoModel.from_pretrained("PixelCat/melotts-korean-base").to(DEVICE)
+        processor = AutoProcessor.from_pretrained(TTS_MODEL)
+        model = AutoModel.from_pretrained(TTS_MODEL).to(DEVICE)
         return {
             "processor": processor, 
             "model": model, 
@@ -61,54 +97,69 @@ def health_check():
     """Health check endpoint."""
     return jsonify({'status': 'ok'})
 
+# Add proper service exception handling
+def safe_tts_operation(func):
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        try:
+            return await func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"TTS operation failed: {str(e)}")
+            raise ServiceException(f"TTS service error: {str(e)}")
+    return wrapper
+
 @app.route('/api/tts', methods=['POST'])
-def text_to_speech():
-    """Convert text to speech."""
+@safe_tts_operation
+async def text_to_speech():
+    """Convert text to speech using OPEA components."""
     try:
         data = request.json
         if not data or 'text' not in data:
-            return jsonify({'error': 'Text is required'}), 400
+            raise ServiceException("Text is required")
         
         text = data['text']
-        voice = data.get('voice', 'default')  # Future option for different voices
+        voice = data.get('voice', 'default')
         
         if not tts_model["initialized"]:
-            return jsonify({'error': 'TTS model not initialized'}), 500
+            raise ServiceException("TTS model not initialized")
+
+        # Create OPEA TTSRequest
+        tts_request = TTSRequest(
+            text=text,
+            voice=voice
+        )
         
-        # Process text with TTS model
-        inputs = tts_model["processor"](
-            text=text, 
-            return_tensors="pt",
-        ).to(DEVICE)
+        # Process through service orchestrator
+        result_dict, runtime_graph = await service_orchestrator.schedule(
+            initial_inputs={"request": tts_request},
+            model_parameters={"device": DEVICE}
+        )
         
-        with torch.no_grad():
-            output = tts_model["model"].generate(
-                **inputs,
-                do_sample=True,
-            )
+        # Get result from last node
+        last_node = runtime_graph.all_leaves()[-1]
+        audio_data = result_dict[last_node]
         
-        # Get the audio samples
-        audio_samples = output.audio_values.cpu().numpy().squeeze()
-        
-        # Create a unique filename
         filename = f"{uuid.uuid4()}.wav"
         filepath = os.path.join(AUDIO_DIR, filename)
         
         # Save the audio file
-        sf.write(filepath, audio_samples, 24000)  # Assuming 24kHz sample rate
+        sf.write(filepath, audio_data.audio_values, audio_data.sample_rate)
         
-        return jsonify({
-            'success': True,
-            'audio_path': filepath,
-            'audio_url': f"/api/audio/{filename}"
-        })
-    
+        return TTSResponse(
+            success=True,
+            audio_path=filepath,
+            audio_url=f"/api/audio/{filename}"
+        ).dict()
+
+    except ServiceException as e:
+        logger.error(f"Service error: {str(e)}")
+        return jsonify({'error': str(e)}), 400
     except Exception as e:
-        logger.error(f"Error generating TTS: {e}")
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"System error: {str(e)}")
+        return jsonify({'error': "Internal server error"}), 500
 
 @app.route('/api/process-questions/<video_id>', methods=['POST'])
-def process_questions(video_id):
+async def process_questions(video_id):
     """Process questions for a video, generating audio for each question."""
     try:
         # Get questions file
@@ -123,19 +174,25 @@ def process_questions(video_id):
         if not questions:
             return jsonify({'error': 'No questions found in the data'}), 400
         
-        # Process each question
+        # Process each question using OPEA TTS service
         for i, question in enumerate(questions):
             # Generate audio for the question
             question_text = question.get('question', '')
             if question_text:
                 try:
-                    # Call the TTS endpoint
-                    tts_response = text_to_speech()
-                    tts_data = tts_response.get_json()
+                    # Create TTS request
+                    tts_request = {
+                        'text': question_text,
+                        'voice': 'default'
+                    }
                     
-                    if tts_response.status_code == 200 and tts_data.get('success'):
-                        # Add audio information to the question
-                        questions[i]['audio_url'] = tts_data.get('audio_url')
+                    # Call our own TTS endpoint
+                    tts_response = await text_to_speech()
+                    if tts_response.status_code == 200:
+                        tts_data = tts_response.get_json()
+                        if tts_data.get('success'):
+                            # Add audio information to the question
+                            questions[i]['audio_url'] = tts_data.get('audio_url')
                 except Exception as e:
                     logger.error(f"Error generating audio for question {i}: {e}")
         
@@ -276,4 +333,14 @@ def fallback_tts(text):
         return {'success': False, 'error': str(e)}
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5002, debug=True)
+    # Register routes with service orchestrator
+    service_orchestrator.register_routes([
+        ('/api/tts', text_to_speech, ['POST']),
+        ('/api/process-questions/<video_id>', process_questions, ['POST']),
+        ('/api/audio/<filename>', get_audio, ['GET']),
+        ('/api/extract-audio/<video_id>', extract_audio_segment, ['POST'])
+    ])
+    
+    # Start the OPEA MicroService
+    service_orchestrator.start()
+    app.run(host='0.0.0.0', port=5002)

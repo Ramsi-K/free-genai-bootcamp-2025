@@ -94,8 +94,6 @@ const QuestionPractice = () => {
     }
   };
 
-export default QuestionPractice;
-
   const handleNext = () => {
     // If we're showing the answer, go to the next question
     if (showAnswer) {
@@ -401,3 +399,5 @@ export default QuestionPractice;
     </Container>
   );
 };
+
+export default QuestionPractice;

@@ -1,6 +1,7 @@
 import os
 import json
 import re
+import logging
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from youtube_transcript_api import YouTubeTranscriptApi
@@ -9,6 +10,13 @@ import requests
 from langdetect import detect
 import pandas as pd
 from pytube import YouTube
+from comps import MicroService, ServiceOrchestrator, ServiceType, ServiceRoleType
+from comps.cores.proto.api_protocol import (
+    TranscriptRequest,
+    TranscriptResponse,
+    ServiceException
+)
+from .guardrails import VideoGuardrails
 
 app = Flask(__name__)
 CORS(app)
@@ -16,6 +24,42 @@ CORS(app)
 # Configuration
 OUTPUT_DIR = os.environ.get('OUTPUT_DIR', '/shared/data')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# Initialize ServiceOrchestrator
+service_orchestrator = ServiceOrchestrator(device=DEVICE)
+
+# Define service dependencies
+question_service = MicroService(
+    name="question_service",
+    host="question-module",  # Docker service name
+    port=5001,
+    endpoint="/api/generate-questions",
+    service_type=ServiceType.PROCESSOR,
+    use_remote_service=True,
+    device=DEVICE
+)
+
+audio_service = MicroService(
+    name="audio_service",
+    host="audio-module",  # Docker service name
+    port=5002,
+    endpoint="/api/extract-audio",
+    service_type=ServiceType.AUDIO,
+    use_remote_service=True,
+    device=DEVICE
+)
+
+# Register services
+service_orchestrator.add(question_service)
+service_orchestrator.add(audio_service)
+
+# Initialize guardrails
+guardrails = VideoGuardrails(
+    blacklisted_channels=[
+        "blocked_channel_1",
+        "blocked_channel_2"
+    ]
+)
 
 def extract_video_id(url):
     """Extract YouTube video ID from URL."""
@@ -121,39 +165,73 @@ def health_check():
     """Health check endpoint."""
     return jsonify({'status': 'ok'})
 
+# Add detailed logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 @app.route('/api/process', methods=['POST'])
 def process_video():
     """Process YouTube video and extract transcript."""
-    data = request.json
-    if not data or 'url' not in data:
-        return jsonify({'error': 'URL is required'}), 400
-    
-    url = data['url']
-    video_id = extract_video_id(url)
-    
-    if not video_id:
-        return jsonify({'error': 'Invalid YouTube URL'}), 400
-    
     try:
-        # Get transcript
-        transcript = YouTubeTranscriptApi.get_transcript(
-            video_id, 
-            languages=['ko', 'ko-KR']  # Try to get Korean transcript
-        )
+        # Rate limiting
+        if not guardrails.check_rate_limit(request.remote_addr):
+            return jsonify({'error': '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.'}), 429
+
+        data = request.json
+        if not data or 'url' not in data:
+            return jsonify({'error': 'URL is required'}), 400
         
+        url = data['url']
+        video_id = extract_video_id(url)
+        
+        if not video_id:
+            return jsonify({'error': 'Invalid YouTube URL'}), 400
+
+        # Get video metadata
+        metadata = get_video_metadata(video_id)
+        
+        # Validate metadata
+        metadata_error = guardrails.validate_video_metadata(metadata)
+        if metadata_error:
+            return jsonify({'error': metadata_error}), 400
+
+        # Try to get transcript with multiple language codes and auto-generated option
+        for lang_code in ['ko', 'ko-KR']:
+            try:
+                # Try manual subtitles first
+                transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=[lang_code])
+                break
+            except:
+                try:
+                    # Try auto-generated subtitles
+                    transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=[lang_code], params={'as_generated': True})
+                    break
+                except:
+                    continue
+        else:
+            return jsonify({'error': '한국어 자막을 찾을 수 없습니다. 자막이 있는 동영상을 선택하세요.'}), 400
+
         # Process transcript
         transcript_text, structured_transcript = process_transcript(transcript)
         
+        # Validate transcript
+        transcript_error = guardrails.validate_transcript(transcript_text)
+        if transcript_error:
+            return jsonify({'error': transcript_error}), 400
+
         # Check if content is primarily Korean
         if not is_korean_content(transcript_text):
+            logger.error(f"Content not primarily Korean for video {video_id}")
             return jsonify({'error': 'Content is not primarily in Korean'}), 400
-        
-        # Get video metadata
-        metadata = get_video_metadata(video_id)
         
         # Segment transcript for easier processing
         segments = segment_transcript(structured_transcript)
         
+        # Validate segments
+        segments_error = guardrails.validate_segments(segments)
+        if segments_error:
+            return jsonify({'error': segments_error}), 400
+
         # Save processed data
         result = {
             'video_id': video_id,
@@ -178,8 +256,8 @@ def process_video():
         })
     
     except Exception as e:
-        app.logger.error(f"Error processing video {video_id}: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Error processing video {video_id}: {str(e)}", exc_info=True)
+        return jsonify({'error': '비디오 처리 중 오류가 발생했습니다. 다른 URL을 시도해보세요.'}), 500
 
 @app.route('/api/videos', methods=['GET'])
 def list_videos():
