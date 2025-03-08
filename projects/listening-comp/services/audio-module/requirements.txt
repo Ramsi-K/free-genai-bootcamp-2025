@@ -1,11 +1,16 @@
-flask==2.3.3
-flask-cors==4.0.0
-requests==2.31.0
-numpy==1.24.4
-soundfile==0.12.1
+# Base requirements
+flask>=2.0.0
+flask-cors>=3.0.10
+requests>=2.31.0
+numpy>=1.24.0
+comps
+torch>=2.0.0
+transformers>=4.35.0
+
+# Audio specific
+soundfile>=0.12.1
 librosa==0.10.1
-pydub==0.25.1
-tensorflow==2.13.0
-torch==2.0.1
-transformers==4.36.0
+pydub>=0.25.1
 gunicorn==21.2.0
+protobuf>=4.21.0
+grpcio>=1.50.0

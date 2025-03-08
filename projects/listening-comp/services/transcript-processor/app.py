@@ -9,6 +9,12 @@ import requests
 from langdetect import detect
 import pandas as pd
 from pytube import YouTube
+from comps import MicroService, ServiceOrchestrator, ServiceType, ServiceRoleType
+from comps.cores.proto.api_protocol import (
+    TranscriptRequest,
+    TranscriptResponse,
+    ServiceException
+)
 
 app = Flask(__name__)
 CORS(app)
@@ -16,6 +22,34 @@ CORS(app)
 # Configuration
 OUTPUT_DIR = os.environ.get('OUTPUT_DIR', '/shared/data')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# Initialize ServiceOrchestrator
+service_orchestrator = ServiceOrchestrator(device=DEVICE)
+
+# Define service dependencies
+question_service = MicroService(
+    name="question_service",
+    host="question-module",  # Docker service name
+    port=5001,
+    endpoint="/api/generate-questions",
+    service_type=ServiceType.PROCESSOR,
+    use_remote_service=True,
+    device=DEVICE
+)
+
+audio_service = MicroService(
+    name="audio_service",
+    host="audio-module",  # Docker service name
+    port=5002,
+    endpoint="/api/extract-audio",
+    service_type=ServiceType.AUDIO,
+    use_remote_service=True,
+    device=DEVICE
+)
+
+# Register services
+service_orchestrator.add(question_service)
+service_orchestrator.add(audio_service)
 
 def extract_video_id(url):
     """Extract YouTube video ID from URL."""
