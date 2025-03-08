@@ -68,9 +68,15 @@ const Home = () => {
       <Paper elevation={3} sx={{ p: 4, mb: 4 }}>
         <Typography variant="h5" gutterBottom>
           유튜브 비디오로 듣기 연습 생성하기
+          <Typography variant="subtitle1" color="textSecondary">
+            Create Listening Practice from YouTube Videos
+          </Typography>
         </Typography>
         <Typography variant="body1" paragraph>
           한국어 콘텐츠가 포함된 YouTube 비디오 URL을 입력하세요. 비디오의 자막을 분석하여 TOPIK 스타일의 듣기 문제를 생성합니다.
+          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+            Enter a YouTube video URL containing Korean content. The system will analyze the subtitles and generate TOPIK-style listening comprehension questions.
+          </Typography>
         </Typography>
         
         <form onSubmit={handleSubmit}>
@@ -117,10 +123,14 @@ const Home = () => {
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
                 TOPIK 스타일 듣기 문제
+                <Typography variant="subtitle1" color="textSecondary">
+                  TOPIK-Style Listening Questions
+                </Typography>
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                YouTube 비디오에서 추출한 콘텐츠를 바탕으로 실제 TOPIK 시험과 유사한 듣기 문제를 자동으로 생성합니다. 
-                정확한 한국어 발음으로 문제를 들을 수 있고, 여러 개의 객관식 선택지에서 정답을 골라 연습할 수 있습니다.
+              <Typography variant="body2" color="text.secondary" paragraph>
+                YouTube 비디오에서 추출한 콘텐츠를 바탕으로 실제 TOPIK 시험과 유사한 듣기 문제를 자동으로 생성합니다.
+                <br /><br />
+                Automatically generates listening comprehension questions similar to real TOPIK exams based on content extracted from YouTube videos.
               </Typography>
             </CardContent>
           </Card>
@@ -138,11 +148,18 @@ const Home = () => {
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
                 맞춤형 학습 경험
+                <Typography variant="subtitle1" color="textSecondary">
+                  Customized Learning Experience
+                </Typography>
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                관심 있는 주제의 YouTube 비디오를 선택하여 학습할 수 있습니다. 
-                다양한 난이도와 주제의 콘텐츠를 통해 한국어 듣기 실력을 향상시키세요. 
-                문제를 풀고 정답을 확인하면서 자신의 실력을 테스트할 수 있습니다.
+                관심 있는 주제의 YouTube 비디오를 선택하여 학습할 수 있습니다.
+                <br />
+                Choose YouTube videos on topics that interest you.
+                <br /><br />
+                다양한 난이도와 주제의 콘텐츠를 통해 한국어 듣기 실력을 향상시키세요.
+                <br />
+                Improve your Korean listening skills through content of various difficulties and topics.
               </Typography>
             </CardContent>
           </Card>

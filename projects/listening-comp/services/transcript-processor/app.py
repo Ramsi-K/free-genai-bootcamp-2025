@@ -1,6 +1,7 @@
 import os
 import json
 import re
+import logging
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from youtube_transcript_api import YouTubeTranscriptApi
@@ -155,31 +156,46 @@ def health_check():
     """Health check endpoint."""
     return jsonify({'status': 'ok'})
 
+# Add detailed logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 @app.route('/api/process', methods=['POST'])
 def process_video():
     """Process YouTube video and extract transcript."""
-    data = request.json
-    if not data or 'url' not in data:
-        return jsonify({'error': 'URL is required'}), 400
-    
-    url = data['url']
-    video_id = extract_video_id(url)
-    
-    if not video_id:
-        return jsonify({'error': 'Invalid YouTube URL'}), 400
-    
     try:
-        # Get transcript
-        transcript = YouTubeTranscriptApi.get_transcript(
-            video_id, 
-            languages=['ko', 'ko-KR']  # Try to get Korean transcript
-        )
+        data = request.json
+        if not data or 'url' not in data:
+            return jsonify({'error': 'URL is required'}), 400
         
+        url = data['url']
+        video_id = extract_video_id(url)
+        
+        if not video_id:
+            return jsonify({'error': 'Invalid YouTube URL'}), 400
+
+        # Try to get transcript with multiple language codes and auto-generated option
+        for lang_code in ['ko', 'ko-KR']:
+            try:
+                # Try manual subtitles first
+                transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=[lang_code])
+                break
+            except:
+                try:
+                    # Try auto-generated subtitles
+                    transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=[lang_code], params={'as_generated': True})
+                    break
+                except:
+                    continue
+        else:
+            return jsonify({'error': '한국어 자막을 찾을 수 없습니다. 자막이 있는 동영상을 선택하세요.'}), 400
+
         # Process transcript
         transcript_text, structured_transcript = process_transcript(transcript)
         
         # Check if content is primarily Korean
         if not is_korean_content(transcript_text):
+            logger.error(f"Content not primarily Korean for video {video_id}")
             return jsonify({'error': 'Content is not primarily in Korean'}), 400
         
         # Get video metadata
@@ -212,8 +228,8 @@ def process_video():
         })
     
     except Exception as e:
-        app.logger.error(f"Error processing video {video_id}: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Error processing video {video_id}: {str(e)}", exc_info=True)
+        return jsonify({'error': '비디오 처리 중 오류가 발생했습니다. 다른 URL을 시도해보세요.'}), 500
 
 @app.route('/api/videos', methods=['GET'])
 def list_videos():

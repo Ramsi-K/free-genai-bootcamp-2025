@@ -2,7 +2,7 @@
 flask>=2.0.0
 flask-cors>=3.0.10
 requests>=2.31.0
-numpy>=1.24.0
+numpy<2.0.0  # Pin numpy to avoid chromadb issue
 pandas>=1.5.0
 comps
 torch>=2.0.0

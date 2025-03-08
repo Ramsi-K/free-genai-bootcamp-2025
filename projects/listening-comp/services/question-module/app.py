@@ -40,8 +40,6 @@ DATA_DIR = os.environ.get('DATA_DIR', '/shared/data')
 CHROMA_DIR = os.environ.get('CHROMA_DIR', '/shared/data/chroma')
 OLLAMA_HOST = os.environ.get('OLLAMA_HOST', 'http://ollama:11434')
 LLM_MODEL = os.environ.get('LLM_MODEL', 'llama3:8b')
-TEI_HOST = os.environ.get('TEI_HOST', 'http://tei-embedding-service')
-TEI_PORT = os.environ.get('TEI_PORT', '80')
 
 # GPU Configuration
 USE_GPU = os.environ.get('USE_GPU', 'true').lower() == 'true'
@@ -60,16 +58,6 @@ os.makedirs(CHROMA_DIR, exist_ok=True)
 service_orchestrator = ServiceOrchestrator(device=DEVICE)
 
 # Define OPEA microservices
-embedding_service = MicroService(
-    name="embedding",
-    host=TEI_HOST,
-    port=int(TEI_PORT),
-    endpoint="/embed",
-    use_remote_service=True,
-    service_type=ServiceType.EMBEDDING,
-    device=DEVICE
-)
-
 llm_service = MicroService(
     name="llm",
     host=OLLAMA_HOST.replace("http://", ""),  # Remove http:// prefix
@@ -80,8 +68,7 @@ llm_service = MicroService(
     device=DEVICE
 )
 
-# Add services to orchestrator
-service_orchestrator.add(embedding_service)
+# Only add LLM service
 service_orchestrator.add(llm_service)
 
 # Add proper error handling for service operations

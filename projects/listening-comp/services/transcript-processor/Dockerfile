@@ -2,7 +2,7 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-# Install system dependencies and dev tools for comps
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     build-essential \
@@ -18,7 +18,6 @@ COPY services/transcript-processor/ .
 # Create necessary directories
 RUN mkdir -p /shared/data
 
-# Set PYTHONPATH for OPEA imports
 ENV PYTHONPATH=/app
 
 EXPOSE 5000
