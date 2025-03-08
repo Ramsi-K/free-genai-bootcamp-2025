@@ -1,0 +1,13 @@
+flask==2.3.3
+flask-cors==4.0.0
+requests==2.31.0
+pandas==2.0.3
+numpy==1.24.4
+langchain==0.0.335
+langchain-community==0.0.16
+langchain-chroma==0.0.5
+chromadb==0.4.18
+pydantic==2.5.2
+sentence-transformers==2.2.2
+ollama==0.1.5
+gunicorn==21.2.0
