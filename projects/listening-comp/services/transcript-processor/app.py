@@ -16,6 +16,7 @@ from comps.cores.proto.api_protocol import (
     TranscriptResponse,
     ServiceException
 )
+from .guardrails import VideoGuardrails
 
 app = Flask(__name__)
 CORS(app)
@@ -51,6 +52,14 @@ audio_service = MicroService(
 # Register services
 service_orchestrator.add(question_service)
 service_orchestrator.add(audio_service)
+
+# Initialize guardrails
+guardrails = VideoGuardrails(
+    blacklisted_channels=[
+        "blocked_channel_1",
+        "blocked_channel_2"
+    ]
+)
 
 def extract_video_id(url):
     """Extract YouTube video ID from URL."""
@@ -164,6 +173,10 @@ logger = logging.getLogger(__name__)
 def process_video():
     """Process YouTube video and extract transcript."""
     try:
+        # Rate limiting
+        if not guardrails.check_rate_limit(request.remote_addr):
+            return jsonify({'error': '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.'}), 429
+
         data = request.json
         if not data or 'url' not in data:
             return jsonify({'error': 'URL is required'}), 400
@@ -173,6 +186,14 @@ def process_video():
         
         if not video_id:
             return jsonify({'error': 'Invalid YouTube URL'}), 400
+
+        # Get video metadata
+        metadata = get_video_metadata(video_id)
+        
+        # Validate metadata
+        metadata_error = guardrails.validate_video_metadata(metadata)
+        if metadata_error:
+            return jsonify({'error': metadata_error}), 400
 
         # Try to get transcript with multiple language codes and auto-generated option
         for lang_code in ['ko', 'ko-KR']:
@@ -193,17 +214,24 @@ def process_video():
         # Process transcript
         transcript_text, structured_transcript = process_transcript(transcript)
         
+        # Validate transcript
+        transcript_error = guardrails.validate_transcript(transcript_text)
+        if transcript_error:
+            return jsonify({'error': transcript_error}), 400
+
         # Check if content is primarily Korean
         if not is_korean_content(transcript_text):
             logger.error(f"Content not primarily Korean for video {video_id}")
             return jsonify({'error': 'Content is not primarily in Korean'}), 400
         
-        # Get video metadata
-        metadata = get_video_metadata(video_id)
-        
         # Segment transcript for easier processing
         segments = segment_transcript(structured_transcript)
         
+        # Validate segments
+        segments_error = guardrails.validate_segments(segments)
+        if segments_error:
+            return jsonify({'error': segments_error}), 400
+
         # Save processed data
         result = {
             'video_id': video_id,
