@@ -8,13 +8,14 @@ services:
       - '5000:5000'
     volumes:
       - shared_data:/shared/data
+      - ./services/transcript-processor:/app/src
     environment:
       - OUTPUT_DIR=/shared/data
       - USE_GPU=${USE_GPU}
       - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
+      - PYTHONUNBUFFERED=1
     depends_on:
-      - question-module
-      - audio-module
+      - ollama
     deploy:
       resources:
         reservations:
@@ -32,6 +33,7 @@ services:
       - '5001:5001'
     volumes:
       - shared_data:/shared/data
+      - ./services/question-module:/app/src
     environment:
       - DATA_DIR=/shared/data
       - CHROMA_DIR=/shared/data/chroma
@@ -40,6 +42,7 @@ services:
       - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
       - LLM_MODEL=${LLM_MODEL}
       - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - PYTHONUNBUFFERED=1
     depends_on:
       - ollama
     deploy:
@@ -59,12 +62,15 @@ services:
       - '5002:5002'
     volumes:
       - shared_data:/shared/data
+      - ./services/audio-module:/app/src
     environment:
       - DATA_DIR=/shared/data
       - AUDIO_DIR=/shared/data/audio
       - USE_GPU=${USE_GPU}
       - TTS_MODEL=${TTS_MODEL}
       - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
+      - PYTHONUNBUFFERED=1
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
     deploy:
       resources:
         reservations:
@@ -76,8 +82,8 @@ services:
   # Frontend React Application
   frontend:
     build:
-      context: ./frontend # Make sure this points to the frontend directory
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
     container_name: korean-frontend
     ports:
       - '80:80'
@@ -98,6 +104,12 @@ services:
       - '11434:11434'
     volumes:
       - ollama_data:/root/.ollama
+    command:
+      [
+        'sh',
+        '-c',
+        'ollama serve & sleep 10 && ollama pull ${LLM_MODEL} && tail -f /dev/null',
+      ]
 
 volumes:
   shared_data:

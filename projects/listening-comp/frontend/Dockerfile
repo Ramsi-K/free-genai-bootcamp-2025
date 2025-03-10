@@ -3,13 +3,14 @@ FROM node:18-slim AS build
 
 WORKDIR /app
 
-# Copy package.json first for better caching
-COPY frontend/package*.json ./
+# Copy package files (fixed path)
+COPY package*.json ./
 
+# Install dependencies
 RUN npm install
 
-# Then copy the rest of the frontend files
-COPY frontend/ .
+# Copy source files (fixed path)
+COPY . .
 
 # Build the app
 RUN npm run build

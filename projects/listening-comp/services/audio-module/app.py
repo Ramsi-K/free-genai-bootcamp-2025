@@ -21,6 +21,25 @@ from comps.cores.proto.api_protocol import (
     TTSResponse,
     ServiceException
 )
+import asyncio
+from flask import Flask, request, jsonify
+from flask.helpers import make_response
+
+# Define async handler for Flask to work with async functions
+def async_handler(f):
+    @wraps(f)
+    def inner(*args, **kwargs):
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        result = loop.run_until_complete(f(*args, **kwargs))
+        # Close the loop if it was created in this function
+        if not loop.is_running():
+            loop.close()
+        return result
+    return inner
 
 app = Flask(__name__)
 CORS(app)
@@ -47,31 +66,23 @@ else:
     DEVICE = torch.device("cpu")
     logger.info("Using CPU for audio processing")
 
-# Initialize ServiceOrchestrator for OPEA
+# Initialize ServiceOrchestrator without device parameter
 service_orchestrator = ServiceOrchestrator()
 
-# Define service dependencies and configurations
-tts_config = {
-    "model": TTS_MODEL,
-    "device": DEVICE,
-    "sample_rate": 24000
-}
-
-# Initialize TTS service as an OPEA MicroService
+# Define TTS service
 tts_service = MicroService(
     name="tts_service",
-    service_role=ServiceRoleType.PROCESSOR,  # Changed from STANDALONE
+    service_type=ServiceType.PROCESSOR,
     host="0.0.0.0",
     port=5002,
     endpoint="/api/tts",
-    input_datatype=TTSRequest,
-    output_datatype=TTSResponse,
-    device=DEVICE,
     use_remote_service=False,
-    config=tts_config
+    config={
+        "model": TTS_MODEL,
+        "sample_rate": 24000
+    }
 )
 
-# Add service to orchestrator
 service_orchestrator.add(tts_service)
 
 # Initialize TTS model

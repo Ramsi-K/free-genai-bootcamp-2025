@@ -27,7 +27,25 @@ from comps.cores.mega.utils import handle_message
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain_community.llms import Ollama
+import asyncio
+from flask import Flask, request, jsonify
+from flask.helpers import make_response
 
+# Define async handler for Flask to work with async functions
+def async_handler(f):
+    @wraps(f)
+    def inner(*args, **kwargs):
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        result = loop.run_until_complete(f(*args, **kwargs))
+        # Close the loop if it was created in this function
+        if not loop.is_running():
+            loop.close()
+        return result
+    return inner
 app = Flask(__name__)
 CORS(app)
 
@@ -54,8 +72,8 @@ else:
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(CHROMA_DIR, exist_ok=True)
 
-# Initialize ServiceOrchestrator with GPU config
-service_orchestrator = ServiceOrchestrator(device=DEVICE)
+# Initialize ServiceOrchestrator without device parameter
+service_orchestrator = ServiceOrchestrator()
 
 # Define OPEA microservices
 llm_service = MicroService(
