@@ -1,0 +1,104 @@
+services:
+  # Transcript Processor Service
+  transcript-processor:
+    build:
+      context: .
+      dockerfile: services/transcript-processor/Dockerfile
+    ports:
+      - '5000:5000'
+    volumes:
+      - shared_data:/shared/data
+    environment:
+      - OUTPUT_DIR=/shared/data
+      - USE_GPU=${USE_GPU}
+      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
+    depends_on:
+      - question-module
+      - audio-module
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  # Question Module Service
+  question-module:
+    build:
+      context: .
+      dockerfile: services/question-module/Dockerfile
+    ports:
+      - '5001:5001'
+    volumes:
+      - shared_data:/shared/data
+    environment:
+      - DATA_DIR=/shared/data
+      - CHROMA_DIR=/shared/data/chroma
+      - OLLAMA_HOST=http://ollama:11434
+      - USE_GPU=${USE_GPU}
+      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
+      - LLM_MODEL=${LLM_MODEL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+    depends_on:
+      - ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  # Audio Module Service
+  audio-module:
+    build:
+      context: .
+      dockerfile: services/audio-module/Dockerfile
+    ports:
+      - '5002:5002'
+    volumes:
+      - shared_data:/shared/data
+    environment:
+      - DATA_DIR=/shared/data
+      - AUDIO_DIR=/shared/data/audio
+      - USE_GPU=${USE_GPU}
+      - TTS_MODEL=${TTS_MODEL}
+      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  # Frontend React Application
+  frontend:
+    build:
+      context: ./frontend # Make sure this points to the frontend directory
+      dockerfile: Dockerfile
+    container_name: korean-frontend
+    ports:
+      - '80:80'
+    environment:
+      - REACT_APP_API_BASE_URL=http://${HOST_IP:-localhost}:5000
+      - REACT_APP_QUESTION_API_URL=http://${HOST_IP:-localhost}:5001
+      - REACT_APP_AUDIO_API_URL=http://${HOST_IP:-localhost}:5002
+    depends_on:
+      - transcript-processor
+      - question-module
+      - audio-module
+    restart: unless-stopped
+
+  # Ollama LLM Service
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - '11434:11434'
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  shared_data:
+  ollama_data:
