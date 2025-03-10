@@ -13,6 +13,29 @@
 
 ## Week 4
 
+### Day 36-37: March 9-10, 2025
+
+Spent both days working on my research paper: **Turn Detection in AI-Powered Conversations: Implications for Language Learning Applications**. Initially, I thought this would take a single day, but the depth of the topic required more time.
+
+I covered **theoretical foundations**, including linguistic models of turn-taking, cultural variations, and computational approaches. Explored how **AI systems handle turn detection**, from **early rule-based methods** to **deep learning architectures** like **transformers and multimodal models**.
+
+Dived into **challenges in real-world AI applications**, including false positives, latency issues, and ASR/TTS limitations. Analyzed **AI language tutors, customer service bots, and virtual assistants**, highlighting where turn detection impacts user experience.
+
+I originally planned to use **Claude** extensively for drafting this paper, but it **makes up references and statistics**, which meant I had to **double-check everything manually**. Claude is also falsifying claims, for e.g., if a ource only mentions that deep learning multimodal systems are a promising area of research Claude turns that into "deep learning multimodal systems **will** significantly reduce turn detection errors".
+This has caused additional delays, as I needed to verify all claims, cross-reference sources, and ensure factual accuracy before including any information.
+
+Right now, the paper is **still incomplete**, but I’ve structured most of it and documented key insights. Next steps include **finalizing case studies**, integrating **more benchmarks**, and **tying it back to language learning AI**. Planning to wrap it up soon.
+
+### Day 35: March 8, 2025
+
+Worked on the OPEA megaservice for the Listening Learning App. Made significant progress in setting up the megaservice structure with three microservices: **transcript-processor, question-module, and audio-module**. Each microservice is now integrated into a single system, feeding into the megaservice.
+
+Spent additional time configuring **GPU acceleration for Docker**, ensuring that the entire system could leverage NVIDIA GPUs for faster processing. The setup was more complex than expected, but after debugging and adjusting configurations, I successfully got it running.
+
+Currently debugging an issue with the **transcript-processor** service. The guardrails implementation is incorrectly flagging longer videos (e.g., 8 minutes) as "too short," preventing them from being processed. Investigating the logic behind the rate-limiting and guardrails checks to pinpoint the issue.
+
+Next step is to fix the transcript-processor bug
+
 ### Day 34: March 6, 2025
 
 Finished the relevant lectures for Listening learning app and spent the remainder of the day on frontend development from scratch. I used chatgpt, bolt, and then Claude and copilot.
