@@ -85,45 +85,50 @@ class KoreanListeningMegaService(MegaService):
 
     async def process_request(self, request_data):
         """
-        Main processing pipeline:
-        1. Get YouTube transcript
-        2. Create embeddings
-        3. Store in vector DB
-        4. Generate questions
-        5. Convert to speech
+        Enhanced processing pipeline:
+        1. Extract transcript from YouTube
+        2. Create embeddings for transcript segments
+        3. Store embeddings in vector DB
+        4. Generate questions using embeddings and LLM
+        5. Convert questions to audio
         """
         try:
             video_id = request_data.get("video_id")
-            if not video_id:
-                raise ValueError("No video ID provided")
 
-            # Process transcript
+            # 1. Get transcript
             transcript_result = await self.service_orchestrator.schedule(
                 service_name="transcript_processor",
                 initial_inputs={"video_id": video_id},
             )
 
-            # Create embeddings and store
-            embedding_result = await self.service_orchestrator.schedule(
-                service_name="embedding",
-                initial_inputs={"text": transcript_result["text"]},
-            )
+            # 2. Create embeddings for each segment
+            embeddings = []
+            for segment in transcript_result["segments"]:
+                emb_result = await self.service_orchestrator.schedule(
+                    service_name="embedding",
+                    initial_inputs={"text": segment["text"]},
+                )
+                embeddings.append(emb_result["embedding"])
 
+            # 3. Store in vector DB
             await self.service_orchestrator.schedule(
                 service_name="vector_storage",
                 initial_inputs={
-                    "embeddings": embedding_result["embeddings"],
-                    "text": transcript_result["text"],
+                    "embeddings": embeddings,
+                    "segments": transcript_result["segments"],
                 },
             )
 
-            # Generate questions
+            # 4. Generate questions using similar segments
             questions_result = await self.service_orchestrator.schedule(
                 service_name="question_generator",
-                initial_inputs={"text": transcript_result["text"]},
+                initial_inputs={
+                    "segments": transcript_result["segments"],
+                    "embeddings": embeddings,
+                },
             )
 
-            # Generate audio for questions
+            # 5. Generate audio for questions
             audio_results = []
             for question in questions_result["questions"]:
                 audio_result = await self.service_orchestrator.schedule(
@@ -134,13 +139,13 @@ class KoreanListeningMegaService(MegaService):
 
             return {
                 "success": True,
+                "transcript": transcript_result,
                 "questions": questions_result["questions"],
                 "audio_files": audio_results,
             }
-
         except Exception as e:
-            logger.error(f"Error processing request: {e}")
-            return {"success": False, "error": str(e)}
+            logger.error(f"Error in pipeline: {e}")
+            raise
 
 
 if __name__ == "__main__":
