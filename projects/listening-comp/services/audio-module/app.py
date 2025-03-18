@@ -79,7 +79,13 @@ logger = logging.getLogger(__name__)
 DATA_DIR = os.environ.get("DATA_DIR", "/shared/data")
 AUDIO_DIR = os.environ.get("AUDIO_DIR", "/shared/data/audio")
 USE_GPU = os.environ.get("USE_GPU", "true").lower() == "true"
-TTS_MODEL = os.environ.get("TTS_MODEL", "PixelCat/melotts-korean-base")
+TTS_MODEL = os.environ.get(
+    "TTS_MODEL"
+)  # Remove default value, let it fail if not set
+
+if not TTS_MODEL:
+    logger.error("TTS_MODEL environment variable not set")
+    raise ValueError("TTS_MODEL must be set in environment variables")
 
 # Create directories
 os.makedirs(DATA_DIR, exist_ok=True)

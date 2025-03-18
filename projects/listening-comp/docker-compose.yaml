@@ -33,7 +33,7 @@ services:
       - '5001:5001'
     volumes:
       - shared_data:/shared/data
-      - ./services/question-module:/app/src
+      - ./services/question-module:/app # Changed this line
     environment:
       - DATA_DIR=/shared/data
       - CHROMA_DIR=/shared/data/chroma
@@ -52,6 +52,11 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+    networks:
+      - app_network
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
   # Audio Module Service
   audio-module:
@@ -70,7 +75,6 @@ services:
       - TTS_MODEL=${TTS_MODEL}
       - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
       - PYTHONUNBUFFERED=1
-      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
     deploy:
       resources:
         reservations:
@@ -78,6 +82,11 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+    networks:
+      - app_network
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
   # Frontend React Application
   frontend:
@@ -139,3 +148,7 @@ services:
 volumes:
   shared_data:
   ollama_data:
+
+networks:
+  app_network:
+    driver: bridge

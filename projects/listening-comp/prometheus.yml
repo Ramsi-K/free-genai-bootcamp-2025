@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'korean-learning'
+    static_configs:
+      - targets: 
+        - 'transcript-processor:8000'
+        - 'question-module:8001'
+        - 'audio-module:8002'
+        - 'mega-service:8000'

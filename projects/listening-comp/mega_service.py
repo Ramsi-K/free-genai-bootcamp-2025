@@ -17,33 +17,13 @@ class KoreanListeningMegaService(MegaService):
             name="transcript_processor",
             host="transcript-processor",
             port=5000,
-            endpoint="/api/process-video",
+            endpoint="/api/process",
             service_type=ServiceType.PROCESSOR,
-            role_type=ServiceRoleType.PROCESSOR,
+            role_type=ServiceRoleType.EXTRACTOR,
         )
 
-        # Embedding service
-        self.embedding_service = MicroService(
-            name="embedding",
-            host="tei-embedding",
-            port=8080,
-            endpoint="/embed",
-            service_type=ServiceType.EMBEDDING,
-            role_type=ServiceRoleType.ENCODER,
-        )
-
-        # Vector storage service (using ChromaDB internally)
-        self.vector_storage = MicroService(
-            name="vector_storage",
-            host="question-module",
-            port=5001,
-            endpoint="/api/store-vectors",
-            service_type=ServiceType.STORAGE,
-            role_type=ServiceRoleType.STORAGE,
-        )
-
-        # Question generation service
-        self.question_gen = MicroService(
+        # Question generation service (includes embedding and vector storage)
+        self.question_service = MicroService(
             name="question_generator",
             host="question-module",
             port=5001,
@@ -52,9 +32,9 @@ class KoreanListeningMegaService(MegaService):
             role_type=ServiceRoleType.GENERATOR,
         )
 
-        # Text-to-speech service
-        self.tts_service = MicroService(
-            name="tts",
+        # Audio generation service
+        self.audio_service = MicroService(
+            name="audio_generator",
             host="audio-module",
             port=5002,
             endpoint="/api/tts",
@@ -72,26 +52,16 @@ class KoreanListeningMegaService(MegaService):
             role_type=ServiceRoleType.GENERATOR,
         )
 
-        # Register all services
+        # Register services
         for service in [
             self.transcript_service,
-            self.embedding_service,
-            self.vector_storage,
-            self.question_gen,
-            self.tts_service,
+            self.question_service,
+            self.audio_service,
             self.llm_service,
         ]:
             self.service_orchestrator.add(service)
 
     async def process_request(self, request_data):
-        """
-        Enhanced processing pipeline:
-        1. Extract transcript from YouTube
-        2. Create embeddings for transcript segments
-        3. Store embeddings in vector DB
-        4. Generate questions using embeddings and LLM
-        5. Convert questions to audio
-        """
         try:
             video_id = request_data.get("video_id")
 
@@ -101,47 +71,43 @@ class KoreanListeningMegaService(MegaService):
                 initial_inputs={"video_id": video_id},
             )
 
-            # 2. Create embeddings for each segment
-            embeddings = []
-            for segment in transcript_result["segments"]:
-                emb_result = await self.service_orchestrator.schedule(
-                    service_name="embedding",
-                    initial_inputs={"text": segment["text"]},
-                )
-                embeddings.append(emb_result["embedding"])
-
-            # 3. Store in vector DB
-            await self.service_orchestrator.schedule(
-                service_name="vector_storage",
-                initial_inputs={
-                    "embeddings": embeddings,
-                    "segments": transcript_result["segments"],
-                },
-            )
-
-            # 4. Generate questions using similar segments
+            # 2. Generate questions
             questions_result = await self.service_orchestrator.schedule(
                 service_name="question_generator",
-                initial_inputs={
-                    "segments": transcript_result["segments"],
-                    "embeddings": embeddings,
-                },
+                initial_inputs={"transcript": transcript_result},
             )
 
-            # 5. Generate audio for questions
+            # 3. Generate audio for questions
             audio_results = []
             for question in questions_result["questions"]:
                 audio_result = await self.service_orchestrator.schedule(
-                    service_name="tts",
+                    service_name="audio_generator",
                     initial_inputs={"text": question["text"]},
                 )
                 audio_results.append(audio_result)
+
+            # Track metrics for question generation
+            for question in questions_result["questions"]:
+                QUESTIONS_GENERATED.labels(
+                    difficulty_level=question["difficulty_level"],
+                    content_type=question["content_type"],
+                ).inc()
 
             return {
                 "success": True,
                 "transcript": transcript_result,
                 "questions": questions_result["questions"],
                 "audio_files": audio_results,
+                "analytics": {
+                    "video_duration": transcript_result["metadata"]["length"],
+                    "question_count": len(questions_result["questions"]),
+                    "difficulty_distribution": questions_result["metadata"][
+                        "difficulty_distribution"
+                    ],
+                    "content_types": questions_result["metadata"][
+                        "content_types"
+                    ],
+                },
             }
         except Exception as e:
             logger.error(f"Error in pipeline: {e}")
