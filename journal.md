@@ -15,6 +15,18 @@
 
 ## Week 6
 
+### Day 42: March 18, 2025
+
+Today, I focused primarily on debugging the OPEA megaservice, particularly the question-module implementation. I refined how questions are generated, ensuring they align with TOPIK-style assessments. I also investigated whether the system should generate questions based on video length or maintain a static question count.
+
+While experimenting with different architectures, I initially separated the embedding and vector store services but later reintegrated them into the question module for better performance. I also built the main megaservice.py entry point and added a wrapper.py file to improve modularity. Unlike standard OPEA examples, my implementation takes a slightly different approach by testing whether services can remain more independent while still functioning within the megaservice architecture.
+
+Additionally, I integrated telemetry using Prometheus and OpenTelemetry (OTEL) to track system performance and debugging data. Persistence was also added to ensure that generated questions and student scores are stored long-term. To visualize student progress, I developed a dashboard functionality that tracks total questions answered and correctness, allowing for a better assessment of learning outcomes.
+
+Beyond debugging, I merged the latest updates from main into my listening-comp branch, ensuring everything remains up to date. I also (finally) started and finished watching the full 3-hour OPEA video, which provided necessary insights into telemetry and architecture best practices.
+
+I also reviewed and planned the final touches for my Turn Detection paper which I will do first thing tomorrow. I briefly explored A-MEM which is a dynamic memory updating method that allows newer information to override old data without a full retraining. Broadly outlined the section for my Beyond Human mimicry paper with A-MEM and its parallels to human memory processes, including the potential for long-term bias accumulation akin to the StressPrompt effect.
+
 ### Day 41: March 17, 2025 (Sick Day)
 
 - Watched **Tom Yeh’s Agents Course** lecture 1 and completed the associated homework as preliminary study for the upcoming Agents-focused assignments.
