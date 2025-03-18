@@ -111,6 +111,66 @@ services:
         'ollama serve & sleep 10 && ollama pull ${LLM_MODEL} && tail -f /dev/null',
       ]
 
+  # Add mega-service
+  mega-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8000:8000'
+    volumes:
+      - shared_data:/shared/data
+    environment:
+      - OLLAMA_HOST=ollama
+    depends_on:
+      - transcript-processor
+      - question-module
+      - audio-module
+      - ollama
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - mega-service
+      - transcript-processor
+      - question-module
+      - audio-module
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - '3000:3000'
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - '16686:16686'
+      - '14250:14250'
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    command: ['--config=/etc/otel-collector-config.yaml']
+    volumes:
+      - ./otel-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - '4317:4317'
+      - '4318:4318'
+    depends_on:
+      - jaeger
+
 volumes:
   shared_data:
   ollama_data:
+  grafana_data:
