@@ -3,6 +3,7 @@ import time
 import logging
 from prometheus_client import Counter, Histogram, start_http_server
 import os
+from services.metrics.persistence import MetricsPersistence
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,7 @@ COMPREHENSION_SCORE = Histogram(
 class ServiceWrapper:
     def __init__(self, service_name):
         self.service_name = service_name
+        self.metrics_persistence = MetricsPersistence()
 
     def endpoint_handler(self, endpoint_name):
         def decorator(func):
@@ -54,6 +56,12 @@ class ServiceWrapper:
                     REQUEST_LATENCY.labels(
                         self.service_name, endpoint_name
                     ).observe(time.time() - start_time)
+
+                    # Store metrics persistently
+                    self.metrics_persistence.store_metric(
+                        f"{self.service_name}_{endpoint_name}_latency",
+                        time.time() - start_time,
+                    )
 
                     return result
                 except Exception as e:
