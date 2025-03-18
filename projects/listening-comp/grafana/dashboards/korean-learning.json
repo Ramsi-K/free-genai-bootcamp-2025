@@ -1,0 +1,47 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Korean Learning Analytics",
+    "tags": ["korean-learning"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Questions Generated (Last 24h)",
+        "type": "stat",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(increase(korean_questions_total[24h]))",
+            "legendFormat": "Questions"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "title": "Average Comprehension Scores",
+        "type": "gauge",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "avg(rate(korean_comprehension_score_sum[1h]) / rate(korean_comprehension_score_count[1h]))",
+            "legendFormat": "Score"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "title": "Audio Generation Success Rate",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rate(korean_audio_total[5m])",
+            "legendFormat": "Audio Files"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+      }
+    ],
+    "refresh": "5s"
+  }
+}
