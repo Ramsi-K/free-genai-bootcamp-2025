@@ -4,6 +4,8 @@
 
 ## Jump to what I was doing in
 
+- [Week 6](#week-6)
+- [Week 5 (Sick Week)](#week-5-sick-week)
 - [Week 4](#week-4)
 - [Week 3](#week-3)
 - [Week 2](#week-2)
@@ -11,7 +13,43 @@
 - [Week 0](#week-0)
 - [Pre-bootcamp](#pre-bootcamp-prep)
 
-## Week 4
+## Week 6
+
+### Day 41: March 17, 2025 (Sick Day)
+
+- Watched **Tom Yeh’s Agents Course** lecture 1 and completed the associated homework as preliminary study for the upcoming Agents-focused assignments.
+- Reviewed all career-focused videos on the GenAI Bootcamp page.
+
+## Week 5 (Sick Week)
+
+### Day 40: March 15, 2025
+
+- Worked on recreating **"Munchers"** word game:
+  - Inspired by Andrew’s office hours; played the original DOS version I found on Internet Archive.
+  - Opted for **p5.js** instead of 3DJS for simplicity.
+  - Completed a working prototype (standalone; no backend yet).
+- Shared progress on the Bootcamp Discord. May integrate into the final MUD project later.
+
+### Day 39: March 14, 2025
+
+- Finished the first draft of my **Turn Detection** paper.
+- Checked and verified references; awaiting Gemini’s review for factual accuracy, unsubstantiated claims, and missing citations.  
+  _(Given the length (~60 pages), this might take a day or more.)_
+- Abstract and final polishing still pending.
+
+### Day 38: March 13, 2025
+
+- Continued working on sections 6 and 7 of the **Turn Detection** paper, focusing on refining arguments and checking sources (**sections 6 and 7** completed).
+
+### Day 36-37: March 11-12, 2025
+
+- Experimented extensively with a "storybook" concept:
+  - Inspired by Andrew’s example from office hours (image generation for children's stories).
+  - Prompt-engineered Gemini to consistently generate coherent children's stories with related 6-panel comic-strip style images.
+  - Successfully obtained translated stories as well, resulting in high-quality outputs.
+- Shared results on Bootcamp Discord; planning possible future integration with the final project.
+
+_Rested extensively both days due to illness._
 
 ### Day 36-37: March 9-10, 2025
 
@@ -21,10 +59,12 @@ I covered **theoretical foundations**, including linguistic models of turn-takin
 
 Dived into **challenges in real-world AI applications**, including false positives, latency issues, and ASR/TTS limitations. Analyzed **AI language tutors, customer service bots, and virtual assistants**, highlighting where turn detection impacts user experience.
 
-I originally planned to use **Claude** extensively for drafting this paper, but it **makes up references and statistics**, which meant I had to **double-check everything manually**. Claude is also falsifying claims, for e.g., if a ource only mentions that deep learning multimodal systems are a promising area of research Claude turns that into "deep learning multimodal systems **will** significantly reduce turn detection errors".
+I originally planned to use **Claude** extensively for drafting this paper, but it **makes up references and statistics**, which meant I had to **double-check everything manually**. Claude is also falsifying claims, for e.g., if a source only mentions that deep learning multimodal systems are a promising area of research Claude turns that into "deep learning multimodal systems **will** significantly reduce turn detection errors".
 This has caused additional delays, as I needed to verify all claims, cross-reference sources, and ensure factual accuracy before including any information.
 
 Right now, the paper is **still incomplete**, but I’ve structured most of it and documented key insights. Next steps include **finalizing case studies**, integrating **more benchmarks**, and **tying it back to language learning AI**. Planning to wrap it up soon.
+
+## Week 4
 
 ### Day 35: March 8, 2025
 
