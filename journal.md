@@ -15,6 +15,18 @@
 
 ## Week 6
 
+### Day 43: March 19, 2025
+
+Today was a high-output but mentally exhausting day. I made major progress on my Turn Detection Paper, integrating new research, refining structure, and ensuring consistency across sections. **Sections 1-4 are finalized**, with all visuals, tables, and citations properly placed. In Section 5, I restructured parts of the discussion to accommodate recent research on ASR/TTS advancements in AI tutoring, specifically for Korean learners (korean-to-english and english-to-korean) AI language learning applications, and adaptive strategies for neurodivergent users. While this strengthened the paper, it also made me rethink how to present this information without disrupting flow. I started reviewing Section 6, identifying inconsistencies in formatting, weak transitions, and redundant content, which will need further revision before moving forward.
+
+On the **Agents** side, I revisited both my Agentic Story Builder and Code Assistance Agent projects, ensuring they still align with the bootcamp’s expectations for Week 3. I also revisited the Web Interaction Agent idea, considering how it could be extended to perform real-world actions instead of just retrieving information. While I reviewed the Hugging Face Agents course, I didn’t get into exercises yet. Something I'm still considering.
+
+I also attended the Intel OPEA webinar on AgentsQnA. No live demo, but they presented pre-recorded videos of the system working, which makes me think that implementation might not be straightforward.
+
+The biggest win of the day was a massive research breakthrough, finding multiple highly relevant papers on AI-driven language learning, ASR/TTS for Korean, and conversational AI for neurodivergent users. This reshaped how I'm structuring Section 5 and the overall research discussion.
+
+At this point, I still feel like I have so much left to do. Section 6 needs final revisions, and I haven’t even touched Sections 7+ yet. On top of that, I still have bootcamp work for Weeks 3, 4, and 5, plus Agents Week tasks and the final integration. 
+
 ### Day 42: March 18, 2025
 
 Today, I focused primarily on debugging the OPEA megaservice, particularly the question-module implementation. I refined how questions are generated, ensuring they align with TOPIK-style assessments. I also investigated whether the system should generate questions based on video length or maintain a static question count.
