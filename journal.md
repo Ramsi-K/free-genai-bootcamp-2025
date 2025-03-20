@@ -15,6 +15,10 @@
 
 ## Week 6
 
+### Day 44: March 20, 2025
+
+This was a major cleanup and structuring day. I finalized Sections 5 and 6 of the Turn Detection paper, refining case studies, eliminating redundancy, and integrating Korean-specific research (Lee & Kim, Oh & Min, etc.). I also ensured the technical details aligned with the main themes, adding necessary tables and comparisons where needed. Beyond that, I explored new ethical considerations in Section 7, particularly the risks of AI speech pattern retention and identity cloning, which unexpectedly ties into my Beyond Human Mimicry paper. The privacy implications of AI tutors mimicking user behaviors raised critical concerns about biometric data protection, deepfake fraud, and regulatory oversight. With these sections nearly locked in, my next steps are to verify Sections 5 & 6, refine Section 7's argument, and integrate further research on AI surveillance, biometric risks, and ethical forgetting models. It was a long but productive day, and the finish line is in sight.
+
 ### Day 43: March 19, 2025
 
 Today was a high-output but mentally exhausting day. I made major progress on my Turn Detection Paper, integrating new research, refining structure, and ensuring consistency across sections. **Sections 1-4 are finalized**, with all visuals, tables, and citations properly placed. In Section 5, I restructured parts of the discussion to accommodate recent research on ASR/TTS advancements in AI tutoring, specifically for Korean learners (korean-to-english and english-to-korean) AI language learning applications, and adaptive strategies for neurodivergent users. While this strengthened the paper, it also made me rethink how to present this information without disrupting flow. I started reviewing Section 6, identifying inconsistencies in formatting, weak transitions, and redundant content, which will need further revision before moving forward.
