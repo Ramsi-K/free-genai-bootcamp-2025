@@ -5,6 +5,8 @@
 **Primary researcher: Ramsi Kalia**  
 **AI-assisted research and visualization by Gemini & Claude**
 
+:link: [LinkedIn Post](https://www.linkedin.com/posts/ramsikalia_the-ouroboros-of-ai-llms-and-genai-activity-7302087247963566080-Uu0R?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAnO1jkBXabJGpbgXYgLI5NmSrw-ACeEGP4)
+
 📄 [Read the Full Paper on Academia.edu](https://www.academia.edu/128171748/The_Ouroboros_of_Artificial_Intelligence_Are_Large_Language_Models_Trapped_in_a_Cycle_of_Self_Consumption)
 
 ---
@@ -51,5 +53,6 @@ Without intervention, the ouroboros loop may define the limits of future intelli
 ---
 
 📎 [Access the Full Paper](https://www.academia.edu/128171748/The_Ouroboros_of_Artificial_Intelligence_Are_Large_Language_Models_Trapped_in_a_Cycle_of_Self_Consumption)
+:link: [LinkedIn Post](https://www.linkedin.com/posts/ramsikalia_the-ouroboros-of-ai-llms-and-genai-activity-7302087247963566080-Uu0R?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAnO1jkBXabJGpbgXYgLI5NmSrw-ACeEGP4)
 
 **Written by Ramsi Kalia | March 2025**

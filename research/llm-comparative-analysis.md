@@ -3,6 +3,9 @@
 **Primary researcher: Ramsi Kalia**  
 **AI-assisted analysis by Gemini**
 
+:link: [LinkedIn Post](https://www.linkedin.com/posts/ramsikalia_comparative-analysis-of-llms-in-software-activity-7295446301603676160-ul6k?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAnO1jkBXabJGpbgXYgLI5NmSrw-ACeEGP4)
+
+📄
 [Access the Full Paper](https://www.academia.edu/128171765/Comparative_Analysis_of_Large_Language_Models_in_Software_Development_Performance_Across_Programming_Languages_and_Code_Completion_Tools)
 
 ## **Introduction**
@@ -93,6 +96,7 @@ LLMs have demonstrated significant potential in transforming coding tasks and re
 ## **Access the Full Research Paper**
 
 📄 [Access the Full Paper](https://www.academia.edu/128171765/Comparative_Analysis_of_Large_Language_Models_in_Software_Development_Performance_Across_Programming_Languages_and_Code_Completion_Tools)
+:link: [LinkedIn Post](https://www.linkedin.com/posts/ramsikalia_comparative-analysis-of-llms-in-software-activity-7295446301603676160-ul6k?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAnO1jkBXabJGpbgXYgLI5NmSrw-ACeEGP4)
 
 ---
 
