@@ -1,9 +1,9 @@
 # Comparative Analysis of Large Language Models in Software Development
 
 **Primary researcher: Ramsi Kalia**  
-**AI-assisted analysis by Gemini**  
+**AI-assisted analysis by Gemini**
 
-[Full PDF](https://drive.google.com/file/d/1TFDgL7VGEWy_vxIxuimc05QOuQVFjAf1/view?usp=sharing)
+[Access the Full Paper](https://www.academia.edu/128171765/Comparative_Analysis_of_Large_Language_Models_in_Software_Development_Performance_Across_Programming_Languages_and_Code_Completion_Tools)
 
 ## **Introduction**
 
@@ -41,14 +41,14 @@ LLMs exhibit varying proficiency depending on the programming language and task 
 
 ### **Ranking LLMs by Programming Language (Based on Available Benchmarks)**
 
-| Programming Language | Top-Performing LLMs | Benchmark Scores |
-|----------------------|--------------------|------------------|
-| Python | GPT-4, Claude 3.5 Sonnet, o1-mini | GPT-4 (90.2%), Claude 3.5 (92%) |
-| JavaScript | Codex, GPT-4 | MultiPL-E: Codex performs best, MBXP: 78.67% pass@1 |
-| Java | Qwen2.5-Coder-32B-Instruct | MBXP: 73.69% pass@1 |
-| C++ | Codex | MultiPL-E: Codex performs equally well as on Python, MBXP: 81.95% pass@1 |
-| Go | Performance generally lower | MBXP: 64.35% pass@1 |
-| Ruby | Limited benchmark data available | N/A |
+| Programming Language | Top-Performing LLMs               | Benchmark Scores                                                         |
+| -------------------- | --------------------------------- | ------------------------------------------------------------------------ |
+| Python               | GPT-4, Claude 3.5 Sonnet, o1-mini | GPT-4 (90.2%), Claude 3.5 (92%)                                          |
+| JavaScript           | Codex, GPT-4                      | MultiPL-E: Codex performs best, MBXP: 78.67% pass@1                      |
+| Java                 | Qwen2.5-Coder-32B-Instruct        | MBXP: 73.69% pass@1                                                      |
+| C++                  | Codex                             | MultiPL-E: Codex performs equally well as on Python, MBXP: 81.95% pass@1 |
+| Go                   | Performance generally lower       | MBXP: 64.35% pass@1                                                      |
+| Ruby                 | Limited benchmark data available  | N/A                                                                      |
 
 ## **LLMs in Code Completion & AI Coding Assistants**
 
@@ -92,7 +92,7 @@ LLMs have demonstrated significant potential in transforming coding tasks and re
 
 ## **Access the Full Research Paper**
 
-📄 [Download the PDF Version](https://drive.google.com/file/d/1TFDgL7VGEWy_vxIxuimc05QOuQVFjAf1/view?usp=sharing)
+📄 [Access the Full Paper](https://www.academia.edu/128171765/Comparative_Analysis_of_Large_Language_Models_in_Software_Development_Performance_Across_Programming_Languages_and_Code_Completion_Tools)
 
 ---
 
