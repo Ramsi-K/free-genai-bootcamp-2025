@@ -4,6 +4,7 @@
 
 ## Jump to what I was doing in
 
+- [Week 7](#week-7)
 - [Week 6](#week-6)
 - [Week 5 (Sick Week)](#week-5-sick-week)
 - [Week 4](#week-4)
@@ -13,7 +14,45 @@
 - [Week 0](#week-0)
 - [Pre-bootcamp](#pre-bootcamp-prep)
 
+## Week 7
+
+### Day 46: March 22, 2025
+
+Today, I completed Section 8 of the dissertation, marking a major milestone in the project. This section: "Recent Advances, Notable Research, and Future Directions" -- was the most intensive by far. I re-read countless papers today, validating of every reference, integrating systems, and restructuring based on emerging themes. I merged and refined all previous drafts, verifying citation accuracy and consolidating some overlapping subsections. The final version includes advances in multimodal turn detection, cultural and neurodivergent adaptation, governance and privacy, unresolved challenges, and a set of forward-looking research directions. I also completed the Executive Summary, formally closing out the analytical portion of the paper. What remains now is the conclusion, back-revising the introduction and abstract, formatting the index, and preparing acknowledgements. 
+
 ## Week 6
+
+### Day 45: March 21, 2025
+
+On this day, I finalized Section 7 of the paper, focusing on the ethical, social, and cultural considerations of AI-powered turn detection. This included in-depth discussions on bias, neurodivergence, accessibility, and regulatory frameworks, as well as the integration of the digital twin and identity theft argument to tie back to earlier privacy concerns. In addition to writing, I generated and refined a full set of visual aids for this section. I restructured and reworked the entirety of Section 8, to align better with the central theme of the paper as well as eliminating any redundancies from earlier sections. The new version is more in line with the rest of the paper now with a clear set of subsections: multimodal and cross-modal turn detection, adaptive cultural and linguistic systems, and neurodivergence-inclusive architectures. Further subsections on governance, real-time modeling, and research gaps are planned next. I also ran plagiarism checks on key sections and made necessary final edits to ensure originality and citation integrity. I hope to finish this tomorrow, I have to complete section 8, conclusion, final run through and any additional pages. 
+
+### Day 44: March 20, 2025
+
+This was a major cleanup and structuring day. I finalized Sections 5 and 6 of the Turn Detection paper, refining case studies, eliminating redundancy, and integrating Korean-specific research (Lee & Kim, Oh & Min, etc.). I also ensured the technical details aligned with the main themes, adding necessary tables and comparisons where needed. Beyond that, I explored new ethical considerations in Section 7, particularly the risks of AI speech pattern retention and identity cloning, which unexpectedly ties into my Beyond Human Mimicry paper. The privacy implications of AI tutors mimicking user behaviors raised critical concerns about biometric data protection, deepfake fraud, and regulatory oversight. With these sections nearly locked in, my next steps are to verify Sections 5 & 6, refine Section 7's argument, and integrate further research on AI surveillance, biometric risks, and ethical forgetting models. It was a long but productive day, and the finish line is in sight.
+
+### Day 43: March 19, 2025
+
+Today was a high-output but mentally exhausting day. I made major progress on my Turn Detection Paper, integrating new research, refining structure, and ensuring consistency across sections. **Sections 1-4 are finalized**, with all visuals, tables, and citations properly placed. In Section 5, I restructured parts of the discussion to accommodate recent research on ASR/TTS advancements in AI tutoring, specifically for Korean learners (korean-to-english and english-to-korean) AI language learning applications, and adaptive strategies for neurodivergent users. While this strengthened the paper, it also made me rethink how to present this information without disrupting flow. I started reviewing Section 6, identifying inconsistencies in formatting, weak transitions, and redundant content, which will need further revision before moving forward.
+
+On the **Agents** side, I revisited both my Agentic Story Builder and Code Assistance Agent projects, ensuring they still align with the bootcamp’s expectations for Week 3. I also revisited the Web Interaction Agent idea, considering how it could be extended to perform real-world actions instead of just retrieving information. While I reviewed the Hugging Face Agents course, I didn’t get into exercises yet. Something I'm still considering.
+
+I also attended the Intel OPEA webinar on AgentsQnA. No live demo, but they presented pre-recorded videos of the system working, which makes me think that implementation might not be straightforward.
+
+The biggest win of the day was a massive research breakthrough, finding multiple highly relevant papers on AI-driven language learning, ASR/TTS for Korean, and conversational AI for neurodivergent users. This reshaped how I'm structuring Section 5 and the overall research discussion.
+
+At this point, I still feel like I have so much left to do. Section 6 needs final revisions, and I haven’t even touched Sections 7+ yet. On top of that, I still have bootcamp work for Weeks 3, 4, and 5, plus Agents Week tasks and the final integration. 
+
+### Day 42: March 18, 2025
+
+Today, I focused primarily on debugging the OPEA megaservice, particularly the question-module implementation. I refined how questions are generated, ensuring they align with TOPIK-style assessments. I also investigated whether the system should generate questions based on video length or maintain a static question count.
+
+While experimenting with different architectures, I initially separated the embedding and vector store services but later reintegrated them into the question module for better performance. I also built the main megaservice.py entry point and added a wrapper.py file to improve modularity. Unlike standard OPEA examples, my implementation takes a slightly different approach by testing whether services can remain more independent while still functioning within the megaservice architecture.
+
+Additionally, I integrated telemetry using Prometheus and OpenTelemetry (OTEL) to track system performance and debugging data. Persistence was also added to ensure that generated questions and student scores are stored long-term. To visualize student progress, I developed a dashboard functionality that tracks total questions answered and correctness, allowing for a better assessment of learning outcomes.
+
+Beyond debugging, I merged the latest updates from main into my listening-comp branch, ensuring everything remains up to date. I also (finally) started and finished watching the full 3-hour OPEA video, which provided necessary insights into telemetry and architecture best practices.
+
+I also reviewed and planned the final touches for my Turn Detection paper which I will do first thing tomorrow. I briefly explored A-MEM which is a dynamic memory updating method that allows newer information to override old data without a full retraining. Broadly outlined the section for my Beyond Human mimicry paper with A-MEM and its parallels to human memory processes, including the potential for long-term bias accumulation akin to the StressPrompt effect.
 
 ### Day 41: March 17, 2025 (Sick Day)
 
