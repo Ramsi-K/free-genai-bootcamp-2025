@@ -16,6 +16,20 @@
 
 ## Week 7
 
+### Day 48: March 24, 2025
+
+Today was a whirlwind of architecture, contemplation, and vibing through backend design. I finalized the outline for my next research paper: "Beyond Human Mimicry: Rethinking AI Identity in Generative Models." The structure includes seven core sections, each supported by real, recent citations. Topics covered include anthropomorphism, ethical realism vs. transparency, memory design, long-term interaction bias, and non-human AI identities. I also added a focused section on cultural variation with a spotlight on South Korea.
+
+I officially kicked off backend development for the HagXwon project using FastAPI, building a working microservice-style flashcard system with GET and POST routes, real-time flashcard evaluation, and in-memory state tracking.
+
+I extended this with sassy, emotionally-damaging tutor responses to simulate AhjummaGPT and began mentally structuring the full backend agent ecosystem. I mapped out use cases for multi-agent LLMs, including Flashcard Agent, Storybook Agent, MUD Game Agent, Listening Agent, and even a Live Object Detection Tutor using mobile camera input.
+
+I explored fine-tuning strategies, LoRA, quantization tradeoffs, neuron depth and layer-wise behavior in LLMs, and the practicality of pruning out the “coding neurons” to create a strictly sass-based Korean tutor.
+
+I created a Mermaid diagram of the full system and flowchart of execution for personality-injected, quantized LLMs. Also ideated the Noraebang Agent and revived the Song-to-Vocab pipeline as a potential Red League feature.
+
+Although I only watched 7 minutes of the FastAPI video, I gained a full working understanding of core concepts by implementing everything manually and reverse-engineering the backend from scratch.
+
 ### Day 47: March 23, 2025
 
 After finalizing Section 8 yesterday, I shifted into full production mode to close out the dissertation. I rewrote the conclusion and abstract, reviewed and reformatted the entire document, fixed spacing, updated figures, and checked fonts (yes, I switched to Times New Roman in the end). I exported the final version as a polished 100-page PDF and double all metadata, references, and citations. I also created a condensed version for LinkedIn, featuring selected diagrams and visuals. This included designing a custom title page, writing a visual summary, expanding on Korea as a testbed, and carefully refining tone, humor, and structure for broader appeal.
