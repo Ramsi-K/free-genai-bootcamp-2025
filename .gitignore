@@ -7,6 +7,10 @@
 #ignore sourced docs and assets
 assets/
 
+#ignore opea examples
+ChatQnA/
+comps/
+
 #ignore .spec files
 .specstory/
 
