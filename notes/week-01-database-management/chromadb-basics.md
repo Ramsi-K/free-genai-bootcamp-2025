@@ -18,10 +18,10 @@
 
 ### **Why Use ChromaDB?**
 
-✅ **Optimized for AI/LLM workflows** (works well with LangChain, OpenAI, Hugging Face, etc.).
-✅ **Python-first & developer-friendly** (simple API, easy to set up).
-✅ **No external database server needed** (ideal for local development).
-✅ **Supports metadata filtering** (store extra information alongside vectors).
+✅ **Optimized for AI/LLM workflows** (works well with LangChain, OpenAI, Hugging Face, etc.).  
+✅ **Python-first & developer-friendly** (simple API, easy to set up).  
+✅ **No external database server needed** (ideal for local development).  
+✅ **Supports metadata filtering** (store extra information alongside vectors).  
 ✅ **Persistent and in-memory storage options** (flexible for production and testing).
 
 ---
