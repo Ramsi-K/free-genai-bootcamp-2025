@@ -16,9 +16,25 @@
 
 ## Week 7
 
+### Day 51: March 27, 2025  
+
+**T-minus 16 days to submission (April 12)**
+
+Today was… chaotic. I spent nearly 9 hours “working” inside a 16-hour day, but it felt like I was chasing clarity across a hundred tabs and losing most of them. I started the day intending to work on backend setup and conda environments, but I quickly got sidetracked by MCP (Model Context Protocol) — a rabbit hole I absolutely did not need. I spiraled into researching how OpenAI and Anthropic define MCP, whether their implementations are compatible, whether it's just glorified JSONification, and why the hype was so intense.
+
+Despite the frustration, I actually did meaningful work beneath the chaos: I clarified the entire backend structure and data flow for my HagXwon project. I defined explicit connections between the Words table and all major study systems — Flashcards, MUD game, and Sentence Practice — and specified that everything must be logged properly as part of study sessions. No abstraction. Sentence Practice, in particular, got its own formal definition: it prompts the user to write or draw a letter, word, or sentence, then compares the result to the original via canvas, image upload, or webcam. It doesn’t require OCR — just image comparison — and I decided it could be turned into a roast-based side feature for AhjummaGPT.
+
+I also made character design decisions, dropping KoreabooGPT and replacing it with NunaGPT — an enthusiastic agent focused on K-pop and K-dramas. I reinforced the roles of existing agents, including the Noraebang Agent (for song-to-vocab), and confirmed that some agents (like AhjussiGPT) will need access to external web search tools to retrieve idioms and proverbs from sites like krdict.
+
+I also made major progress finalizing the structure for a multi-agentic RAG system. I now have a clear separation between structured vocabulary data (which will live in SQLite) and freeform, chunked content (stored in ChromaDB). I confirmed that Flashcards, the MUD game, and Sentence Practice all pull from the same core Words table, with metadata like TOPIK level, tone, and usage frequency to support retrieval. More importantly, I designed the system to support agent-specific RAG behavior: for example, AhjussiGPT will use real-time web search to pull idioms and proverbs from krdict, while NunaGPT will retrieve pop culture references from K-pop sources. Noraebang Agent will use lyrics or subtitles to generate vocabulary lists from songs. Each agent will filter retrieval based on persona traits and user level, creating a truly personalized experience across multiple modalities. I haven’t implemented any of it yet, but the architectural plan is solid and aligns with the overall goal of intelligent, personality-driven tutoring.
+
+Although I only watched ~35 minutes of the backend video, I reviewed my FastAPI flashcard code and remembered where I left off. My backend is technically functional — flashcard routes and logic are working — but it’s not connected to the frontend yet. I located the frontend folder in my repo but still don’t understand how it works or how to tie it all together.
+
+By the end of the day, I gave up on MCP, concluded it was a distraction (at least for now), and decided to refocus on shipping the backend. I was also severely sleep-deprived (only 3 hours of sleep the night before), but I managed to clean up, shower, and keep pushing through — even if most of that push involved yelling at AI about tool wrappers and JSON specs. Structurally, the day wasn’t wasted. I walked away with clearer architecture, stronger ERD design, and deeper confidence in how the pieces should fit together.
+
 ### Day 49, 50: March 25 & 26, 2025
 
-T-minus 17 days to submission (April 12)
+**T-minus 17 days to submission (April 12)**
 
 Over the last two days, I made major progress getting the structure and architecture of my HagXwon capstone project into shape, even though nothing is finalized yet. I’ve been bouncing between ideas, refining my direction, and trying to get a high-level view of the system before writing any actual code. I spent a good amount of time researching RAG systems—how they work, what kinds of data they require, and which type of retrieval logic might best suit my use case. I looked into various options including standard RAG and multi-agentic RAG options and am still weighing which direction makes sense depending on how fast I can build and how cleanly I can integrate each piece. I also had to step back and realize that it’s not my job to solve Korean grammar logic from scratch—I need to build a scalable system that leverages LLMs effectively without overcomplicating things.
 
