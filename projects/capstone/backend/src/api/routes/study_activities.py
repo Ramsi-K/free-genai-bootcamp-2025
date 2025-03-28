@@ -1,0 +1,50 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from ...database import get_db
+from ...models.study_activity import StudyActivity
+from ...models.study_session import StudySession
+from ...schemas.study_activity import (
+    StudyActivityCreate,
+    StudyActivity as StudyActivitySchema,
+)
+
+router = APIRouter()
+
+
+@router.get("/{id}")
+async def get_study_activity(id: int, db: AsyncSession = Depends(get_db)):
+    query = select(StudyActivity).filter(StudyActivity.id == id)
+    result = await db.execute(query)
+    activity = result.scalar_one_or_none()
+    if not activity:
+        raise HTTPException(status_code=404, detail="Study activity not found")
+    return activity
+
+
+@router.get("/{id}/study_sessions")
+async def get_activity_sessions(
+    id: int,
+    skip: int = 0,
+    limit: int = 100,
+    db: AsyncSession = Depends(get_db),
+):
+    query = (
+        select(StudySession)
+        .filter(StudySession.study_activity_id == id)
+        .offset(skip)
+        .limit(limit)
+    )
+    result = await db.execute(query)
+    return result.scalars().all()
+
+
+@router.post("")
+async def create_study_activity(
+    activity: StudyActivityCreate, db: AsyncSession = Depends(get_db)
+):
+    db_activity = StudyActivity(**activity.dict())
+    db.add(db_activity)
+    await db.commit()
+    await db.refresh(db_activity)
+    return db_activity
