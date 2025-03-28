@@ -48,3 +48,11 @@ async def create_study_activity(
     await db.commit()
     await db.refresh(db_activity)
     return db_activity
+
+
+@router.get("")  # Fix: Changed from no decorator to @router.get("")
+async def get_study_activities(db: AsyncSession = Depends(get_db)):
+    """Get all study activities"""
+    query = select(StudyActivity)
+    result = await db.execute(query)
+    return result.scalars().all()

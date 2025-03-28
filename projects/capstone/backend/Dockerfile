@@ -9,10 +9,18 @@ WORKDIR /app
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     build-essential \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Create necessary directories
 RUN mkdir -p /app/instance /app/assets/data/processed
+
+# Create necessary directories and copy data
+COPY ./assets/data/processed /app/assets/data/processed
+
+# Don't need these anymore since we're using real data
+# RUN echo "[]" > /app/assets/data/processed/words.json && \
+#     echo "[]" > /app/assets/data/processed/groups.json
 
 # Install Python dependencies
 COPY requirements.txt .
@@ -21,10 +29,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY ./src /app/src
 COPY alembic.ini .
-
-# Create empty JSON files if they don't exist
-RUN echo "[]" > /app/assets/data/processed/words.json && \
-    echo "[]" > /app/assets/data/processed/groups.json
 
 EXPOSE 8000
 

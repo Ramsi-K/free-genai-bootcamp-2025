@@ -1,8 +1,14 @@
+import os
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
-import os
+
+# Ensure instance directory exists
+os.makedirs("instance", exist_ok=True)
 
 DATABASE_URL = "sqlite+aiosqlite:///./instance/words.db"
+print(
+    f"Using database at: {os.path.abspath('./instance/words.db')}"
+)  # Debug log
 
 engine = create_async_engine(DATABASE_URL, echo=True)
 AsyncSessionLocal = sessionmaker(
@@ -12,8 +18,16 @@ Base = declarative_base()
 
 
 async def init_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    print("Initializing database...")  # Debug log
+    import src.models  # Import models here to ensure all are registered
+
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        print("Database tables created successfully")  # Debug log
+    except Exception as e:
+        print(f"Error initializing database: {e}")  # Debug log
+        raise
 
 
 async def get_db():

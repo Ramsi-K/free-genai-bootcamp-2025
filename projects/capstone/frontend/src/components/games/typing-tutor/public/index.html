@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Japanese Kanji Typing Tutor</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
+
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			background-color: #000;
+		}
+
+		canvas {
+			display: block;
+		}
+
+		#game-container {
+			border: solid 1px rgba(255,255,255,0.3);
+		}
+	</style>
+</head>
+<body>
+    <div id="game-container"></div>
+
+		<script src="src/player_data.js"></script>
+
+		<script src="src/main/info_bar.js"></script>
+		<script src="src/main/word_manager.js"></script>
+		<script src="src/main/skyline_block.js"></script>
+		<script src="src/main/missle.js"></script>
+		<script src="src/main/jp_word.js"></script>
+		<script src="src/main/jp_word_block.js"></script>
+		<script src="src/main/correction_jp_word.js"></script>
+		<script src="src/main/correction_jp_word_block.js"></script>
+		<script src="src/main/correction_box.js"></script>
+
+		<script src="src/review/review_border.js"></script>
+		<script src="src/review/review_jp_word.js"></script>
+		<script src="src/review/review_jp_word_block.js"></script>
+
+		<script src="src/scene_main.js"></script>
+		<script src="src/scene_review.js"></script>
+    <script>
+let Data;
+async function fetchWords(group_id) {
+	try {	
+		const apiUrl = `http://127.0.0.1:5000/groups/${group_id}/words/raw`;
+		const response = await fetch(`${apiUrl}`);
+		Data = await response.json();
+	} catch (error) {
+		console.error('Error fetching word raw list:', error);
+		throw('err')
+	}
+}
+
+async function initGame() {
+	_player_data = new PlayerData()
+	const config = {
+		type: Phaser.AUTO,
+		width: 1280,
+		height: 720,
+		parent: 'game-container',
+		scene: [SceneMain]
+	};
+	const game = new Phaser.Game(config);
+}
+
+async function main() {
+	const params = new URLSearchParams(window.location.search);
+	const group_id = params.get('group_id');
+	const session_id = params.get('session_id');
+	await fetchWords(group_id);
+	Data.study_session_id = session_id;
+	await initGame();
+}
+
+main()
+    </script>
+</body>
+</html>

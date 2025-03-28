@@ -1,12 +1,35 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from typing import List
 from ...database import get_db
 from ...models.word import Word
 from ...models.study_session import StudySession
 from ...models.word_review_item import WordReviewItem
+from ...schemas.study_session import StudySession as StudySessionSchema
 
 router = APIRouter()
+
+
+@router.get("", response_model=List[StudySessionSchema])
+async def get_study_sessions(
+    skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)
+):
+    query = select(StudySession).offset(skip).limit(limit)
+    result = await db.execute(query)
+    return result.scalars().all()
+
+
+@router.get("/{session_id}", response_model=StudySessionSchema)
+async def get_study_session(
+    session_id: int, db: AsyncSession = Depends(get_db)
+):
+    query = select(StudySession).filter(StudySession.id == session_id)
+    result = await db.execute(query)
+    session = result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail="Study session not found")
+    return session
 
 
 @router.post("/{id}/review")
