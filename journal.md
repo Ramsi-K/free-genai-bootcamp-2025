@@ -16,6 +16,12 @@
 
 ## Week 7
 
+### Day 52: March 28, 2025
+
+**T-minus 15 days to submission (April 12)**
+
+Today I built the entire backend from scratch in FastAPI. I connected it to the frontend I had started earlier with Vite, Bolt, and Tailwind. I picked up that half-finished UI, filled in a lot of the placeholder logic, and got the API integration flowing cleanly. I also added in and improved the Munchers game I had prototyped in p5js. The game is working but it doesn't have fun looking characters. I added beginner, intermediate and advanced levels. I was initially working with static data but then I tried to add data in from the sqlite3 db. The theme picking logic is not working well. My backend is returning the api calls with the right info but its not connected well to my game. I built everything in Docker from step 1. Vibe coding FTW :muscle: :mechanical_arm:
+
 ### Day 51: March 27, 2025  
 
 **T-minus 16 days to submission (April 12)**
