@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./backend:/app
+      - db-data:/app/instance # Changed from ./backend/instance to named volume
+      - processed-data:/app/assets/data/processed # Changed to named volume
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+      - CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir src
+    restart: unless-stopped
+    networks:
+      - hagxwon-network
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend/src
+          target: /app/src
+          ignore:
+            - '**/__pycache__/'
+            - '**/*.pyc'
+        - action: rebuild
+          path: ./backend/requirements.txt
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Anonymous volume for node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000/api
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true # Enable hot reload in Docker
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - hagxwon-network
+    command: npm run dev -- --host 0.0.0.0 --port 5173
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5173']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/src
+          target: /app/src
+          ignore:
+            - 'node_modules/'
+            - 'dist/'
+        - action: rebuild
+          path: ./frontend/package.json
+
+networks:
+  hagxwon-network:
+    driver: bridge
+
+volumes:
+  db-data: # Persists the SQLite database
+  processed-data: # Persists the processed Korean word data
