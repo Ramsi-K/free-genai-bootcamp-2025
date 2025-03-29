@@ -4,6 +4,7 @@
 
 ## Jump to what I was doing in
 
+- [Week 8](#week-8)
 - [Week 7](#week-7)
 - [Week 6](#week-6)
 - [Week 5 (Sick Week)](#week-5-sick-week)
@@ -13,6 +14,12 @@
 - [Week 1](#week-1)
 - [Week 0](#week-0)
 - [Pre-bootcamp](#pre-bootcamp-prep)
+
+## Week 8
+
+### Day 53: March 29, 2025
+
+I finalized the complete database schema for my capstone project, restructuring it to support all planned app features including word tracking, session logging, agent attribution, and SRS functionality. I implemented tables such as `words`, `sample_sentences`, `word_groups`, `word_group_map`, `study_sessions`, `activity_logs`, `session_stats`, `word_stats`, and `wrong_inputs`, and added support fields like `source_type`, `source_details`, `added_by_agent`, `ease_factor`, and `next_due_at`. I built reset logic for both full database resets and individual sessions. I reviewed the backend folder structure, confirmed the role of models and schemas, and clarified planned API endpoints. I also studied chunking and embedding techniques. RAG retrieval types and types of Agentic RAG. I am leaning towards Swarm type Agents instead of having a designated orchestrator. I spent some time on setting up the OCR pipeline. I wrote the script to convert image-based PDFs into page-level images, extract Korean text using OCR, and save each page's image and metadata into structured JSON and a combined JSONL file for future chunking and embedding.
 
 ## Week 7
 
