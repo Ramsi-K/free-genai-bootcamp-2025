@@ -19,3 +19,8 @@
 # notebooks
 *.ipynb_checkpoints
 *.ipynb
+
+
+# cache
+__pycache__/
+*.pyc
