@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     build:
@@ -9,13 +7,15 @@ services:
       - '8000:8000'
     volumes:
       - ./backend:/app
-      - db-data:/app/instance # Changed from ./backend/instance to named volume
-      - processed-data:/app/assets/data/processed # Changed to named volume
+      - db-data:/app/data
+      - ./backend/assets/data/processed:/app/assets/data/processed:ro # Fixed path to match project structure
     environment:
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
       - CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
-    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir src
+      - ENVIRONMENT=development
+      - SQLITE_DB_PATH=/app/data/hagxwon.db
+    command: bash -c "chmod +x /app/scripts/start.sh && /app/scripts/start.sh"
     restart: unless-stopped
     networks:
       - hagxwon-network
@@ -75,5 +75,6 @@ networks:
     driver: bridge
 
 volumes:
-  db-data: # Persists the SQLite database
+  db-data:
+    driver: local
   processed-data: # Persists the processed Korean word data
