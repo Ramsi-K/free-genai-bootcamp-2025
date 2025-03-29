@@ -1,0 +1,21 @@
+#db
+*.db
+
+# SQLite database files
+*.sqlite3
+*.sqlite
+
+# data
+*.json
+*.jsonl
+*.csv
+*.tsv
+*.xml
+*.xlsx
+*.pdf
+*.docx
+*.txt
+
+# notebooks
+*.ipynb_checkpoints
+*.ipynb
