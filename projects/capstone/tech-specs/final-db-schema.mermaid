@@ -1,0 +1,92 @@
+erDiagram
+
+  words {
+    int id PK
+    string korean
+    string english
+    string part_of_speech
+    string romanization
+    int topik_level
+    string source_type
+    string source_details
+    string added_by_agent
+    datetime created_at
+  }
+
+  sample_sentences {
+    int id PK
+    int word_id FK
+    string sentence_korean
+    string sentence_english
+  }
+
+  word_groups {
+    int id PK
+    string name
+    string description
+    string source_type
+    string source_details
+    datetime created_at
+    boolean is_editable
+  }
+
+  word_group_map {
+    int id PK
+    int word_id FK
+    int group_id FK
+  }
+
+  study_sessions {
+    int id PK
+    datetime started_at
+    datetime ended_at
+    string config_json
+  }
+
+  activity_logs {
+    int id PK
+    int session_id FK
+    int word_id FK
+    string activity_type
+    string input_text
+    boolean correct
+    int score
+    string image_path
+    datetime timestamp
+  }
+
+  session_stats {
+    int id PK
+    int session_id FK
+    int total_shown
+    int total_correct
+    float accuracy
+    int level
+  }
+
+  word_stats {
+    int word_id PK
+    int times_seen
+    int times_correct
+    int current_streak
+    datetime last_seen_at
+    datetime next_due_at
+    real ease_factor
+    int interval_days
+  }
+
+  wrong_inputs {
+    int id PK
+    int word_id FK
+    string input_text
+    datetime timestamp
+  }
+
+  sample_sentences ||--|| words : belongs_to
+  word_group_map ||--|| words : contains
+  word_group_map ||--|| word_groups : groups
+  activity_logs ||--|| words : about
+  activity_logs ||--|| study_sessions : in
+  session_stats ||--|| study_sessions : summarizes
+  word_stats ||--|| words : tracks
+  wrong_inputs ||--|| words : mistaken_for
