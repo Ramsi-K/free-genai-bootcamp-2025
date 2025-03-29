@@ -1,28 +1,49 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Table
-from sqlalchemy.orm import relationship
-from ..database import Base
+from sqlmodel import SQLModel, Field, Relationship
+from datetime import datetime, timezone
+from typing import Optional, List, TYPE_CHECKING
+from .associations import word_group_map  # Import from single source of truth
 
-# Define the association table
-words_groups = Table(
-    "words_groups",
-    Base.metadata,
-    Column("word_id", Integer, ForeignKey("words.id")),
-    Column("group_id", Integer, ForeignKey("groups.id")),
-)
+if TYPE_CHECKING:
+    from .group import WordGroup
+    from .sample_sentence import SampleSentence
+    from .activity_log import ActivityLog
+    from .word_stats import WordStats
+    from .wrong_input import WrongInput
+    from .word_review_item import WordReviewItem
 
 
-class Word(Base):
-    __tablename__ = "words"
+class Word(SQLModel, table=True):
+    __tablename__ = "words"  # Explicitly set table name
 
-    id = Column(Integer, primary_key=True, index=True)
-    hangul = Column(String)
-    romanization = Column(String)
-    english = Column(String)
-    type = Column(String)
-    example_korean = Column(String)
-    example_english = Column(String)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    korean: str = Field(nullable=False)
+    english: str = Field(nullable=False)
+    part_of_speech: Optional[str] = None
+    romanization: Optional[str] = None
+    topik_level: Optional[int] = None
+    source_type: Optional[str] = None
+    source_details: Optional[str] = None
+    added_by_agent: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
-    groups = relationship(
-        "Group", secondary=words_groups, back_populates="words"
+    # Relationships
+    groups: List["WordGroup"] = Relationship(
+        back_populates="words",
+        sa_relationship_kwargs={
+            "secondary": word_group_map,
+        },
     )
-    review_items = relationship("WordReviewItem", back_populates="word")
+    sample_sentences: List["SampleSentence"] = Relationship(
+        back_populates="word"
+    )
+    activity_logs: List["ActivityLog"] = Relationship(back_populates="word")
+    word_stats: Optional["WordStats"] = Relationship(
+        back_populates="word", sa_relationship_kwargs={"uselist": False}
+    )
+    wrong_inputs: List["WrongInput"] = Relationship(back_populates="word")
+    review_items: List["WordReviewItem"] = Relationship(back_populates="word")
+
+
+@property
+def created_at_utc(self):
+    return datetime.now(timezone.utc)

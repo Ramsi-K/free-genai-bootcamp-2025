@@ -1,0 +1,17 @@
+2025-03-29 13:21:24,358 - __main__ - INFO - Initializing database at /app/data/hagxwon.db
+2025-03-29 13:21:24,461 - __main__ - ERROR - Error initializing database: object of type 'int' has no len()
+Traceback (most recent call last):
+  File "/app/src/db/init_db.py", line 221, in init_db
+    "Tables Created": len(SCHEMA_SQL.count("CREATE TABLE")),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object of type 'int' has no len()
+2025-03-29 13:23:53,991 - __main__ - INFO - Initializing database at /app/data/hagxwon.db
+2025-03-29 13:23:53,994 - __main__ - INFO - Database initialization completed successfully
+2025-03-29 13:26:12,885 - __main__ - INFO - Initializing database at /app/data/hagxwon.db
+2025-03-29 13:26:13,046 - __main__ - INFO - Database initialization completed successfully
+2025-03-29 13:30:45,682 - __main__ - INFO - Initializing database at /app/data/hagxwon.db
+2025-03-29 13:30:45,777 - __main__ - INFO - Database initialization completed successfully
+2025-03-29 13:49:28,282 - __main__ - INFO - Initializing database at /app/data/hagxwon.db
+2025-03-29 13:49:28,372 - __main__ - INFO - Database initialization completed successfully
+2025-03-29 14:05:18,705 - __main__ - INFO - Initializing database at /app/data/hagxwon.db
+2025-03-29 14:05:18,797 - __main__ - INFO - Database initialization completed successfully

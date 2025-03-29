@@ -1,23 +1,31 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from ...database import get_db, Base, engine
-from ...models.word_review_item import WordReviewItem
-from ...models.study_session import StudySession
+from ...db.init_db import reset_all, reset_session
+from ...database import get_db
 
-router = APIRouter()
-
-
-@router.post("/reset_history")
-async def reset_history(db: AsyncSession = Depends(get_db)):
-    await db.execute(WordReviewItem.__table__.delete())
-    await db.execute(StudySession.__table__.delete())
-    await db.commit()
-    return {"status": "success", "message": "Study history reset."}
+router = APIRouter(prefix="/admin", tags=["admin"])
 
 
-@router.post("/full_reset")
-async def full_reset(db: AsyncSession = Depends(get_db)):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
-    return {"status": "success", "message": "Database fully reset."}
+@router.post("/reset/all")
+async def reset_database():
+    """Reset entire database"""
+    try:
+        reset_all()
+        return {"status": "success", "message": "Database fully reset"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/reset/session/{session_id}")
+async def reset_study_session(session_id: int):
+    """Reset specific study session data"""
+    try:
+        reset_session(session_id)
+        return {
+            "status": "success",
+            "message": f"Session {session_id} reset successful",
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -1,17 +1,26 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
-from ..database import Base
-from .word import words_groups  # Import the association table
+from sqlmodel import SQLModel, Field, Relationship
+from typing import Optional, List, TYPE_CHECKING
+from datetime import datetime
+from .associations import word_group_map  # Import from single source of truth
+
+if TYPE_CHECKING:
+    from .word import Word
 
 
-class Group(Base):
-    __tablename__ = "groups"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    words_count = Column(Integer, default=0)
-    group_type = Column(String, nullable=False, default="theme")
+class WordGroup(SQLModel, table=True):
+    __tablename__ = "word_groups"
 
-    words = relationship(
-        "Word", secondary=words_groups, back_populates="groups"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(nullable=False)
+    description: Optional[str] = Field(default=None)
+    source_type: Optional[str] = Field(default=None)
+    source_details: Optional[str] = Field(default=None)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    is_editable: bool = Field(default=True)
+
+    words: List["Word"] = Relationship(
+        back_populates="groups",
+        sa_relationship_kwargs={
+            "secondary": word_group_map,
+        },
     )
-    study_sessions = relationship("StudySession", back_populates="group")

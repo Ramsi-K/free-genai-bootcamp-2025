@@ -1,75 +1,143 @@
+import logging
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import List
+from datetime import datetime
 from ...database import get_db
-from ...models.word import Word
 from ...models.study_session import StudySession
-from ...models.word_review_item import WordReviewItem
-from ...schemas.study_session import StudySession as StudySessionSchema
+from ...models.session_stats import SessionStats
+from ...schemas.study_session import (
+    StudySessionCreate,
+    StudySessionUpdate,
+    StudySessionResponse,
+)
+from ...schemas.session_stats import SessionStatsResponse, SessionStatsBase
 
-router = APIRouter()
+logger = logging.getLogger(__name__)
+
+router = APIRouter(prefix="/sessions", tags=["study_sessions"])
 
 
-@router.get("", response_model=List[StudySessionSchema])
-async def get_study_sessions(
+@router.get("", response_model=List[StudySessionResponse])
+async def list_sessions(
     skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)
 ):
+    """List all study sessions with pagination"""
     query = select(StudySession).offset(skip).limit(limit)
     result = await db.execute(query)
     return result.scalars().all()
 
 
-@router.get("/{session_id}", response_model=StudySessionSchema)
-async def get_study_session(
-    session_id: int, db: AsyncSession = Depends(get_db)
+@router.post("", response_model=StudySessionResponse, status_code=201)
+async def start_session(
+    session: StudySessionCreate, db: AsyncSession = Depends(get_db)
 ):
-    query = select(StudySession).filter(StudySession.id == session_id)
-    result = await db.execute(query)
-    session = result.scalar_one_or_none()
-    if not session:
-        raise HTTPException(status_code=404, detail="Study session not found")
-    return session
-
-
-@router.post("/{id}/review")
-async def create_word_review(
-    id: int, word_id: int, correct: bool, db: AsyncSession = Depends(get_db)
-):
-    review = WordReviewItem(
-        word_id=word_id, study_session_id=id, correct=correct
+    """Start a new study session"""
+    logger.info(
+        f"Starting new study session with config: {session.config_json}"
     )
-    db.add(review)
-    await db.commit()
-    return {"status": "success", "message": "Review recorded."}
+
+    try:
+        # Create session
+        db_session = StudySession(**session.dict())
+        db.add(db_session)
+        await db.commit()
+        await db.refresh(db_session)
+
+        # Initialize session stats
+        stats = SessionStats(session_id=db_session.id)
+        db.add(stats)
+        await db.commit()
+
+        logger.info(f"Session {db_session.id} created successfully")
+        return db_session
+    except Exception as e:
+        logger.error(f"Failed to create session: {str(e)}")
+        raise
 
 
-@router.get("/{id}/words")
-async def get_session_words(
-    id: int,
-    skip: int = 0,
-    limit: int = 100,
+@router.patch("/{session_id}", response_model=StudySessionResponse)
+async def update_session(
+    session_id: int,
+    session: StudySessionUpdate,
     db: AsyncSession = Depends(get_db),
 ):
-    query = (
-        select(Word)
-        .join(WordReviewItem)
-        .filter(WordReviewItem.study_session_id == id)
-        .offset(skip)
-        .limit(limit)
+    """Update a study session (e.g., end it)"""
+    result = await db.execute(
+        select(StudySession).filter(StudySession.id == session_id)
     )
-    result = await db.execute(query)
-    return result.scalars().all()
+    db_session = result.scalar_one_or_none()
+    if not db_session:
+        raise HTTPException(status_code=404, detail="Session not found")
 
+    # Update session
+    for key, value in session.dict(exclude_unset=True).items():
+        setattr(db_session, key, value)
 
-@router.post("")
-async def create_study_session(
-    group_id: int, study_activity_id: int, db: AsyncSession = Depends(get_db)
-):
-    session = StudySession(
-        group_id=group_id, study_activity_id=study_activity_id
-    )
-    db.add(session)
+    if session.ended_at:  # If ending session, set ended_at
+        db_session.ended_at = session.ended_at
+
     await db.commit()
-    await db.refresh(session)
-    return {"id": session.id, "group_id": session.group_id}
+    await db.refresh(db_session)
+    return db_session
+
+
+@router.delete("/{session_id}")
+async def delete_session(session_id: int, db: AsyncSession = Depends(get_db)):
+    """Delete a study session and all related data"""
+    result = await db.execute(
+        select(StudySession).filter(StudySession.id == session_id)
+    )
+    session = result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    await db.delete(session)
+    await db.commit()
+    return {"message": f"Session {session_id} deleted successfully"}
+
+
+@router.get("/{session_id}/stats", response_model=SessionStatsResponse)
+async def get_session_stats(
+    session_id: int, db: AsyncSession = Depends(get_db)
+):
+    """Get statistics for a study session"""
+    result = await db.execute(
+        select(SessionStats).filter(SessionStats.session_id == session_id)
+    )
+    stats = result.scalar_one_or_none()
+    if not stats:
+        raise HTTPException(status_code=404, detail="Session stats not found")
+    return stats
+
+
+@router.patch("/{session_id}/stats", response_model=SessionStatsResponse)
+async def update_session_stats(
+    session_id: int,
+    stats: SessionStatsBase,
+    db: AsyncSession = Depends(get_db),
+):
+    """Update statistics for an ongoing session"""
+    logger.info(f"Updating stats for session {session_id}: {stats.dict()}")
+
+    result = await db.execute(
+        select(SessionStats).filter(SessionStats.session_id == session_id)
+    )
+    db_stats = result.scalar_one_or_none()
+    if not db_stats:
+        raise HTTPException(status_code=404, detail="Session stats not found")
+
+    # Update stats
+    for key, value in stats.dict(exclude_unset=True).items():
+        setattr(db_stats, key, value)
+
+    # Recalculate accuracy
+    if db_stats.total_shown > 0:
+        db_stats.accuracy = db_stats.total_correct / db_stats.total_shown
+
+    await db.commit()
+    await db.refresh(db_stats)
+
+    logger.info(f"Stats updated. New accuracy: {db_stats.accuracy:.2f}")
+    return db_stats

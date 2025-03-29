@@ -1,7 +1,27 @@
-from .word import Word, words_groups
-from .group import Group
-from .study_activity import StudyActivity
-from .study_session import StudySession
-from .word_review_item import WordReviewItem
+from sqlmodel import SQLModel
 
-__all__ = ["Word", "Group", "StudyActivity", "StudySession", "WordReviewItem"]
+# Import associations first since others depend on it
+from .associations import word_group_map
+from .word import Word
+from .group import WordGroup
+from .activity_log import ActivityLog
+from .session_stats import SessionStats
+from .study_session import StudySession
+from .word_stats import WordStats
+from .wrong_input import WrongInput
+from .word_review_item import WordReviewItem
+from .sample_sentence import SampleSentence
+
+# Update export order
+__all__ = [
+    "word_group_map",  # Export association tables first
+    "Word",
+    "WordGroup",
+    "ActivityLog",
+    "SessionStats",
+    "StudySession",
+    "WordStats",
+    "WrongInput",
+    "WordReviewItem",
+    "SampleSentence",
+]
