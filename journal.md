@@ -17,7 +17,17 @@
 
 ## Week 8
 
+### Day 54: March 30, 2025
+
+**T-minus 13 days to submission (April 12)**
+
+Today I fixed all remaining backend import errors and confirmed my FastAPI routes via /debug/routes. The routes are correctly registered, but many of my test cases are still failing due to model issues, missing associations, or incorrect payloads. I successfully posted a new word using the `/api/words` POST route, but the `/api/groups` POST route is returning a 500 error, likely due to a mismatch between the schema and database model. Sentence-related routes are returning 404 or 422, which may be due to a lack of test data or broken relationships between words and sentences. 
+
+I also generated multiple HTML-based language learning games using Hugging Face’s DeepSeek AI builder, including Munchers, MUD Game, Listening Match, Memory Match, Proverbs Matching, Finger Spelling, and Consonant Game. These games are functional but currently separate from my app's frontend stack. I plan to integrate them soon. I also started working on the writing practice app, which will compare user handwriting to Korean calligraphy using a webcam. 
+
 ### Day 53: March 29, 2025
+
+**T-minus 14 days to submission (April 12)**
 
 I finalized the complete database schema for my capstone project, restructuring it to support all planned app features including word tracking, session logging, agent attribution, and SRS functionality. I implemented tables such as `words`, `sample_sentences`, `word_groups`, `word_group_map`, `study_sessions`, `activity_logs`, `session_stats`, `word_stats`, and `wrong_inputs`, and added support fields like `source_type`, `source_details`, `added_by_agent`, `ease_factor`, and `next_due_at`. I built reset logic for both full database resets and individual sessions. I reviewed the backend folder structure, confirmed the role of models and schemas, and clarified planned API endpoints. I also studied chunking and embedding techniques. RAG retrieval types and types of Agentic RAG. I am leaning towards Swarm type Agents instead of having a designated orchestrator. I spent some time on setting up the OCR pipeline. I wrote the script to convert image-based PDFs into page-level images, extract Korean text using OCR, and save each page's image and metadata into structured JSON and a combined JSONL file for future chunking and embedding.
 
