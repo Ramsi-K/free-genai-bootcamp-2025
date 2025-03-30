@@ -1,7 +1,8 @@
 import sqlite3
 from pathlib import Path
 
-# Get correct paths - point to hagxwon.db instead of education.db
+
+# Get correct paths - point to hagxwon.db
 current_dir = Path(__file__).resolve().parent
 backend_src = current_dir.parent
 project_root = backend_src.parent.parent

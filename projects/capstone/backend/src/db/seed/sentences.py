@@ -19,8 +19,8 @@ async def load_sentences(
         for item in sentences_data:
             sentence = SampleSentence(
                 word_id=item["word_id"],
-                sentence_korean=item["korean"],
-                sentence_english=item["english"],
+                sentence_korean=item["example_kr"],
+                sentence_english=item["example_en"],
             )
             db.add(sentence)
         await db.commit()

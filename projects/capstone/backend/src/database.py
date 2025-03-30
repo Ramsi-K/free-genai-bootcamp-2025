@@ -1,5 +1,6 @@
 from pathlib import Path
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from contextlib import asynccontextmanager
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel
 from .config import SQLITE_DB_PATH
@@ -20,6 +21,7 @@ async_session_factory = sessionmaker(
 
 
 # Dependency for routes
+@asynccontextmanager
 async def get_db() -> AsyncSession:
     async with async_session_factory() as session:
         try:

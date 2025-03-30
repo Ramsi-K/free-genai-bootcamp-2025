@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from ...models.group import WordGroup
-from ...models.word import word_group_map
+from ...models.word import Word, word_group_map
 
 
 async def load_groups(
@@ -10,38 +10,78 @@ async def load_groups(
 ) -> None:
     """Seed database with word groups and their word associations"""
     try:
-        print("\nLoading word groups...")
+        print("\n🌱 Loading word groups...")
         start_time = datetime.now()
 
         with open(db_path, "r", encoding="utf-8") as f:
             groups_data = json.load(f)
 
-        # Create groups
-        for group in groups_data:
+        # Load all existing words (map: korean -> Word object)
+        existing_words = await db.execute(select(Word))
+        word_lookup = {word.korean: word for word in existing_words.scalars()}
+
+        group_count = 0
+        link_count = 0
+
+        for group_name, group_info in groups_data["groups"].items():
             db_group = WordGroup(
-                name=group["name"],
-                description=group.get("description"),
-                source_type=group.get("source_type"),
-                source_details=group.get("source_details"),
+                name=group_name,
+                description=group_info.get("description"),
+                source_type=group_info.get("source_type"),
+                source_details=group_info.get("source_details"),
             )
             db.add(db_group)
             await db.flush()
 
-            # Add word associations if any
-            if "word_ids" in group:
+            word_ids = []
+            for word_obj in group_info.get("words", []):
+                hangul = word_obj.get("hangul")
+                english = word_obj.get("english")
+                romanization = word_obj.get("romanization")
+
+                if not hangul or not english:
+                    print(f"⚠️ Skipping invalid word: {word_obj}")
+                    continue
+
+                # Insert missing words
+                if hangul not in word_lookup:
+                    new_word = Word(
+                        korean=hangul,
+                        english=(
+                            ", ".join(english)
+                            if isinstance(english, list)
+                            else str(english)
+                        ),
+                        part_of_speech="noun",
+                        romanization=romanization,
+                        source_type="group_generated",
+                        source_details=f"auto from group: {group_name}",
+                        added_by_agent="seed_script",
+                        created_at=datetime.utcnow(),
+                    )
+                    db.add(new_word)
+                    await db.flush()
+                    word_lookup[hangul] = new_word
+
+                word_ids.append(word_lookup[hangul].id)
+
+            if word_ids:
                 values = [
-                    {"word_id": word_id, "group_id": db_group.id}
-                    for word_id in group["word_ids"]
+                    {"word_id": wid, "group_id": db_group.id}
+                    for wid in word_ids
                 ]
                 await db.execute(word_group_map.insert(), values)
+                link_count += len(word_ids)
+
+            group_count += 1
 
         await db.commit()
 
-        end_time = datetime.now()
-        print(f"Successfully loaded {len(groups_data)} groups")
-        duration = (end_time - start_time).total_seconds()
-        print(f"Duration: {duration:.2f} seconds")
+        duration = (datetime.now() - start_time).total_seconds()
+        print(
+            f"✅ Loaded {group_count} groups and {link_count} links in {duration:.2f}s"
+        )
 
     except Exception as e:
-        print(f"Error loading groups: {str(e)}")
+        print(f"❌ Error loading groups: {str(e)}")
         raise

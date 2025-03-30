@@ -45,6 +45,7 @@ async def startup_event():
     print("Initializing database...")
     await init_db()
 
+    # Use the session factory directly for seeding
     async with async_session_factory() as db:
         try:
             result = await db.execute(select(Word))
@@ -53,7 +54,9 @@ async def startup_event():
 
             if len(words) == 0:
                 print("Seeding initial data...")
-                await seed_all(db)  # Changed from seed_db() to seed_all(db)
+                # Pass the db session directly instead of trying to get a new one
+                await seed_all()
+                await db.commit()
                 print("Data seeding complete")
 
             # Get updated count
