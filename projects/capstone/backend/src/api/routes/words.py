@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import List
-from ...database import get_db
+from ...database import get_db  # Import the corrected get_db
 from ...models.word import Word
 from ...models.sample_sentence import SampleSentence
 from ...models.word_stats import WordStats
@@ -16,16 +16,14 @@ from ...schemas.word_stats import WordStatsResponse, WordStatsUpdate
 router = APIRouter(prefix="/words", tags=["words"])
 
 
-@router.get("", response_model=List[WordResponse])  # <-- Uses WordResponse
+@router.get("", response_model=List[WordResponse])
 async def list_words(
     skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)
 ):
     """List all words with pagination"""
     query = select(Word).offset(skip).limit(limit)
     result = await db.execute(query)
-    return (
-        result.scalars().all()
-    )  # SQLModel Word gets converted to WordResponse
+    return result.scalars().all()
 
 
 @router.get("/{word_id}", response_model=WordResponse)

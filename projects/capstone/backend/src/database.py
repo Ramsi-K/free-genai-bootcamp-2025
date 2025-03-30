@@ -20,14 +20,10 @@ async_session_factory = sessionmaker(
 )
 
 
-# Dependency for routes
-@asynccontextmanager
+# Corrected dependency for routes
 async def get_db() -> AsyncSession:
     async with async_session_factory() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
+        yield session
 
 
 # Database initialization

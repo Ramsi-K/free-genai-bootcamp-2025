@@ -1,17 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .api.routes import (
-    words_router,
-    groups_router,
-    sessions_router,
-    logs_router,
-    mistakes_router,
-    dashboard_router,
-)
+
+from .api.routes.words import router as words_router
+from .api.routes.groups import router as groups_router
+from .api.routes.study_sessions import router as sessions_router
+from .api.routes.activity_logs import router as logs_router
+from .api.routes.mistakes import router as mistakes_router
+from .api.routes.dashboard import router as dashboard_router
+from .api.routes.admin import router as admin_router
+from .api.routes.study_activities import router as study_activities_router
+
 from .db.seed import seed_all  # Import the actual seeder you have
 from .database import init_db, async_session_factory
 from sqlalchemy.sql import select
-from .models import Word
+from .models.word import Word
 import os
 
 app = FastAPI(title="HagXwon API")
@@ -25,13 +27,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Register routes with proper prefixes
-app.include_router(words_router, prefix="/api/words")
-app.include_router(groups_router, prefix="/api/groups")
-app.include_router(sessions_router, prefix="/api/sessions")
-app.include_router(logs_router, prefix="/api/logs")
-app.include_router(mistakes_router, prefix="/api/mistakes")
-app.include_router(dashboard_router, prefix="/api/dashboard")
+app.include_router(words_router, prefix="/api")
+app.include_router(groups_router, prefix="/api")
+app.include_router(sessions_router, prefix="/api")
+app.include_router(logs_router, prefix="/api")
+app.include_router(mistakes_router, prefix="/api")
+app.include_router(dashboard_router, prefix="/api")
+app.include_router(admin_router, prefix="/api")
+app.include_router(study_activities_router, prefix="/api")
+
+
+@app.get("/debug/routes")
+async def list_routes():
+    return [
+        {
+            "path": route.path,
+            "name": route.name,
+            "methods": list(route.methods),
+        }
+        for route in app.routes
+    ]
 
 
 @app.get("/health")
@@ -55,7 +72,7 @@ async def startup_event():
             if len(words) == 0:
                 print("Seeding initial data...")
                 # Pass the db session directly instead of trying to get a new one
-                await seed_all()
+                await seed_all(db)
                 await db.commit()
                 print("Data seeding complete")
 
