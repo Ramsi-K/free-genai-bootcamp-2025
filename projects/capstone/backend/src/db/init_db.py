@@ -1,26 +1,17 @@
 import sqlite3
+import logging
 from pathlib import Path
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from sqlmodel import SQLModel
 
-from ..database import engine, async_session_factory
-from ..models.word import Word
-from ..models.word_stats import WordStats
-from ..models.wrong_input import WrongInput
-from ..models.group import WordGroup
-from ..models.study_session import StudySession
-from ..models.session_stats import SessionStats
-from ..models.activity_log import ActivityLog
-from ..models.sample_sentence import SampleSentence
-from ..models.associations import word_group_map
-from ..models.activity_type import ActivityType
+from ..database import engine
 
 # from ..models.word_review_item import WordReviewItem
 
 
 def reset_all():
-    """Reset the entire database."""
+    logging.basicConfig(filename="database.log", level=logging.ERROR)
+    """Reset the entire database and reinitialize with initial data."""
     try:
         conn = sqlite3.connect(str(Path(engine.url.database)))
         cursor = conn.cursor()
@@ -41,11 +32,17 @@ def reset_all():
 
         conn.commit()
         conn.close()
+
+        # Reinitialize the database with initial data
+        import asyncio
+
+        asyncio.run(init_db(drop_existing=False))
     except Exception as e:
         raise Exception(f"Database error: {e}")
 
 
 def reset_session(session_id: int):
+    logging.basicConfig(filename="database.log", level=logging.ERROR)
     """Reset a specific study session."""
     try:
         conn = sqlite3.connect(str(Path(engine.url.database)))
@@ -75,9 +72,36 @@ def reset_session(session_id: int):
         raise Exception(f"Database error: {e}")
 
 
+async def seed_db(conn: AsyncSession):
+    logging.basicConfig(filename="database.log", level=logging.ERROR)
+    """Seed the database with initial data."""
+    try:
+        from .seed import seed_all
+
+        await seed_all()
+        print("Database seeded successfully")
+    except Exception as e:
+        print(f"Error seeding database: {e}")
+
+
 async def init_db(drop_existing: bool = False):
+    logging.basicConfig(filename="database.log", level=logging.ERROR)
+    try:
+        async with engine.begin() as conn:
+            if drop_existing:
+                await conn.run_sync(SQLModel.metadata.drop_all)
+            await conn.run_sync(SQLModel.metadata.create_all)
+
+            # Seed the database with initial data
+            await seed_db(conn)
+    except Exception as e:
+        logging.error(f"Error initializing database: {e}")
+        print(f"Error initializing database: {e}")
     """Initialize the database."""
     async with engine.begin() as conn:
         if drop_existing:
             await conn.run_sync(SQLModel.metadata.drop_all)
         await conn.run_sync(SQLModel.metadata.create_all)
+
+        # Seed the database with initial data
+        await seed_db(conn)

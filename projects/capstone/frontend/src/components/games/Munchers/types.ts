@@ -15,3 +15,17 @@ export interface Enemy {
 }
 
 export type GameState = 'menu' | 'theme-select' | 'instructions' | 'playing' | 'paused' | 'game-over';
+
+export interface Group {
+  id: number;
+  name: string;
+  description: string;
+  words_count: number;
+}
+
+export interface Word {
+  id: number;
+  hangul: string;
+  english: string;
+  romanization: string;
+}

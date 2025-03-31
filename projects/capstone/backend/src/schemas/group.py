@@ -1,20 +1,30 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
-from .word import WordResponse  # Add missing import
+from .word import WordResponse
 
 
-class GroupBase(BaseModel):
+class WordGroupBase(BaseModel):
     name: str
     description: Optional[str] = None
-    words_count: int = 0
+    source_type: Optional[str] = None
+    source_details: Optional[str] = None
+    is_editable: bool = True
 
 
-class GroupCreate(GroupBase):
+class WordGroupCreate(WordGroupBase):
     pass
 
 
-class GroupResponse(GroupBase):
+class WordGroupUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    source_type: Optional[str] = None
+    source_details: Optional[str] = None
+    is_editable: Optional[bool] = None
+
+
+class WordGroupResponse(WordGroupBase):
     id: int
     created_at: datetime
     words: List["WordResponse"] = []

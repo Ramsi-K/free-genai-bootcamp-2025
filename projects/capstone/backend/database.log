@@ -1,17 +1,74 @@
-2025-03-29 13:21:24,358 - __main__ - INFO - Initializing database at /app/data/hagxwon.db
-2025-03-29 13:21:24,461 - __main__ - ERROR - Error initializing database: object of type 'int' has no len()
+INFO:sqlalchemy.engine.Engine:BEGIN (implicit)
+INFO:sqlalchemy.engine.Engine:SELECT count(words.id) AS count_1 
+FROM words
+INFO:sqlalchemy.engine.Engine:[cached since 685s ago] ()
+INFO:sqlalchemy.engine.Engine:BEGIN (implicit)
+INFO:sqlalchemy.engine.Engine:SELECT count(words.id) AS count_1 
+FROM words
+INFO:sqlalchemy.engine.Engine:[cached since 685s ago] ()
+INFO:sqlalchemy.engine.Engine:BEGIN (implicit)
+INFO:sqlalchemy.engine.Engine:SELECT study_activities.id, study_activities.name, study_activities.url, study_activities.thumbnail_url, study_activities.created_at 
+FROM study_activities
+INFO:sqlalchemy.engine.Engine:[cached since 685s ago] ()
+INFO:sqlalchemy.engine.Engine:SELECT count(word_stats.word_id) AS count_1 
+FROM word_stats
+INFO:sqlalchemy.engine.Engine:[cached since 684.9s ago] ()
+INFO:sqlalchemy.engine.Engine:SELECT count(study_sessions.id) AS count_1 
+FROM study_sessions
+INFO:sqlalchemy.engine.Engine:[cached since 685s ago] ()
+INFO:sqlalchemy.engine.Engine:ROLLBACK
+INFO:sqlalchemy.engine.Engine:SELECT count(word_review_items.id) AS count_1 
+FROM word_review_items
+INFO:sqlalchemy.engine.Engine:[cached since 684.9s ago] ()
+INFO:sqlalchemy.engine.Engine:SELECT count(wrong_inputs.id) AS count_1 
+FROM wrong_inputs
+INFO:sqlalchemy.engine.Engine:[cached since 685s ago] ()
+INFO:sqlalchemy.engine.Engine:BEGIN (implicit)
+INFO:sqlalchemy.engine.Engine:SELECT study_activities.id, study_activities.name, study_activities.url, study_activities.thumbnail_url, study_activities.created_at 
+FROM study_activities
+INFO:sqlalchemy.engine.Engine:[cached since 685s ago] ()
+INFO:sqlalchemy.engine.Engine:ROLLBACK
+INFO:sqlalchemy.engine.Engine:ROLLBACK
+INFO:sqlalchemy.engine.Engine:ROLLBACK
+INFO:sqlalchemy.engine.Engine:BEGIN (implicit)
+INFO:sqlalchemy.engine.Engine:SELECT count(words.id) AS count_1 
+FROM words
+INFO:sqlalchemy.engine.Engine:[cached since 685s ago] ()
+INFO:sqlalchemy.engine.Engine:BEGIN (implicit)
+INFO:sqlalchemy.engine.Engine:SELECT count(words.id) AS count_1 
+FROM words
+INFO:sqlalchemy.engine.Engine:[cached since 685s ago] ()
+INFO:sqlalchemy.engine.Engine:SELECT count(word_stats.word_id) AS count_1 
+FROM word_stats
+INFO:sqlalchemy.engine.Engine:[cached since 684.9s ago] ()
+INFO:sqlalchemy.engine.Engine:SELECT count(study_sessions.id) AS count_1 
+FROM study_sessions
+INFO:sqlalchemy.engine.Engine:[cached since 685s ago] ()
+INFO:sqlalchemy.engine.Engine:SELECT count(word_review_items.id) AS count_1 
+FROM word_review_items
+INFO:sqlalchemy.engine.Engine:[cached since 684.9s ago] ()
+INFO:sqlalchemy.engine.Engine:SELECT count(wrong_inputs.id) AS count_1 
+FROM wrong_inputs
+INFO:sqlalchemy.engine.Engine:[cached since 685s ago] ()
+INFO:sqlalchemy.engine.Engine:ROLLBACK
+INFO:sqlalchemy.engine.Engine:ROLLBACK
+ERROR:src.database:Error with database session: group_type
 Traceback (most recent call last):
-  File "/app/src/db/init_db.py", line 221, in init_db
-    "Tables Created": len(SCHEMA_SQL.count("CREATE TABLE")),
-                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: object of type 'int' has no len()
-2025-03-29 13:23:53,991 - __main__ - INFO - Initializing database at /app/data/hagxwon.db
-2025-03-29 13:23:53,994 - __main__ - INFO - Database initialization completed successfully
-2025-03-29 13:26:12,885 - __main__ - INFO - Initializing database at /app/data/hagxwon.db
-2025-03-29 13:26:13,046 - __main__ - INFO - Database initialization completed successfully
-2025-03-29 13:30:45,682 - __main__ - INFO - Initializing database at /app/data/hagxwon.db
-2025-03-29 13:30:45,777 - __main__ - INFO - Database initialization completed successfully
-2025-03-29 13:49:28,282 - __main__ - INFO - Initializing database at /app/data/hagxwon.db
-2025-03-29 13:49:28,372 - __main__ - INFO - Database initialization completed successfully
-2025-03-29 14:05:18,705 - __main__ - INFO - Initializing database at /app/data/hagxwon.db
-2025-03-29 14:05:18,797 - __main__ - INFO - Database initialization completed successfully
+  File "/app/src/database.py", line 37, in get_db
+    yield session
+  File "/app/src/api/routes/groups.py", line 39, in get_groups
+    query = query.filter(WordGroup.group_type == group_type)
+                         ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pydantic/_internal/_model_construction.py", line 271, in __getattr__
+    raise AttributeError(item)
+AttributeError: group_type
+ERROR:src.database:Error with database session: group_type
+Traceback (most recent call last):
+  File "/app/src/database.py", line 37, in get_db
+    yield session
+  File "/app/src/api/routes/groups.py", line 39, in get_groups
+    query = query.filter(WordGroup.group_type == group_type)
+                         ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pydantic/_internal/_model_construction.py", line 271, in __getattr__
+    raise AttributeError(item)
+AttributeError: group_type

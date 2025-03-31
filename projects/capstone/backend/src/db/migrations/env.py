@@ -4,7 +4,7 @@ from alembic import context
 from sqlmodel import SQLModel
 
 # Import all models needed for migrations
-from src.models.associations import word_group_map  # Update import location
+from src.models.associations import word_group_map
 from src.models.word import Word
 from src.models.group import WordGroup
 from src.models.sample_sentence import SampleSentence
@@ -55,7 +55,8 @@ def run_migrations_online():
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
         )
 
         with context.begin_transaction():

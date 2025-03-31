@@ -31,17 +31,32 @@ class Word(SQLModel, table=True):
         back_populates="words",
         sa_relationship_kwargs={
             "secondary": word_group_map,
+            # No cascade needed here usually, association table handles it
         },
     )
     sample_sentences: List["SampleSentence"] = Relationship(
-        back_populates="word"
+        back_populates="word",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
     )
-    activity_logs: List["ActivityLog"] = Relationship(back_populates="word")
+    activity_logs: List["ActivityLog"] = Relationship(
+        back_populates="word",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
+    )
     word_stats: Optional["WordStats"] = Relationship(
-        back_populates="word", sa_relationship_kwargs={"uselist": False}
+        back_populates="word",
+        sa_relationship_kwargs={
+            "uselist": False,
+            "cascade": "all, delete-orphan",
+        },
     )
-    wrong_inputs: List["WrongInput"] = Relationship(back_populates="word")
-    review_items: List["WordReviewItem"] = Relationship(back_populates="word")
+    wrong_inputs: List["WrongInput"] = Relationship(
+        back_populates="word",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
+    )
+    review_items: List["WordReviewItem"] = Relationship(
+        back_populates="word",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
+    )
 
 
 @property

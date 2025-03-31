@@ -17,6 +17,9 @@ class WordGroup(SQLModel, table=True):
     source_details: Optional[str] = Field(default=None)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     is_editable: bool = Field(default=True)
+    group_type: Optional[str] = Field(
+        default=None
+    )  # Added group_type attribute
 
     words: List["Word"] = Relationship(
         back_populates="groups",

@@ -4,6 +4,9 @@ from contextlib import asynccontextmanager
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel
 from .config import SQLITE_DB_PATH
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Ensure data directory exists
 data_dir = Path(SQLITE_DB_PATH).parent
@@ -20,10 +23,22 @@ async_session_factory = sessionmaker(
 )
 
 
-# Corrected dependency for routes
-async def get_db() -> AsyncSession:
-    async with async_session_factory() as session:
-        yield session
+# # Corrected dependency for routes
+# async def get_db() -> AsyncSession:
+#     async with async_session_factory() as session:
+#         yield session
+
+
+@asynccontextmanager
+async def get_db():
+    try:
+        logger.info("Creating database session...")
+        async with async_session_factory() as session:
+            yield session
+            logger.info("Database session closed.")
+    except Exception as e:
+        logger.exception(f"Error with database session: {e}")
+        raise
 
 
 # Database initialization

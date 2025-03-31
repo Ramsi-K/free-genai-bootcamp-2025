@@ -1,7 +1,9 @@
-from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, HTTPException
+
+# Removed unused Depends, AsyncSession, get_db
 from ...db.init_db import reset_all, reset_session
-from ...database import get_db
+
+# from ...database import get_db # Not used here
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 

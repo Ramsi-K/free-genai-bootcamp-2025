@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Depends, HTTPException
+
+# Removed unused AsyncSession import
 from sqlalchemy import select
 from typing import List, Optional
 from ...database import get_db
+from contextlib import asynccontextmanager  # Added import
 from ...models.activity_log import ActivityLog
 from ...models.activity_type import ActivityType
 from ...schemas.activity_log import ActivityLogCreate, ActivityLogResponse
@@ -17,39 +19,55 @@ async def list_activity_logs(
     session_id: Optional[int] = None,
     word_id: Optional[int] = None,
     activity_type: Optional[ActivityType] = None,
-    db: AsyncSession = Depends(get_db),
+    db_cm: asynccontextmanager = Depends(get_db),
 ):
     """List activity logs with optional filters"""
-    query = select(ActivityLog)
+    async with db_cm as db:
+        query = select(ActivityLog)
 
-    if session_id:
-        query = query.filter(ActivityLog.session_id == session_id)
-    if word_id:
-        query = query.filter(ActivityLog.word_id == word_id)
-    if activity_type:
-        query = query.filter(ActivityLog.activity_type == activity_type.value)
+        if session_id:
+            query = query.filter(ActivityLog.session_id == session_id)
+        if word_id:
+            query = query.filter(ActivityLog.word_id == word_id)
+        if activity_type:
+            query = query.filter(
+                ActivityLog.activity_type == activity_type.value
+            )
 
-    query = query.offset(skip).limit(limit)
-    result = await db.execute(query)
-    return result.scalars().all()
+        query = query.offset(skip).limit(limit)
+        result = await db.execute(query)
+        return result.scalars().all()
 
 
 @router.post("", response_model=ActivityLogResponse, status_code=201)
 async def create_activity_log(
-    log: ActivityLogCreate, db: AsyncSession = Depends(get_db)
+    log: ActivityLogCreate, db_cm: asynccontextmanager = Depends(get_db)
 ):
     """Create a new activity log entry"""
-    db_log = ActivityLog(**log.dict())
-    db.add(db_log)
+    async with db_cm as db:
+        db_log = ActivityLog(**log.dict())
+        db.add(db_log)
 
-    try:
-        await db.commit()
-        await db.refresh(db_log)
-    except Exception:
-        await db.rollback()
-        raise HTTPException(
-            status_code=400,
-            detail="Failed to create activity log. Verify session_id and word_id exist.",
-        )
+        try:
+            await db.commit()
+            await db.refresh(db_log)
+            return db_log
+        except (
+            Exception
+        ) as e:  # Catch specific exceptions if possible (e.g., IntegrityError)
+            await db.rollback()
+            # Log the error for debugging
+            import logging
 
-    return db_log
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to create activity log: {e}")
+            # Provide a more informative error message if possible
+            detail = "Failed to create activity log."
+            if "FOREIGN KEY constraint failed" in str(e):
+                detail += " Ensure session_id and word_id exist."
+            elif "UNIQUE constraint failed" in str(e):
+                detail += " Duplicate entry detected."  # Example
+            raise HTTPException(
+                status_code=400,  # Or 500 for unexpected errors
+                detail=detail,
+            )

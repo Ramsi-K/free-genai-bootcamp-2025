@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Sketch from 'react-p5';
 import p5Types from 'p5';
 import { api } from '../../lib/api';
-import { Word } from '../../types/api';
+import { Word, Group, Enemy, GameState } from './types';
+import axios from 'axios';
 
 interface KoreanMuncherGameProps {
   difficulty: string;
@@ -41,15 +42,17 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
   onGameOver,
   onPause
 }) => {
-  const GRID_SIZE = 4; // Changed from 5 to 4 rows
-  const CANVAS_SIZE = Math.min(window.innerWidth * 0.7, 1000); // Increased max width
+  const GRID_SIZE = 4;
+  const CANVAS_SIZE = Math.min(window.innerWidth * 0.7, 1000);
   const CELL_SIZE = CANVAS_SIZE / GRID_SIZE;
 
   const [words, setWords] = useState<string[][]>([]);
   const [themeWords, setThemeWords] = useState<Word[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [gameState, setGameState] = useState<GameState>('menu');
+  const [currentState, setCurrentState] = useState<GameState>('menu');
 
-  const [gameState, setGameState] = useState({
+  const [gameStats, setGameStats] = useState({
     score: 0,
     lives: DIFFICULTY_SETTINGS[difficulty].lives,
     munchMeter: 0,
@@ -79,15 +82,18 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
 
   const difficultySettings = DIFFICULTY_SETTINGS[difficulty];
 
+  const startGame = () => {
+    setGameState('playing');
+    setupLevel();
+  };
+
   useEffect(() => {
     const loadThemeWords = async () => {
       setIsLoading(true);
       try {
-        // Get all words for this theme
         const groupWords = await api.getGroupWords(themeId);
         setThemeWords(groupWords);
 
-        // Create grid with random selection of words
         const grid = Array(GRID_SIZE).fill(null).map(() => 
           Array(GRID_SIZE).fill(null).map(() => {
             const randomIndex = Math.floor(Math.random() * groupWords.length);
@@ -95,19 +101,18 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
           })
         );
         setWords(grid);
+        startGame();
       } catch (error) {
         console.error('Failed to load theme words:', error);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
-    loadThemeWords();
-  }, [themeId]);
 
-  const setup = (p5: p5Types, canvasParentRef: Element) => {
-    p5.createCanvas(CANVAS_SIZE, CANVAS_SIZE).parent(canvasParentRef);
-    setupLevel();
-    // ...rest of setup
-  };
+    if (themeId) {
+      loadThemeWords();
+    }
+  }, [themeId]);
 
   const setupLevel = () => {
     const newEnemies: Enemy[] = [];
@@ -127,7 +132,18 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
       enemy.moveTimer++;
       if (enemy.moveTimer > difficultySettings.enemySpeed) {
         enemy.moveTimer = 0;
-        // ...rest of enemy movement code...
+        // Random movement
+        const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+        const newDirection = Math.floor(Math.random() * directions.length);
+        const [dx, dy] = directions[newDirection];
+        const newX = enemy.x + dx;
+        const newY = enemy.y + dy;
+        
+        if (newX >= 0 && newX < GRID_SIZE && newY >= 0 && newY < GRID_SIZE) {
+          enemy.x = newX;
+          enemy.y = newY;
+          enemy.direction = newDirection;
+        }
       }
       return enemy;
     }));
@@ -135,8 +151,8 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
 
   const checkCollisions = () => {
     enemies.forEach(enemy => {
-      if (enemy.x === player.x && enemy.y === player.y && !gameState.isGameOver) {
-        setGameState(prev => {
+      if (enemy.x === player.x && enemy.y === player.y && !gameStats.isGameOver) {
+        setGameStats(prev => {
           const newLives = prev.lives - 1;
           if (newLives <= 0) {
             onGameOver(prev.score);
@@ -150,16 +166,15 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
   };
 
   const handleWordMunch = () => {
-    if (gameState.isGameOver) return;
+    if (gameStats.isGameOver) return;
     
     let selectedWord = words[player.y][player.x];
     if (themeWords.some(word => word.hangul === selectedWord)) {
-      setGameState(prev => {
+      setGameStats(prev => {
         const newMunchMeter = prev.munchMeter + 1;
         const newScore = prev.score + (100 * prev.level);
         
         if (newMunchMeter >= 5) {
-          // Level up after 5 correct munches
           return {
             ...prev,
             score: newScore,
@@ -176,11 +191,11 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
       });
       setWords(prevWords => {
         const newWords = [...prevWords];
-        newWords[player.y][player.x] = ''; // Remove munched word
+        newWords[player.y][player.x] = '';
         return newWords;
       });
     } else {
-      setGameState(prev => {
+      setGameStats(prev => {
         const newLives = prev.lives - 1;
         if (newLives <= 0) {
           onGameOver(prev.score);
@@ -193,7 +208,7 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
   };
 
   const keyPressed = (p5: p5Types) => {
-    if (gameState.isGameOver) return;
+    if (gameStats.isGameOver) return;
     
     if (p5.keyCode === p5.LEFT_ARROW) player.move(-1, 0);
     if (p5.keyCode === p5.RIGHT_ARROW) player.move(1, 0);
@@ -202,14 +217,18 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
     if (p5.keyCode === p5.ENTER || p5.keyCode === 32) handleWordMunch();
   };
 
+  const setup = (p5: p5Types, canvasParentRef: Element) => {
+    p5.createCanvas(CANVAS_SIZE, CANVAS_SIZE).parent(canvasParentRef);
+  };
+
   const drawGrid = (p5: p5Types) => {
     const xOffset = (p5.width - GRID_SIZE * CELL_SIZE) / 2;
-    const yOffset = 80; // Reduced from 100 to 80 to fit better
-    p5.stroke(74, 144, 226); // Restored original blue color
+    const yOffset = 80;
+    p5.stroke(74, 144, 226);
     p5.strokeWeight(2);
     for (let i = 0; i < GRID_SIZE; i++) {
       for (let j = 0; j < GRID_SIZE; j++) {
-        p5.fill(10, 10, 40, 200); // Semi-transparent dark blue
+        p5.fill(10, 10, 40, 200);
         p5.rect(i * CELL_SIZE + xOffset, j * CELL_SIZE + yOffset, CELL_SIZE, CELL_SIZE);
       }
     }
@@ -219,7 +238,7 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
     const xOffset = (p5.width - GRID_SIZE * CELL_SIZE) / 2;
     const yOffset = 80;
     p5.textAlign(p5.CENTER, p5.CENTER);
-    p5.textSize(CELL_SIZE * 0.4); // Increased text size
+    p5.textSize(CELL_SIZE * 0.4);
     p5.fill(255);
     words.forEach((row, i) => {
       row.forEach((word, j) => {
@@ -237,15 +256,13 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
   const drawPlayer = (p5: p5Types) => {
     const xOffset = (p5.width - GRID_SIZE * CELL_SIZE) / 2;
     const yOffset = 80;
-    // Restore original player appearance
-    p5.fill(74, 144, 226); // Primary blue
+    p5.fill(74, 144, 226);
     p5.noStroke();
     p5.circle(
       player.x * CELL_SIZE + CELL_SIZE / 2 + xOffset,
       player.y * CELL_SIZE + CELL_SIZE / 2 + yOffset,
       CELL_SIZE * 0.7
     );
-    // Add eyes
     p5.fill(255);
     p5.circle(
       player.x * CELL_SIZE + CELL_SIZE * 0.4 + xOffset,
@@ -263,7 +280,7 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
     const xOffset = (p5.width - GRID_SIZE * CELL_SIZE) / 2;
     const yOffset = 80;
     enemies.forEach(enemy => {
-      p5.fill(255, 50, 50); // Bright red
+      p5.fill(255, 50, 50);
       p5.noStroke();
       p5.circle(
         enemy.x * CELL_SIZE + CELL_SIZE / 2 + xOffset,
@@ -274,7 +291,6 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
   };
 
   const draw = (p5: p5Types) => {
-    // Background gradient
     const c1 = p5.color(10, 10, 40);
     const c2 = p5.color(20, 20, 80);
     for(let y = 0; y < p5.height; y++){
@@ -287,7 +303,7 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
     drawGrid(p5);
     drawWords(p5);
     drawPlayer(p5);
-    if (!gameState.isGameOver) {
+    if (!gameStats.isGameOver) {
       drawEnemies(p5);
       updateEnemies(p5);
       checkCollisions();
@@ -299,10 +315,9 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
     p5.fill(255);
     p5.textSize(24);
     p5.textAlign(p5.CENTER, p5.CENTER);
-    p5.text(`Level ${gameState.level}  Score: ${gameState.score}  Lives: ${gameState.lives}`, CANVAS_SIZE/2, 50);
-    // Draw munch meter
+    p5.text(`Level ${gameStats.level}  Score: ${gameStats.score}  Lives: ${gameStats.lives}`, CANVAS_SIZE/2, 50);
     p5.fill(50, 200, 50);
-    p5.rect(100, CANVAS_SIZE - 30, gameState.munchMeter * 40, 10);
+    p5.rect(100, CANVAS_SIZE - 30, gameStats.munchMeter * 40, 10);
   };
 
   if (isLoading) {
@@ -320,9 +335,9 @@ const KoreanMuncherGame: React.FC<KoreanMuncherGameProps> = ({
             Pause
           </button>
           <div className="flex gap-8 text-xl">
-            <span>Score: {gameState.score}</span>
-            <span>Lives: {gameState.lives}</span>
-            <span>Level: {gameState.level}</span>
+            <span>Score: {gameStats.score}</span>
+            <span>Lives: {gameStats.lives}</span>
+            <span>Level: {gameStats.level}</span>
           </div>
         </div>
         <Sketch 
