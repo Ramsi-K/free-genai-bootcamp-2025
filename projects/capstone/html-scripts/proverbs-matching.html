@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Korean Proverbs Matching Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3a5a78;
+            --secondary: #7393B3;
+            --accent: #E76F51;
+            --light: #f8f9fa;
+            --dark: #293241;
+            --success: #2A9D8F;
+            --warning: #E9C46A;
+            --danger: #E76F51;
+            --text: #333;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Roboto', 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            font-weight: 900;
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .difficulty-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .difficulty-btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .difficulty-btn.active {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+        
+        .score-display {
+            background-color: var(--light);
+            padding: 10px 15px;
+            border-radius: 30px;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .progress-container {
+            flex-grow: 1;
+            margin: 0 20px;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .timer-display {
+            background-color: var(--light);
+            padding: 10px 15px;
+            border-radius: 30px;
+            font-weight: bold;
+            color: var(--danger);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .game-mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mode-btn.active {
+            border-color: var(--primary);
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .proverb-display {
+            background-color: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .proverb-korean {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        .proverb-romanized {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+        
+        .proverb-meaning {
+            font-size: 1rem;
+            color: var(--text);
+        }
+        
+        .illustration {
+            width: 120px;
+            height: 120px;
+            background-color: white;
+            border-radius: 10px;
+            border: 2px solid #eee;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .option-card {
+            background-color: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option-card.correct {
+            border-color: var(--success);
+            background-color: rgba(42, 157, 143, 0.1);
+        }
+        
+        .option-card.wrong {
+            border-color: var(--danger);
+            background-color: rgba(231, 111, 81, 0.1);
+        }
+        
+        .option-card.selected {
+            border-color: var(--primary);
+            background-color: rgba(58, 90, 120, 0.1);
+        }
+        
+        .option-text {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .option-hint {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .feedback-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+            font-weight: bold;
+        }
+        
+        .feedback-correct {
+            background-color: rgba(42, 157, 143, 0.2);
+            color: var(--success);
+            display: block;
+        }
+        
+        .feedback-wrong {
+            background-color: rgba(231, 111, 81, 0.2);
+            color: var(--danger);
+            display: block;
+        }
+        
+        .explanation-box {
+            background-color: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .explanation-title {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .explanation-content {
+            line-height: 1.6;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .submit-btn {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .submit-btn:hover {
+            background-color: #2d4560;
+        }
+        
+        .next-btn {
+            background-color: var(--success);
+            color: white;
+            display: none;
+        }
+        
+        .next-btn:hover {
+            background-color: #1e7d72;
+        }
+        
+        .skip-btn {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .skip-btn:hover {
+            background-color: #e0b04c;
+        }
+        
+        .hint-btn {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .hint-btn:hover {
+            background-color: #5c7d9c;
+        }
+        
+        .result-screen {
+            padding: 30px;
+            text-align: center;
+            display: none;
+        }
+        
+        .result-icon {
+            font-size: 4rem;
+            color: var(--success);
+            margin-bottom: 20px;
+        }
+        
+        .result-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .result-score {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+        
+        .result-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-box {
+            background-color: var(--light);
+            padding: 15px 25px;
+            border-radius: 10px;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .restart-btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            border: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .progress-container {
+                width: 100%;
+                margin: 10px 0;
+            }
+            
+            .proverb-korean {
+                font-size: 1.3rem;
+            }
+            
+            .illustration {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .stat-box {
+                padding: 10px 15px;
+            }
+            
+            .stat-value {
+                font-size: 1.3rem;
+            }
+        }
+        
+        /* Animations */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .bounce {
+            animation: bounce 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Korean Proverbs Matching Game</h1>
+            <div class="subtitle">Match Korean proverbs with their English meanings and learn Korean wisdom!</div>
+            <div class="difficulty-selector">
+                <button class="difficulty-btn active" data-difficulty="beginner">Beginner</button>
+                <button class="difficulty-btn" data-difficulty="intermediate">Intermediate</button>
+                <button class="difficulty-btn" data-difficulty="advanced">Advanced</button>
+            </div>
+        </header>
+        
+        <div class="game-container" id="game-screen">
+            <div class="game-header">
+                <div class="score-display">
+                    <i class="fas fa-star"></i>
+                    <span id="score">0</span> points
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <div class="timer-display">
+                    <i class="fas fa-clock"></i>
+                    <span id="timer">30</span> sec
+                </div>
+            </div>
+            
+            <div class="game-area">
+                <div class="game-mode-selector">
+                    <button class="mode-btn active" data-mode="korean-to-english">Korean → English</button>
+                    <button class="mode-btn" data-mode="english-to-korean">English → Korean</button>
+                </div>
+                
+                <div class="proverb-display" id="proverb-display">
+                    <div>
+                        <div class="illustration" id="illustration">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="proverb-korean" id="proverb-korean">Press Start to begin</div>
+                        <div class="proverb-romanized" id="proverb-romanized"></div>
+                        <div class="proverb-meaning" id="proverb-meaning"></div>
+                    </div>
+                </div>
+                
+                <div class="options-grid" id="options-grid"></div>
+                
+                <div class="feedback-message" id="feedback-message"></div>
+                
+                <div class="explanation-box" id="explanation-box">
+                    <div class="explanation-title">
+                        <i class="fas fa-lightbulb"></i>
+                        Cultural Insight
+                    </div>
+                    <div class="explanation-content" id="explanation-content"></div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="action-btn hint-btn" id="hint-btn">
+                    <i class="fas fa-lightbulb"></i> Hint
+                </button>
+                <button class="action-btn skip-btn" id="skip-btn">
+                    <i class="fas fa-forward"></i> Skip
+                </button>
+                <button class="action-btn submit-btn" id="submit-btn">
+                    <i class="fas fa-check"></i> Submit
+                </button>
+                <button class="action-btn next-btn" id="next-btn">
+                    <i class="fas fa-arrow-right"></i> Next
+                </button>
+            </div>
+        </div>
+        
+        <div class="result-screen" id="result-screen">
+            <div class="result-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h2 class="result-title">Game Completed!</h2>
+            <div class="result-score">Your score: <span id="final-score">0</span></div>
+            
+            <div class="result-stats">
+                <div class="stat-box">
+                    <div class="stat-value" id="correct-count">0</div>
+                    <div class="stat-label">Correct</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="total-questions">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="accuracy">0%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+            </div>
+            
+            <button class="restart-btn" id="restart-btn">
+                <i class="fas fa-redo"></i> Play Again
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Proverb database with illustrations
+        const proverbData = {
+            beginner: [
+                {
+                    korean: "가는 날이 장날",
+                    romanized: "ga-neun nal-i jang-nal",
+                    literal: "Going day is market day",
+                    meaning: "Accidentally encountering something just at the moment you wanted to avoid it (Murphy's Law)",
+                    explanation: "This proverb describes the frustrating situation when you accidentally meet someone or something you wanted to avoid, similar to arriving at the market on the very busiest day when you hoped for a quiet visit.",
+                    options: [
+                        "Easy come, easy go",
+                        "Accidentally encountering something at the worst time",
+                        "Better late than never",
+                        "Practice makes perfect"
+                    ],
+                    illustration: "fa-calendar-times"
+                },
+                {
+                    korean: "갈수록 태산",
+                    romanized: "gal-su-rok tae-san",
+                    literal: "The more you go, the bigger the mountain",
+                    meaning: "Things get more difficult as you proceed (mountains look larger as you approach)",
+                    explanation: "This expresses how challenges often seem to grow as you get closer to them, just like how Mount Tai (a large mountain) appears bigger as you get nearer. It's often used when facing increasing difficulties in work or study.",
+                    options: [
+                        "The early bird catches the worm",
+                        "Difficulties increase as you progress",
+                        "Small things amuse small minds",
+                        "All roads lead to Rome"
+                    ],
+                    illustration: "fa-mountain"
+                },
+                {
+                    korean: "고래 싸움에 새우 등 터진다",
+                    romanized: "go-rae ssa-um-e sae-u deung teo-jin-da",
+                    literal: "When whales fight, shrimp's backs get burst",
+                    meaning: "When the powerful fight, the weak suffer collateral damage",
+                    explanation: "This vivid proverb describes how small innocent parties often get hurt when large forces conflict, similar to shrimp being crushed when whales battle. It's frequently used in political or economic contexts.",
+                    options: [
+                        "The small suffer when the powerful fight",
+                        "Still waters run deep",
+                        "Two heads are better than one",
+                        "Time heals all wounds"
+                    ],
+                    illustration: "fa-fish"
+                },
+                {
+                    korean: "금강산도 식후경",
+                    romanized: "geum-gang-san-do sik-hu-gyeong",
+                    literal: "Even Geumgang Mountain must wait until after mealtime",
+                    meaning: "Basic needs must be met before pursuing higher things (you must eat before sightseeing)",
+                    explanation: "This emphasizes the importance of taking care of basic needs before pursuing higher ambitions, suggesting that no matter how beautiful Geumgang Mountain is, one must eat first before appreciating it.",
+                    options: [
+                        "Where there's smoke, there's fire",
+                        "Basic needs come before higher pursuits",
+                        "Life begins at forty",
+                        "Let bygones be bygones"
+                    ],
+                    illustration: "fa-utensils"
+                }
+            ],
+            intermediate: [
+                {
+                    korean: "낫 놓고 기역 자도 모른다",
+                    romanized: "nat noh-go gi-yeok ja-do mo-reun-da",
+                    literal: "Doesn't recognize the letter '기역' even with a sickle placed next to it",
+                    meaning: "Completely illiterate or ignorant (the character '기역' looks like a sickle)",
+                    explanation: "This humorous proverb refers to someone being completely illiterate, as the Korean letter 'ㄱ' (giyeok) resembles the shape of a sickle, so if they can't recognize it even with a real sickle as a hint, they must be truly unlearned.",
+                    options: [
+                        "Too many cooks spoil the broth",
+                        "Completely illiterate or ignorant",
+                        "Practice what you preach",
+                        "Absence makes the heart grow fonder"
+                    ],
+                    illustration: "fa-spell-check"
+                },
+                {
+                    korean: "등잔 밑이 어둡다",
+                    romanized: "deung-jan mit-i eo-dup-da",
+                    literal: "It's dark under the lamp",
+                    meaning: "Unable to see what's right in front of you (missing the obvious)",
+                    explanation: "This describes the phenomenon where people often miss what's closest to them, just like how the area right beneath a lamp is dark because the light shines outward. It's often used about overlooking obvious solutions or people nearby.",
+                    options: [
+                        "Can't see the forest for the trees",
+                        "Unable to see what's obvious",
+                        "Strike while the iron is hot",
+                        "Don't count your chickens before they hatch"
+                    ],
+                    illustration: "fa-lightbulb"
+                },
+                {
+                    korean: "누워서 침 뱉기",
+                    romanized: "nu-wo-seo chim baet-gi",
+                    literal: "Spitting while lying down",
+                    meaning: "Self-defeating behavior (your spit will land on your own face)",
+                    explanation: "This graphically illustrates self-defeating actions—if you spit while lying on your back, the saliva will fall back on your own face. It's used to criticize actions that ultimately harm the doer.",
+                    options: [
+                        "Actions that backfire on you",
+                        "Between a rock and a hard place",
+                        "When in Rome, do as the Romans do",
+                        "Two wrongs don't make a right"
+                    ],
+                    illustration: "fa-user-shield"
+                },
+                {
+                    korean: "바늘 도둑이 소 도둑 된다",
+                    romanized: "ba-neul do-dup-i so do-dup doen-da",
+                    literal: "A needle thief becomes a cow thief",
+                    meaning: "Small crimes lead to big crimes (give them an inch, they'll take a mile)",
+                    explanation: "This warns that small dishonest acts can escalate into major crimes, just like how stealing needles might lead to stealing cows. It emphasizes the importance of stopping bad behavior early.",
+                    options: [
+                        "Penny wise, pound foolish",
+                        "Small dishonesties lead to bigger crimes",
+                        "Make hay while the sun shines",
+                        "The pot calling the kettle black"
+                    ],
+                    illustration: "fa-user-secret"
+                }
+            ],
+            advanced: [
+                {
+                    korean: "산 넘어 산",
+                    romanized: "san neom-eo san",
+                    literal: "Mountain beyond mountain",
+                    meaning: "One difficulty after another (problem solved but another appears)",
+                    explanation: "This expresses the frustration of overcoming one challenge only to face another immediately, depicted as crossing one mountain to find another right behind it. It's often used about continuous life difficulties.",
+                    options: [
+                        "When one door closes, another opens",
+                        "One challenge followed by another",
+                        "Rome wasn't built in a day",
+                        "The grass is always greener on the other side"
+                    ],
+                    illustration: "fa-mountain"
+                },
+                {
+                    korean: "소 잃고 외양간 고친다",
+                    romanized: "so ilh-go oe-yang-gan go-chin-da",
+                    literal: "Fixing the barn after losing the cow",
+                    meaning: "Taking precautions after the damage is done (closing the barn door after the horse has bolted)",
+                    explanation: "This criticizes taking preventive measures only after suffering loss, similar to repairing the barn after the cow has already escaped. It's used to describe belated, ineffective precautions.",
+                    options: [
+                        "Closing the barn door after the horse has bolted",
+                        "Barking up the wrong tree",
+                        "Don't make a mountain out of a molehill",
+                        "Don't put all your eggs in one basket"
+                    ],
+                    illustration: "fa-horse"
+                },
+                {
+                    korean: "우물 안 개구리",
+                    romanized: "um-mul an gae-gu-ri",
+                    literal: "Frog in a well",
+                    meaning: "Someone with a narrow perspective (the frog thinks the well is the whole world)",
+                    explanation: "This describes someone with limited experience who mistakenly believes their small worldview is complete, like a frog living in a well that thinks the well is the entire world. It criticizes narrow-mindedness.",
+                    options: [
+                        "A big fish in a small pond",
+                        "Someone with narrow perspective",
+                        "You can't teach an old dog new tricks",
+                        "Don't judge a book by its cover"
+                    ],
+                    illustration: "fa-frog"
+                },
+                {
+                    korean: "호랑이도 제 말하면 온다",
+                    romanized: "ho-rang-i-do je mal-ha-myeon on-da",
+                    literal: "If you speak of the tiger, it will come",
+                    meaning: "Speaking of someone may make them appear (speak of the devil)",
+                    explanation: "Similar to 'speak of the devil,' this warns that mentioning someone might make them appear, based on the superstition that naming a tiger could summon it. It's often used humorously when someone appears just as they're being discussed.",
+                    options: [
+                        "Speak of the devil",
+                        "Monkey see, monkey do",
+                        "The lion's share",
+                        "Kill two birds with one stone"
+                    ],
+                    illustration: "fa-comment-dots"
+                }
+            ]
+        };
+
+        // Game variables
+        let currentDifficulty = "beginner";
+        let gameMode = "korean-to-english";
+        let score = 0;
+        let correctCount = 0;
+        let currentQuestion = 0;
+        let totalQuestions = 8;
+        let timeLeft = 30;
+        let timer;
+        let gameActive = false;
+        let selectedItem = null;
+        let currentProverb = {};
+        let answerKey = {};
+        
+        // DOM elements
+        const gameScreen = document.getElementById("game-screen");
+        const resultScreen = document.getElementById("result-screen");
+        const scoreDisplay = document.getElementById("score");
+        const timerDisplay = document.getElementById("timer");
+        const progressBar = document.getElementById("progress-bar");
+        const proverbKoreanDisplay = document.getElementById("proverb-korean");
+        const proverbRomanizedDisplay = document.getElementById("proverb-romanized");
+        const proverbMeaningDisplay = document.getElementById("proverb-meaning");
+        const illustrationDisplay = document.getElementById("illustration");
+        const optionsGrid = document.getElementById("options-grid");
+        const feedbackMessage = document.getElementById("feedback-message");
+        const explanationBox = document.getElementById("explanation-box");
+        const explanationContent = document.getElementById("explanation-content");
+        const finalScoreDisplay = document.getElementById("final-score");
+        const correctCountDisplay = document.getElementById("correct-count");
+        const totalQuestionsDisplay = document.getElementById("total-questions");
+        const accuracyDisplay = document.getElementById("accuracy");
+        const nextBtn = document.getElementById("next-btn");
+        const submitBtn = document.getElementById("submit-btn");
+        
+        // Difficulty buttons
+        document.querySelectorAll(".difficulty-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".difficulty-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentDifficulty = btn.dataset.difficulty;
+            });
+        });
+        
+        // Mode buttons
+        document.querySelectorAll(".mode-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                gameMode = btn.dataset.mode;
+                if (gameActive) {
+                    loadQuestion();
+                }
+            });
+        });
+        
+        // Start game when page loads
+        window.addEventListener('load', startGame);
+        
+        // Restart game
+        document.getElementById("restart-btn").addEventListener("click", startGame);
+        
+        // Skip question
+        document.getElementById("skip-btn").addEventListener("click", nextQuestion);
+        
+        // Hint button
+        document.getElementById("hint-btn").addEventListener("click", showHint);
+        
+        // Submit answer
+        submitBtn.addEventListener("click", checkAnswer);
+        nextBtn.addEventListener("click", nextQuestion);
+        
+        function startGame() {
+            // Reset game state
+            gameActive = true;
+            score = 0;
+            correctCount = 0;
+            currentQuestion = 0;
+            timeLeft = 30;
+            
+            // Show game screen
+            gameScreen.style.display = "flex";
+            resultScreen.style.display = "none";
+            
+            // Reset displays
+            scoreDisplay.textContent = score;
+            timerDisplay.textContent = timeLeft;
+            progressBar.style.width = "0%";
+            
+            // Reset buttons
+            submitBtn.style.display = "flex";
+            nextBtn.style.display = "none";
+            
+            // Load first question
+            loadQuestion();
+            
+            // Start timer
+            clearInterval(timer);
+            timer = setInterval(updateTimer, 1000);
+        }
+        
+        function loadQuestion() {
+            if (currentQuestion >= totalQuestions) {
+                endGame();
+                return;
+            }
+            
+            // Reset UI
+            optionsGrid.innerHTML = "";
+            feedbackMessage.className = "feedback-message";
+            feedbackMessage.textContent = "";
+            explanationBox.style.display = "none";
+            selectedItem = null;
+            
+            // Update progress
+            progressBar.style.width = `${(currentQuestion / totalQuestions) * 100}%`;
+            
+            // Get proverb from database based on difficulty
+            const pool = [...proverbData[currentDifficulty]];
+            shuffleArray(pool);
+            currentProverb = pool[0];
+            
+            // Get 3 other random proverbs for wrong options
+            const otherProverbs = [];
+            const allProverbs = [...proverbData.beginner, ...proverbData.intermediate, ...proverbData.advanced].filter(p => 
+                p !== currentProverb && !pool.includes(p)
+            );
+            shuffleArray(allProverbs);
+            for (let i = 0; i < 3; i++) {
+                otherProverbs.push(allProverbs[i].meaning);
+            }
+            
+            // Prepare answer key
+            answerKey = {
+                korean: currentProverb.korean,
+                romanized: currentProverb.romanized,
+                meaning: currentProverb.meaning,
+                options: [...otherProverbs, currentProverb.meaning]
+            };
+            
+            // Shuffle options
+            shuffleArray(answerKey.options);
+            
+            // Display proverb based on game mode
+            if (gameMode === "korean-to-english") {
+                proverbKoreanDisplay.textContent = currentProverb.korean;
+                proverbRomanizedDisplay.textContent = currentProverb.romanized;
+                proverbMeaningDisplay.textContent = "";
+                
+                // Display options (English meanings)
+                answerKey.options.forEach((option, index) => {
+                    const optionCard = document.createElement("div");
+                    optionCard.className = "option-card";
+                    optionCard.dataset.index = index;
+                    optionCard.innerHTML = `
+                        <div class="option-text">${option}</div>
+                    `;
+                    optionCard.addEventListener("click", selectOption);
+                    optionsGrid.appendChild(optionCard);
+                });
+            } else {
+                // English-to-Korean mode
+                proverbKoreanDisplay.textContent = "";
+                proverbRomanizedDisplay.textContent = "";
+                proverbMeaningDisplay.textContent = currentProverb.meaning;
+                
+                // Display options (Korean proverbs)
+                const koreanOptions = [...otherProverbs.map(p => p.korean), currentProverb.korean];
+                shuffleArray(koreanOptions);
+                
+                koreanOptions.forEach((option, index) => {
+                    const optionCard = document.createElement("div");
+                    optionCard.className = "option-card";
+                    optionCard.dataset.index = index;
+                    optionCard.innerHTML = `
+                        <div class="option-text">${option}</div>
+                        <div class="option-hint">${proverbDataKoreans[option]?.romanized || ""}</div>
+                    `;
+                    optionCard.addEventListener("click", selectOption);
+                    optionsGrid.appendChild(optionCard);
+                    
+                    // Store the correct answer index
+                    if (option === currentProverb.korean) {
+                        answerKey.correctIndex = index;
+                    }
+                });
+            }
+            
+            // Update illustration
+            illustrationDisplay.innerHTML = `<i class="fas ${currentProverb.illustration}"></i>`;
+            
+            currentQuestion++;
+        }
+        
+        function selectOption() {
+            // Deselect previous selection
+            if (selectedItem) {
+                selectedItem.classList.remove("selected");
+            }
+            
+            // Select new item
+            this.classList.add("selected");
+            selectedItem = this;
+        }
+        
+        function checkAnswer() {
+            if (!selectedItem) {
+                feedbackMessage.className = "feedback-message shake";
+                feedbackMessage.textContent = "Please select an option first!";
+                feedbackMessage.style.display = "block";
+                feedbackMessage.style.animation = "none";
+                setTimeout(() => {
+                    feedbackMessage.style.animation = "";
+                }, 10);
+                return;
+            }
+            
+            gameActive = false;
+            clearInterval(timer);
+            
+            let isCorrect = false;
+            
+            if (gameMode === "korean-to-english") {
+                const selectedMeaning = answerKey.options[selectedItem.dataset.index];
+                isCorrect = selectedMeaning === currentProverb.meaning;
+            } else {
+                isCorrect = parseInt(selectedItem.dataset.index) === answerKey.correctIndex;
+            }
+            
+            // Show feedback
+            if (isCorrect) {
+                score += 100;
+                correctCount++;
+                selectedItem.classList.add("correct");
+                feedbackMessage.className = "feedback-message feedback-correct bounce";
+                feedbackMessage.textContent = "Correct! 😊";
+                scoreDisplay.textContent = score;
+            } else {
+                selectedItem.classList.add("wrong");
+                feedbackMessage.className = "feedback-message feedback-wrong shake";
+                feedbackMessage.textContent = "Incorrect! 😢";
+                
+                // Highlight correct answer
+                document.querySelectorAll(".option-card").forEach(card => {
+                    if (gameMode === "korean-to-english") {
+                        if (answerKey.options[card.dataset.index] === currentProverb.meaning) {
+                            card.classList.add("correct");
+                        }
+                    } else {
+                        if (parseInt(card.dataset.index) === answerKey.correctIndex) {
+                            card.classList.add("correct");
+                        }
+                    }
+                });
+            }
+            
+            feedbackMessage.style.display = "block";
+            
+            // Show explanation
+            explanationContent.textContent = currentProverb.explanation;
+            explanationBox.style.display = "block";
+            
+            // Update buttons
+            submitBtn.style.display = "none";
+            nextBtn.style.display = "flex";
+        }
+        
+        function nextQuestion() {
+            loadQuestion();
+            gameActive = true;
+            timeLeft = 30;
+            timerDisplay.textContent = timeLeft;
+            clearInterval(timer);
+            timer = setInterval(updateTimer, 1000);
+        }
+        
+        function updateTimer() {
+            if (!gameActive) return;
+            
+            timeLeft--;
+            timerDisplay.textContent = timeLeft;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                checkAnswer(); // Auto-submit when time runs out
+            }
+        }
+        
+        function showHint() {
+            alert(`Hint: ${currentProverb.literal}\n(Literal translation)`);
+        }
+        
+        function endGame() {
+            clearInterval(timer);
+            gameActive = false;
+            
+            // Show result screen
+            gameScreen.style.display = "none";
+            resultScreen.style.display = "block";
+            
+            // Calculate results
+            const accuracy = Math.round((correctCount / totalQuestions) * 100);
+            
+            // Display results
+            finalScoreDisplay.textContent = score;
+            correctCountDisplay.textContent = correctCount;
+            totalQuestionsDisplay.textContent = totalQuestions;
+            accuracyDisplay.textContent = accuracy + "%";
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        // Create a helper object for Korean proverbs
+        const proverbDataKoreans = {};
+        Object.values(proverbData).forEach(difficulty => {
+            difficulty.forEach(proverb => {
+                proverbDataKoreans[proverb.korean] = {
+                    romanized: proverb.romanized,
+                    meaning: proverb.meaning
+                };
+            });
+        });
+    </script>
+</body>
+</html>

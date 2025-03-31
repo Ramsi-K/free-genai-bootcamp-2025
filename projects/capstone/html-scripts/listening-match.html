@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Korean Space Shooter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --correct: #4CAF50;
+            --wrong: #F44336;
+            --player: #FFD700;
+            --background: #121212;
+            --text: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', 'Noto Sans KR', sans-serif;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 500px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        #game-screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('https://assets.codepen.io/21542/stars-bg.jpg') repeat;
+            background-size: 300px 300px;
+        }
+
+        #player {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--player);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--player);
+            z-index: 10;
+            transition: transform 0.1s;
+        }
+
+        #player::before {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            bottom: -10px;
+            left: 15px;
+            background-color: var(--player);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .word-bubble {
+            position: absolute;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            cursor: default;
+            user-select: none;
+            transition: transform 0.1s;
+            white-space: nowrap;
+            font-family: 'Noto Sans KR', sans-serif;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .word-bubble.correct {
+            background-color: var(--correct);
+        }
+
+        .word-bubble.wrong {
+            background-color: var(--wrong);
+        }
+
+        .word-bubble:hover {
+            transform: scale(1.05);
+        }
+
+        #controls {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        #game-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #score, #level, #lives {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #start-screen, #game-over-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        #game-over-screen {
+            display: none;
+        }
+
+        .modal-content {
+            background: linear-gradient(to bottom right, #1a1a2e, #16213e);
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            border: 3px solid var(--player);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: var(--player);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        #final-stats {
+            margin: 20px 0;
+            line-height: 2;
+            font-size: 1.2rem;
+        }
+
+        .instructions {
+            margin: 20px 0;
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+        }
+
+        .bullet {
+            color: var(--player);
+            margin-right: 10px;
+        }
+
+        .projectile {
+            position: absolute;
+            width: 5px;
+            height: 15px;
+            background-color: var(--player);
+            border-radius: 2px;
+            box-shadow: 0 0 10px var(--player);
+            z-index: 5;
+        }
+
+        .explosion {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        @keyframes explode {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        .power-up {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #FF5722;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #FF5722;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            z-index: 8;
+        }
+
+        #difficulty-select {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .difficulty-btn {
+            padding: 8px 16px;
+            border: 2px solid transparent;
+            border-radius: 50px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .difficulty-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .difficulty-btn.selected {
+            background-color: var(--player);
+            color: black;
+            font-weight: bold;
+            border-color: white;
+        }
+
+        @media (max-width: 768px) {
+            #game-container {
+                height: 400px;
+            }
+
+            .word-bubble {
+                font-size: 1rem;
+                padding: 8px 16px;
+            }
+
+            #controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-info">
+        <div id="score"><i class="fas fa-star"></i> 점수: <span>0</span></div>
+        <div id="level"><i class="fas fa-level-up-alt"></i> 레벨: <span>1</span></div>
+        <div id="lives"><i class="fas fa-heart"></i> 목숨: <span>3</span></div>
+    </div>
+
+    <div id="game-container">
+        <div id="game-screen">
+            <div id="player"></div>
+        </div>
+
+        <div id="start-screen">
+            <div class="modal-content">
+                <h1>한글 우주 방위대</h1>
+                <p>알맞은 한국어 단어를 쏘고, 틀린 단어는 피하세요!</p>
+                
+                <div class="instructions">
+                    <div><span class="bullet">•</span> 방향키로 우주선을 이동하세요</div>
+                    <div><span class="bullet">•</span> 스페이스바로 정답을 쏘세요</div>
+                    <div><span class="bullet">•</span> 틀린 답을 맞히거나 적에게 부딪히면 목숨을 잃습니다</div>
+                </div>
+
+                <div id="difficulty-select">
+                    <div class="difficulty-btn selected" data-difficulty="easy">쉬움</div>
+                    <div class="difficulty-btn" data-difficulty="medium">보통</div>
+                    <div class="difficulty-btn" data-difficulty="hard">어려움</div>
+                </div>
+
+                <button class="btn" id="start-btn">게임 시작</button>
+            </div>
+        </div>
+
+        <div id="game-over-screen">
+            <div class="modal-content">
+                <h1>게임 오버!</h1>
+                <div id="final-stats">
+                    <p>최종 점수: <span id="final-score">0</span></p>
+                    <p>달성 레벨: <span id="final-level">1</span></p>
+                    <p>맞힌 문제: <span id="final-correct">0</span></p>
+                </div>
+                <button class="btn" id="play-again-btn">다시 플레이</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="controls">
+        <button class="btn" id="pause-btn"><i class="fas fa-pause"></i> 일시정지</button>
+        <button class="btn" id="sound-btn"><i class="fas fa-volume-up"></i> 소리</button>
+    </div>
+
+    <script>
+        // Game variables
+        let gameRunning = false;
+        let gamePaused = false;
+        let soundOn = true;
+        let playerX = 0;
+        let keys = {};
+        let score = 0;
+        let level = 1;
+        let lives = 3;
+        let correctAnswers = 0;
+        let difficulty = "easy";
+        let spawnInterval;
+        let levelUpThreshold = 5;
+        let enemySpeed = 2;
+        let spawnRate = 2000;
+
+        // Korean vocabulary with distractors
+        const vocabulary = [
+            { korean: "사과", english: "apple", level: 1 },
+            { korean: "학교", english: "school", level: 1 },
+            { korean: "책", english: "book", level: 1 },
+            { korean: "고양이", english: "cat", level: 1 },
+            { korean: "개", english: "dog", level: 1 },
+            { korean: "물", english: "water", level: 1 },
+            { korean: "불", english: "fire", level: 1 },
+            { korean: "가족", english: "family", level: 2 },
+            { korean: "친구", english: "friend", level: 2 },
+            { korean: "시간", english: "time", level: 2 },
+            { korean: "음식", english: "food", level: 2 },
+            { korean: "도시", english: "city", level: 2 },
+            { korean: "나라", english: "country", level: 2 },
+            { korean: "행복", english: "happiness", level: 3 },
+            { korean: "사랑", english: "love", level: 3 },
+            { korean: "꿈", english: "dream", level: 3 },
+            { korean: "여행", english: "travel", level: 3 },
+            { korean: "공부", english: "study", level: 3 }
+        ];
+
+        const wrongWords = [
+            "바나나", "자동차", "컴퓨터", "텔레비전", "축구",
+            "피아노", "비행기", "병원", "바지", "구름",
+            "의자", "모자", "신문", "선생님", "텔레비전"
+        ];
+
+        // DOM elements
+        const gameContainer = document.getElementById('game-container');
+        const gameScreen = document.getElementById('game-screen');
+        const player = document.getElementById('player');
+        const startScreen = document.getElementById('start-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const startBtn = document.getElementById('start-btn');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const soundBtn = document.getElementById('sound-btn');
+        const scoreDisplay = document.querySelector('#score span');
+        const levelDisplay = document.querySelector('#level span');
+        const livesDisplay = document.querySelector('#lives span');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const finalLevelDisplay = document.getElementById('final-level');
+        const finalCorrectDisplay = document.getElementById('final-correct');
+        const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+
+        // Event listeners
+        startBtn.addEventListener('click', startGame);
+        playAgainBtn.addEventListener('click', startGame);
+        pauseBtn.addEventListener('click', togglePause);
+        soundBtn.addEventListener('click', toggleSound);
+
+        difficultyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                difficultyBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                difficulty = btn.dataset.difficulty;
+                
+                // Set game difficulty
+                switch(difficulty) {
+                    case 'easy':
+                        enemySpeed = 2;
+                        spawnRate = 2000;
+                        lives = 5;
+                        break;
+                    case 'medium':
+                        enemySpeed = 3;
+                        spawnRate = 1500;
+                        lives = 3;
+                        break;
+                    case 'hard':
+                        enemySpeed = 4;
+                        spawnRate = 1000;
+                        lives = 2;
+                        break;
+                }
+                livesDisplay.textContent = lives;
+            });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            
+            if (gameRunning && !gamePaused && e.key === ' ') {
+                shoot();
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // Game functions
+        function startGame() {
+            // Reset game state
+            gameScreen.innerHTML = '<div id="player"></div>';
+            player = document.getElementById('player');
+            playerX = gameContainer.offsetWidth / 2 - player.offsetWidth / 2;
+            player.style.left = `${playerX}px`;
+            
+            score = 0;
+            level = 1;
+            correctAnswers = 0;
+            scoreDisplay.textContent = score;
+            levelDisplay.textContent = level;
+            livesDisplay.textContent = lives;
+            
+            // Start game
+            gameRunning = true;
+            startScreen.style.display = 'none';
+            gameOverScreen.style.display = 'none';
+            
+            // Start game loop
+            gameLoop();
+            
+            // Start spawning enemies
+            spawnInterval = setInterval(spawnWord, spawnRate);
+        }
+
+        function gameLoop() {
+            if (!gameRunning || gamePaused) return;
+            
+            // Move player
+            if (keys['ArrowLeft'] && playerX > 0) {
+                playerX -= 8;
+            }
+            if (keys['ArrowRight'] && playerX < gameContainer.offsetWidth - player.offsetWidth) {
+                playerX += 8;
+            }
+            player.style.left = `${playerX}px`;
+            
+            // Move projectiles
+            const projectiles = document.querySelectorAll('.projectile');
+            projectiles.forEach(projectile => {
+                const top = parseInt(projectile.style.top);
+                if (top < 0) {
+                    projectile.remove();
+                } else {
+                    projectile.style.top = `${top - 10}px`;
+                    
+                    // Check collision with words
+                    const wordBubbles = document.querySelectorAll('.word-bubble');
+                    wordBubbles.forEach(bubble => {
+                        if (checkCollision(projectile, bubble)) {
+                            handleCollision(projectile, bubble);
+                        }
+                    });
+                }
+            });
+            
+            // Move words
+            const wordBubbles = document.querySelectorAll('.word-bubble');
+            wordBubbles.forEach(bubble => {
+                const top = parseInt(bubble.style.top);
+                bubble.style.top = `${top + enemySpeed}px`;
+                
+                // Check if word reached bottom
+                if (top > gameContainer.offsetHeight) {
+                    if (bubble.classList.contains('correct')) {
+                        loseLife();
+                    }
+                    bubble.remove();
+                }
+                
+                // Check collision with player
+                if (checkCollision(player, bubble)) {
+                    handlePlayerCollision(bubble);
+                }
+            });
+            
+            // Move power ups
+            const powerUps = document.querySelectorAll('.power-up');
+            powerUps.forEach(powerUp => {
+                const top = parseInt(powerUp.style.top) + 3;
+                powerUp.style.top = `${top}px`;
+                
+                // Check if power up reached bottom
+                if (top > gameContainer.offsetHeight) {
+                    powerUp.remove();
+                }
+                
+                // Check collision with player
+                if (checkCollision(player, powerUp)) {
+                    powerUp.remove();
+                    collectPowerUp();
+                }
+            });
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        function spawnWord() {
+            if (!gameRunning || gamePaused) return;
+            
+            // Filter vocabulary for current level
+            const currentLevelWords = vocabulary.filter(word => word.level <= level);
+            
+            // Randomly decide if we'll spawn a correct or wrong word
+            const spawnCorrect = Math.random() > 0.4;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'word-bubble';
+            
+            if (spawnCorrect) {
+                // Spawn correct word
+                const randomWord = currentLevelWords[Math.floor(Math.random() * currentLevelWords.length)];
+                const isEnglish = Math.random() > 0.5;
+                
+                bubble.textContent = isEnglish ? randomWord.english : randomWord.korean;
+                bubble.dataset.correct = "true";
+                bubble.dataset.pair = isEnglish ? randomWord.korean : randomWord.english;
+                bubble.classList.add('correct');
+            } else {
+                // Spawn wrong word
+                bubble.textContent = wrongWords[Math.floor(Math.random() * wrongWords.length)];
+                bubble.dataset.correct = "false";
+                bubble.classList.add('wrong');
+            }
+            
+            // Random x position
+            const x = Math.random() * (gameContainer.offsetWidth - 150);
+            bubble.style.left = `${x}px`;
+            bubble.style.top = `-50px`;
+            
+            gameScreen.appendChild(bubble);
+        }
+
+        function shoot() {
+            if (!gameRunning || gamePaused) return;
+            
+            const projectile = document.createElement('div');
+            projectile.className = 'projectile';
+            projectile.style.left = `${playerX + player.offsetWidth / 2 - 2.5}px`;
+            projectile.style.top = `${gameContainer.offsetHeight - 70}px`;
+            
+            gameScreen.appendChild(projectile);
+            playSound('shoot');
+        }
+
+        function handleCollision(projectile, bubble) {
+            projectile.remove();
+            createExplosion(parseInt(projectile.style.left), parseInt(projectile.style.top));
+            
+            if (bubble.dataset.correct === "true") {
+                // Correct answer
+                bubble.remove();
+                score += 50 * level;
+                correctAnswers++;
+                scoreDisplay.textContent = score;
+                playSound('correct');
+                
+                // Check for level up
+                if (correctAnswers >= levelUpThreshold * level) {
+                    levelUp();
+                }
+                
+                // Spawn power up sometimes
+                if (Math.random() > 0.7) {
+                    spawnPowerUp(parseInt(bubble.style.left), parseInt(bubble.style.top));
+                }
+            } else {
+                // Wrong answer
+                loseLife();
+                playSound('wrong');
+            }
+        }
+
+        function handlePlayerCollision(bubble) {
+            if (bubble.dataset.correct === "false") {
+                // Wrong word hit player
+                bubble.remove();
+                loseLife();
+                playSound('wrong');
+            }
+        }
+
+        function loseLife() {
+            lives--;
+            livesDisplay.textContent = lives;
+            createExplosion(playerX + 25, gameContainer.offsetHeight - 50);
+            
+            if (lives <= 0) {
+                gameOver();
+            } else {
+                playSound('lifeLost');
+            }
+        }
+
+        function levelUp() {
+            level++;
+            levelDisplay.textContent = level;
+            levelUpThreshold = Math.floor(levelUpThreshold * 1.2);
+            enemySpeed += 0.5;
+            spawnRate = Math.max(500, spawnRate - 200);
+            clearInterval(spawnInterval);
+            spawnInterval = setInterval(spawnWord, spawnRate);
+            
+            playSound('levelUp');
+            showLevelUpMessage();
+        }
+
+        function showLevelUpMessage() {
+            const message = document.createElement('div');
+            message.textContent = `레벨 업! ${level}`;
+            message.style.position = 'absolute';
+            message.style.top = '50%';
+            message.style.left = '50%';
+            message.style.transform = 'translate(-50%, -50%)';
+            message.style.color = 'gold';
+            message.style.fontSize = '3rem';
+            message.style.fontWeight = 'bold';
+            message.style.textShadow = '0 0 10px white';
+            message.style.zIndex = '100';
+            message.style.animation = 'fadeOut 2s forwards';
+            gameScreen.appendChild(message);
+            
+            setTimeout(() => {
+                message.remove();
+            }, 2000);
+        }
+
+        function collectPowerUp() {
+            playSound('powerUp');
+            
+            // Random power up effect
+            const effect = Math.random();
+            
+            if (effect < 0.3) {
+                // Extra life
+                lives++;
+                livesDisplay.textContent = lives;
+                showPowerUpMessage('생명 +1');
+            } else if (effect < 0.6) {
+                // Score boost
+                score += 100 * level;
+                scoreDisplay.textContent = score;
+                showPowerUpMessage('점수 +' + (100 * level));
+            } else {
+                // Temporary invincibility
+                showPowerUpMessage('무적 시간!');
+                player.style.boxShadow = '0 0 20px gold';
+                const originalColor = player.style.backgroundColor;
+                player.style.backgroundColor = 'gold';
+                
+                setTimeout(() => {
+                    player.style.boxShadow = '0 0 10px gold';
+                    player.style.backgroundColor = originalColor;
+                }, 5000);
+            }
+        }
+
+        function spawnPowerUp(x, y) {
+            const powerUp = document.createElement('div');
+            powerUp.className = 'power-up';
+            powerUp.innerHTML = '<i class="fas fa-bolt"></i>';
+            powerUp.style.left = `${x}px`;
+            powerUp.style.top = `${y}px`;
+            
+            gameScreen.appendChild(powerUp);
+        }
+
+        function showPowerUpMessage(text) {
+            const message = document.createElement('div');
+            message.textContent = text;
+            message.style.position = 'absolute';
+            message.style.top = '20%';
+            message.style.left = '50%';
+            message.style.transform = 'translateX(-50%)';
+            message.style.color = 'white';
+            message.style.fontSize = '1.5rem';
+            message.style.fontWeight = 'bold';
+            message.style.textShadow = '0 0 5px black';
+            message.style.zIndex = '100';
+            message.style.animation = 'fadeOut 1.5s forwards';
+            gameScreen.appendChild(message);
+            
+            setTimeout(() => {
+                message.remove();
+            }, 1500);
+        }
+
+        function createExplosion(x, y) {
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            explosion.style.left = `${x - 15}px`;
+            explosion.style.top = `${y - 15}px`;
+            explosion.style.background = 'radial-gradient(circle, gold, red)';
+            explosion.style.animation = 'explode 0.5s forwards';
+            
+            gameScreen.appendChild(explosion);
+            
+            setTimeout(() => {
+                explosion.remove();
+            }, 500);
+        }
+
+        function checkCollision(obj1, obj2) {
+            const rect1 = obj1.getBoundingClientRect();
+            const rect2 = obj2.getBoundingClientRect();
+            
+            return !(
+                rect1.right < rect2.left || 
+                rect1.left > rect2.right || 
+                rect1.bottom < rect2.top || 
+                rect1.top > rect2.bottom
+            );
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            clearInterval(spawnInterval);
+            
+            finalScoreDisplay.textContent = score;
+            finalLevelDisplay.textContent = level;
+            finalCorrectDisplay.textContent = correctAnswers;
+            
+            gameOverScreen.style.display = 'flex';
+            playSound('gameOver');
+        }
+
+        function togglePause() {
+            gamePaused = !gamePaused;
+            pauseBtn.innerHTML = gamePaused ? 
+                '<i class="fas fa-play"></i> 계속하기' : 
+                '<i class="fas fa-pause"></i> 일시정지';
+            
+            if (!gamePaused && gameRunning) {
+                gameLoop();
+                spawnInterval = setInterval(spawnWord, spawnRate);
+            }
+            
+            playSound('click');
+        }
+
+        function toggleSound() {
+            soundOn = !soundOn;
+            soundBtn.innerHTML = soundOn ? 
+                '<i class="fas fa-volume-up"></i> 소리' : 
+                '<i class="fas fa-volume-mute"></i> 음소거';
+            playSound('click');
+        }
+
+        function playSound(type) {
+            if (!soundOn) return;
+            
+            // In a real implementation, you would play actual sounds here
+            console.log(`Playing ${type} sound`);
+        }
+
+        // Initialize
+        difficultyBtns[0].click(); // Set default difficulty
+    </script>
+</body>
+</html>

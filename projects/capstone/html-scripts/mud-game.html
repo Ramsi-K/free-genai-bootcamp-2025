@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한국어 모험 (Korean Adventure)</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #0f0f0f;
+            color: #e0e0e0;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        #game-container {
+            border: 1px solid #444;
+            padding: 20px;
+            height: 400px;
+            overflow-y: scroll;
+            margin-bottom: 20px;
+            background-color: #111;
+        }
+        
+        #input-container {
+            display: flex;
+        }
+        
+        #command-input {
+            flex-grow: 1;
+            padding: 10px;
+            background-color: #222;
+            color: #e0e0e0;
+            border: 1px solid #444;
+            font-family: 'Courier New', monospace;
+        }
+        
+        #command-input:focus {
+            outline: none;
+            border-color: #666;
+        }
+        
+        button {
+            padding: 10px 15px;
+            background-color: #333;
+            color: #e0e0e0;
+            border: 1px solid #444;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #444;
+        }
+        
+        .game-text {
+            margin-bottom: 10px;
+        }
+        
+        .location {
+            color: #4CAF50;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .object {
+            color: #FF9800;
+        }
+        
+        .npc {
+            color: #2196F3;
+        }
+        
+        .exit {
+            color: #9C27B0;
+        }
+        
+        .vocab {
+            color: #FF5722;
+            font-weight: bold;
+        }
+        
+        .vocab-meaning {
+            color: #607D8B;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+        
+        .command-help {
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+        
+        .inventory-item {
+            color: #FFC107;
+        }
+        
+        .error {
+            color: #F44336;
+        }
+    </style>
+</head>
+<body>
+    <h1>한국어 모험 (Korean Adventure)</h1>
+    <div id="game-container">
+        <div class="game-text">어서 오세요! 한국어 모험 게임에 오신 것을 환영합니다.</div>
+        <div class="game-text">Today's vocabulary word: <span class="vocab">학교<span class="vocab-meaning"> (school)</span></span></div>
+    </div>
+    <div id="input-container">
+        <input type="text" id="command-input" placeholder="명령을 입력하세요..." autofocus>
+        <button id="submit-button">Enter</button>
+    </div>
+    
+    <script>
+        // Game state
+        const gameState = {
+            currentRoom: 'home',
+            inventory: [],
+            learnedWords: ['학교'],
+            score: 0
+        };
+        
+        // Vocabulary with Korean and English
+        const vocabulary = {
+            '학교': 'school',
+            '책': 'book',
+            '의자': 'chair',
+            '탁자': 'table',
+            '문': 'door',
+            '창문': 'window',
+            '선생님': 'teacher',
+            '학생': 'student',
+            '친구': 'friend',
+            '가방': 'bag'
+        };
+        
+        // Rooms data
+        const rooms = {
+            'home': {
+                description: "당신은 집에 있습니다. 여기는 따뜻하고 안전합니다.",
+                descriptionVocab: `당신은 <span class="vocab">집<span class="vocab-meaning"> (home)</span></span>에 있습니다.`,
+                objects: ['책', '의자', '탁자'],
+                exits: {
+                    'east': 'street',
+                    'description': "출구: 동쪽으로 길이 있습니다."
+                },
+                npcs: []
+            },
+            'street': {
+                description: "당신은 조용한 거리에 있습니다. 주변에 사람들이 몇 명 있습니다.",
+                descriptionVocab: `당신은 조용한 <span class="vocab">길<span class="vocab-meaning"> (street)</span></span>에 있습니다.`,
+                objects: [],
+                exits: {
+                    'west': 'home',
+                    'north': 'school',
+                    'description': "출구: 서쪽으로 집이, 북쪽으로 학교가 있습니다."
+                },
+                npcs: ['친구']
+            },
+            'school': {
+                description: "당신은 학교 안에 있습니다. 많은 학생들이 공부하고 있습니다.",
+                descriptionVocab: `당신은 <span class="vocab">학교<span class="vocab-meaning"> (school)</span></span> 안에 있습니다.`,
+                objects: ['책', '가방'],
+                exits: {
+                    'south': 'street',
+                    'description': "출구: 남쪽으로 길이 있습니다."
+                },
+                npcs: ['선생님', '학생']
+            }
+        };
+        
+        // NPC dialogues
+        const npcDialogues = {
+            '친구': {
+                initial: "안녕! 오늘 기분이 어때? (Hello! How are you today?)",
+                askWord: "오늘 배운 한국어 단어가 뭐야? (What Korean word did you learn today?)",
+                correctResponse: "정말 잘했어요! (Great job!)",
+                wrongResponse: "아니요, 다시 생각해 보세요. (No, think again.)"
+            },
+            '선생님': {
+                initial: "수업이 곧 시작됩니다. 준비하세요! (Class will start soon. Get ready!)",
+                askWord: "한국어로 'school'은 뭐라고 해요? (What is 'school' in Korean?)",
+                correctResponse: "참 잘했어요! (Excellent!)",
+                wrongResponse: "다시 시도해 보세요. (Try again.)"
+            },
+            '학생': {
+                initial: "안녕하세요? 저는 새 학생입니다. (Hello, I'm a new student.)",
+                askWord: "한국어로 'book'은 뭐예요? (What is 'book' in Korean?)",
+                correctResponse: "맞아요! (That's right!)",
+                wrongResponse: "틀렸어요! (Wrong!)"
+            }
+        };
+        
+        // Available commands
+        const commands = {
+            'look': ['look', '보기'],
+            'move': ['go', 'move', '이동', '가다'],
+            'take': ['take', 'pick', '들다', '가져가다'],
+            'drop': ['drop', '버리다', '놓다'],
+            'talk': ['talk', 'say', '대화', '말하다'],
+            'use': ['use', '사용하다'],
+            'give': ['give', '주다'],
+            'open': ['open', '열다'],
+            'close': ['close', '닫다'],
+            'eat': ['eat', '먹다'],
+            'inventory': ['inventory', 'inv', '소지품'],
+            'drink': ['drink', '마시다'],
+            'help': ['help', '도움', '명령어']
+        };
+        
+        // Direction aliases
+        const directions = {
+            'north': ['north', '북', '북쪽'],
+            'south': ['south', '남', '남쪽'],
+            'east': ['east', '동', '동쪽'],
+            'west': ['west', '서', '서쪽'],
+            'up': ['up', '위'],
+            'down': ['down', '아래'],
+            'left': ['left', '왼쪽'],
+            'right': ['right', '오른쪽']
+        };
+        
+        // DOM elements
+        const gameContainer = document.getElementById('game-container');
+        const commandInput = document.getElementById('command-input');
+        const submitButton = document.getElementById('submit-button');
+        
+        // Initialize game
+        function initGame() {
+            addToGame("오늘의 한국어 단어를 배워보세요!");
+            addToGame("사용 가능한 명령어: 보기, 이동 [방향], 들다 [물건], 버리다 [물건], 대화 [사람], 사용하다 [물건], 주다 [사람] [물건], 열다 [물건], 닫다 [물건], 먹다 [음식], 소지품, 마시다 [음료], 도움");
+            printRoomDescription();
+        }
+        
+        // Add text to game container
+        function addToGame(text, className = 'game-text') {
+            const div = document.createElement('div');
+            div.className = className;
+            div.innerHTML = text;
+            gameContainer.appendChild(div);
+            gameContainer.scrollTop = gameContainer.scrollHeight;
+        }
+        
+        // Print current room description
+        function printRoomDescription() {
+            const room = rooms[gameState.currentRoom];
+            
+            addToGame(`<div class="location">현재 위치: ${gameState.currentRoom === 'home' ? '집' : gameState.currentRoom === 'street' ? '길' : '학교'}</div>`);
+            
+            if (gameState.learnedWords.length >= Object.keys(vocabulary).length) {
+                addToGame(room.descriptionVocab);
+            } else {
+                addToGame(room.description);
+            }
+            
+            // Show objects in room
+            if (room.objects.length > 0) {
+                let objectsText = "여기에 볼 수 있는 물건들: ";
+                objectsText += room.objects.map(obj => {
+                    const learned = gameState.learnedWords.includes(obj);
+                    return learned ? 
+                        `<span class="object">${obj}<span class="vocab-meaning"> (${vocabulary[obj]})</span></span>` : 
+                        `<span class="object">${vocabulary[obj]}</span>`;
+                }).join(", ");
+                addToGame(objectsText);
+            }
+            
+            // Show NPCs in room
+            if (room.npcs.length > 0) {
+                let npcsText = "여기에 있는 사람들: ";
+                npcsText += room.npcs.map(npc => {
+                    const learned = gameState.learnedWords.includes(npc);
+                    return learned ? 
+                        `<span class="npc">${npc}<span class="vocab-meaning"> (${vocabulary[npc]})</span></span>` : 
+                        `<span class="npc">${vocabulary[npc]}</span>`;
+                }).join(", ");
+                addToGame(npcsText);
+            }
+            
+            // Show exits
+            addToGame(`<span class="exit">${room.exits.description}</span>`);
+        }
+        
+        // Process player input
+        function processCommand() {
+            const input = commandInput.value.trim().toLowerCase();
+            commandInput.value = '';
+            
+            if (!input) return;
+            
+            addToGame(`<span style="color:#aaa;">&gt; ${input}</span>`);
+            
+            // Check for matching command
+            let commandFound = false;
+            
+            // Help command
+            if (isCommand(input, 'help')) {
+                commandFound = true;
+                showHelp();
+            }
+            
+            // Look command
+            else if (isCommand(input, 'look')) {
+                commandFound = true;
+                printRoomDescription();
+            }
+            
+            // Move command
+            else if (isCommand(input.split(' ')[0], 'move')) {
+                commandFound = true;
+                const direction = input.split(' ')[1];
+                movePlayer(direction);
+            }
+            
+            // Take command
+            else if (isCommand(input.split(' ')[0], 'take')) {
+                commandFound = true;
+                const object = input.split(' ').slice(1).join(' ');
+                takeObject(object);
+            }
+            
+            // Drop command
+            else if (isCommand(input.split(' ')[0], 'drop')) {
+                commandFound = true;
+                const object = input.split(' ').slice(1).join(' ');
+                dropObject(object);
+            }
+            
+            // Talk command
+            else if (isCommand(input.split(' ')[0], 'talk')) {
+                commandFound = true;
+                const npc = input.split(' ').slice(1).join(' ');
+                talkToNPC(npc);
+            }
+            
+            // Inventory command
+            else if (isCommand(input, 'inventory')) {
+                commandFound = true;
+                showInventory();
+            }
+            
+            // Use command
+            else if (isCommand(input.split(' ')[0], 'use')) {
+                commandFound = true;
+                const object = input.split(' ').slice(1).join(' ');
+                useObject(object);
+            }
+            
+            // No matching command found
+            if (!commandFound) {
+                addToGame("잘 이해하지 못했습니다. '도움' 명령을 사용하여 사용 가능한 명령을 볼 수 있습니다.", 'error');
+            }
+        }
+        
+        // Check if input matches a command
+        function isCommand(input, commandType) {
+            return commands[commandType].some(cmd => input.startsWith(cmd));
+        }
+        
+        // Show help
+        function showHelp() {
+            addToGame("<div class='command-help'>사용 가능한 명령어:</div>");
+            addToGame("<div class='command-help'>보기 - 주변을 둘러봅니다</div>");
+            addToGame("<div class='command-help'>이동 [방향] - 북/남/동/서/위/아래 등으로 이동</div>");
+            addToGame("<div class='command-help'>들다 [물건] - 물건을 집습니다</div>");
+            addToGame("<div class='command-help'>버리다 [물건] - 물건을 버립니다</div>");
+            addToGame("<div class='command-help'>대화 [사람] - 사람과 대화합니다</div>");
+            addToGame("<div class='command-help'>사용하다 [물건] - 물건을 사용합니다</div>");
+            addToGame("<div class='command-help'>주다 [사람] [물건] - 사람에게 물건을 줍니다</div>");
+            addToGame("<div class='command-help'>열다 [물건] - 문이나 상자를 엽니다</div>");
+            addToGame("<div class='command-help'>닫다 [물건] - 문이나 상자를 닫습니다</div>");
+            addToGame("<div class='command-help'>먹다 [음식] - 음식을 먹습니다</div>");
+            addToGame("<div class='command-help'>마시다 [음료] - 음료를 마십니다</div>");
+            addToGame("<div class='command-help'>소지품 - 가지고 있는 물건을 확인합니다</div>");
+        }
+        
+        // Move player
+        function movePlayer(direction) {
+            if (!direction) {
+                addToGame("어느 방향으로 이동하시겠습니까? (예: 북쪽, 동쪽)", 'error');
+                return;
+            }
+            
+            // Find the direction in aliases
+            let matchedDirection = null;
+            for (const [dir, aliases] of Object.entries(directions)) {
+                if (aliases.includes(direction)) {
+                    matchedDirection = dir;
+                    break;
+                }
+            }
+            
+            if (!matchedDirection) {
+                addToGame(`"${direction}"은(는) 유효한 방향이 아닙니다.`, 'error');
+                return;
+            }
+            
+            const currentRoom = rooms[gameState.currentRoom];
+            const exitRoom = currentRoom.exits[matchedDirection];
+            
+            if (exitRoom) {
+                gameState.currentRoom = exitRoom;
+                addToGame(`${matchedDirection}쪽으로 이동합니다...`);
+                printRoomDescription();
+                
+                // Check if we need to learn a new word
+                const roomName = gameState.currentRoom === 'home' ? '집' : 
+                                 gameState.currentRoom === 'street' ? '길' : '학교';
+                
+                if (!gameState.learnedWords.includes(roomName)) {
+                    addToGame(`새로운 단어를 배웠습니다: <span class="vocab">${roomName}<span class="vocab-meaning"> (${vocabulary[roomName]})</span></span>`);
+                    gameState.learnedWords.push(roomName);
+                    gameState.score += 10;
+                }
+            } else {
+                addToGame(`그쪽으로는 갈 수 없습니다.`, 'error');
+            }
+        }
+        
+        // Take object
+        function takeObject(object) {
+            if (!object) {
+                addToGame("무엇을 들어야 합니까?", 'error');
+                return;
+            }
+            
+            const currentRoom = rooms[gameState.currentRoom];
+            let objectFound = null;
+            
+            // Check if object is in room using English or Korean
+            for (const obj of currentRoom.objects) {
+                const englishName = vocabulary[obj];
+                if (obj === object || englishName === object) {
+                    objectFound = obj;
+                    break;
+                }
+            }
+            
+            if (objectFound) {
+                // Check if player already knows the Korean word
+                if (!gameState.learnedWords.includes(objectFound)) {
+                    const confirmation = confirm(`"${vocabulary[objectFound]}"의 한국어 단어를 배우시겠습니까?\n(Would you like to learn the Korean word for "${vocabulary[objectFound]}"?)`);
+                    if (confirmation) {
+                        gameState.learnedWords.push(objectFound);
+                        gameState.score += 10;
+                        addToGame(`새로운 단어를 배웠습니다: <span class="vocab">${objectFound}<span class="vocab-meaning"> (${vocabulary[objectFound]})</span></span>`);
+                    }
+                }
+                
+                gameState.inventory.push(objectFound);
+                currentRoom.objects = currentRoom.objects.filter(obj => obj !== objectFound);
+                addToGame(`당신은 ${vocabulary[objectFound]}을(를) 들었습니다.`);
+            } else {
+                addToGame(`여기에 ${object}은(는) 없습니다.`, 'error');
+            }
+        }
+        
+        // Drop object
+        function dropObject(object) {
+            if (!object) {
+                addToGame("무엇을 놓아야 합니까?", 'error');
+                return;
+            }
+            
+            let objectFound = null;
+            
+            // Check if object is in inventory using English or Korean
+            for (const obj of gameState.inventory) {
+                const englishName = vocabulary[obj];
+                if (obj === object || englishName === object) {
+                    objectFound = obj;
+                    break;
+                }
+            }
+            
+            if (objectFound) {
+                gameState.inventory = gameState.inventory.filter(obj => obj !== objectFound);
+                rooms[gameState.currentRoom].objects.push(objectFound);
+                addToGame(`당신은 ${vocabulary[objectFound]}을(를) 놓았습니다.`);
+            } else {
+                addToGame(`당신은 ${object}을(를) 가지고 있지 않습니다.`, 'error');
+            }
+        }
+        
+        // Talk to NPC
+        function talkToNPC(npc) {
+            if (!npc) {
+                addToGame("누구와 대화하시겠습니까?", 'error');
+                return;
+            }
+            
+            const currentRoom = rooms[gameState.currentRoom];
+            let npcFound = null;
+            
+            // Check if NPC is in room using English or Korean
+            for (const npcKey of currentRoom.npcs) {
+                const englishName = vocabulary[npcKey];
+                if (npcKey === npc || englishName === npc) {
+                    npcFound = npcKey;
+                    break;
+                }
+            }
+            
+            if (npcFound) {
+                // Check if player knows the Korean word
+                const knowsWord = gameState.learnedWords.includes(npcFound);
+                
+                if (knowsWord) {
+                    const dialogue = npcDialogues[npcFound];
+                    addToGame(`<span class="npc">${npcFound}:</span> ${dialogue.initial}`);
+                    
+                    // Prompt player with vocab question
+                    setTimeout(() => {
+                        addToGame(`<span class="npc">${npcFound}:</span> ${dialogue.askWord}`);
+                        
+                        // Simple interaction (in a real game, you'd prompt the user)
+                        setTimeout(() => {
+                            const answer = prompt(dialogue.askWord);
+                            if (answer && answer.trim().toLowerCase() === npcFound.toLowerCase()) {
+                                addToGame(`<span class="npc">${npcFound}:</span> ${dialogue.correctResponse}`);
+                                gameState.score += 20;
+                            } else {
+                                addToGame(`<span class="npc">${npcFound}:</span> ${dialogue.wrongResponse}`);
+                            }
+                        }, 1000);
+                    }, 1000);
+                } else {
+                    // Player doesn't know the Korean word yet
+                    const confirmation = confirm(`"${vocabulary[npcFound]}"의 한국어 단어를 배우시겠습니까?\n(Would you like to learn the Korean word for "${vocabulary[npcFound]}"?)`);
+                    if (confirmation) {
+                        gameState.learnedWords.push(npcFound);
+                        gameState.score += 10;
+                        addToGame(`새로운 단어를 배웠습니다: <span class="vocab">${npcFound}<span class="vocab-meaning"> (${vocabulary[npcFound]})</span></span>`);
+                        
+                        // Now they can talk to the NPC again and practice
+                        addToGame(`이제 ${npcFound}과(와) 대화할 수 있습니다.`);
+                    }
+                }
+            } else {
+                addToGame(`여기에 ${npc}은(는) 없습니다.`, 'error');
+            }
+        }
+        
+        // Show inventory
+        function showInventory() {
+            if (gameState.inventory.length === 0) {
+                addToGame("당신은 아무것도 가지고 있지 않습니다.");
+                return;
+            }
+            
+            let inventoryText = "당신은 다음을 가지고 있습니다: ";
+            inventoryText += gameState.inventory.map(item => {
+                return `<span class="inventory-item">${item}<span class="vocab-meaning"> (${vocabulary[item]})</span></span>`;
+            }).join(", ");
+            
+            addToGame(inventoryText);
+        }
+        
+        // Use object (simplified)
+        function useObject(object) {
+            if (!object) {
+                addToGame("무엇을 사용하시겠습니까?", 'error');
+                return;
+            }
+            
+            // Check if object is in inventory
+            let objectFound = null;
+            for (const obj of gameState.inventory) {
+                const englishName = vocabulary[obj];
+                if (obj === object || englishName === object) {
+                    objectFound = obj;
+                    break;
+                }
+            }
+            
+            if (objectFound) {
+                addToGame(`당신은 ${vocabulary[objectFound]}을(를) 사용합니다.`);
+                
+                // Special effect for book (learn a random new word)
+                if (objectFound === '책') {
+                    const unlearnedWords = Object.keys(vocabulary).filter(
+                        word => !gameState.learnedWords.includes(word)
+                    );
+                    
+                    if (unlearnedWords.length > 0) {
+                        const randomWord = unlearnedWords[Math.floor(Math.random() * unlearnedWords.length)];
+                        gameState.learnedWords.push(randomWord);
+                        gameState.score += 10;
+                        addToGame(`책을 읽다가 새로운 단어를 발견했습니다!`);
+                        addToGame(`새로운 단어를 배웠습니다: <span class="vocab">${randomWord}<span class="vocab-meaning"> (${vocabulary[randomWord]})</span></span>`);
+                    } else {
+                        addToGame(`이 책에서 배울 새로운 단어는 더 이상 없습니다.`);
+                    }
+                }
+            } else {
+                addToGame(`당신은 ${object}을(를) 가지고 있지 않습니다.`, 'error');
+            }
+        }
+        
+        // Event listeners
+        submitButton.addEventListener('click', processCommand);
+        commandInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                processCommand();
+            }
+        });
+        
+        // Start the game
+        initGame();
+    </script>
+</body>
+</html>
