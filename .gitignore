@@ -3,6 +3,10 @@
 *.zip
 */todo.txt
 */*/todo.txt
+.DS_Store
+*.db
+*.pyc
+*.ipynb
 
 #ignore sourced docs and assets
 assets/
