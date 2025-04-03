@@ -17,6 +17,15 @@
 
 ## Week 8
 
+### Day 55 and 56: March 31 April 2, 2025:
+
+**T-minus 10 days to submission (April 12)**
+
+On March 31, I focused on backend cleanup—fixing redundancies, resolving circular imports, and trying to stabilize the architecture. I ran out of Copilot monthly credits, so I started testing alternatives: Gemini Code Assist, Cline, Roo, and others. I tried Gemini 2.5 but it throttled out in 15 minutes. Most of the models I tested either introduced new problems or failed to resolve existing ones. The day was spent mostly switching between models and trying to find something reliable to work with.
+
+On April 2, I returned to the idea of salvaging the megaservice for the listening learning app. The thought was that if I could get it running, I could use OPEA in my capstone. I don't want to use OPEA otherwise. There are better and easier methods, but since OPEA was such a central part of the bootcamp, I decided it would be good to at least try. Again, my major issues revolved around models: not working reliably, API call limits and throttling. Claude 3.7 also tried to delete all my code files.
+I am planning to give the OPEA Listening Learning App another half-day on April 3. If I can't get it to work then I would have to abandon it. Most others also had issues with OPEA. If I do get it running, I might still use it in the capstone, if it proves worth the trouble.
+
 ### Day 54: March 30, 2025
 
 **T-minus 13 days to submission (April 12)**
