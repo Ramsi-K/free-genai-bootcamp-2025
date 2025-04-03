@@ -4,6 +4,9 @@
 
 ## Jump to what I was doing in
 
+
+
+- [Week 8](#week-8)
 - [Week 7](#week-7)
 - [Week 6](#week-6)
 - [Week 5 (Sick Week)](#week-5-sick-week)
@@ -20,11 +23,113 @@
 
 Today, I completed Section 8 of the dissertation, marking a major milestone in the project. This section: "Recent Advances, Notable Research, and Future Directions" -- was the most intensive by far. I re-read countless papers today, validating of every reference, integrating systems, and restructuring based on emerging themes. I merged and refined all previous drafts, verifying citation accuracy and consolidating some overlapping subsections. The final version includes advances in multimodal turn detection, cultural and neurodivergent adaptation, governance and privacy, unresolved challenges, and a set of forward-looking research directions. I also completed the Executive Summary, formally closing out the analytical portion of the paper. What remains now is the conclusion, back-revising the introduction and abstract, formatting the index, and preparing acknowledgements. 
 
+## Week 8
+
+### Day 55 and 56: March 31 April 2, 2025:
+
+**T-minus 10 days to submission (April 12)**
+
+On March 31, I focused on backend cleanup—fixing redundancies, resolving circular imports, and trying to stabilize the architecture. I ran out of Copilot monthly credits, so I started testing alternatives: Gemini Code Assist, Cline, Roo, and others. I tried Gemini 2.5 but it throttled out in 15 minutes. Most of the models I tested either introduced new problems or failed to resolve existing ones. The day was spent mostly switching between models and trying to find something reliable to work with.
+
+On April 2, I returned to the idea of salvaging the megaservice for the listening learning app. The thought was that if I could get it running, I could use OPEA in my capstone. I don't want to use OPEA otherwise. There are better and easier methods, but since OPEA was such a central part of the bootcamp, I decided it would be good to at least try. Again, my major issues revolved around models: not working reliably, API call limits and throttling. Claude 3.7 also tried to delete all my code files.
+I am planning to give the OPEA Listening Learning App another half-day on April 3. If I can't get it to work then I would have to abandon it. Most others also had issues with OPEA. If I do get it running, I might still use it in the capstone, if it proves worth the trouble.
+
+### Day 54: March 30, 2025
+
+**T-minus 13 days to submission (April 12)**
+
+Today I fixed all remaining backend import errors and confirmed my FastAPI routes via /debug/routes. The routes are correctly registered, but many of my test cases are still failing due to model issues, missing associations, or incorrect payloads. I successfully posted a new word using the `/api/words` POST route, but the `/api/groups` POST route is returning a 500 error, likely due to a mismatch between the schema and database model. Sentence-related routes are returning 404 or 422, which may be due to a lack of test data or broken relationships between words and sentences. 
+
+I also generated multiple HTML-based language learning games using Hugging Face’s DeepSeek AI builder, including Munchers, MUD Game, Listening Match, Memory Match, Proverbs Matching, Finger Spelling, and Consonant Game. These games are functional but currently separate from my app's frontend stack. I plan to integrate them soon. I also started working on the writing practice app, which will compare user handwriting to Korean calligraphy using a webcam. 
+
+### Day 53: March 29, 2025
+
+**T-minus 14 days to submission (April 12)**
+
+I finalized the complete database schema for my capstone project, restructuring it to support all planned app features including word tracking, session logging, agent attribution, and SRS functionality. I implemented tables such as `words`, `sample_sentences`, `word_groups`, `word_group_map`, `study_sessions`, `activity_logs`, `session_stats`, `word_stats`, and `wrong_inputs`, and added support fields like `source_type`, `source_details`, `added_by_agent`, `ease_factor`, and `next_due_at`. I built reset logic for both full database resets and individual sessions. I reviewed the backend folder structure, confirmed the role of models and schemas, and clarified planned API endpoints. I also studied chunking and embedding techniques. RAG retrieval types and types of Agentic RAG. I am leaning towards Swarm type Agents instead of having a designated orchestrator. I spent some time on setting up the OCR pipeline. I wrote the script to convert image-based PDFs into page-level images, extract Korean text using OCR, and save each page's image and metadata into structured JSON and a combined JSONL file for future chunking and embedding.
+
+## Week 7
+
+### Day 52: March 28, 2025
+
+**T-minus 15 days to submission (April 12)**
+
+Today I built the entire backend from scratch in FastAPI. I connected it to the frontend I had started earlier with Vite, Bolt, and Tailwind. I picked up that half-finished UI, filled in a lot of the placeholder logic, and got the API integration flowing cleanly. I also added in and improved the Munchers game I had prototyped in p5js. The game is working but it doesn't have fun looking characters. I added beginner, intermediate and advanced levels. I was initially working with static data but then I tried to add data in from the sqlite3 db. The theme picking logic is not working well. My backend is returning the api calls with the right info but its not connected well to my game. I built everything in Docker from step 1. Vibe coding FTW :muscle: :mechanical_arm:
+
+### Day 51: March 27, 2025  
+
+**T-minus 16 days to submission (April 12)**
+
+Today was… chaotic. I spent nearly 9 hours “working” inside a 16-hour day, but it felt like I was chasing clarity across a hundred tabs and losing most of them. I started the day intending to work on backend setup and conda environments, but I quickly got sidetracked by MCP (Model Context Protocol) — a rabbit hole I absolutely did not need. I spiraled into researching how OpenAI and Anthropic define MCP, whether their implementations are compatible, whether it's just glorified JSONification, and why the hype was so intense.
+
+Despite the frustration, I actually did meaningful work beneath the chaos: I clarified the entire backend structure and data flow for my HagXwon project. I defined explicit connections between the Words table and all major study systems — Flashcards, MUD game, and Sentence Practice — and specified that everything must be logged properly as part of study sessions. No abstraction. Sentence Practice, in particular, got its own formal definition: it prompts the user to write or draw a letter, word, or sentence, then compares the result to the original via canvas, image upload, or webcam. It doesn’t require OCR — just image comparison — and I decided it could be turned into a roast-based side feature for AhjummaGPT.
+
+I also made character design decisions, dropping KoreabooGPT and replacing it with NunaGPT — an enthusiastic agent focused on K-pop and K-dramas. I reinforced the roles of existing agents, including the Noraebang Agent (for song-to-vocab), and confirmed that some agents (like AhjussiGPT) will need access to external web search tools to retrieve idioms and proverbs from sites like krdict.
+
+I also made major progress finalizing the structure for a multi-agentic RAG system. I now have a clear separation between structured vocabulary data (which will live in SQLite) and freeform, chunked content (stored in ChromaDB). I confirmed that Flashcards, the MUD game, and Sentence Practice all pull from the same core Words table, with metadata like TOPIK level, tone, and usage frequency to support retrieval. More importantly, I designed the system to support agent-specific RAG behavior: for example, AhjussiGPT will use real-time web search to pull idioms and proverbs from krdict, while NunaGPT will retrieve pop culture references from K-pop sources. Noraebang Agent will use lyrics or subtitles to generate vocabulary lists from songs. Each agent will filter retrieval based on persona traits and user level, creating a truly personalized experience across multiple modalities. I haven’t implemented any of it yet, but the architectural plan is solid and aligns with the overall goal of intelligent, personality-driven tutoring.
+
+Although I only watched ~35 minutes of the backend video, I reviewed my FastAPI flashcard code and remembered where I left off. My backend is technically functional — flashcard routes and logic are working — but it’s not connected to the frontend yet. I located the frontend folder in my repo but still don’t understand how it works or how to tie it all together.
+
+By the end of the day, I gave up on MCP, concluded it was a distraction (at least for now), and decided to refocus on shipping the backend. I was also severely sleep-deprived (only 3 hours of sleep the night before), but I managed to clean up, shower, and keep pushing through — even if most of that push involved yelling at AI about tool wrappers and JSON specs. Structurally, the day wasn’t wasted. I walked away with clearer architecture, stronger ERD design, and deeper confidence in how the pieces should fit together.
+
+### Day 49, 50: March 25 & 26, 2025
+
+**T-minus 17 days to submission (April 12)**
+
+Over the last two days, I made major progress getting the structure and architecture of my HagXwon capstone project into shape, even though nothing is finalized yet. I’ve been bouncing between ideas, refining my direction, and trying to get a high-level view of the system before writing any actual code. I spent a good amount of time researching RAG systems—how they work, what kinds of data they require, and which type of retrieval logic might best suit my use case. I looked into various options including standard RAG and multi-agentic RAG options and am still weighing which direction makes sense depending on how fast I can build and how cleanly I can integrate each piece. I also had to step back and realize that it’s not my job to solve Korean grammar logic from scratch—I need to build a scalable system that leverages LLMs effectively without overcomplicating things.
+
+In parallel, I watched all the remaining bootcamp lectures, including a number of unlisted MUD game videos, so I could fully understand the expectations and the references behind the projects. I easily went through what felt like 400 hours of content in two days, just to make sure I didn’t miss anything. Around the same time, Gemini released new models on March 25, and I tested them by generating fully playable p5.js games from a single prompt. GPT then dropped the GPT-4o image model on the 26th, so I tested that as well and started thinking about how I could use it in any part of my build. I generated an AhjummaGPT holding kimchi and created a full cartoon trainer family portrait including Ahjumma, Ahjussi, Koreaboo, Sunbae, and more.
+
+I also started looking seriously into backend deployment using Docker. I went back over Docker concepts and clarified a lot of my earlier confusion—especially around whether to containerize everything or keep some parts external. I now have a working mental model where my FastAPI app and any local LLM containers (e.g., via Ollama) run together using docker-compose, while larger assets like vector DBs and training data are stored externally—possibly on Hugging Face—and pulled in at runtime. I also confirmed that things like sample dialogues for fine-tuning should not be included inside the container itself.
+
+For fine-tuning, I worked through a plan for supporting multiple personalities—AhjummaGPT, AhjussiGPT, KoreabooGPT, and others—within the same base model using persona-tagged JSONL files. These can be trained using LoRA and then prompt-injected at runtime to simulate each style. I did some digging to check if any similar persona datasets already exist, but it looks like I’ll need to generate my own. I estimated somewhere between 300 and 1000 samples per persona would be enough, and I’ll prioritize AhjummaGPT for the bootcamp timeline. I also started defining a tone and tagging schema that will include things like tone strength, formality, speaker type, language mix, and TOPIK level.
+
+A big part of these two days also went into searching for high-quality Korean learning resources. I spent hours tracking down open-source grammar books, vocabulary lists, dictionaries, and even research papers or cultural materials that could be embedded as background knowledge for the RAG system. This will help anchor the different trainer personalities in real, culturally grounded material. I especially focused on kimchi-related texts, Korean etiquette, traditional phrases, and beginner-level grammar explanations. Nothing is committed yet, but I now have a library of sources to draw from and tag as I go.
+
+I wrote and iterated on my HagXwon tech spec, my README, and a document outlining the character system and major trainer personas. I also drafted a Gantt chart to help plan my delivery timeline and scoped out which components are core and which are stretch goals. These documents helped me pin down how the backend and frontend will interact, what kinds of databases are needed, how persona switching should work, and how I might integrate things like fine-tuning and vector search into the broader system.
+
+Some of my time also went into exploring how to handle handwriting input in the language learning flow. I reviewed a few options—OCR models, CNN-based classification, and simple image comparison—and realized that since my app controls what the user is supposed to write, I can likely skip classification and just compare the input to a rendered version of the expected character. I studied how the tutorial Kana app does this and confirmed that their approach is based on single-character comparison, which fits my case.Andrew’s reimplementation shifted from sentence-level to word-level checking, which reaffirmed that handwriting evaluation could either be straightforward (at the jamo level) or a major hurdle (at the sentence level), depending on scope. I briefly considered turning this feature into a side quest—a fun, roast-based handwriting rating tool powered by AhjummaGPT that doesn’t actually validate anything but instead delivers randomized sass. That idea would simplify the logic and make it more engaging for users without requiring heavy modeling. I also realized that the sentence-writing and recognition features in Andrew's implementation make more sense for someone preparing for JLPT5, whereas my app is focused on early learners, where stroke practice and jamo familiarity are more important than full-sentence recognition.
+
+I looked at existing Korean handwriting datasets and realized they’re not great for my use case—most are low-quality or not suited to calligraphy practice. I started planning out how I might generate a dataset using different fonts and make it public on Kaggle, mostly for fun and potential future use in a tracing or calligraphy mode. But again—this isn’t final. Just an idea I'm holding onto for now. I also explored models like Donut (by Clova) and Polyglot-Ko, and while Donut might be useful for OCR down the line, it’s not something I'm focused on right now. Polyglot-Ko, on the other hand, looks promising for persona fine-tuning, especially for Korean-speaking characters like AhjummaGPT.
+
+Finally, I reviewed some of my older diagrams from the “Beyond Human Mimicry” project using Napkin.ai and realized they might actually support my current app direction by explaining the design logic behind non-Western agent identities. I’ve been thinking more seriously about how cultural grounding impacts personality modeling, and this app may become a real showcase for that idea. All in all, nothing is final yet, but I’ve laid a massive amount of groundwork and feel like I’m finally approaching clarity.
+
+I also looked into pruning vs quantization; self quantizing models vs using pre quantized models from hf; LoRA vs qLoRA; Flask vs FastAPI vs Gradio vs Streamlit; CNN vs SSIM vs OCR;  single vs multiple vector DBs; agentic web search for song-to-vocab vs multi-agentic RAG with web search; choosing pororo ocr just because it sounds cute;  Korean LLMs, including Polyglot-Ko, Motif, EXAONE, and HyperCLOVA, and the Donut model for OCR; GPT-SoVITS for voice cloning, AvatarChatbot from OPEA; and pre-rendered avatar animation vs real-time interaction.
+
+### Day 48: March 24, 2025
+
+Today was a whirlwind of architecture, contemplation, and vibing through backend design. I finalized the outline for my next research paper: "Beyond Human Mimicry: Rethinking AI Identity in Generative Models." The structure includes seven core sections, each supported by real, recent citations. Topics covered include anthropomorphism, ethical realism vs. transparency, memory design, long-term interaction bias, and non-human AI identities. I also added a focused section on cultural variation with a spotlight on South Korea.
+
+I officially kicked off backend development for the HagXwon project using FastAPI, building a working microservice-style flashcard system with GET and POST routes, real-time flashcard evaluation, and in-memory state tracking.
+
+I extended this with sassy, emotionally-damaging tutor responses to simulate AhjummaGPT and began mentally structuring the full backend agent ecosystem. I mapped out use cases for multi-agent LLMs, including Flashcard Agent, Storybook Agent, MUD Game Agent, Listening Agent, and even a Live Object Detection Tutor using mobile camera input.
+
+I explored fine-tuning strategies, LoRA, quantization tradeoffs, neuron depth and layer-wise behavior in LLMs, and the practicality of pruning out the “coding neurons” to create a strictly sass-based Korean tutor.
+
+I created a Mermaid diagram of the full system and flowchart of execution for personality-injected, quantized LLMs. Also ideated the Noraebang Agent and revived the Song-to-Vocab pipeline as a potential Red League feature.
+
+Although I only watched 7 minutes of the FastAPI video, I gained a full working understanding of core concepts by implementing everything manually and reverse-engineering the backend from scratch.
+
+### Day 47: March 23, 2025
+
+After finalizing Section 8 yesterday, I shifted into full production mode to close out the dissertation. I rewrote the conclusion and abstract, reviewed and reformatted the entire document, fixed spacing, updated figures, and checked fonts (yes, I switched to Times New Roman in the end). I exported the final version as a polished 100-page PDF and double all metadata, references, and citations. I also created a condensed version for LinkedIn, featuring selected diagrams and visuals. This included designing a custom title page, writing a visual summary, expanding on Korea as a testbed, and carefully refining tone, humor, and structure for broader appeal.
+
+I published the full dissertation to Academia.edu and shared the PDF mini-paper on LinkedIn, Discord, and GitHub.
+
+On GitHub, I added all three research projects — the LLM analysis, the Ouroboros paper, and the Turn Detection dissertation — under the `/research/` folder, each with its own markdown summary, links, and project structure update in the main `README.md`.
+
+### Day 46: March 22, 2025
+
+Today, I completed Section 8 of the dissertation, marking a major milestone in the project. This section: "Recent Advances, Notable Research, and Future Directions" -- was the most intensive by far. I re-read countless papers today, validating of every reference, integrating systems, and restructuring based on emerging themes. I merged and refined all previous drafts, verifying citation accuracy and consolidating some overlapping subsections. The final version includes advances in multimodal turn detection, cultural and neurodivergent adaptation, governance and privacy, unresolved challenges, and a set of forward-looking research directions. I also completed the Executive Summary, formally closing out the analytical portion of the paper. What remains now is the conclusion, back-revising the introduction and abstract, formatting the index, and preparing acknowledgements.
+
+
 ## Week 6
 
 ### Day 45: March 21, 2025
 
+
 On this day, I finalized Section 7 of the paper, focusing on the ethical, social, and cultural considerations of AI-powered turn detection. This included in-depth discussions on bias, neurodivergence, accessibility, and regulatory frameworks, as well as the integration of the digital twin and identity theft argument to tie back to earlier privacy concerns. In addition to writing, I generated and refined a full set of visual aids for this section. I restructured and reworked the entirety of Section 8, to align better with the central theme of the paper as well as eliminating any redundancies from earlier sections. The new version is more in line with the rest of the paper now with a clear set of subsections: multimodal and cross-modal turn detection, adaptive cultural and linguistic systems, and neurodivergence-inclusive architectures. Further subsections on governance, real-time modeling, and research gaps are planned next. I also ran plagiarism checks on key sections and made necessary final edits to ensure originality and citation integrity. I hope to finish this tomorrow, I have to complete section 8, conclusion, final run through and any additional pages. 
+
 
 ### Day 44: March 20, 2025
 
@@ -40,7 +145,9 @@ I also attended the Intel OPEA webinar on AgentsQnA. No live demo, but they pres
 
 The biggest win of the day was a massive research breakthrough, finding multiple highly relevant papers on AI-driven language learning, ASR/TTS for Korean, and conversational AI for neurodivergent users. This reshaped how I'm structuring Section 5 and the overall research discussion.
 
+
 At this point, I still feel like I have so much left to do. Section 6 needs final revisions, and I haven’t even touched Sections 7+ yet. On top of that, I still have bootcamp work for Weeks 3, 4, and 5, plus Agents Week tasks and the final integration. 
+
 
 ### Day 42: March 18, 2025
 
