@@ -1,31 +1,31 @@
-FROM python:3.11-slim
+# Use the common base image
+FROM listening-app-base:latest
 
-WORKDIR /app/srcp/src
+# WORKDIR /app is inherited
 
-# Get OPEA components from GitHub
-RUN apt-get update && \
-    apt-get install -y git && \
-    git clone -b main https://github.com/opea-project/GenAIComps.git && \
-    cp -r GenAIComps/comps . && \
-    rm -rf GenAIComps && \
-    apt-get remove -y git && \
-    apt-get autoremove -y && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Install service-specific system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install requirements
+# Copy requirements and install
 COPY services/question-module/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy service files
+# Copy service-specific code
 COPY services/question-module/app.py .
-COPY services/metrics/persistence.py ./services/metrics/
 COPY wrappers.py .
 
+# Create metrics directory structure
+RUN mkdir -p services/metrics
+COPY services/metrics/persistence.py ./services/metrics/
+RUN touch services/metrics/__init__.py
+
+# Create data directory
 RUN mkdir -p /shared/data/chroma /shared/data/metrics
 
-ENV PYTHONPATH=/app
-
+# Expose port
 EXPOSE 5001
 
+# Command
 CMD ["python", "app.py"]

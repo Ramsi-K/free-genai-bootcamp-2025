@@ -13,6 +13,7 @@ from pydub import AudioSegment
 import torch
 import asyncio
 from transformers import AutoProcessor, AutoModel
+from functools import wraps  # Add explicit import for wraps
 
 # Import OPEA components
 from comps import (
@@ -78,10 +79,8 @@ logger = logging.getLogger(__name__)
 # Environment variables
 DATA_DIR = os.environ.get("DATA_DIR", "/shared/data")
 AUDIO_DIR = os.environ.get("AUDIO_DIR", "/shared/data/audio")
-USE_GPU = os.environ.get("USE_GPU", "true").lower() == "true"
-TTS_MODEL = os.environ.get(
-    "TTS_MODEL"
-)  # Remove default value, let it fail if not set
+USE_GPU = os.environ.get("USE_GPU", "false").lower() in ("true", "1", "yes")
+TTS_MODEL = os.environ.get("TTS_MODEL")
 
 if not TTS_MODEL:
     logger.error("TTS_MODEL environment variable not set")
@@ -91,13 +90,24 @@ if not TTS_MODEL:
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(AUDIO_DIR, exist_ok=True)
 
-# Check if GPU is available
-if USE_GPU and torch.cuda.is_available():
-    DEVICE = torch.device("cuda")
-    logger.info("Using GPU for audio processing")
+# Check if GPU is available and should be used
+if USE_GPU:
+    if torch.cuda.is_available():
+        DEVICE = torch.device("cuda")
+        logger.info(
+            f"Using GPU for audio processing: {torch.cuda.get_device_name(0)}"
+        )
+        logger.info(
+            f"GPU Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.2f} GB"
+        )
+    else:
+        DEVICE = torch.device("cpu")
+        logger.warning(
+            "USE_GPU=true but no GPU available, falling back to CPU"
+        )
 else:
     DEVICE = torch.device("cpu")
-    logger.info("Using CPU for audio processing")
+    logger.info("Using CPU for audio processing (USE_GPU=false)")
 
 # Initialize ServiceOrchestrator without device parameter
 service_orchestrator = ServiceOrchestrator()

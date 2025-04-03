@@ -1,13 +1,10 @@
 import os
-import json
 import logging
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import chromadb
 from chromadb.utils import embedding_functions
-import asyncio
 from prometheus_client import Counter
-from functools import wraps
 from comps import MicroService, ServiceType, ServiceRoleType
 from wrappers import ServiceWrapper, init_telemetry
 from opentelemetry import trace
@@ -17,6 +14,7 @@ from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from docarray_shim import DocList  # Use compatibility wrapper for DocList
 
 # Initialize OTEL
 trace.set_tracer_provider(TracerProvider())
@@ -118,9 +116,15 @@ class QuestionGenerator:
         try:
             segments = transcript_data.get("segments", [])
             total_duration = sum(seg["duration"] for seg in segments)
-            max_questions = int(
+            max_questions_by_duration = int(
                 (total_duration / 60) * self.max_questions_per_minute
             )
+            num_questions = transcript_data.get(
+                "num_questions", 3
+            )  # Get desired number of questions
+            max_questions = min(
+                num_questions, max_questions_by_duration
+            )  # Use the smaller value
 
             # Filter segments that are too short
             valid_segments = [
@@ -217,7 +221,13 @@ async def store_vectors():
 async def generate_questions():
     try:
         data = request.json
-        result = await generator.generate_topik_questions(data["transcript"])
+        transcript = data["transcript"]
+        num_questions = data.get(
+            "num_questions", 3
+        )  # Get num_questions, default to 3
+        result = await generator.generate_topik_questions(
+            {"transcript": transcript, "num_questions": num_questions}
+        )
         QUESTIONS_GENERATED.labels(difficulty_level="topik").inc()
 
         return jsonify(result)

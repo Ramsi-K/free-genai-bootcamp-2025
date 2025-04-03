@@ -1,5 +1,15 @@
 services:
-  # Transcript Processor Service
+  # Build base image first - make this a simple image reference, not a long-running service
+  base:
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+    image: listening-app-base:latest
+    # Make it keep running but don't include it in the depends_on chain
+    command: tail -f /dev/null
+    networks:
+      - app_network
+
   transcript-processor:
     build:
       context: .
@@ -8,57 +18,51 @@ services:
       - '5000:5000'
     volumes:
       - shared_data:/shared/data
-      - ./services/transcript-processor:/app/src
     environment:
       - OUTPUT_DIR=/shared/data
-      - USE_GPU=${USE_GPU}
+      - USE_GPU=${USE_GPU:-false}
       - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
       - PYTHONUNBUFFERED=1
-    depends_on:
-      - ollama
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+      - PYTHONPATH=/app:/app/comps/cores/proto
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  # Question Module Service
   question-module:
     build:
       context: .
       dockerfile: services/question-module/Dockerfile
+    depends_on:
+      ollama:
+        condition: service_started
     ports:
       - '5001:5001'
     volumes:
       - shared_data:/shared/data
-      - ./services/question-module:/app # Changed this line
     environment:
       - DATA_DIR=/shared/data
       - CHROMA_DIR=/shared/data/chroma
-      - OLLAMA_HOST=http://ollama:11434
-      - USE_GPU=${USE_GPU}
+      - OLLAMA_HOST=ollama
+      - USE_GPU=${USE_GPU:-false}
       - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
       - LLM_MODEL=${LLM_MODEL}
       - EMBEDDING_MODEL=${EMBEDDING_MODEL}
       - PYTHONUNBUFFERED=1
-    depends_on:
-      - ollama
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+      - PYTHONPATH=/app:/app/comps/cores/proto
     networks:
       - app_network
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5001/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  # Audio Module Service
   audio-module:
     build:
       context: .
@@ -67,28 +71,23 @@ services:
       - '5002:5002'
     volumes:
       - shared_data:/shared/data
-      - ./services/audio-module:/app/src
     environment:
       - DATA_DIR=/shared/data
       - AUDIO_DIR=/shared/data/audio
-      - USE_GPU=${USE_GPU}
+      - USE_GPU=${USE_GPU:-false}
       - TTS_MODEL=${TTS_MODEL}
       - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
       - PYTHONUNBUFFERED=1
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+      - PYTHONPATH=/app:/app/comps/cores/proto
     networks:
       - app_network
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5002/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  # Frontend React Application
   frontend:
     build:
       context: .
@@ -104,50 +103,76 @@ services:
       - transcript-processor
       - question-module
       - audio-module
+    networks:
+      - app_network
     restart: unless-stopped
 
-  # Ollama LLM Service
   ollama:
     image: ollama/ollama:latest
     ports:
       - '11434:11434'
     volumes:
       - ollama_data:/root/.ollama
-    command:
-      [
-        'sh',
-        '-c',
-        'ollama serve & sleep 10 && ollama pull ${LLM_MODEL} && tail -f /dev/null',
-      ]
+    command: serve
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:11434/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  # Add mega-service
   mega-service:
     build:
       context: .
       dockerfile: Dockerfile
+    depends_on:
+      transcript-processor:
+        condition: service_started
+      question-module:
+        condition: service_started
+      audio-module:
+        condition: service_started
+      ollama:
+        condition: service_started
     ports:
       - '8000:8000'
+      - '8888:8888'
     volumes:
       - shared_data:/shared/data
     environment:
       - OLLAMA_HOST=ollama
-    depends_on:
-      - transcript-processor
-      - question-module
-      - audio-module
-      - ollama
+      - LLM_MODEL=${LLM_MODEL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - TTS_MODEL=${TTS_MODEL}
+      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app:/app/comps/cores/proto
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  # Start with just prometheus for basic monitoring
   prometheus:
     image: prom/prometheus:latest
     ports:
       - '9090:9090'
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - app_network
+    restart: unless-stopped
 
 volumes:
   shared_data:
   ollama_data:
+  prometheus_data:
 
 networks:
   app_network:
