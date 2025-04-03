@@ -1,0 +1,24 @@
+metrics:
+  retention:
+    prometheus: "90d"
+    jaeger: "30d"
+    
+  exporters:
+    prometheus:
+      storage_path: "/prometheus"
+    jaeger:
+      storage_type: "elasticsearch"
+      
+  dashboards:
+    korean_learning:
+      - name: "Questions Generated"
+        metric: "korean_questions_total"
+        type: "counter"
+        
+      - name: "Comprehension Scores"
+        metric: "korean_comprehension_score"
+        type: "histogram"
+        
+      - name: "Audio Generation"
+        metric: "korean_audio_total"
+        type: "counter"

@@ -4,6 +4,8 @@
 
 ## Jump to what I was doing in
 
+
+
 - [Week 8](#week-8)
 - [Week 7](#week-7)
 - [Week 6](#week-6)
@@ -14,6 +16,12 @@
 - [Week 1](#week-1)
 - [Week 0](#week-0)
 - [Pre-bootcamp](#pre-bootcamp-prep)
+
+## Week 7
+
+### Day 46: March 22, 2025
+
+Today, I completed Section 8 of the dissertation, marking a major milestone in the project. This section: "Recent Advances, Notable Research, and Future Directions" -- was the most intensive by far. I re-read countless papers today, validating of every reference, integrating systems, and restructuring based on emerging themes. I merged and refined all previous drafts, verifying citation accuracy and consolidating some overlapping subsections. The final version includes advances in multimodal turn detection, cultural and neurodivergent adaptation, governance and privacy, unresolved challenges, and a set of forward-looking research directions. I also completed the Executive Summary, formally closing out the analytical portion of the paper. What remains now is the conclusion, back-revising the introduction and abstract, formatting the index, and preparing acknowledgements. 
 
 ## Week 8
 
@@ -114,11 +122,14 @@ On GitHub, I added all three research projects — the LLM analysis, the Ourobor
 
 Today, I completed Section 8 of the dissertation, marking a major milestone in the project. This section: "Recent Advances, Notable Research, and Future Directions" -- was the most intensive by far. I re-read countless papers today, validating of every reference, integrating systems, and restructuring based on emerging themes. I merged and refined all previous drafts, verifying citation accuracy and consolidating some overlapping subsections. The final version includes advances in multimodal turn detection, cultural and neurodivergent adaptation, governance and privacy, unresolved challenges, and a set of forward-looking research directions. I also completed the Executive Summary, formally closing out the analytical portion of the paper. What remains now is the conclusion, back-revising the introduction and abstract, formatting the index, and preparing acknowledgements.
 
+
 ## Week 6
 
 ### Day 45: March 21, 2025
 
-On this day, I finalized Section 7 of the paper, focusing on the ethical, social, and cultural considerations of AI-powered turn detection. This included in-depth discussions on bias, neurodivergence, accessibility, and regulatory frameworks, as well as the integration of the digital twin and identity theft argument to tie back to earlier privacy concerns. In addition to writing, I generated and refined a full set of visual aids for this section. I restructured and reworked the entirety of Section 8, to align better with the central theme of the paper as well as eliminating any redundancies from earlier sections. The new version is more in line with the rest of the paper now with a clear set of subsections: multimodal and cross-modal turn detection, adaptive cultural and linguistic systems, and neurodivergence-inclusive architectures. Further subsections on governance, real-time modeling, and research gaps are planned next. I also ran plagiarism checks on key sections and made necessary final edits to ensure originality and citation integrity. I hope to finish this tomorrow, I have to complete section 8, conclusion, final run through and any additional pages.
+
+On this day, I finalized Section 7 of the paper, focusing on the ethical, social, and cultural considerations of AI-powered turn detection. This included in-depth discussions on bias, neurodivergence, accessibility, and regulatory frameworks, as well as the integration of the digital twin and identity theft argument to tie back to earlier privacy concerns. In addition to writing, I generated and refined a full set of visual aids for this section. I restructured and reworked the entirety of Section 8, to align better with the central theme of the paper as well as eliminating any redundancies from earlier sections. The new version is more in line with the rest of the paper now with a clear set of subsections: multimodal and cross-modal turn detection, adaptive cultural and linguistic systems, and neurodivergence-inclusive architectures. Further subsections on governance, real-time modeling, and research gaps are planned next. I also ran plagiarism checks on key sections and made necessary final edits to ensure originality and citation integrity. I hope to finish this tomorrow, I have to complete section 8, conclusion, final run through and any additional pages. 
+
 
 ### Day 44: March 20, 2025
 
@@ -134,7 +145,9 @@ I also attended the Intel OPEA webinar on AgentsQnA. No live demo, but they pres
 
 The biggest win of the day was a massive research breakthrough, finding multiple highly relevant papers on AI-driven language learning, ASR/TTS for Korean, and conversational AI for neurodivergent users. This reshaped how I'm structuring Section 5 and the overall research discussion.
 
-At this point, I still feel like I have so much left to do. Section 6 needs final revisions, and I haven’t even touched Sections 7+ yet. On top of that, I still have bootcamp work for Weeks 3, 4, and 5, plus Agents Week tasks and the final integration.
+
+At this point, I still feel like I have so much left to do. Section 6 needs final revisions, and I haven’t even touched Sections 7+ yet. On top of that, I still have bootcamp work for Weeks 3, 4, and 5, plus Agents Week tasks and the final integration. 
+
 
 ### Day 42: March 18, 2025
 

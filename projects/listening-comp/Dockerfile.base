@@ -1,0 +1,39 @@
+# Use Python 3.10-slim as the base image
+FROM python:3.10-slim
+
+# Install required system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    wget \
+    unzip \
+    git \
+    ffmpeg \
+    libsndfile1 \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Install common Python dependencies
+COPY requirements.txt . 
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Clone GenAIComps repository and install
+RUN git clone -b main https://github.com/opea-project/GenAIComps.git
+WORKDIR /app/GenAIComps
+RUN pip install -e .
+WORKDIR /app
+
+# Create symlink for compatibility
+RUN ln -sf /app/GenAIComps/comps /app/comps
+
+# Add docarray shim for fallback
+COPY docarray_shim.py /app/
+
+# Set Python path
+ENV PYTHONPATH=/app:/app/GenAIComps
+
+# Keep the container running
+CMD ["tail", "-f", "/dev/null"]

@@ -1,25 +1,32 @@
-FROM python:3.9-slim
+# Use the common base image (tag will be defined in docker-compose)
+FROM listening-app-base:latest
 
-WORKDIR /app
+# WORKDIR /app is inherited
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    ffmpeg \
+# Install service-specific system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy and install requirements
+# Copy requirements and install
 COPY services/transcript-processor/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy service code
-COPY services/transcript-processor/ .
+# Copy service-specific code
+COPY services/transcript-processor/app.py .
+COPY services/transcript-processor/guardrails.py .
+COPY wrappers.py .
 
-# Create necessary directories
-RUN mkdir -p /shared/data
+# Create metrics directory structure
+RUN mkdir -p services/metrics
+COPY services/metrics/persistence.py ./services/metrics/
+RUN touch services/metrics/__init__.py
 
-ENV PYTHONPATH=/app
+# Create data directory (can also be done in base or via volume mount)
+RUN mkdir -p /shared/data /shared/data/metrics
 
+# Expose port
 EXPOSE 5000
 
+# Command
 CMD ["python", "app.py"]

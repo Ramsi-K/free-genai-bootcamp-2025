@@ -1,27 +1,31 @@
-# Copyright (C) 2024 Intel Corporation
-# SPDX-License-Identifier: Apache-2.0
+# Use the common base image
+FROM listening-app-base:latest
 
-FROM python:3.9-slim
+# WORKDIR /app is inherited
 
-WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# Install service-specific system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy and install requirements
+# Copy requirements and install
 COPY services/question-module/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy service code
-COPY services/question-module/ .
+# Copy service-specific code
+COPY services/question-module/app.py .
+COPY wrappers.py .
 
-# Create directories
-RUN mkdir -p /shared/data/chroma
+# Create metrics directory structure
+RUN mkdir -p services/metrics
+COPY services/metrics/persistence.py ./services/metrics/
+RUN touch services/metrics/__init__.py
 
-ENV PYTHONPATH=/app
+# Create data directory
+RUN mkdir -p /shared/data/chroma /shared/data/metrics
 
+# Expose port
 EXPOSE 5001
 
+# Command
 CMD ["python", "app.py"]

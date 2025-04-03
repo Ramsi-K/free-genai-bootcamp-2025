@@ -1,29 +1,16 @@
-# Copyright (C) 2024 Intel Corporation
-# SPDX-License-Identifier: Apache-2.0
+# Use the common base image
+FROM listening-app-base:latest
 
-FROM python:3.9-slim
-
-WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    ffmpeg \
-    libsndfile1 \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy and install requirements
+# Install service-specific dependencies
 COPY services/audio-module/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt && \
+    python -c "import numpy; print('Numpy version:', numpy.__version__)" || echo "Numpy not installed"
 
-# Copy service code
-COPY services/audio-module/ .
+# Copy service-specific code
+COPY wrappers.py .
 
-# Create necessary directories
-RUN mkdir -p /shared/data/audio
-
-ENV PYTHONPATH=/app
-
+# Expose port
 EXPOSE 5002
 
+# Command
 CMD ["python", "app.py"]
