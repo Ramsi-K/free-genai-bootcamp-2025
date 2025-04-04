@@ -1,0 +1,84 @@
+# # Base requirements
+# flask==2.0.1
+# flask-cors==3.0.10
+# requests==2.31.0
+# numpy==1.24.3
+
+# # For GenAIComps
+# docarray[common]==0.21.0  # Keep this version for compatibility
+# pydantic==1.10.9  # Align with docarray
+
+# # Audio processing
+# torch==2.0.1
+# --extra-index-url https://download.pytorch.org/whl/cpu
+
+# transformers==4.35.0
+# pydub==0.25.1
+# soundfile==0.12.1
+
+# # Transcript processing
+# youtube_transcript_api==0.6.1
+# pytube==15.0.0
+# langdetect==1.0.9
+# pandas==1.5.0
+
+# # Question generation
+# # chromadb==0.4.17  # Downgrade to avoid fastapi conflict
+# langchain==0.1.0
+# langchain-community==0.0.10
+# sentence-transformers==2.2.2
+
+# # Telemetry
+# prometheus_client==0.20.0
+# opentelemetry-api==1.16.0
+# opentelemetry-sdk==1.16.0
+# opentelemetry-exporter-otlp==1.16.0
+# opentelemetry-instrumentation-flask>=0.41b0,<0.53
+
+# # FastAPI and Uvicorn
+# uvicorn==0.15.0
+# fastapi==0.95.2  # Align with docarray
+
+# Base requirements
+flask
+flask-cors
+requests
+numpy
+
+# For GenAIComps
+docarray==0.21  # Keep this version for compatibility
+pydantic==1.10.9  # Align with docarray
+
+# Audio processing
+torch==2.0.1
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+transformers==4.35.0
+pydub
+soundfile
+
+# Transcript processing
+youtube_transcript_api==0.6.1
+pytube==15.0.0
+langdetect==1.0.9
+pandas==1.5.0
+
+# Question generation
+# chromadb==0.4.17  # Downgrade to avoid fastapi conflict
+langchain==0.1.0
+langchain-community==0.0.10
+sentence-transformers==2.2.2
+
+# Telemetry
+prometheus_client
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-exporter-otlp
+opentelemetry-instrumentation-flask
+
+# FastAPI and Uvicorn
+uvicorn
+fastapi  # Align with docarray
+
+numpy
+

@@ -1,0 +1,27 @@
+# Base requirements
+# flask, flask-cors, requests, and numpy are now in base image
+
+# Audio specific - smaller dependencies first
+soundfile>=0.12.1
+pydub>=0.25.1
+gunicorn==21.2.0
+# prometheus_client is now in base image
+protobuf>=4.21.0
+grpcio>=1.50.0
+
+# Always use the smallest CPU versions of PyTorch to avoid large downloads
+torch==2.0.1
+torchaudio==2.0.2
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# Transformers - specify a fixed version to improve caching
+
+
+# Skip librosa as it has many large dependencies
+# librosa==0.10.1
+
+# For GenAIComps compatibility
+docarray==0.21
+pydantic==1.10.9
+numpy==1.24.3
+

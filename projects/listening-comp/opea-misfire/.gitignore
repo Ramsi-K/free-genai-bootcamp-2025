@@ -1,0 +1,7 @@
+ChatQnA/*
+comps/*
+
+.DS_Store
+*.db
+*.pyc
+*.ipynb

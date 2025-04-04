@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'listening-comp'
+    static_configs:
+      - targets: ['transcript-processor:5000', 'question-module:5001', 'audio-module:5002', 'mega-service:8000']

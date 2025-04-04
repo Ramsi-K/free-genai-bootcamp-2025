@@ -1,0 +1,17 @@
+# Core requirements only
+flask==2.0.1
+flask-cors==3.0.10
+requests==2.31.0
+chromadb==0.4.18
+sentence-transformers==2.2.2
+prometheus_client==0.20.0
+werkzeug==2.0.1
+
+# Use the CPU-only version of PyTorch
+torch==2.0.1
+torchaudio==2.0.2+cpu
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+docarray==0.21
+pydantic==1.10.9
+numpy==1.24.3

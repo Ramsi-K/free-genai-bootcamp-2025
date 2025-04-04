@@ -1,0 +1,179 @@
+services:
+  # Build base image first - make this a simple image reference, not a long-running service
+  base:
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+    image: listening-app-base:latest
+    # Make it keep running but don't include it in the depends_on chain
+    command: tail -f /dev/null
+    networks:
+      - app_network
+
+  transcript-processor:
+    build:
+      context: .
+      dockerfile: services/transcript-processor/Dockerfile
+    ports:
+      - '5000:5000'
+    volumes:
+      - shared_data:/shared/data
+    environment:
+      - OUTPUT_DIR=/shared/data
+      - USE_GPU=${USE_GPU:-false}
+      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app:/app/comps/cores/proto
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  question-module:
+    build:
+      context: .
+      dockerfile: services/question-module/Dockerfile
+    depends_on:
+      ollama:
+        condition: service_started
+    ports:
+      - '5001:5001'
+    volumes:
+      - shared_data:/shared/data
+    environment:
+      - DATA_DIR=/shared/data
+      - CHROMA_DIR=/shared/data/chroma
+      - OLLAMA_HOST=ollama
+      - USE_GPU=${USE_GPU:-false}
+      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
+      - LLM_MODEL=${LLM_MODEL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app:/app/comps/cores/proto
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5001/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  audio-module:
+    build:
+      context: .
+      dockerfile: services/audio-module/Dockerfile
+    ports:
+      - '5002:5002'
+    volumes:
+      - shared_data:/shared/data
+    environment:
+      - DATA_DIR=/shared/data
+      - AUDIO_DIR=/shared/data/audio
+      - USE_GPU=${USE_GPU:-false}
+      - TTS_MODEL=${TTS_MODEL}
+      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app:/app/comps/cores/proto
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5002/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: korean-frontend
+    ports:
+      - '80:80'
+    environment:
+      - REACT_APP_API_BASE_URL=http://${HOST_IP:-localhost}:5000
+      - REACT_APP_QUESTION_API_URL=http://${HOST_IP:-localhost}:5001
+      - REACT_APP_AUDIO_API_URL=http://${HOST_IP:-localhost}:5002
+    depends_on:
+      - transcript-processor
+      - question-module
+      - audio-module
+    networks:
+      - app_network
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - '11434:11434'
+    volumes:
+      - ollama_data:/root/.ollama
+    command: serve
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:11434/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  mega-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      transcript-processor:
+        condition: service_started
+      question-module:
+        condition: service_started
+      audio-module:
+        condition: service_started
+      ollama:
+        condition: service_started
+    ports:
+      - '8000:8000'
+      - '8888:8888'
+    volumes:
+      - shared_data:/shared/data
+    environment:
+      - OLLAMA_HOST=ollama
+      - LLM_MODEL=${LLM_MODEL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - TTS_MODEL=${TTS_MODEL}
+      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app:/app/comps/cores/proto
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - app_network
+    restart: unless-stopped
+
+volumes:
+  shared_data:
+  ollama_data:
+  prometheus_data:
+
+networks:
+  app_network:
+    driver: bridge
