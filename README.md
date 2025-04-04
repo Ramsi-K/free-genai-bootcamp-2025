@@ -1,6 +1,6 @@
-# GenAI Bootcamp 2025  
+# GenAI Bootcamp 2025
 
-This repository documents my journey through the **GenAI Bootcamp 2025** organized by [Andrew Brown](https://www.exampro.co/). I’ll be designing and developing **AI-powered learning applications**, focusing on real-world **GenAI solutions**, model selection, prompt engineering, and cloud deployment.  
+This repository documents my journey through the **GenAI Bootcamp 2025** organized by [Andrew Brown](https://www.exampro.co/). I’ll be designing and developing **AI-powered learning applications**, focusing on real-world **GenAI solutions**, model selection, prompt engineering, and cloud deployment.
 
 ## Repository Structure
 
@@ -9,26 +9,34 @@ This repository documents my journey through the **GenAI Bootcamp 2025** organiz
 ├── README.md                # Main repo overview (Bootcamp journey)
 ├── journal.md               # Daily bootcamp progress log
 ├── roadmap.md               # Week-by-week learning plan
+└── hagxwon-branding-package/    # Finalized branding assets & logo
 ├── notes/                   # All structured notes (TOGAF, ML, GenAI Essentials)
 │   ├── week-00-genai-essentials/    # AI fundamentals
 │   ├── week-00-miniMLseries/        # Machine Learning Mini Series
 │   ├── week-00-TOGAF/               # Enterprise architecture & TOGAF
+    ├── week-01-OPEA/                # Open Platform for Enterprise AI (OPEA)
+    ├── ...                          # and more
 ├── projects/                # Contains implementation details
 │   ├── genai-architecting/          # AI system architecture
 │   ├── sentence-constructor/        # NLP-based language learning app
+    ├── ...                          # Numerous language learning apps & projects
+├── research/                # Longform research & paper summaries
+│   ├── llm-comparative-analysis.md  # LLMs in code completion (paper summary)
+│   ├── llm-ouroboros-analysis.md    # Self-consuming LLMs & data risks
+│   └── turn-detection-summary.md    # Dissertation: turn-taking in AI language apps
 ```
 
-## **Bootcamp Overview**  
+## **Bootcamp Overview**
 
-The **GenAI Bootcamp 2025** is designed to help participants:  
+The **GenAI Bootcamp 2025** is designed to help participants:
 
-- Understand the **capabilities & limitations** of GenAI.  
-- Apply GenAI to **real-world business cases** through projects.  
-- Learn to **architect & deploy GenAI workloads** effectively.  
+- Understand the **capabilities & limitations** of GenAI.
+- Apply GenAI to **real-world business cases** through projects.
+- Learn to **architect & deploy GenAI workloads** effectively.
 
-Each week, the difficulty level **increases**, requiring strong problem-solving and adaptability. Many participants may drop out, but I plan to **push through and complete all challenges**.  
+Each week, the difficulty level **increases**, requiring strong problem-solving and adaptability. Many participants may drop out, but I plan to **push through and complete all challenges**.
 
-## **Business Scenario**  
+## **Business Scenario**
 
 I've been hired as an **AI Engineer** for a **Korean Hagwon (Language Learning Center)** to:
 
@@ -60,53 +68,53 @@ See full details in **[business-proposal.md](/projects/genai-architecting/docs/b
 
 See full week-by-week learning plan in **[roadmap.md](./roadmap.md)**.
 
-## **Technical Prerequisites**  
+## **Technical Prerequisites**
 
-Before starting the bootcamp, I completed the following courses:  
+Before starting the bootcamp, I completed the following courses:
 
-- [GenAI Essentials Course](https://youtu.be/nJ25yl34Uqw?si=L1GJpRbU3eDorYR3)  
-- [Python for Beginners](https://www.youtube.com/watch?v=eWRfhZUzrAc&list=PLWKjhJtqVAbnqBxcdjVGgT3uVR10bzTEB)  
-- [PyTorch for Beginners](https://www.youtube.com/watch?v=V_xro1bcAuA)  
-- [Tailwind CSS for Beginners](https://www.youtube.com/watch?v=ft30zcMlFao)  
-- [React for Beginners](https://www.youtube.com/watch?v=DLX62G4lc44&list=PLWKjhJtqVAbkArDMazoARtNz1aMwNWmvC)  
-- [GitHub Foundations](https://www.youtube.com/watch?v=Jdc0i7RcBv8&t=1462s)  
+- [GenAI Essentials Course](https://youtu.be/nJ25yl34Uqw?si=L1GJpRbU3eDorYR3)
+- [Python for Beginners](https://www.youtube.com/watch?v=eWRfhZUzrAc&list=PLWKjhJtqVAbnqBxcdjVGgT3uVR10bzTEB)
+- [PyTorch for Beginners](https://www.youtube.com/watch?v=V_xro1bcAuA)
+- [Tailwind CSS for Beginners](https://www.youtube.com/watch?v=ft30zcMlFao)
+- [React for Beginners](https://www.youtube.com/watch?v=DLX62G4lc44&list=PLWKjhJtqVAbkArDMazoARtNz1aMwNWmvC)
+- [GitHub Foundations](https://www.youtube.com/watch?v=Jdc0i7RcBv8&t=1462s)
 
-## **Required Accounts & Platforms**  
+## **Required Accounts & Platforms**
 
-- **Cloud**: AWS, Azure, GCP  
-- **AI/ML**: Hugging Face, Lightning.AI, Intel Tiber Developer Cloud, CIVO  
-- **Dev & Deployment**: GitHub, Gitpod, Codespaces, MongoDB, Lucid Charts, Vercel/v0  
+- **Cloud**: AWS, Azure, GCP
+- **AI/ML**: Hugging Face, Lightning.AI, Intel Tiber Developer Cloud, CIVO
+- **Dev & Deployment**: GitHub, Gitpod, Codespaces, MongoDB, Lucid Charts, Vercel/v0
 
-## **Challenges & Learnings**  
+## **Challenges & Learnings**
 
-This section will be **updated as I progress**, documenting:  
+This section will be **updated as I progress**, documenting:
 
-- Key **technical challenges** encountered.  
-- **Solutions and lessons learned** along the way.  
-- **Reflections on growth** throughout the bootcamp.  
+- Key **technical challenges** encountered.
+- **Solutions and lessons learned** along the way.
+- **Reflections on growth** throughout the bootcamp.
 
-## **My Approach to the Bootcamp**  
+## **My Approach to the Bootcamp**
 
-To stay on track and maximize learning, I’ll be following this mindset:  
+To stay on track and maximize learning, I’ll be following this mindset:
 
-- **Structured Learning** – Active participation in every session, Q&A, and discussions.  
-- **Time Management** – Dedicated **study & coding time** each week.  
-- **Collaboration** – Engaging with other participants, sharing insights.  
-- **Problem-Solving First** – Debugging & troubleshooting before asking for help.  
-- **Consistency Over Perfection** – **Finishing tasks** rather than waiting for the perfect solution.  
+- **Structured Learning** – Active participation in every session, Q&A, and discussions.
+- **Time Management** – Dedicated **study & coding time** each week.
+- **Collaboration** – Engaging with other participants, sharing insights.
+- **Problem-Solving First** – Debugging & troubleshooting before asking for help.
+- **Consistency Over Perfection** – **Finishing tasks** rather than waiting for the perfect solution.
 
-## **Resources**  
+## **Resources**
 
 - [Bootcamp Signup](https://genai.cloudprojectbootcamp.com/)
-- [Andrew’s Message about Project Details](https://youtu.be/Tae4osFwWXQ)  
-- [Bootcamp Success Tips – Medium Article](https://medium.com/@aeh.herman/my-bootcamp-experience-or-how-to-succeed-in-bootcamps-by-trying-really-hard-eb7514241387)  
-- [Reddit Post – Tips on Surviving a Bootcamp](https://www.reddit.com/r/learnprogramming/comments/p6ke33/about_to_take_a_full_immersive_coding_bootcamp/)  
+- [Andrew’s Message about Project Details](https://youtu.be/Tae4osFwWXQ)
+- [Bootcamp Success Tips – Medium Article](https://medium.com/@aeh.herman/my-bootcamp-experience-or-how-to-succeed-in-bootcamps-by-trying-really-hard-eb7514241387)
+- [Reddit Post – Tips on Surviving a Bootcamp](https://www.reddit.com/r/learnprogramming/comments/p6ke33/about_to_take_a_full_immersive_coding_bootcamp/)
 
-📌 *This README will evolve as I make progress. For now, it serves as a starting point for my GenAI Bootcamp journey. Stay tuned for updates!*  
+📌 _This README will evolve as I make progress. For now, it serves as a starting point for my GenAI Bootcamp journey. Stay tuned for updates!_
 
 ## 📜 License & Attribution
 
 This repository is licensed under **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0)**.  
-You are free to **share and adapt** this work, but **must provide credit** and **cannot use it for commercial purposes**.  
+You are free to **share and adapt** this work, but **must provide credit** and **cannot use it for commercial purposes**.
 
 🔗 [Full License Details](https://creativecommons.org/licenses/by-nc-sa/4.0/)
