@@ -4,8 +4,6 @@
 
 ## Jump to what I was doing in
 
-
-
 - [Week 8](#week-8)
 - [Week 7](#week-7)
 - [Week 6](#week-6)
@@ -17,15 +15,23 @@
 - [Week 0](#week-0)
 - [Pre-bootcamp](#pre-bootcamp-prep)
 
-## Week 7
-
-### Day 46: March 22, 2025
-
-Today, I completed Section 8 of the dissertation, marking a major milestone in the project. This section: "Recent Advances, Notable Research, and Future Directions" -- was the most intensive by far. I re-read countless papers today, validating of every reference, integrating systems, and restructuring based on emerging themes. I merged and refined all previous drafts, verifying citation accuracy and consolidating some overlapping subsections. The final version includes advances in multimodal turn detection, cultural and neurodivergent adaptation, governance and privacy, unresolved challenges, and a set of forward-looking research directions. I also completed the Executive Summary, formally closing out the analytical portion of the paper. What remains now is the conclusion, back-revising the introduction and abstract, formatting the index, and preparing acknowledgements. 
-
 ## Week 8
 
-### Day 55 and 56: March 31 April 2, 2025:
+### Day 57-58: April 3-4, 2025
+
+**T-minus 8 days to submission (April 12)**
+
+I spent days trying to get the OPEA microservices running, but I hit wall after wall. Most of the time was lost to `docarray` import errors (`BaseDoc`, `DocList`), `numpy` 2.0 breaking changes, and Docker layers refusing to cooperate. I patched, shimmed, rebuilt images, cleaned caches, rewrote requirements, and still ended up with broken services.
+
+Attended office hours to try and resolve it, but the bigger question is whether OPEA is worth the fight. This framework was supposed to be "glue code" for building GenAI apps, yet setting it up has become harder than building the app itself. It is frustrating to pour this much time in and have nothing shippable yet.
+
+Generally speaking, open source is meant to be flexible and patchable yet the framework has proven entirely too rigid and opaque for my specific use case (YT transcript → Q generation → TTS). The OPEA system is meant to be glue, but it became the bottleneck.
+
+After exhausting all options, I've decided to drop OPEA and rebuild my Listening Learning App using clean, modular Python code instead. This will give me more control and reduce debugging overhead. I've renamed the opea implementation folder to `opea-misfire`.
+
+I stuck it out for so long with OPEA because I thought that if I could get it to work once, it would become clearer and easier to implement a second time and _then_ I could use it to patch together multiple services for the final capstone project. The time cost has become too high to justify.
+
+### Day 55 and 56: March 31 April 2, 2025
 
 **T-minus 10 days to submission (April 12)**
 
@@ -38,9 +44,9 @@ I am planning to give the OPEA Listening Learning App another half-day on April 
 
 **T-minus 13 days to submission (April 12)**
 
-Today I fixed all remaining backend import errors and confirmed my FastAPI routes via /debug/routes. The routes are correctly registered, but many of my test cases are still failing due to model issues, missing associations, or incorrect payloads. I successfully posted a new word using the `/api/words` POST route, but the `/api/groups` POST route is returning a 500 error, likely due to a mismatch between the schema and database model. Sentence-related routes are returning 404 or 422, which may be due to a lack of test data or broken relationships between words and sentences. 
+Today I fixed all remaining backend import errors and confirmed my FastAPI routes via /debug/routes. The routes are correctly registered, but many of my test cases are still failing due to model issues, missing associations, or incorrect payloads. I successfully posted a new word using the `/api/words` POST route, but the `/api/groups` POST route is returning a 500 error, likely due to a mismatch between the schema and database model. Sentence-related routes are returning 404 or 422, which may be due to a lack of test data or broken relationships between words and sentences.
 
-I also generated multiple HTML-based language learning games using Hugging Face’s DeepSeek AI builder, including Munchers, MUD Game, Listening Match, Memory Match, Proverbs Matching, Finger Spelling, and Consonant Game. These games are functional but currently separate from my app's frontend stack. I plan to integrate them soon. I also started working on the writing practice app, which will compare user handwriting to Korean calligraphy using a webcam. 
+I also generated multiple HTML-based language learning games using Hugging Face’s DeepSeek AI builder, including Munchers, MUD Game, Listening Match, Memory Match, Proverbs Matching, Finger Spelling, and Consonant Game. These games are functional but currently separate from my app's frontend stack. I plan to integrate them soon. I also started working on the writing practice app, which will compare user handwriting to Korean calligraphy using a webcam.
 
 ### Day 53: March 29, 2025
 
@@ -56,7 +62,7 @@ I finalized the complete database schema for my capstone project, restructuring 
 
 Today I built the entire backend from scratch in FastAPI. I connected it to the frontend I had started earlier with Vite, Bolt, and Tailwind. I picked up that half-finished UI, filled in a lot of the placeholder logic, and got the API integration flowing cleanly. I also added in and improved the Munchers game I had prototyped in p5js. The game is working but it doesn't have fun looking characters. I added beginner, intermediate and advanced levels. I was initially working with static data but then I tried to add data in from the sqlite3 db. The theme picking logic is not working well. My backend is returning the api calls with the right info but its not connected well to my game. I built everything in Docker from step 1. Vibe coding FTW :muscle: :mechanical_arm:
 
-### Day 51: March 27, 2025  
+### Day 51: March 27, 2025
 
 **T-minus 16 days to submission (April 12)**
 
@@ -94,7 +100,7 @@ I looked at existing Korean handwriting datasets and realized they’re not grea
 
 Finally, I reviewed some of my older diagrams from the “Beyond Human Mimicry” project using Napkin.ai and realized they might actually support my current app direction by explaining the design logic behind non-Western agent identities. I’ve been thinking more seriously about how cultural grounding impacts personality modeling, and this app may become a real showcase for that idea. All in all, nothing is final yet, but I’ve laid a massive amount of groundwork and feel like I’m finally approaching clarity.
 
-I also looked into pruning vs quantization; self quantizing models vs using pre quantized models from hf; LoRA vs qLoRA; Flask vs FastAPI vs Gradio vs Streamlit; CNN vs SSIM vs OCR;  single vs multiple vector DBs; agentic web search for song-to-vocab vs multi-agentic RAG with web search; choosing pororo ocr just because it sounds cute;  Korean LLMs, including Polyglot-Ko, Motif, EXAONE, and HyperCLOVA, and the Donut model for OCR; GPT-SoVITS for voice cloning, AvatarChatbot from OPEA; and pre-rendered avatar animation vs real-time interaction.
+I also looked into pruning vs quantization; self quantizing models vs using pre quantized models from hf; LoRA vs qLoRA; Flask vs FastAPI vs Gradio vs Streamlit; CNN vs SSIM vs OCR; single vs multiple vector DBs; agentic web search for song-to-vocab vs multi-agentic RAG with web search; choosing pororo ocr just because it sounds cute; Korean LLMs, including Polyglot-Ko, Motif, EXAONE, and HyperCLOVA, and the Donut model for OCR; GPT-SoVITS for voice cloning, AvatarChatbot from OPEA; and pre-rendered avatar animation vs real-time interaction.
 
 ### Day 48: March 24, 2025
 
@@ -122,14 +128,11 @@ On GitHub, I added all three research projects — the LLM analysis, the Ourobor
 
 Today, I completed Section 8 of the dissertation, marking a major milestone in the project. This section: "Recent Advances, Notable Research, and Future Directions" -- was the most intensive by far. I re-read countless papers today, validating of every reference, integrating systems, and restructuring based on emerging themes. I merged and refined all previous drafts, verifying citation accuracy and consolidating some overlapping subsections. The final version includes advances in multimodal turn detection, cultural and neurodivergent adaptation, governance and privacy, unresolved challenges, and a set of forward-looking research directions. I also completed the Executive Summary, formally closing out the analytical portion of the paper. What remains now is the conclusion, back-revising the introduction and abstract, formatting the index, and preparing acknowledgements.
 
-
 ## Week 6
 
 ### Day 45: March 21, 2025
 
-
-On this day, I finalized Section 7 of the paper, focusing on the ethical, social, and cultural considerations of AI-powered turn detection. This included in-depth discussions on bias, neurodivergence, accessibility, and regulatory frameworks, as well as the integration of the digital twin and identity theft argument to tie back to earlier privacy concerns. In addition to writing, I generated and refined a full set of visual aids for this section. I restructured and reworked the entirety of Section 8, to align better with the central theme of the paper as well as eliminating any redundancies from earlier sections. The new version is more in line with the rest of the paper now with a clear set of subsections: multimodal and cross-modal turn detection, adaptive cultural and linguistic systems, and neurodivergence-inclusive architectures. Further subsections on governance, real-time modeling, and research gaps are planned next. I also ran plagiarism checks on key sections and made necessary final edits to ensure originality and citation integrity. I hope to finish this tomorrow, I have to complete section 8, conclusion, final run through and any additional pages. 
-
+On this day, I finalized Section 7 of the paper, focusing on the ethical, social, and cultural considerations of AI-powered turn detection. This included in-depth discussions on bias, neurodivergence, accessibility, and regulatory frameworks, as well as the integration of the digital twin and identity theft argument to tie back to earlier privacy concerns. In addition to writing, I generated and refined a full set of visual aids for this section. I restructured and reworked the entirety of Section 8, to align better with the central theme of the paper as well as eliminating any redundancies from earlier sections. The new version is more in line with the rest of the paper now with a clear set of subsections: multimodal and cross-modal turn detection, adaptive cultural and linguistic systems, and neurodivergence-inclusive architectures. Further subsections on governance, real-time modeling, and research gaps are planned next. I also ran plagiarism checks on key sections and made necessary final edits to ensure originality and citation integrity. I hope to finish this tomorrow, I have to complete section 8, conclusion, final run through and any additional pages.
 
 ### Day 44: March 20, 2025
 
@@ -145,9 +148,7 @@ I also attended the Intel OPEA webinar on AgentsQnA. No live demo, but they pres
 
 The biggest win of the day was a massive research breakthrough, finding multiple highly relevant papers on AI-driven language learning, ASR/TTS for Korean, and conversational AI for neurodivergent users. This reshaped how I'm structuring Section 5 and the overall research discussion.
 
-
-At this point, I still feel like I have so much left to do. Section 6 needs final revisions, and I haven’t even touched Sections 7+ yet. On top of that, I still have bootcamp work for Weeks 3, 4, and 5, plus Agents Week tasks and the final integration. 
-
+At this point, I still feel like I have so much left to do. Section 6 needs final revisions, and I haven’t even touched Sections 7+ yet. On top of that, I still have bootcamp work for Weeks 3, 4, and 5, plus Agents Week tasks and the final integration.
 
 ### Day 42: March 18, 2025
 
