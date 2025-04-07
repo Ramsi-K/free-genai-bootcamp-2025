@@ -54,29 +54,7 @@ def init_telemetry():
 init_telemetry()
 
 # Database path
-DB_PATH = "/shared/data/questions.db"
-
-# Ensure database exists
-os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-
-# Initialize database
-conn = sqlite3.connect(DB_PATH)
-cursor = conn.cursor()
-# Create questions table
-cursor.execute(
-    """
-    CREATE TABLE IF NOT EXISTS questions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        video_id TEXT NOT NULL,
-        question_text TEXT NOT NULL,
-        choices TEXT NOT NULL,
-        correct_answer INTEGER NOT NULL,
-        audio_segment TEXT NOT NULL
-    )
-    """
-)
-conn.commit()
-conn.close()
+DB_PATH = os.path.join(os.getcwd(), "..", "shared", "data", "app.db")
 
 # Ollama LLM endpoint
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://ollama:11434")

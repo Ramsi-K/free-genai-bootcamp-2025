@@ -34,8 +34,7 @@ CORS(app)
 # --- Configuration ---
 OUTPUT_DIR = os.environ.get("OUTPUT_DIR", "/shared/data")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-DB_PATH = os.path.join(os.getcwd(), "../..", "shared", "data", "transcripts.db")
-os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+DB_PATH = os.path.join(os.getcwd(), "..", "shared", "data", "app.db")
 OTEL_EXPORTER_OTLP_ENDPOINT = os.environ.get(
     "OTEL_EXPORTER_OTLP_ENDPOINT", "http://otel-collector:4317"
 )  # Point to collector service name in docker-compose
@@ -66,54 +65,6 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
-
-# --- Database Setup ---
-def init_db():
-    """Initialize the SQLite database and tables."""
-    conn = None
-    try:
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        # Videos table
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS videos (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                video_id TEXT UNIQUE NOT NULL,
-                title TEXT,
-                author TEXT,
-                description TEXT,
-                length INTEGER,
-                publish_date TEXT,
-                views INTEGER,
-                transcript TEXT,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP
-            )
-        """
-        )
-        # Segments table
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS segments (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                video_id TEXT NOT NULL,
-                start REAL,
-                end REAL,
-                duration REAL,
-                text TEXT,
-                FOREIGN KEY(video_id) REFERENCES videos(video_id) ON DELETE CASCADE
-            )
-        """
-        )  # Added ON DELETE CASCADE
-        conn.commit()
-        logger.info(f"Database initialized successfully at {DB_PATH}")
-    except sqlite3.Error as e:
-        logger.error(f"Database initialization failed: {e}")
-        # Consider how critical DB is. If essential, maybe raise exception?
-    finally:
-        if conn:
-            conn.close()
-
 
 # --- OTEL Setup ---
 def init_telemetry():
@@ -528,9 +479,5 @@ def get_transcript_by_video_id(video_id):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     logger.info("Starting the Flask app...")
-
-    # Initialize the database before starting the app
-    logger.info(f"Initializing database at {DB_PATH}...")
-    init_db()
 
     app.run(host="0.0.0.0", port=5000, debug=True)
