@@ -18,20 +18,21 @@ import {
 } from '@mui/material';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import HearingIcon from '@mui/icons-material/Hearing';
+import { useAppContext } from '../context/AppContext';
 
 // API endpoint configuration
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
 const Home = () => {
   const navigate = useNavigate();
+  const { dispatch } = useAppContext();
   const [youtubeUrl, setYoutubeUrl] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    dispatch({ type: 'SET_LOADING', payload: true });
     setError(null);
     
     try {
@@ -50,7 +51,7 @@ const Home = () => {
       console.error('Error processing video:', err);
       setError(err.response?.data?.error || 'Failed to process video. Please try another URL.');
     } finally {
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
@@ -89,7 +90,7 @@ const Home = () => {
             placeholder="https://www.youtube.com/watch?v=..."
             margin="normal"
             required
-            disabled={loading}
+            disabled={false}
             InputProps={{
               startAdornment: <YouTubeIcon color="error" sx={{ mr: 1 }} />,
             }}
@@ -101,10 +102,10 @@ const Home = () => {
               variant="contained" 
               color="primary" 
               size="large"
-              disabled={loading || !youtubeUrl}
-              startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <HearingIcon />}
+              disabled={!youtubeUrl}
+              startIcon={<HearingIcon />}
             >
-              {loading ? '처리 중...' : '비디오 처리하기'}
+              비디오 처리하기
             </Button>
           </Box>
         </form>

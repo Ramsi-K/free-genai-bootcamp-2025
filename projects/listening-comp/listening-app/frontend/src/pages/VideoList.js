@@ -23,17 +23,19 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import QuizIcon from '@mui/icons-material/Quiz';
+import { useAppContext } from '../context/AppContext';
 
 // API endpoint configuration
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 const QUESTION_API_URL = process.env.REACT_APP_QUESTION_API_URL || 'http://localhost:5001';
 
 const VideoList = () => {
+  const { state, dispatch } = useAppContext();
   const [videos, setVideos] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    dispatch({ type: 'SET_LOADING', payload: true });
     fetchVideos();
   }, []);
 
@@ -45,7 +47,7 @@ const VideoList = () => {
       console.error('Error fetching videos:', err);
       setError('Failed to load videos. Please try again later.');
     } finally {
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
@@ -92,7 +94,7 @@ const VideoList = () => {
         </Typography>
       </Box>
 
-      {loading ? (
+      {state.loading ? (
         <Box display="flex" justifyContent="center" my={4}>
           <CircularProgress />
         </Box>

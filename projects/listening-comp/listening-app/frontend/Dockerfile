@@ -12,6 +12,12 @@ RUN npm install --quiet
 # Copy frontend source code
 COPY frontend/ .
 
+# Add analytics tracking
+COPY frontend/analytics.js ./analytics.js
+
+# Debugging: Ensure analytics.js is copied
+RUN ls -la /app
+
 # Debugging: List files before running npm build
 RUN ls -la /app
 

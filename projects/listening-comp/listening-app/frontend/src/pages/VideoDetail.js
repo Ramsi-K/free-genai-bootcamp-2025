@@ -31,6 +31,7 @@ import YouTubeIcon from '@mui/icons-material/YouTube';
 import InfoIcon from '@mui/icons-material/Info';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import HearingIcon from '@mui/icons-material/Hearing';
+import { useAppContext } from '../context/AppContext';
 
 // API endpoint configuration
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
@@ -40,8 +41,8 @@ const AUDIO_API_URL = process.env.REACT_APP_AUDIO_API_URL || 'http://localhost:5
 const VideoDetail = () => {
   const { videoId } = useParams();
   const navigate = useNavigate();
+  const { dispatch } = useAppContext();
   const [videoData, setVideoData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -49,6 +50,7 @@ const VideoDetail = () => {
   const [existingQuestions, setExistingQuestions] = useState(null);
 
   useEffect(() => {
+    dispatch({ type: 'SET_LOADING', payload: true });
     fetchVideoData();
     checkExistingQuestions();
   }, [videoId]);
@@ -61,7 +63,7 @@ const VideoDetail = () => {
       console.error('Error fetching video data:', err);
       setError('Failed to load video data. Please try again later.');
     } finally {
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
@@ -117,16 +119,6 @@ const VideoDetail = () => {
     const remainingSeconds = Math.floor(seconds % 60);
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
-
-  if (loading) {
-    return (
-      <Container maxWidth="lg">
-        <Box display="flex" justifyContent="center" my={4}>
-          <CircularProgress />
-        </Box>
-      </Container>
-    );
-  }
 
   if (error && !videoData) {
     return (
