@@ -1,29 +1,54 @@
 services:
-  # Build base image first - make this a simple image reference, not a long-running service
   base:
     build:
       context: .
       dockerfile: Dockerfile.base
     image: listening-app-base:latest
-    # Make it keep running but don't include it in the depends_on chain
     command: tail -f /dev/null
     networks:
       - app_network
 
-  transcript-processor:
+  main:
     build:
       context: .
-      dockerfile: services/transcript-processor/Dockerfile
+      dockerfile: Dockerfile
+    ports:
+      - '8000:8000'
+    environment:
+      - HOST_IP=${HOST_IP}
+      - LLM_MODEL=${LLM_MODEL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - TTS_MODEL=${TTS_MODEL}
+      - USE_GPU=${USE_GPU}
+      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    depends_on:
+      - otel-collector
+      - prometheus
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  transcript-processor:
+    build:
+      context: ./services/transcript-processor
+      dockerfile: Dockerfile
     ports:
       - '5000:5000'
+    environment:
+      - DB_PATH=/shared/data/app.db
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    depends_on:
+      - otel-collector
     volumes:
       - shared_data:/shared/data
-    environment:
-      - OUTPUT_DIR=/shared/data
-      - USE_GPU=${USE_GPU:-false}
-      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
-      - PYTHONUNBUFFERED=1
-      - PYTHONPATH=/app:/app/comps/cores/proto
     networks:
       - app_network
     restart: unless-stopped
@@ -35,25 +60,18 @@ services:
 
   question-module:
     build:
-      context: .
-      dockerfile: services/question-module/Dockerfile
-    depends_on:
-      ollama:
-        condition: service_started
+      context: ./services/question-module
+      dockerfile: Dockerfile
     ports:
       - '5001:5001'
+    environment:
+      - DB_PATH=/shared/data/app.db
+      - LLM_MODEL=${LLM_MODEL}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    depends_on:
+      - otel-collector
     volumes:
       - shared_data:/shared/data
-    environment:
-      - DATA_DIR=/shared/data
-      - CHROMA_DIR=/shared/data/chroma
-      - OLLAMA_HOST=ollama
-      - USE_GPU=${USE_GPU:-false}
-      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
-      - LLM_MODEL=${LLM_MODEL}
-      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
-      - PYTHONUNBUFFERED=1
-      - PYTHONPATH=/app:/app/comps/cores/proto
     networks:
       - app_network
     restart: unless-stopped
@@ -65,20 +83,19 @@ services:
 
   audio-module:
     build:
-      context: .
-      dockerfile: services/audio-module/Dockerfile
+      context: ./services/audio-module
+      dockerfile: Dockerfile
     ports:
       - '5002:5002'
+    environment:
+      - DB_PATH=/shared/data/app.db
+      - TTS_MODEL=${TTS_MODEL}
+      - USE_GPU=${USE_GPU}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    depends_on:
+      - otel-collector
     volumes:
       - shared_data:/shared/data
-    environment:
-      - DATA_DIR=/shared/data
-      - AUDIO_DIR=/shared/data/audio
-      - USE_GPU=${USE_GPU:-false}
-      - TTS_MODEL=${TTS_MODEL}
-      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
-      - PYTHONUNBUFFERED=1
-      - PYTHONPATH=/app:/app/comps/cores/proto
     networks:
       - app_network
     restart: unless-stopped
@@ -123,48 +140,43 @@ services:
       timeout: 10s
       retries: 3
 
-  mega-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      transcript-processor:
-        condition: service_started
-      question-module:
-        condition: service_started
-      audio-module:
-        condition: service_started
-      ollama:
-        condition: service_started
+  ollama-server:
+    image: ollama/ollama
+    container_name: ollama-server
     ports:
-      - '8000:8000'
-      - '8888:8888'
-    volumes:
-      - shared_data:/shared/data
+      - '11434:11434'
     environment:
-      - OLLAMA_HOST=ollama
+      - no_proxy=${NO_PROXY}
+      - http_proxy=${HTTP_PROXY}
+      - https_proxy=${HTTPS_PROXY}
       - LLM_MODEL=${LLM_MODEL}
-      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
-      - TTS_MODEL=${TTS_MODEL}
-      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
-      - PYTHONUNBUFFERED=1
-      - PYTHONPATH=/app:/app/comps/cores/proto
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./start.sh:/start.sh
+    entrypoint: ['/bin/bash', '/start.sh']
+    networks:
+      - app_network
+
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    volumes:
+      - ./otel-config.yaml:/etc/otel-config.yaml
+    command: ['--config=/etc/otel-config.yaml']
+    ports:
+      - '4317:4317'
     networks:
       - app_network
     restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   prometheus:
     image: prom/prometheus:latest
-    ports:
-      - '9090:9090'
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
+    ports:
+      - '9090:9090'
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
     networks:
       - app_network
     restart: unless-stopped
@@ -172,6 +184,7 @@ services:
 volumes:
   shared_data:
   ollama_data:
+    driver: local
   prometheus_data:
 
 networks:

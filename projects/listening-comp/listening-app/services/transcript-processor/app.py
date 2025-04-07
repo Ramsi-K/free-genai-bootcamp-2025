@@ -476,6 +476,10 @@ def get_transcript_by_video_id(video_id):
         return jsonify({"error": "Internal server error"}), 500
 
 
+@app.route("/health", methods=["GET"])
+def health_check():
+    return jsonify({"status": "ok"})
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     logger.info("Starting the Flask app...")

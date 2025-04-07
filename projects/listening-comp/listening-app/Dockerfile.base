@@ -20,20 +20,19 @@ WORKDIR /app
 COPY requirements.txt . 
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Clone GenAIComps repository and install
-RUN git clone -b main https://github.com/opea-project/GenAIComps.git
-WORKDIR /app/GenAIComps
-RUN pip install -e .
-WORKDIR /app
+# Ensure only required files are copied into the image
 
-# Create symlink for compatibility
-RUN ln -sf /app/GenAIComps/comps /app/comps
+# Install Prometheus and OpenTelemetry dependencies
+RUN pip install --no-cache-dir prometheus_client opentelemetry-sdk opentelemetry-exporter-otlp
 
-# Add docarray shim for fallback
-COPY docarray_shim.py /app/
+# Add OpenTelemetry Collector configuration
+COPY otel-config.yaml /etc/otel-config.yaml
+
+# Expose OpenTelemetry Collector port
+EXPOSE 4317
 
 # Set Python path
-ENV PYTHONPATH=/app:/app/GenAIComps
+ENV PYTHONPATH=/app
 
 # Keep the container running
 CMD ["tail", "-f", "/dev/null"]

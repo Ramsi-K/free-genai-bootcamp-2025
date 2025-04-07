@@ -20,27 +20,15 @@ from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.resources import Resource
-
-# Define async handler for Flask to work with async functions
-def async_handler(f):
-    @wraps(f)
-    def inner(*args, **kwargs):
-        try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-        result = loop.run_until_complete(f(*args, **kwargs))
-        # Close the loop if it was created in this function
-        if not loop.is_running():
-            loop.close()
-        return result
-
-    return inner
+from services.metrics.persistence import MetricsPersistence
 
 app = Flask(__name__)
 FlaskInstrumentor().instrument_app(app)
 CORS(app)
+
+@app.route("/health", methods=["GET"])
+def health_check():
+    return jsonify({"status": "ok"})
 
 # Initialize Prometheus metrics
 AUDIO_GENERATED = Counter(
@@ -130,10 +118,16 @@ def initialize_tts_model():
 # Initialize the TTS model
 tts_model = initialize_tts_model()
 
-@app.route("/health", methods=["GET"])
-def health_check():
-    """Health check endpoint."""
-    return jsonify({"status": "ok"})
+# Initialize MetricsPersistence
+metrics_persistence = MetricsPersistence()
+
+# Example usage: Store a metric
+def store_audio_metric(metric_name, value, labels=None):
+    metrics_persistence.store_metric(metric_name, value, labels)
+
+# Example usage: Retrieve metrics
+def get_audio_metrics(metric_name, start_date=None, end_date=None):
+    return metrics_persistence.get_metrics(metric_name, start_date, end_date)
 
 @app.route("/api/process-questions/<video_id>", methods=["POST"])
 def process_questions(video_id):
@@ -174,6 +168,9 @@ def process_questions(video_id):
 
                     AUDIO_GENERATED.inc()
                     generated_audio.append({"question_id": question_id, "audio_path": filepath})
+
+                    # Store audio processing metric
+                    store_audio_metric("audio_processing_time", 1.23, labels={"status": "success"})
 
                 except Exception as e:
                     TTS_ERRORS.inc()

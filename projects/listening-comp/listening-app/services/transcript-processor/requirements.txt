@@ -1,19 +1,5 @@
-flask>=2.0.0
-flask-cors>=3.0.10
-requests>=2.31.0
-numpy==1.24.3
+# Service-specific requirements
 youtube_transcript_api>=0.6.1
 langdetect>=1.0.9
-gunicorn==21.2.0
-prometheus_client==0.20.0
-
-# OTEL Dependencies
-opentelemetry-api
-opentelemetry-sdk
-opentelemetry-instrumentation-flask
-opentelemetry-exporter-otlp-proto-grpc
-
-# Guardrails dependency (if needed beyond langdetect)
-# Add any specific guardrails library if used, otherwise langdetect is included
 
 

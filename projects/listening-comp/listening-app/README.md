@@ -7,7 +7,7 @@ This guide provides comprehensive instructions on how to set up and deploy the K
 The application consists of 3 main microservices plus supporting services:
 
 1. **Transcript Processor**: Extracts Korean content from YouTube videos and prepares the data
-2. **Question Module**: Embeds text, generates TOPIK-style listening comprehension questions
+2. **Question Module**: LLM generates TOPIK-style listening comprehension questions
 3. **Audio Module**: Generates audio for questions using TTS
 4. **Supporting Services**:
    - Ollama: Local LLM service for question generation
