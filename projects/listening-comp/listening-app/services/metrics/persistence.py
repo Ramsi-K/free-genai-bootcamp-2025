@@ -32,4 +32,23 @@ class MetricsPersistence:
     def get_metrics(self, name, start_date=None, end_date=None):
         """Retrieve metrics for analysis"""
         metrics = []
-        # Implementation for reading stored metrics
+        start_date = pd.to_datetime(start_date) if start_date else None
+        end_date = pd.to_datetime(end_date) if end_date else None
+
+        # Traverse through the date-based directory structure
+        for root, _, files in os.walk(self.base_path):
+            for file in files:
+                if file == f"{name}.jsonl":
+                    filepath = os.path.join(root, file)
+                    with open(filepath, "r") as f:
+                        for line in f:
+                            metric = json.loads(line)
+                            timestamp = pd.to_datetime(metric["timestamp"])
+
+                            # Filter by date range if provided
+                            if (start_date and timestamp < start_date) or (end_date and timestamp > end_date):
+                                continue
+
+                            metrics.append(metric)
+
+        return metrics
