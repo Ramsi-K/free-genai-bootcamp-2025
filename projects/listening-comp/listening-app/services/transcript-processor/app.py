@@ -13,7 +13,8 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
 import requests
 from datetime import datetime
-from prometheus_client import Counter, generate_latest, REGISTRY
+from prometheus_client import Counter, generate_latest, REGISTRY, make_wsgi_app
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
     OTLPSpanExporter,
@@ -158,6 +159,11 @@ PROCESSING_ERRORS = Counter(
         "error_type"
     ],  # e.g., 'metadata_fetch', 'transcript_fetch', 'guardrail', 'database'
 )
+
+# Add Prometheus metrics endpoint
+app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
+    '/metrics': make_wsgi_app()
+})
 
 
 # --- Helper Functions (Preserved from original logic) ---
