@@ -127,7 +127,7 @@ services:
   ollama:
     image: ollama/ollama:latest
     ports:
-      - '11434:11434'
+      - '8008:11434'
     volumes:
       - ollama_data:/root/.ollama
     command: serve
@@ -140,22 +140,22 @@ services:
       timeout: 10s
       retries: 3
 
-  ollama-server:
-    image: ollama/ollama
-    container_name: ollama-server
-    ports:
-      - '11434:11434'
-    environment:
-      - no_proxy=${NO_PROXY}
-      - http_proxy=${HTTP_PROXY}
-      - https_proxy=${HTTPS_PROXY}
-      - LLM_MODEL=${LLM_MODEL}
-    volumes:
-      - ollama_data:/root/.ollama
-      - ./start.sh:/start.sh
-    entrypoint: ['/bin/bash', '/start.sh']
-    networks:
-      - app_network
+  # ollama-server:
+  #   image: ollama/ollama
+  #   container_name: ollama-server
+  #   ports:
+  #     - '11434:11434'
+  #   environment:
+  #     - no_proxy=${NO_PROXY}
+  #     - http_proxy=${HTTP_PROXY}
+  #     - https_proxy=${HTTPS_PROXY}
+  #     - LLM_MODEL=${LLM_MODEL}
+  #   volumes:
+  #     - ollama_data:/root/.ollama
+  #     - ./start.sh:/start.sh
+  #   entrypoint: ['/bin/bash', '/start.sh']
+  #   networks:
+  #     - app_network
 
   otel-collector:
     image: otel/opentelemetry-collector:latest

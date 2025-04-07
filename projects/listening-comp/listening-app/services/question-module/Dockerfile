@@ -4,11 +4,11 @@ FROM listening-app-base:latest
 # WORKDIR /app is inherited
 
 # Install service-specific dependencies
-COPY services/question-module/requirements.txt .
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy service-specific code
-COPY services/question-module/app.py .
+COPY app.py .
 
 # Expose port
 EXPOSE 5001

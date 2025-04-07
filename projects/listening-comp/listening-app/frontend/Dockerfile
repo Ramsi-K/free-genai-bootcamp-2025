@@ -1,42 +1,29 @@
-# Build stage
-FROM node:18-slim AS build
+# Use Node.js as the base image for building the frontend
+FROM node:18-slim as build
 
+# Set the working directory
 WORKDIR /app
 
-# Copy package files first for better caching
-COPY frontend/package*.json ./
+# Copy package.json for dependency installation
+COPY ./frontend/package.json ./
 
-# Install dependencies - use npm install instead of npm ci since package-lock.json might not exist
+# Install dependencies
 RUN npm install --quiet
 
-# Copy frontend source code
-COPY frontend/ .
+# Copy the rest of the frontend source code
+COPY ./frontend/ ./
 
-# Add analytics tracking
-COPY frontend/analytics.js ./analytics.js
-
-# Debugging: Ensure analytics.js is copied
-RUN ls -la /app
-
-# Debugging: List files before running npm build
-RUN ls -la /app
-
-# Debugging: Print Node.js and npm versions
-RUN node -v && npm -v
-
-# Build the app
+# Build the frontend
 RUN npm run build
 
-# Production stage with minimal image
+# Use Nginx as the base image for serving the frontend
 FROM nginx:stable-alpine
-# Copy build artifacts from the build stage
+
+# Copy the built frontend files to the Nginx HTML directory
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Add nginx configuration
-COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expose port 80
+# Expose port 80 for the frontend
 EXPOSE 80
 
-# Start nginx
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]

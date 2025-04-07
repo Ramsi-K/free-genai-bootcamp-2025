@@ -8,19 +8,18 @@ processors:
   batch:
 
 exporters:
-  jaeger:
-    endpoint: jaeger:14250
-    tls:
-      insecure: true
-  prometheus:
-    endpoint: 0.0.0.0:8888
+  otlp:
+    endpoint: "localhost:4317"
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [jaeger]
+      exporters: [otlp]
     metrics:
       receivers: [otlp]
-      exporters: [prometheus]
+      exporters: [otlp]
+    logs:
+      receivers: [otlp]
+      exporters: [otlp]

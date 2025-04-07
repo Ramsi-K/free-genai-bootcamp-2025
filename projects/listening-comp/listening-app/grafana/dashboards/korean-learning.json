@@ -42,6 +42,8 @@
         "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
       }
     ],
-    "refresh": "5s"
+    "refresh": "5s",
+    "schemaVersion": 36,
+    "version": 1
   }
 }
