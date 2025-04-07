@@ -14,7 +14,7 @@ class VideoGuardrails:
     max_duration: int = 900  # Maximum video length (15 minutes)
     min_transcript_length: int = 100  # Minimum transcript character length
     max_transcript_length: int = 5000  # Maximum transcript character length
-    min_korean_ratio: float = 0.7  # Minimum ratio of Korean text
+    min_korean_ratio: float = 0.5  # Minimum ratio of Korean text
     blacklisted_channels: List[str] = None  # Channels to block
     rate_limit: int = 10  # Requests per minute
     requests: Dict[str, List[datetime]] = None  # Track request timestamps
@@ -42,7 +42,7 @@ class VideoGuardrails:
         self.requests[ip_address].append(now)
         return True
 
-    def validate_video_metadata(self, metadata: Dict) -> Optional[str]:
+    def validate_metadata(self, metadata: Dict) -> Optional[str]:
         """Validate video metadata."""
         if metadata.get("length", 0) < self.min_duration:
             return f"비디오가 너무 짧습니다. 최소 {self.min_duration}초 이상이어야 합니다."

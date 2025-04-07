@@ -30,9 +30,9 @@ mkdir -p korean-listening-app
 cd korean-listening-app
 
 # Create the folder structure
-mkdir -p services/transcript-processor/utils
-mkdir -p services/question-module/utils
-mkdir -p services/audio-module/utils
+mkdir -p services/transcript-processor
+mkdir -p services/question-module
+mkdir -p services/audio-module
 mkdir -p frontend/public
 mkdir -p frontend/src/components
 mkdir -p frontend/src/pages
