@@ -4,7 +4,6 @@ import time
 import uuid
 import logging
 import tempfile
-import numpy as np
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import requests
@@ -22,7 +21,13 @@ from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.resources import Resource
-from ..metrics.persistence import MetricsPersistence
+import sys
+import os
+
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+)
+from services.metrics.persistence import MetricsPersistence
 
 app = Flask(__name__)
 FlaskInstrumentor().instrument_app(app)

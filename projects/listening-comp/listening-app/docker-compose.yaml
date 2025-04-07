@@ -83,8 +83,8 @@ services:
 
   audio-module:
     build:
-      context: ./services/audio-module
-      dockerfile: Dockerfile
+      context: ./services
+      dockerfile: audio-module/Dockerfile
     ports:
       - '5002:5002'
     environment:

@@ -2,4 +2,7 @@
 # No special dependencies required
 torchaudio==2.0.2
 --extra-index-url https://download.pytorch.org/whl/cpu
+soundfile>=0.10.3
+pydub
+
 

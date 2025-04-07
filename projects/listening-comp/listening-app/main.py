@@ -3,6 +3,7 @@ import sqlite3
 import logging
 from flask import Flask, request, jsonify
 import importlib
+from services.metrics.persistence import MetricsPersistence
 
 transcript_processor = importlib.import_module("services.transcript-processor")
 question_module = importlib.import_module("services.question-module")
@@ -12,6 +13,9 @@ audio_module = importlib.import_module("services.audio-module")
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Initialize MetricsPersistence
+metrics_persistence = MetricsPersistence()
 
 # Shared database path
 DB_PATH = os.path.join(os.getcwd(), "shared", "data", "app.db")
@@ -84,6 +88,11 @@ def process_video():
         return jsonify({"error": "Video URL is required"}), 400
 
     try:
+        # Track API usage
+        metrics_persistence.store_metric(
+            "api_usage", 1, labels={"endpoint": "/api/process"}
+        )
+
         # Step 1: Process transcript
         transcript_result = transcript_processor.process_transcript(video_url)
 
@@ -114,6 +123,10 @@ def process_video():
         )
 
     except Exception as e:
+        # Track errors
+        metrics_persistence.store_metric(
+            "api_errors", 1, labels={"endpoint": "/api/process"}
+        )
         logger.error(f"Error processing video: {e}")
         return jsonify({"error": "Internal server error"}), 500
 

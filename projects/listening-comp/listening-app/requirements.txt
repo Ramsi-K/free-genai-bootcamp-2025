@@ -16,7 +16,6 @@ torch==2.0.1
 youtube_transcript_api==0.6.1
 pytube==15.0.0
 langdetect==1.0.9
-pandas==1.5.0
 
 # Question generation
 sentence-transformers==2.2.2
