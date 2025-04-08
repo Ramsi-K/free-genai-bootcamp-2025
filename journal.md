@@ -4,6 +4,7 @@
 
 ## Jump to what I was doing in
 
+- [Week 9](#week-9)
 - [Week 8](#week-8)
 - [Week 7](#week-7)
 - [Week 6](#week-6)
@@ -14,6 +15,14 @@
 - [Week 1](#week-1)
 - [Week 0](#week-0)
 - [Pre-bootcamp](#pre-bootcamp-prep)
+
+## Week 9
+
+### Day 59: April 7, 2025
+
+**T-minus 6 days to submission (April 12)**
+
+Finalized the transcript service: endpoints for processing, listing, and retrieving transcripts are functional. Integrated SQLite, metrics, OpenTelemetry, and added Korean transcript filtering. Spent most of the day debugging the audio module. Fixed broken imports from `services.metrics.persistence` by adjusting the Docker build context in `docker-compose.yml`. Resolved the pandas/numpy binary mismatch by removing pandas and varying numpy. All module-specific errors are now fixed. The last known issue was an OpenTelemetry warning at runtime, but no critical errors remained. At this point, the modules work and the focus needs to shift to wiring everything together and finishing the app.
 
 ## Week 8
 
