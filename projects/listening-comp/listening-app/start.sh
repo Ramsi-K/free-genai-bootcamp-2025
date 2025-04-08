@@ -47,9 +47,15 @@ python services/audio-module/app.py &
 check_service "Audio Module" 5002
 
 # Step 4: Start Prometheus and OpenTelemetry Collector
+echo "Starting Prometheus and OpenTelemetry Collector..."
 docker-compose up -d prometheus otel-collector
+
+# Check if OpenTelemetry Collector is running on both gRPC and HTTP ports
+check_service "OpenTelemetry Collector (gRPC)" 4317
+check_service "OpenTelemetry Collector (HTTP)" 4318
+
+# Check if Prometheus is running
 check_service "Prometheus" 9090
-check_service "OpenTelemetry Collector" 4317
 
 # Step 5: Start the main application
 python main.py &
