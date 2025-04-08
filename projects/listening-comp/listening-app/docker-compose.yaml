@@ -17,15 +17,13 @@ services:
     environment:
       - HOST_IP=${HOST_IP}
       - LLM_MODEL=${LLM_MODEL}
-      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
-      - TTS_MODEL=${TTS_MODEL}
       - USE_GPU=${USE_GPU}
-      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
       - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
     depends_on:
       - otel-collector
       - prometheus
+      - ollama
     networks:
       - app_network
     restart: unless-stopped
@@ -104,11 +102,11 @@ services:
       - '5002:5002'
     environment:
       - DB_PATH=/shared/data/app.db
-      - TTS_MODEL=${TTS_MODEL}
       - USE_GPU=${USE_GPU}
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
     depends_on:
       - otel-collector
+      - melotts
     volumes:
       - shared_data:/shared/data
     networks:
@@ -201,6 +199,23 @@ services:
     networks:
       - app_network
     restart: unless-stopped
+
+  melotts:
+    build:
+      context: ./MeloTTS
+      dockerfile: Dockerfile
+    ports:
+      - '8888:8888'
+    networks:
+      - app_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.00'
+    environment:
+      - USE_GPU=${USE_GPU}
 
 volumes:
   shared_data:

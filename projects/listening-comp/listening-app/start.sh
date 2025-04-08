@@ -26,7 +26,18 @@ check_service() {
 python main.py init-db &
 check_service "Database Initialization" 8000
 
-# Step 2: Start Ollama server and download the LLM model
+# Step 2: Start MeloTTS
+if [ "$USE_GPU" = "true" ]; then
+  echo "Starting MeloTTS with GPU support..."
+  docker run --gpus all -d -p 8888:8888 --name melotts-container melotts
+else
+  echo "Starting MeloTTS without GPU support..."
+  docker run -d -p 8888:8888 --name melotts-container melotts
+fi
+
+check_service "MeloTTS" 8888
+
+# Step 3: Start Ollama server and download the LLM model
 if ! ollama list | grep -q "$LLM_MODEL"; then
   echo "Downloading LLM model: $LLM_MODEL"
   ollama pull "$LLM_MODEL"
@@ -36,7 +47,7 @@ fi
 ollama serve &
 check_service "Ollama Server" 11434
 
-# Step 3: Start all microservices
+# Step 4: Start all microservices
 python services/transcript-processor/app.py &
 check_service "Transcript Processor" 5000
 
@@ -46,7 +57,7 @@ check_service "Question Module" 5001
 python services/audio-module/app.py &
 check_service "Audio Module" 5002
 
-# Step 4: Start Prometheus and OpenTelemetry Collector
+# Step 5: Start Prometheus and OpenTelemetry Collector
 echo "Starting Prometheus and OpenTelemetry Collector..."
 docker-compose up -d prometheus otel-collector
 
@@ -57,7 +68,7 @@ check_service "OpenTelemetry Collector (HTTP)" 4318
 # Check if Prometheus is running
 check_service "Prometheus" 9090
 
-# Step 5: Start the main application
+# Step 6: Start the main application
 python main.py &
 check_service "Main Application" 8000
 

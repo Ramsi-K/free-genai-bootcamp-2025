@@ -5,3 +5,5 @@ comps/*
 *.db
 *.pyc
 *.ipynb
+__pycache__/
+audio-module/MeloTTS/
