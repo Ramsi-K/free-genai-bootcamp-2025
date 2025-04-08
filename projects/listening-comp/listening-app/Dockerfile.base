@@ -16,20 +16,19 @@ RUN apt-get update && \
 # Set working directory
 WORKDIR /app
 
-# Install common Python dependencies
-COPY requirements.txt . 
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Ensure only required files are copied into the image
-
-# Install Prometheus and OpenTelemetry dependencies
+# Ensure OpenTelemetry dependencies are installed
 RUN pip install --no-cache-dir prometheus_client opentelemetry-sdk opentelemetry-exporter-otlp
 
 # Add OpenTelemetry Collector configuration
 COPY otel-config.yaml /etc/otel-config.yaml
 
-# Expose OpenTelemetry Collector port
+# Copy requirements early to leverage Docker caching
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Expose OpenTelemetry Collector ports
 EXPOSE 4317
+EXPOSE 4318
 
 # Set Python path
 ENV PYTHONPATH=/app
