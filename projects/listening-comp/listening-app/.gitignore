@@ -1,9 +1,10 @@
-ChatQnA/*
-comps/*
+# Removed OpenTelemetry-related files and directories from being ignored
+# ChatQnA/*
+# comps/*
 
 .DS_Store
 *.db
 *.pyc
 *.ipynb
 __pycache__/
-audio-module/MeloTTS/
+MeloTTS/

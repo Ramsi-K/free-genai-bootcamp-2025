@@ -15,31 +15,21 @@ RUN apt-get update && apt-get install -y \
 RUN pip install --no-cache-dir \
     torch \
     numpy \
-    unidic-lite \
     flask \
     flask-cors \
     requests \
-    youtube-transcript-api
-
-# Re-adding OpenTelemetry dependencies
-RUN pip install --no-cache-dir prometheus_client opentelemetry-sdk opentelemetry-exporter-otlp
+    youtube-transcript-api \
+    prometheus_client
 
 # Set working directory
 WORKDIR /app
-
-# Ensure OpenTelemetry dependencies are installed
-RUN pip install --no-cache-dir prometheus_client opentelemetry-sdk opentelemetry-exporter-otlp
-
-# Add OpenTelemetry Collector configuration
-COPY otel-config.yaml /etc/otel-config.yaml
 
 # Copy requirements early to leverage Docker caching
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose OpenTelemetry Collector ports
-EXPOSE 4317
-EXPOSE 4318
+# Expose necessary ports
+EXPOSE 8000
 
 # Set Python path
 ENV PYTHONPATH=/app

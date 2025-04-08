@@ -4,15 +4,36 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 // Pages
-import Home from './pages/Home';
-import VideoList from './pages/VideoList';
+import HomePage from './pages/HomePage';
 import VideoDetail from './pages/VideoDetail';
-import QuestionPractice from './pages/QuestionPractice';
 import NotFound from './pages/NotFound';
 
 // Components
 import AppHeader from './components/AppHeader';
 import Footer from './components/Footer';
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
+
+async function submitVideoUrl(videoUrl) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/process`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ url: videoUrl, num_questions: 3 }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to process video");
+    }
+
+    const data = await response.json();
+    console.log("Success:", data);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
 
 // Create a theme
 const theme = createTheme({
@@ -47,10 +68,8 @@ function App() {
           <AppHeader />
           <main style={{ flexGrow: 1, padding: '20px' }}>
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/videos" element={<VideoList />} />
-              <Route path="/videos/:videoId" element={<VideoDetail />} />
-              <Route path="/practice/:videoId" element={<QuestionPractice />} />
+              <Route path="/" element={<HomePage />} />
+              <Route path="/video/:id" element={<VideoDetail />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

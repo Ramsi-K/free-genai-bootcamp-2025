@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Load environment variables
+# Load environment variables, ignoring comments and empty lines
 if [ -f .env ]; then
-  export $(cat .env | xargs)
+  export $(grep -vE '^#|^$' .env | xargs)
 fi
 
 # Function to check if a service is running
@@ -23,21 +23,19 @@ check_service() {
 }
 
 # Step 1: Initialize the database
-python main.py init-db &
-check_service "Database Initialization" 8000
-
-# Step 2: Start MeloTTS
-if [ "$USE_GPU" = "true" ]; then
-  echo "Starting MeloTTS with GPU support..."
-  docker run --gpus all -d -p 8888:8888 --name melotts-container melotts
-else
-  echo "Starting MeloTTS without GPU support..."
-  docker run -d -p 8888:8888 --name melotts-container melotts
+python main.py init-db
+if [ $? -ne 0 ]; then
+  echo "Database initialization failed. Please check the logs for details."
+  exit 1
 fi
 
-check_service "MeloTTS" 8888
+# Check if the database file exists
+if [ ! -f "/shared/data/app.db" ]; then
+  echo "Database file not found at /shared/data/app.db. Initialization may have failed."
+  exit 1
+fi
 
-# Step 3: Start Ollama server and download the LLM model
+# Step 2: Start Ollama server and download the LLM model
 if ! ollama list | grep -q "$LLM_MODEL"; then
   echo "Downloading LLM model: $LLM_MODEL"
   ollama pull "$LLM_MODEL"
@@ -47,7 +45,7 @@ fi
 ollama serve &
 check_service "Ollama Server" 11434
 
-# Step 4: Start all microservices
+# Step 3: Start all microservices
 python services/transcript-processor/app.py &
 check_service "Transcript Processor" 5000
 
@@ -57,18 +55,7 @@ check_service "Question Module" 5001
 python services/audio-module/app.py &
 check_service "Audio Module" 5002
 
-# Step 5: Start Prometheus and OpenTelemetry Collector
-echo "Starting Prometheus and OpenTelemetry Collector..."
-docker-compose up -d prometheus otel-collector
-
-# Check if OpenTelemetry Collector is running on both gRPC and HTTP ports
-check_service "OpenTelemetry Collector (gRPC)" 4317
-check_service "OpenTelemetry Collector (HTTP)" 4318
-
-# Check if Prometheus is running
-check_service "Prometheus" 9090
-
-# Step 6: Start the main application
+# Step 4: Start the main application
 python main.py &
 check_service "Main Application" 8000
 

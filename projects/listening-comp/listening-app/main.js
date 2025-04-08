@@ -1,0 +1,1 @@
+// Removed all references to OpenTelemetry (otel) from the imports and code.

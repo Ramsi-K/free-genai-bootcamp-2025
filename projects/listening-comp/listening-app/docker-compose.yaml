@@ -19,10 +19,7 @@ services:
       - LLM_MODEL=${LLM_MODEL}
       - USE_GPU=${USE_GPU}
       - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
     depends_on:
-      - otel-collector
-      - prometheus
       - ollama
     networks:
       - app_network
@@ -47,9 +44,8 @@ services:
     environment:
       - DB_PATH=/shared/data/app.db
       - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
     depends_on:
-      - otel-collector
+      - ollama
     volumes:
       - shared_data:/shared/data
     networks:
@@ -75,9 +71,8 @@ services:
     environment:
       - DB_PATH=/shared/data/app.db
       - LLM_MODEL=${LLM_MODEL}
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
     depends_on:
-      - otel-collector
+      - ollama
     volumes:
       - shared_data:/shared/data
     networks:
@@ -103,10 +98,8 @@ services:
     environment:
       - DB_PATH=/shared/data/app.db
       - USE_GPU=${USE_GPU}
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
     depends_on:
-      - otel-collector
-      - melotts
+      - ollama
     volumes:
       - shared_data:/shared/data
     networks:
@@ -120,8 +113,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M # Limit to 512MB of RAM
-          cpus: '0.50' # Limit to 50% of a single CPU core
+          memory: 512M
+          cpus: '0.50'
 
   frontend:
     build:
@@ -131,9 +124,9 @@ services:
     ports:
       - '80:80'
     environment:
-      - REACT_APP_API_BASE_URL=http://${HOST_IP:-localhost}:5000
-      - REACT_APP_QUESTION_API_URL=http://${HOST_IP:-localhost}:5001
-      - REACT_APP_AUDIO_API_URL=http://${HOST_IP:-localhost}:5002
+      - REACT_APP_API_BASE_URL=http://localhost:8000
+      # - REACT_APP_QUESTION_API_URL=http://${HOST_IP:-localhost}:5001
+      # - REACT_APP_AUDIO_API_URL=http://${HOST_IP:-localhost}:5002
     depends_on:
       - transcript-processor
       - question-module
@@ -158,70 +151,10 @@ services:
       timeout: 10s
       retries: 3
 
-  # ollama-server:
-  #   image: ollama/ollama
-  #   container_name: ollama-server
-  #   ports:
-  #     - '11434:11434'
-  #   environment:
-  #     - no_proxy=${NO_PROXY}
-  #     - http_proxy=${HTTP_PROXY}
-  #     - https_proxy=${HTTPS_PROXY}
-  #     - LLM_MODEL=${LLM_MODEL}
-  #   volumes:
-  #     - ollama_data:/root/.ollama
-  #     - ./start.sh:/start.sh
-  #   entrypoint: ['/bin/bash', '/start.sh']
-  #   networks:
-  #     - app_network
-
-  otel-collector:
-    image: otel/opentelemetry-collector:latest
-    volumes:
-      - ./otel-config.yaml:/etc/otel-config.yaml
-    command: ['--config=/etc/otel-config.yaml']
-    ports:
-      - '4317:4317'
-      - '4318:4318' # Added HTTP endpoint
-    networks:
-      - app_network
-    restart: unless-stopped
-
-  prometheus:
-    image: prom/prometheus:latest
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    ports:
-      - '9090:9090'
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    networks:
-      - app_network
-    restart: unless-stopped
-
-  melotts:
-    build:
-      context: ./MeloTTS
-      dockerfile: Dockerfile
-    ports:
-      - '8888:8888'
-    networks:
-      - app_network
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-          cpus: '1.00'
-    environment:
-      - USE_GPU=${USE_GPU}
-
 volumes:
   shared_data:
   ollama_data:
     driver: local
-  prometheus_data:
 
 networks:
   app_network:

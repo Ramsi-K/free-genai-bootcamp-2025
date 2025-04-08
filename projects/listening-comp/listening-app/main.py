@@ -3,19 +3,16 @@ import sqlite3
 import logging
 from flask import Flask, request, jsonify
 import importlib
-from services.metrics.persistence import MetricsPersistence
+import re
+from flask_cors import CORS
 
 transcript_processor = importlib.import_module("services.transcript-processor")
 question_module = importlib.import_module("services.question-module")
 audio_module = importlib.import_module("services.audio-module")
 
-
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Initialize MetricsPersistence
-metrics_persistence = MetricsPersistence()
 
 # Shared database path
 DB_PATH = os.path.join(os.getcwd(), "shared", "data", "app.db")
@@ -23,11 +20,11 @@ os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 # Initialize the shared database
 def init_shared_database():
-    """Initialize the shared SQLite database with required tables."""
     try:
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
@@ -77,6 +74,20 @@ def init_shared_database():
         logger.error(f"Failed to initialize shared database: {e}")
 
 
+@app.route("/")
+def home():
+    return "Welcome to the Listening App API!", 200
+
+
+def extract_video_id(video_url):
+    """Extracts the video ID from a YouTube URL."""
+    pattern = r"(?:v=|\/)([0-9A-Za-z_-]{11})"
+    match = re.search(pattern, video_url)
+    if match:
+        return match.group(1)
+    return None
+
+
 @app.route("/api/process", methods=["POST"])
 def process_video():
     """Process a video through the pipeline: Transcript → Questions → Audio."""
@@ -87,14 +98,13 @@ def process_video():
     if not video_url:
         return jsonify({"error": "Video URL is required"}), 400
 
-    try:
-        # Track API usage
-        metrics_persistence.store_metric(
-            "api_usage", 1, labels={"endpoint": "/api/process"}
-        )
+    video_id = extract_video_id(video_url)
+    if not video_id:
+        return jsonify({"error": "Invalid YouTube URL"}), 400
 
+    try:
         # Step 1: Process transcript
-        transcript_result = transcript_processor.process_transcript(video_url)
+        transcript_result = transcript_processor.process_transcript(video_id)
 
         # Step 2: Generate questions
         questions_result = question_module.generate_questions(
@@ -123,12 +133,23 @@ def process_video():
         )
 
     except Exception as e:
-        # Track errors
-        metrics_persistence.store_metric(
-            "api_errors", 1, labels={"endpoint": "/api/process"}
-        )
         logger.error(f"Error processing video: {e}")
         return jsonify({"error": "Internal server error"}), 500
+
+
+@app.route("/api/transcripts", methods=["GET"])
+def get_transcripts():
+    return jsonify({"message": "Transcripts endpoint is working"})
+
+
+@app.route("/api/questions", methods=["GET"])
+def get_questions():
+    return jsonify({"message": "Questions endpoint is working"})
+
+
+@app.route("/api/audio", methods=["GET"])
+def get_audio():
+    return jsonify({"message": "Audio endpoint is working"})
 
 
 if __name__ == "__main__":

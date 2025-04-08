@@ -1,5 +1,5 @@
 # Use the common base image
-FROM python:3.10
+FROM listening-app-base:latest
 
 # Install service-specific dependencies
 COPY audio-module/requirements.txt .
