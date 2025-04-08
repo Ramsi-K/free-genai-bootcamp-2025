@@ -10,22 +10,19 @@ processors:
   batch:
 
 exporters:
-  logging:
-    loglevel: debug
-  otlp:
-    endpoint: "http://otel-collector:4317"
-  
+  debug: {}
+
 service:
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug, otlp]
+      exporters: [debug]
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug, otlp]
+      exporters: [debug]
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug, otlp]
+      exporters: [debug]

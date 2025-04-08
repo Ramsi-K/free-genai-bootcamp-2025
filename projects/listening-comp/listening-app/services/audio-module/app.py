@@ -1,13 +1,7 @@
 import os
-import json
-import time
-import uuid
 import logging
-import tempfile
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
-import requests
-import soundfile as sf
 from pydub import AudioSegment
 import torch
 import sqlite3
@@ -23,6 +17,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.resources import Resource
 import sys
 import os
+from melo.api import TTS
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
@@ -92,11 +87,6 @@ logger = logging.getLogger(__name__)
 # Environment variables
 DATA_DIR = os.environ.get("DATA_DIR", "/shared/data")
 USE_GPU = os.environ.get("USE_GPU", "false").lower() in ("true", "1", "yes")
-TTS_MODEL = os.environ.get("TTS_MODEL")
-
-if not TTS_MODEL:
-    logger.error("TTS_MODEL environment variable not set")
-    raise ValueError("TTS_MODEL must be set in environment variables")
 
 # Database path and audio directory
 DB_PATH = os.path.join(os.getcwd(), "..", "shared", "data", "app.db")
@@ -124,15 +114,15 @@ else:
     logger.info("Using CPU for audio processing (USE_GPU=false)")
 
 
-# Initialize TTS model
+# Initialize TTS model using MeloTTS API
 def initialize_tts_model():
     try:
-        # Try to load MeloTTS for Korean TTS
-        processor = AutoProcessor.from_pretrained(TTS_MODEL)
-        model = AutoModel.from_pretrained(TTS_MODEL).to(DEVICE)
-        return {"processor": processor, "model": model, "initialized": True}
+        device = "cuda" if USE_GPU and torch.cuda.is_available() else "cpu"
+        model = TTS(language="KR", device=device)
+        logger.info("MeloTTS model initialized successfully")
+        return {"model": model, "initialized": True}
     except Exception as e:
-        logger.error(f"Failed to initialize TTS model: {e}")
+        logger.error(f"Failed to initialize MeloTTS model: {e}")
         return {"initialized": False}
 
 
@@ -181,31 +171,26 @@ def process_questions(video_id):
                 try:
                     # Generate audio for the question
                     input_text = f"{question_text}\n{audio_segment}"
-                    inputs = tts_model["processor"].text_to_sequence(
-                        input_text
+                    output_path = os.path.join(
+                        AUDIO_DIR, f"{video_id}_{question_id}.wav"
                     )
-                    audio = tts_model["model"].generate(
-                        inputs, sampling_rate=24000
+                    tts_model["model"].tts_to_file(
+                        input_text, speaker_id="KR", output_path=output_path
                     )
-
-                    # Save the audio file
-                    filename = f"{video_id}_{question_id}.wav"
-                    filepath = os.path.join(AUDIO_DIR, filename)
-                    sf.write(filepath, audio, 24000)
 
                     # Update the database with the audio file path
                     conn = sqlite3.connect(DB_PATH)
                     cursor = conn.cursor()
                     cursor.execute(
                         "UPDATE questions SET audio_path = ? WHERE id = ?",
-                        (filepath, question_id),
+                        (output_path, question_id),
                     )
                     conn.commit()
                     conn.close()
 
                     AUDIO_GENERATED.inc()
                     generated_audio.append(
-                        {"question_id": question_id, "audio_path": filepath}
+                        {"question_id": question_id, "audio_path": output_path}
                     )
 
                     # Store audio processing metric

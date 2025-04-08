@@ -14,7 +14,7 @@ from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from flask import Flask, jsonify
+import time
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -46,21 +46,29 @@ def init_telemetry():
             "OTEL_EXPORTER_OTLP_ENDPOINT not set. Telemetry disabled."
         )
         return
-    try:
-        resource = Resource(attributes={SERVICE_NAME: SERVICE_NAME_OTEL})
-        provider = TracerProvider(resource=resource)
-        otlp_exporter = OTLPSpanExporter(
-            endpoint=OTEL_EXPORTER_OTLP_ENDPOINT, insecure=True
-        )
-        span_processor = BatchSpanProcessor(otlp_exporter)
-        provider.add_span_processor(span_processor)
-        trace.set_tracer_provider(provider)
-        FlaskInstrumentor().instrument_app(app)
-        logging.info(
-            f"OpenTelemetry initialized for service: {SERVICE_NAME_OTEL}"
-        )
-    except Exception as e:
-        logging.error(f"Failed to initialize OpenTelemetry: {e}")
+
+    for attempt in range(5):  # Retry up to 5 times
+        try:
+            resource = Resource(attributes={SERVICE_NAME: SERVICE_NAME_OTEL})
+            provider = TracerProvider(resource=resource)
+            otlp_exporter = OTLPSpanExporter(
+                endpoint=OTEL_EXPORTER_OTLP_ENDPOINT, insecure=True
+            )
+            span_processor = BatchSpanProcessor(otlp_exporter)
+            provider.add_span_processor(span_processor)
+            trace.set_tracer_provider(provider)
+            FlaskInstrumentor().instrument_app(app)
+            logging.info(
+                f"OpenTelemetry initialized for service: {SERVICE_NAME_OTEL}"
+            )
+            return
+        except Exception as e:
+            logging.error(
+                f"Failed to initialize OpenTelemetry (attempt {attempt + 1}/5): {e}"
+            )
+            time.sleep(2**attempt)  # Exponential backoff
+
+    logging.error("OpenTelemetry initialization failed after 5 attempts.")
 
 
 # Call telemetry initialization
