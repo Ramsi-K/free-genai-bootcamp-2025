@@ -1,0 +1,7 @@
+youtube_transcript_api>=0.6.0
+gtts>=2.3.2
+pygame>=2.5.0
+transformers>=4.30.0
+torch>=2.0.0
+sentencepiece>=0.1.99
+accelerate>=0.20.0
