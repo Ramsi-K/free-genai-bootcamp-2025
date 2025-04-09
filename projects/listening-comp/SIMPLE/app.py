@@ -1,22 +1,11 @@
-import streamlit as st
-import time
-from pathlib import Path
 import os
-import shutil
-import csv
-import sounddevice as sd
-import numpy as np
-import soundfile as sf
-import matplotlib.pyplot as plt
-from datetime import datetime
-import random
 from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 import torch
 import re
 import nltk
-from nltk.tokenize import word_tokenize
 import json
 import hashlib
+from translate import Translator
 
 # Initialize NLTK
 try:
@@ -48,13 +37,7 @@ MODELS = {
     }
 }
 
-# Store model choice in session state
-if 'model_name' not in st.session_state:
-    st.session_state['model_name'] = "gpt2"  # Default model
-model_name = st.session_state['model_name']
-
 # Properly load models with exception handling
-@st.cache_resource
 def load_text_generation_pipeline(model_key="gpt2"):
     """Load a text generation pipeline with proper error handling"""
     try:
@@ -62,15 +45,23 @@ def load_text_generation_pipeline(model_key="gpt2"):
         model_info = MODELS.get(model_key, MODELS["gpt2"])
         model_name = model_info["name"]
         
-        # Don't pass cache_dir directly to pipeline as it causes errors
+        # Initialize tokenizer first to set pad_token_id properly
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        
+        # Fix for GPT-2 warning about pad_token_id
+        # Set pad_token to eos_token if it doesn't exist
+        if tokenizer.pad_token is None:
+            tokenizer.pad_token = tokenizer.eos_token
+        
+        # Create pipeline with configured tokenizer
         return pipeline('text-generation', 
                         model=model_name,
+                        tokenizer=tokenizer,
                         max_length=800)
     except Exception as e:
-        st.error(f"Error loading pipeline model: {e}")
+        print(f"Error loading pipeline model: {e}")
         return None
 
-@st.cache_resource
 def load_tokenizer_and_model(model_key="exaone"):
     """Load a tokenizer and model for more complex models with proper error handling"""
     try:
@@ -91,20 +82,133 @@ def load_tokenizer_and_model(model_key="exaone"):
         
         return tokenizer, model
     except Exception as e:
-        st.error(f"Error loading tokenizer and model: {e}")
+        print(f"Error loading tokenizer and model: {e}")
         return None, None
 
-# Load generators based on user preference
-try:
-    if model_name == "gpt2":
-        generator = load_text_generation_pipeline("gpt2")
-        tokenizer, model = None, None
-    else:  # EXAONE or other complex model
-        generator = None  # Don't use pipeline for these models
-        tokenizer, model = load_tokenizer_and_model(model_name)
-except Exception as e:
-    st.error(f"Error during model initialization: {e}")
-    generator, tokenizer, model = None, None, None
+def load_translation_model(model_key="gpt2"):
+    """Load a model optimized for Korean to English translation."""
+    try:
+        # We'll try to use EXAONE for translation if available as it's better for Korean
+        if model_key == 'exaone':
+            tokenizer, model = load_tokenizer_and_model('exaone')
+            if tokenizer is not None and model is not None:
+                return 'exaone', tokenizer, model
+        
+        # Fallback to GPT-2 for translation
+        generator = load_text_generation_pipeline('gpt2')
+        if generator is not None:
+            return 'gpt2', generator, None
+        
+        # If nothing is available
+        return None, None, None
+    except Exception as e:
+        print(f"Error loading translation model: {e}")
+        return None, None, None
+
+def translate_korean_to_english(korean_text, use_streamlit=False):
+    """Translate Korean text to English using the best available model.
+    
+    Args:
+        korean_text: The Korean text to translate
+        use_streamlit: If False (default), use print for messages instead of streamlit
+    """
+    try:
+        # Load translation model if not already loaded
+        model_type, model_or_tokenizer, model = load_translation_model()
+        
+        if model_type == 'exaone' and model_or_tokenizer is not None and model is not None:
+            try:
+                # Use EXAONE model for better Korean translation
+                print("Using EXAONE model for translation...")
+                
+                # Tokenizer is stored in model_or_tokenizer, model in model
+                tokenizer = model_or_tokenizer
+                
+                messages = [
+                    {"role": "system", "content": "You are a helpful Korean to English translator."},
+                    {"role": "user", "content": f"Translate the following Korean text to English. Only respond with the translation, no additional text:\n\n{korean_text}"}
+                ]
+                
+                # Tokenize with the model we have
+                input_ids = tokenizer.apply_chat_template(
+                    messages,
+                    tokenize=True,
+                    add_generation_prompt=True,
+                    return_tensors="pt"
+                )
+                
+                if torch.cuda.is_available():
+                    input_ids = input_ids.to("cuda")
+                
+                # Generate translation
+                output = model.generate(
+                    input_ids,
+                    max_new_tokens=256,
+                    do_sample=False
+                )
+                
+                translation = tokenizer.decode(output[0], skip_special_tokens=True)
+                
+                # Extract only the translated part by removing prompt text
+                if "Translate the following Korean text to English" in translation:
+                    translation = translation.split("Translate the following Korean text to English")[1]
+                if korean_text in translation:
+                    translation = translation.split(korean_text, 1)[1].strip()
+                
+                # Clean up translation result
+                if "English translation:" in translation.lower():
+                    translation = translation.split("English translation:", 1)[1].strip()
+                
+                # Remove any remaining system/user prompt residue
+                translation = re.sub(r'^[Ss]ystem:.*?\n', '', translation)
+                translation = re.sub(r'^[Uu]ser:.*?\n', '', translation)
+                translation = re.sub(r'^[Aa]ssistant:.*?\n', '', translation)
+                
+                return translation.strip()
+            
+            except Exception as e:
+                print(f"EXAONE translation failed: {e}")
+        
+        elif model_type == 'gpt2' and model_or_tokenizer is not None:
+            try:
+                # Use GPT-2 pipeline
+                generator = model_or_tokenizer
+                print("Using GPT-2 for translation...")
+                
+                prompt = f"Translate this Korean text to English: {korean_text}\nEnglish translation:"
+                result = generator(prompt, 
+                            num_return_sequences=1,
+                            max_length=150,
+                            do_sample=True,
+                            temperature=0.7,
+                            truncation=True,
+                            # Suppress warnings by explicitly stating we're handling pad token
+                            pad_token_id=generator.tokenizer.pad_token_id)[0]['generated_text']
+                
+                # Extract the translation part
+                if "English translation:" in result:
+                    translation = result.split("English translation:", 1)[1].strip()
+                    return translation
+                else:
+                    # Try to extract anything after the Korean text
+                    if korean_text in result:
+                        translation = result.split(korean_text, 1)[1].strip()
+                        return translation
+                    else:
+                        return result  # Return full result if can't extract cleanly
+            
+            except Exception as e:
+                print(f"GPT-2 translation failed: {e}")
+        
+        # Fallback to simple translator
+        print("Using simple translator...")
+        translator = Translator(to_lang="en")
+        translation = translator.translate(korean_text)
+        return translation
+        
+    except Exception as e:
+        print(f"Translation error: {e}")
+        return f"Translation failed. Original text: {korean_text}"
 
 def generate_topik_questions_with_llm(transcript, num_questions=3, model_choice="gpt2", difficulty="medium"):
     """Generate TOPIK-style questions with proper error handling"""
@@ -123,10 +227,10 @@ def generate_topik_questions_with_llm(transcript, num_questions=3, model_choice=
                 with open(cache_file, 'r', encoding='utf-8') as f:
                     cached_questions = json.load(f)
                     if cached_questions and len(cached_questions) > 0:
-                        st.success(f"Loaded {len(cached_questions)} TOPIK-style questions from cache.")
+                        print(f"Loaded {len(cached_questions)} TOPIK-style questions from cache.")
                         return cached_questions
             except Exception as e:
-                st.warning(f"Error loading cached questions: {e}")
+                print(f"Error loading cached questions: {e}")
         
         # Prepare transcript - limit to reduce token length
         # Using a smaller excerpt to avoid token limits
@@ -163,6 +267,11 @@ CORRECT: [Correct option letter]
 
 """
             # Generate using pipeline
+            generator = load_text_generation_pipeline(model_choice)
+            if generator is None:
+                print("Failed to load GPT-2 model.")
+                return []
+                
             try:
                 result = generator(prompt, 
                             num_return_sequences=1,
@@ -172,7 +281,7 @@ CORRECT: [Correct option letter]
                             temperature=0.7,
                             truncation=True)[0]['generated_text']
             except Exception as e:
-                st.error(f"Error during GPT-2 generation: {e}")
+                print(f"Error during GPT-2 generation: {e}")
                 return []
                 
         else:  # EXAONE model
@@ -214,11 +323,14 @@ CORRECT: [정답 옵션의 알파벳]
                     {"role": "user", "content": prompt}
                 ]
                 
+                # Load model and tokenizer
+                tokenizer, model = load_tokenizer_and_model(model_choice)
+                
                 # Check if tokenizer and model were loaded successfully
                 if tokenizer is None or model is None:
-                    st.error("EXAONE model or tokenizer not available.")
+                    print("EXAONE model or tokenizer not available.")
                     # Fall back to GPT-2
-                    st.warning("Falling back to GPT-2 model...")
+                    print("Falling back to GPT-2 model...")
                     return generate_topik_questions_with_llm(transcript, num_questions, "gpt2", difficulty)
                 
                 # Tokenize
@@ -239,9 +351,9 @@ CORRECT: [정답 옵션의 알파벳]
                 
                 result = tokenizer.decode(output[0], skip_special_tokens=True)
             except Exception as e:
-                st.error(f"Error during EXAONE processing: {e}")
+                print(f"Error during EXAONE processing: {e}")
                 # Fall back to GPT-2
-                st.warning("Falling back to GPT-2 model...")
+                print("Falling back to GPT-2 model...")
                 return generate_topik_questions_with_llm(transcript, num_questions, "gpt2", difficulty)
         
         # Parse the generated questions 
@@ -252,14 +364,14 @@ CORRECT: [정답 옵션의 알파벳]
             try:
                 with open(cache_file, 'w', encoding='utf-8') as f:
                     json.dump(questions, f, ensure_ascii=False, indent=2)
-                st.success(f"Cached {len(questions)} TOPIK-style questions for future use.")
+                print(f"Cached {len(questions)} TOPIK-style questions for future use.")
             except Exception as e:
-                st.warning(f"Error caching questions: {e}")
+                print(f"Error caching questions: {e}")
         
         return questions
         
     except Exception as e:
-        st.error(f"Error generating TOPIK-style questions with LLM: {e}")
+        print(f"Error generating TOPIK-style questions with LLM: {e}")
         return []
 
 def parse_generated_questions(generated_text):
@@ -305,32 +417,32 @@ def parse_generated_questions(generated_text):
                         "correct_option": correct_option
                     })
             except Exception as e:
-                st.warning(f"Error parsing question block: {e}")
+                print(f"Error parsing question block: {e}")
                 continue
     
     except Exception as e:
-        st.error(f"Error parsing generated questions: {e}")
+        print(f"Error parsing generated questions: {e}")
     
     return questions
 
-# Main app structure - placeholder for the actual app implementation
-def main():
-    st.title("Korean Listening Practice App")
-    
-    # Model selection in sidebar
-    with st.sidebar:
-        st.subheader("Model Options")
-        model_option = st.selectbox(
-            "Choose LLM model for question generation:",
-            options=["gpt2", "exaone"],
-            format_func=lambda x: MODELS[x]["display_name"],
-            index=0
-        )
-        
-        if model_option != st.session_state.get('model_name'):
-            st.session_state['model_name'] = model_option
-            st.warning(f"Model changed to {MODELS[model_option]['display_name']}. Please reload the app.")
-            st.rerun()
+# Initialize models for common use
+_generator = None
+_tokenizer = None
+_model = None
 
-    # Rest of the app implementation would go here
-    # ...existing code...
+def initialize_models(model_name="gpt2"):
+    """Initialize models for use in the application"""
+    global _generator, _tokenizer, _model
+    
+    try:
+        if model_name == "gpt2":
+            _generator = load_text_generation_pipeline("gpt2")
+            _tokenizer, _model = None, None
+        else:  # EXAONE or other complex model
+            _generator = None  # Don't use pipeline for these models
+            _tokenizer, _model = load_tokenizer_and_model(model_name)
+        
+        return True
+    except Exception as e:
+        print(f"Error during model initialization: {e}")
+        return False

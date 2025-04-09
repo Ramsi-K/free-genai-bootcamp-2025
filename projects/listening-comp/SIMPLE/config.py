@@ -1,3 +1,4 @@
+
 APP_CONFIG = {
     # Application settings
     "app_name": "Korean Listening Comprehension",
@@ -61,4 +62,22 @@ APP_CONFIG = {
     "anki_deck_name": "Korean Listening",
     "anki_note_type": "Basic",
     "anki_tags": ["korean", "listening"]
+}
+
+# Model information
+MODELS = {
+    "gpt2": {
+        "name": "gpt2",
+        "display_name": "GPT-2 (English base, small ~500MB)",
+        "description": "Fast to download and run, less accurate for Korean",
+        "size": "~500MB",
+        "korean_support": "Limited"
+    },
+    "exaone": {
+        "name": "LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct",
+        "display_name": "EXAONE-3.5-2.4B (Korean/English, large)",
+        "description": "High quality Korean language support, but large download",
+        "size": "~2.4GB",
+        "korean_support": "Excellent"
+    }
 }

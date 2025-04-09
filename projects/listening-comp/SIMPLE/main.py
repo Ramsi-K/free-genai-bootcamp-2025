@@ -17,10 +17,17 @@ import torch
 from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
 from gtts import gTTS
 from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
-from translate import Translator
 
 # Import progress functions
-from progress import update_progress, get_progress_stats, display_progress
+from progress import update_progress, get_progress_stats, display_progress, display_final_score
+# Import translation function from app.py
+from app import translate_korean_to_english, generate_topik_questions_with_llm
+# Import audio utilities
+from audio_utils import play_audio_with_speed, text_to_speech_with_speed, save_audio_file, practice_pronunciation
+# Import vocabulary functions
+from vocabulary import save_vocabulary, browse_vocabulary, get_vocabulary_count
+# Import config
+from config import APP_CONFIG, MODELS
 
 # Define directories
 MODEL_CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model_cache")
@@ -30,6 +37,7 @@ RECORDINGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "recor
 EXPORTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "exports")
 USER_STATS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_stats.json")
 
+
 # Create directories
 os.makedirs(MODEL_CACHE_DIR, exist_ok=True)
 os.makedirs(QUESTION_CACHE_DIR, exist_ok=True)
@@ -37,51 +45,7 @@ os.makedirs(VOCAB_DIR, exist_ok=True)
 os.makedirs(RECORDINGS_DIR, exist_ok=True)
 os.makedirs(EXPORTS_DIR, exist_ok=True)
 
-# App configuration
-APP_CONFIG = {
-    "version": "2.0",
-    "difficulty_levels": {
-        "easy": {
-            "sentence_length_range": (10, 50),
-            "num_questions": 3,
-            "playback_speed": 0.8
-        },
-        "medium": {
-            "sentence_length_range": (20, 80),
-            "num_questions": 4,
-            "playback_speed": 1.0
-        },
-        "hard": {
-            "sentence_length_range": (30, 150),
-            "num_questions": 5,
-            "playback_speed": 1.0
-        }
-    },
-    "default_difficulty": "medium",
-    "audio_speeds": {
-        "slow": 0.75,
-        "normal": 1.0
-    },
-    "default_audio_speed": "normal"
-}
 
-# Model information
-MODELS = {
-    "gpt2": {
-        "name": "gpt2",
-        "display_name": "GPT-2 (English base, small ~500MB)",
-        "description": "Fast to download and run, less accurate for Korean",
-        "size": "~500MB",
-        "korean_support": "Limited"
-    },
-    "exaone": {
-        "name": "LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct",
-        "display_name": "EXAONE-3.5-2.4B (Korean/English, large)",
-        "description": "High quality Korean language support, but large download",
-        "size": "~2.4GB",
-        "korean_support": "Excellent"
-    }
-}
 
 def clear_screen():
     """Clear the terminal screen."""
@@ -169,12 +133,19 @@ def extract_sentences_by_difficulty(transcript, difficulty="medium"):
     if not transcript:
         return []
     
-    # Get difficulty settings
-    difficulty_config = APP_CONFIG["difficulty_levels"].get(
-        difficulty, APP_CONFIG["difficulty_levels"]["medium"])
-    
-    min_length, max_length = difficulty_config["sentence_length_range"]
-    num_sentences = difficulty_config["num_questions"]
+    # Simply set different parameters based on difficulty level
+    if difficulty == "easy":
+        min_length = 10
+        max_length = 50
+        num_sentences = 5
+    elif difficulty == "hard":
+        min_length = 30
+        max_length = 100
+        num_sentences = 8
+    else:  # medium
+        min_length = 20
+        max_length = 80
+        num_sentences = 6
     
     # Split the transcript by sentence endings
     sentences = re.split(r'[.!?]\s+', transcript)
@@ -183,15 +154,9 @@ def extract_sentences_by_difficulty(transcript, difficulty="medium"):
     valid_sentences = [s for s in sentences if min_length <= len(s) <= max_length]
     
     if not valid_sentences:
-        # Fallback to medium difficulty if needed
-        medium_config = APP_CONFIG["difficulty_levels"]["medium"]
-        min_length, max_length = medium_config["sentence_length_range"]
-        valid_sentences = [s for s in sentences if min_length <= len(s) <= max_length]
+        # Fallback to more lenient filtering if we couldn't find sentences
+        valid_sentences = [s for s in sentences if len(s) >= 10]
         
-        if not valid_sentences:
-            # Last resort: just take whatever sentences we have
-            valid_sentences = [s for s in sentences if len(s) >= 10]
-    
     # Select random sentences
     if len(valid_sentences) <= num_sentences:
         return valid_sentences
@@ -310,92 +275,6 @@ def use_llm_for_questions():
         print("Please install the required packages with: pip install -r requirements.txt")
         return {}
 
-def play_audio_with_speed(file_path, speed="normal"):
-    """Play audio with speed control using pygame."""
-    try:
-        # Initialize pygame mixer
-        pygame.mixer.init()
-        pygame.mixer.music.load(file_path)
-        
-        # Set playback speed - only available in newer pygame versions
-        # If not available, warn user but continue with normal speed
-        try:
-            target_speed = APP_CONFIG["audio_speeds"].get(speed, 1.0)
-            if hasattr(pygame.mixer.music, 'set_pos'):
-                pygame.mixer.music.set_pos(target_speed)
-        except:
-            if speed != "normal":
-                print(f"Note: Speed control ({speed}) not available with this version of pygame.")
-        
-        # Play and wait for completion
-        pygame.mixer.music.play()
-        while pygame.mixer.music.get_busy():
-            pygame.time.Clock().tick(10)
-        
-    except Exception as e:
-        print(f"Error playing audio: {e}")
-    finally:
-        pygame.mixer.quit()
-
-def text_to_speech_with_speed(text, speed="normal", save_path=None):
-    """Generate Korean text-to-speech audio with speed control and play it."""
-    # Create a temporary file
-    temp_file = tempfile.NamedTemporaryFile(suffix='.mp3', delete=False)
-    temp_filename = temp_file.name
-    temp_file.close()
-    
-    try:
-        # Generate TTS - for gTTS, "slow" is a separate parameter
-        is_slow = False
-        if speed == "slow":
-            is_slow = True
-            
-        tts = gTTS(text=text, lang='ko', slow=is_slow)
-        tts.save(temp_filename)
-        
-        # Save to permanent location if requested
-        if save_path:
-            try:
-                os.makedirs(os.path.dirname(save_path), exist_ok=True)
-                with open(temp_filename, 'rb') as src_file:
-                    with open(save_path, 'wb') as dst_file:
-                        dst_file.write(src_file.read())
-            except Exception as e:
-                print(f"Error saving audio to {save_path}: {e}")
-        
-        # Play the audio with speed control
-        play_audio_with_speed(temp_filename, speed)
-        
-        return temp_filename if not save_path else save_path
-    
-    finally:
-        # Cleanup temporary file if we're not saving it
-        if os.path.exists(temp_filename) and save_path:
-            os.unlink(temp_filename)
-
-def save_audio_file(text, filename):
-    """Generate Korean text-to-speech audio and save to a file."""
-    try:
-        tts = gTTS(text=text, lang='ko', slow=False)
-        tts.save(filename)
-        return True
-    except Exception as e:
-        print(f"Error saving audio: {e}")
-        return False
-
-def display_question(question, question_num, total_questions):
-    """Display a question to the user."""
-    clear_screen()
-    print(f"\n🎧 Question {question_num} of {total_questions}\n")
-    print(f"Listen to the following sentence:")
-    print(f"\n{question['blank_sentence']}\n")
-    
-    # Display options
-    for i, option in enumerate(question['options']):
-        print(f"{chr(65 + i)}. {option}")
-    
-    print("\nPress 'R' to replay the audio, 'S' to switch speed, 'P' to practice pronunciation.")
-
 def quiz_user_with_options(questions, session_dir=None, audio_speed="normal"):
     """Quiz the user with speed control and more options."""
     score = 0
@@ -472,104 +351,19 @@ def quiz_user_with_options(questions, session_dir=None, audio_speed="normal"):
         # Ask if user wants to translate this sentence
         if input("\nWould you like an English translation? (y/n): ").lower() == 'y':
             try:
-                translation = translate_korean_to_english(question['sentence'])
+                # Use the imported function from app.py with use_streamlit=False
+                translation = translate_korean_to_english(question['sentence'], use_streamlit=False)
                 print(f"\nTranslation: {translation}")
-            except:
-                print("\nSorry, translation service is not available.")
+            except Exception as e:
+                print(f"\nSorry, translation failed: {e}")
         
         input("\nPress Enter to continue...")
     
-    # Save vocabulary
+    # Save vocabulary using the imported function
     if vocabulary:
         save_vocabulary(vocabulary)
     
     return score, total
-
-def practice_pronunciation(korean_text):
-    """Let user record their pronunciation of Korean text and get feedback."""
-    print("\n🎤 Pronunciation Practice")
-    print("\nListen to the correct pronunciation first:")
-    text_to_speech_with_speed(korean_text, "normal")
-    
-    # Recording settings
-    FORMAT = pyaudio.paInt16
-    CHANNELS = 1
-    RATE = 44100
-    CHUNK = 1024
-    RECORD_SECONDS = 5
-    
-    # Create a unique filename for this recording
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    recording_path = os.path.join(RECORDINGS_DIR, f"pronunciation_{timestamp}.wav")
-    
-    # Prepare for recording
-    input("\nPress Enter when ready to record your pronunciation (5 seconds)...")
-    
-    try:
-        # Start recording
-        audio = pyaudio.PyAudio()
-        stream = audio.open(format=FORMAT, channels=CHANNELS,
-                            rate=RATE, input=True,
-                            frames_per_buffer=CHUNK)
-        
-        print("\nRecording... speak now")
-        frames = []
-        
-        for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-            data = stream.read(CHUNK)
-            frames.append(data)
-        
-        print("Recording finished")
-        
-        # Stop recording
-        stream.stop_stream()
-        stream.close()
-        audio.terminate()
-        
-        # Save the recording
-        with wave.open(recording_path, 'wb') as wf:
-            wf.setnchannels(CHANNELS)
-            wf.setsampwidth(audio.get_sample_size(FORMAT))
-            wf.setframerate(RATE)
-            wf.writeframes(b''.join(frames))
-        
-        print(f"\nYour pronunciation has been saved to {recording_path}")
-        
-        # Simple feedback (in reality this would use speech recognition)
-        print("\nWould you like to hear your pronunciation?")
-        if input("(y/n): ").lower() == 'y':
-            play_audio_with_speed(recording_path, "normal")
-            
-        print("\nWould you like to hear the correct pronunciation again for comparison?")
-        if input("(y/n): ").lower() == 'y':
-            text_to_speech_with_speed(korean_text, "normal")
-            
-        return True
-        
-    except Exception as e:
-        print(f"Error during pronunciation practice: {e}")
-        return False
-
-def translate_korean_to_english(korean_text):
-    """Translate Korean text to English using a simple approach."""
-    # This would ideally use a translation API
-    # but for now we'll return a placeholder message
-    translator= Translator(to_lang="en")
-    translation = translator.translate(korean_text)
-    return translation
-
-def save_vocabulary(vocabulary_items):
-    """Save vocabulary items to a file for later review."""
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    vocab_file = os.path.join(VOCAB_DIR, f"vocabulary_{timestamp}.json")
-    
-    try:
-        with open(vocab_file, 'w', encoding='utf-8') as f:
-            json.dump(vocabulary_items, f, ensure_ascii=False, indent=2)
-        return True
-    except Exception as e:
-        print(f"Error saving vocabulary: {e}")
-        return False
 
 def create_quiz_session_dict(video_id, transcript, questions):
     """Create a dictionary of the quiz session data for storing in JSON."""
@@ -595,24 +389,21 @@ def create_quiz_session_dict(video_id, transcript, questions):
     return session
 
 def save_quiz_session(session_data, base_dir="quiz_sessions"):
-    """Save quiz session data and audio files."""
+    """Save quiz session data without generating audio files."""
     # Create session directory
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     video_id = session_data["video_id"]
     session_dir = os.path.join(base_dir, f"{video_id}_{timestamp}")
     os.makedirs(session_dir, exist_ok=True)
     
-    # Create audio directory
+    # Create audio directory - but don't generate audio yet
     audio_dir = os.path.join(session_dir, "audio")
     os.makedirs(audio_dir, exist_ok=True)
     
-    # Save audio files for each question
+    # Just set placeholder paths for audio files
     for i, question in enumerate(session_data["questions"]):
         audio_filename = f"question_{i+1}.mp3"
         audio_path = os.path.join(audio_dir, audio_filename)
-        
-        # Generate and save audio file
-        save_audio_file(question["sentence"], audio_path)
         
         # Update the audio path in the session data
         session_data["questions"][i]["audio_path"] = os.path.relpath(audio_path, session_dir)
@@ -657,7 +448,7 @@ def export_to_anki(session_data, export_file=None):
                     audio = f'[sound:{audio_filename}]'
                 
                 # Get any additional fields
-                english = translate_korean_to_english(korean)
+                english = translate_korean_to_english(korean, use_streamlit=False)
                 tags = "korean listening practice"
                 
                 writer.writerow([korean, english, audio, tags])
@@ -683,6 +474,143 @@ def export_to_anki(session_data, export_file=None):
     except Exception as e:
         print(f"Error exporting to Anki format: {e}")
         return None
+
+def display_question(question, current_num, total):
+    """Display a question to the user in a clear format."""
+    clear_screen()
+    print(f"Question {current_num} of {total}\n")
+    
+    if "blank_sentence" in question:
+        # Basic fill-in-the-blank format
+        print(question["blank_sentence"])
+    elif "question_text" in question:
+        # TOPIK-style format
+        print(question["question_text"])
+    
+    print("\nOptions:")
+    options = question.get("options", [])
+    option_letters = ["A", "B", "C", "D"]
+    
+    for i, option in enumerate(options):
+        if i < len(option_letters):
+            print(f"{option_letters[i]}. {option}")
+
+def quiz_user_topik_style(questions, session_dir=None, audio_speed="normal"):
+    """Quiz the user with TOPIK-style listening comprehension questions."""
+    score = 0
+    total = len(questions)
+    vocabulary = []  # Track vocabulary
+    
+    for i, question in enumerate(questions):
+        # First display the question
+        display_question(question, i+1, total)
+        
+        # Add vocabulary from this question (e.g., the sentence)
+        if "sentence" in question:
+            vocabulary.append({
+                "word": question["sentence"].split()[0] if question["sentence"].split() else "",
+                "context": question["sentence"]
+            })
+        
+        # Determine audio path
+        audio_path = None
+        if session_dir and "audio_path" in question and question["audio_path"]:
+            audio_path = os.path.join(session_dir, question["audio_path"])
+            
+            # Check if audio exists, if not, generate it now
+            if not os.path.exists(audio_path):
+                # print(f"Generating audio for question {i+1}...")
+                save_audio_file(question["sentence"], audio_path)
+        
+        # # Play the audio with selected speed
+        # print("\nPlaying audio for this question...")
+        # if audio_path and os.path.exists(audio_path):
+        #     # Play existing audio file with speed control
+        #     play_audio_with_speed(audio_path, audio_speed)
+        # else:
+        #     # Generate new audio with speed on the fly (don't save)
+        #     text_to_speech_with_speed(question['sentence'], audio_speed)
+        
+        while True:
+            user_input = input("\nYour answer (A/B/C/D), R to replay, S to switch speed, P to practice pronunciation: ").upper()
+            
+            if user_input == 'R':
+                # Replay with current speed
+                if audio_path and os.path.exists(audio_path):
+                    play_audio_with_speed(audio_path, audio_speed)
+                else:
+                    text_to_speech_with_speed(question['sentence'], audio_speed)
+                continue
+                
+            elif user_input == 'S':
+                # Toggle speed between normal and slow
+                audio_speed = "slow" if audio_speed == "normal" else "normal"
+                print(f"\nSwitched to {audio_speed} speed.")
+                if audio_path and os.path.exists(audio_path):
+                    play_audio_with_speed(audio_path, audio_speed)
+                else:
+                    text_to_speech_with_speed(question['sentence'], audio_speed)
+                continue
+                
+            elif user_input == 'P':
+                # Practice pronunciation
+                practice_pronunciation(question['sentence'])
+                continue
+                
+            elif user_input in ['A', 'B', 'C', 'D']:
+                break
+                
+            else:
+                print("Invalid input. Please enter A, B, C, D, R, S, or P.")
+        
+        if user_input == question['correct_option']:
+            print("\n✅ Correct!")
+            score += 1
+        else:
+            print(f"\n❌ Incorrect. The correct answer was {question['correct_option']}.")
+        
+        print("\nThe sentence was:")
+        print(f"「{question['sentence']}」")
+        
+        # Ask if user wants to translate this sentence
+        if input("\nWould you like an English translation? (y/n): ").lower() == 'y':
+            try:
+                translation = translate_korean_to_english(question['sentence'], use_streamlit=False)
+                print(f"\nTranslation: {translation}")
+            except Exception as e:
+                print(f"\nSorry, translation failed: {e}")
+        
+        input("\nPress Enter to continue...")
+    
+    # Save vocabulary
+    if vocabulary:
+        save_vocabulary(vocabulary)
+    
+    return score, total
+
+def create_topik_quiz_session_dict(video_id, transcript, questions, difficulty="medium", model="gpt2"):
+    """Create a dictionary of TOPIK-style quiz session data for storing in JSON."""
+    session = {
+        "video_id": video_id,
+        "timestamp": datetime.datetime.now().isoformat(),
+        "transcript": transcript,
+        "quiz_type": "topik",
+        "difficulty": difficulty,
+        "model_used": model,
+        "questions": []
+    }
+    
+    for q in questions:
+        question_data = {
+            "sentence": q["sentence"],
+            "question_text": q["question_text"],
+            "options": q["options"],
+            "correct_option": q["correct_option"],
+            "audio_path": ""  # Will be filled later
+        }
+        session["questions"].append(question_data)
+    
+    return session
 
 def main():
     """Main function to run the Korean Listening Comprehension app."""
@@ -737,34 +665,7 @@ def main():
             
         elif choice == "5":
             # Browse vocabulary
-            vocab_files = [f for f in os.listdir(VOCAB_DIR) if f.endswith('.json')]
-            
-            if not vocab_files:
-                print("No vocabulary files found yet. Complete some quizzes to build your vocabulary.")
-                input("\nPress Enter to continue...")
-                continue
-                
-            print("\nAvailable vocabulary lists:")
-            for i, vfile in enumerate(vocab_files):
-                print(f"{i+1}. {vfile}")
-                
-            vfile_choice = input("\nEnter number to view (or 0 to go back): ")
-            try:
-                vfile_index = int(vfile_choice) - 1
-                if vfile_index == -1:
-                    continue
-                if 0 <= vfile_index < len(vocab_files):
-                    with open(os.path.join(VOCAB_DIR, vocab_files[vfile_index]), 'r', encoding='utf-8') as f:
-                        vocab_list = json.load(f)
-                        
-                    clear_screen()
-                    print(f"\n=== Vocabulary List ({vocab_files[vfile_index]}) ===\n")
-                    for i, item in enumerate(vocab_list):
-                        print(f"{i+1}. {item['word']} - Context: {item['context']}")
-                        
-                    input("\nPress Enter to continue...")
-            except:
-                print("Invalid selection.")
+            browse_vocabulary()
                 
         elif choice == "6":
             # Export to Anki
@@ -968,7 +869,7 @@ def main():
             
             json_path = save_quiz_session(session_data, quiz_sessions_dir)
             
-            print(f"Quiz data saved to {json_path}")
+            # print(f"Quiz data saved to {json_path}")
             
             # Select audio speed
             print("\nSelect audio speed:")
@@ -977,10 +878,17 @@ def main():
             speed_choice = input("Enter choice (1/2): ")
             audio_speed = "normal" if speed_choice != "2" else "slow"
             
-            input("Press Enter to start the quiz...")
+            # Wait for user confirmation before starting quiz and playing audio
+            input("\nPress Enter to start the quiz...")
             
             # Load the saved session to get the audio paths
             session_data = load_quiz_session(json_path)
+            
+            # Make sure session_data is properly loaded before proceeding
+            if not session_data or not session_data.get("questions"):
+                print("Error: Could not load saved session data. Please try again.")
+                continue
+                
             session_dir = os.path.dirname(json_path)
             
             # Quiz the user with TOPIK-style questions
@@ -1051,7 +959,7 @@ def main():
             session_data["difficulty"] = difficulty
             json_path = save_quiz_session(session_data, quiz_sessions_dir)
             
-            print(f"Quiz data saved to {json_path}")
+            # print(f"Quiz data saved to {json_path}")
             
             # Select audio speed
             print("\nSelect audio speed:")

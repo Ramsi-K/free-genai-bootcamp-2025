@@ -121,3 +121,38 @@ def display_progress():
         print(f"Error displaying progress: {e}")
         
     input("\nPress Enter to continue...")
+
+def display_final_score(score, total):
+    """Display the final score for a quiz session with encouraging feedback."""
+    print("\n===== Quiz Results =====")
+    print(f"Your Score: {score}/{total}")
+    
+    # Calculate percentage
+    if total > 0:
+        percentage = (score / total) * 100
+        print(f"Accuracy: {percentage:.1f}%")
+        
+        # Provide feedback based on performance
+        if percentage >= 90:
+            print("\n🌟 Excellent work! Your listening comprehension is outstanding!")
+        elif percentage >= 80:
+            print("\n😀 Great job! You're making excellent progress!")
+        elif percentage >= 70:
+            print("\n👍 Good progress! Keep up the good work!")
+        elif percentage >= 50:
+            print("\n💪 You're making steady progress. Keep practicing!")
+        else:
+            print("\n🌱 Every practice session helps you improve. Don't give up!")
+    
+    # Add a personal touch
+    words_of_encouragement = [
+        "Learning a language is a journey, not a destination.",
+        "Consistency is key to language mastery!",
+        "Your brain is forming new connections with every practice session.",
+        "Korean fluency is getting closer with each quiz you take!",
+        "Great work on challenging yourself today!"
+    ]
+    import random
+    print(f"\n💭 {random.choice(words_of_encouragement)}")
+    
+    input("\nPress Enter to continue...")

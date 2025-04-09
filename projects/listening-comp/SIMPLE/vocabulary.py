@@ -150,3 +150,4 @@ def browse_vocabulary():
     except Exception as e:
         print(f"Error browsing vocabulary: {e}")
         input("\nPress Enter to continue...")
+
