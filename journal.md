@@ -18,6 +18,16 @@
 
 ## Week 9
 
+### Day 61: April 9, 2025
+
+**T-minus 4 days to submission (April 12)**
+
+_Listening Learning App Focus_
+
+Today I spent a significant amount of time trying to fix my backend-frontend setup, which was being extremely uncooperative. I was working with the version of the code where I had already removed OPEA, and then stripped out OpenTelemetry as well. After several hours of debugging, it became clear that there were too many issues buried in the codebase, and it wasn’t going to work. I decided to abandon that setup entirely.
+
+Instead, I rebuilt the Listening Learning App from scratch as a simple terminal-based scaffold that I could submit for bootcamp. I completed the entire application with audio playback and pronunciation recording directly in the terminal. Everything is now working as intended, and I also created a Dockerfile to support containerization, although the build is slow due to torch dependencies.
+
 ### Day 60: April 8, 2025
 
 **T-minus 4 days to submission (April 12)**
