@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listening App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .results {
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Listening App</h1>
+        <p>Enter a YouTube video URL to generate questions and answers.</p>
+        <input type="text" id="videoUrl" placeholder="Enter YouTube video URL">
+        <button id="submitButton">Submit</button>
+        <div id="results" class="results"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = "http://localhost:8000";
+
+        document.getElementById('submitButton').addEventListener('click', processVideo);
+
+        async function processVideo() {
+            const videoUrl = document.getElementById('videoUrl').value;
+            if (!videoUrl) {
+                alert("Please enter a YouTube video URL.");
+                return;
+            }
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = "<p>Processing...</p>";
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/process`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ url: videoUrl, num_questions: 3 }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || "Failed to process video");
+                }
+
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                console.error("Error:", error);
+                resultsDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            if (data.success) {
+                let html = "<h2>Generated Questions</h2>";
+                data.questions.forEach((question, index) => {
+                    html += `<p><strong>Q${index + 1}:</strong> ${question.question_text}</p>`;
+                    html += "<ul>";
+                    question.choices.forEach((choice, i) => {
+                        html += `<li>${String.fromCharCode(65 + i)}. ${choice}</li>`;
+                    });
+                    html += "</ul>";
+                });
+                resultsDiv.innerHTML = html;
+            } else {
+                resultsDiv.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

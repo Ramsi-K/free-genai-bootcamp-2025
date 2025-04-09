@@ -1,24 +1,20 @@
 services:
-  base:
-    build:
-      context: .
-      dockerfile: Dockerfile.base
-    image: listening-app-base:latest
-    command: tail -f /dev/null
-    networks:
-      - app_network
-
   main:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: korean-main-backend
     ports:
       - '8000:8000'
     environment:
-      - HOST_IP=${HOST_IP}
-      - LLM_MODEL=${LLM_MODEL}
-      - USE_GPU=${USE_GPU}
+      - HOST_IP=${HOST_IP:-localhost}
+      - LLM_MODEL=${LLM_MODEL:-llama3:8b}
+      - USE_GPU=${USE_GPU:-false}
       - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+      - FLASK_DEBUG=${FLASK_DEBUG:-false}
+      - OLLAMA_HOST=http://ollama:11434
+    volumes:
+      - shared_data:/app/shared/data
     depends_on:
       - ollama
     networks:
@@ -28,93 +24,7 @@ services:
       test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
       interval: 30s
       timeout: 10s
-      retries: 3
-    deploy:
-      resources:
-        limits:
-          memory: 1G # Limit to 1GB of RAM
-          cpus: '1.00' # Limit to 1 CPU core
-
-  transcript-processor:
-    build:
-      context: ./services/transcript-processor
-      dockerfile: Dockerfile
-    ports:
-      - '5000:5000'
-    environment:
-      - DB_PATH=/shared/data/app.db
-      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
-    depends_on:
-      - ollama
-    volumes:
-      - shared_data:/shared/data
-    networks:
-      - app_network
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:5000/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    deploy:
-      resources:
-        limits:
-          memory: 512M # Limit to 512MB of RAM
-          cpus: '0.50' # Limit to 50% of a single CPU core
-
-  question-module:
-    build:
-      context: ./services/question-module
-      dockerfile: Dockerfile
-    ports:
-      - '5001:5001'
-    environment:
-      - DB_PATH=/shared/data/app.db
-      - LLM_MODEL=${LLM_MODEL}
-    depends_on:
-      - ollama
-    volumes:
-      - shared_data:/shared/data
-    networks:
-      - app_network
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:5001/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    deploy:
-      resources:
-        limits:
-          memory: 512M # Limit to 512MB of RAM
-          cpus: '0.50' # Limit to 50% of a single CPU core
-
-  audio-module:
-    build:
-      context: ./services
-      dockerfile: audio-module/Dockerfile
-    ports:
-      - '5002:5002'
-    environment:
-      - DB_PATH=/shared/data/app.db
-      - USE_GPU=${USE_GPU}
-    depends_on:
-      - ollama
-    volumes:
-      - shared_data:/shared/data
-    networks:
-      - app_network
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:5002/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '0.50'
+      retries: 5
 
   frontend:
     build:
@@ -124,35 +34,32 @@ services:
     ports:
       - '80:80'
     environment:
-      - REACT_APP_API_BASE_URL=http://localhost:8000
-      # - REACT_APP_QUESTION_API_URL=http://${HOST_IP:-localhost}:5001
-      # - REACT_APP_AUDIO_API_URL=http://${HOST_IP:-localhost}:5002
+      - REACT_APP_API_BASE_URL=http://${HOST_IP:-localhost}:8000
     depends_on:
-      - transcript-processor
-      - question-module
-      - audio-module
+      - main
     networks:
       - app_network
     restart: unless-stopped
 
   ollama:
     image: ollama/ollama:latest
+    container_name: korean-ollama
     ports:
-      - '8008:11434'
+      - '11434:11434'
     volumes:
       - ollama_data:/root/.ollama
-    command: serve
     networks:
       - app_network
     restart: unless-stopped
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:11434/api/health']
+      test: ['CMD', 'curl', '-f', 'http://localhost:11434/']
       interval: 30s
       timeout: 10s
       retries: 3
 
 volumes:
   shared_data:
+    driver: local
   ollama_data:
     driver: local
 

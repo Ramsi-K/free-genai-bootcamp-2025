@@ -1,5 +1,0 @@
-# Service-specific requirements
-youtube_transcript_api>=0.6.1
-langdetect>=1.0.9
-
-

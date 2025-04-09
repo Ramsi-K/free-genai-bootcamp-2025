@@ -21,7 +21,7 @@ import HearingIcon from '@mui/icons-material/Hearing';
 import { useAppContext } from '../context/AppContext';
 
 // API endpoint configuration
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
 
 const Home = () => {
   const navigate = useNavigate();
