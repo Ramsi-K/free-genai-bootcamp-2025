@@ -1,0 +1,32 @@
+services:
+  main:
+    build: .
+    ports:
+      - '8000:8000'
+    environment:
+      - LLM_MODEL=exaone3.5:2.4b
+      - OLLAMA_HOST=http://ollama:11434
+    volumes:
+      - shared_data:/app/shared/data
+    depends_on:
+      - ollama
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - '3000:80'
+    depends_on:
+      - main
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - '11434:11434'
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  shared_data:
+  ollama_data:

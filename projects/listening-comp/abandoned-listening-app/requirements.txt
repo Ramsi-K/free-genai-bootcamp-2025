@@ -1,0 +1,19 @@
+# Base requirements
+flask
+flask-cors
+requests
+prometheus_client
+numpy<2.0 # Pin numpy to avoid 2.x compatibility issues
+
+# Audio processing
+torch>=2.2.0 # Upgrade torch to a version with torch.compiler
+--extra-index-url https://download.pytorch.org/whl/cpu
+scipy
+
+# Transcript processing
+youtube_transcript_api==0.6.1
+langdetect==1.0.9
+
+# TTS Generation
+transformers
+

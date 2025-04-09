@@ -1,0 +1,12 @@
+*.wav
+model_cache/
+question_cache/
+quiz_sessions/
+recordings/
+vocabulary/
+*.pyc
+__pycache__/
+exports/
+*.ipynb
+*.ipynb_checkpoints
+*.json

@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'services'
+    static_configs:
+      - targets: ['main:8000', 'transcript-processor:5000', 'question-module:5001', 'audio-module:5002']
+  - job_name: 'frontend'
+    static_configs:
+      - targets: ['frontend:80']

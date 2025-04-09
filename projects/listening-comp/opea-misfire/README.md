@@ -1,3 +1,5 @@
+> **Note: This project was originally an attempt to integrate microservices using the GenAIComps (OPEA) orchestration framework. However, due to compatibility issues and lack of flexibility with custom services, this version has been deprecated. Please refer to the new implementation using plain Python orchestration in the main project directory.**
+
 # Korean Listening Comprehension App - Implementation Guide
 
 This guide provides comprehensive instructions on how to set up and deploy the Korean Listening Comprehension App, which is built using the OPEA framework.
