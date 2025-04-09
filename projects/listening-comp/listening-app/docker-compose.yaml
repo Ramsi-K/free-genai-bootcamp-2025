@@ -1,68 +1,32 @@
 services:
   main:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: korean-main-backend
+    build: .
     ports:
       - '8000:8000'
     environment:
-      - HOST_IP=${HOST_IP:-localhost}
-      - LLM_MODEL=${LLM_MODEL:-llama3:8b}
-      - USE_GPU=${USE_GPU:-false}
-      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
-      - FLASK_DEBUG=${FLASK_DEBUG:-false}
+      - LLM_MODEL=exaone3.5:2.4b
       - OLLAMA_HOST=http://ollama:11434
     volumes:
       - shared_data:/app/shared/data
     depends_on:
       - ollama
-    networks:
-      - app_network
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
   frontend:
     build:
       context: .
       dockerfile: frontend/Dockerfile
-    container_name: korean-frontend
     ports:
-      - '80:80'
-    environment:
-      - REACT_APP_API_BASE_URL=http://${HOST_IP:-localhost}:8000
+      - '3000:80'
     depends_on:
       - main
-    networks:
-      - app_network
-    restart: unless-stopped
 
   ollama:
     image: ollama/ollama:latest
-    container_name: korean-ollama
     ports:
       - '11434:11434'
     volumes:
       - ollama_data:/root/.ollama
-    networks:
-      - app_network
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:11434/']
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
 volumes:
   shared_data:
-    driver: local
   ollama_data:
-    driver: local
-
-networks:
-  app_network:
-    driver: bridge

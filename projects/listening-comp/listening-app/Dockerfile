@@ -1,37 +1,33 @@
-# Use a suitable base image with Python and necessary build tools
-# Using python:3.10-slim as an example, adjust if needed
+# Simple Python base image
 FROM python:3.10-slim
 
-# Install system dependencies required by libs like torch, soundfile, etc.
-# Example: ffmpeg might be needed by TTS or audio processing
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Essential system packages only
+RUN apt-get update && apt-get install -y \
     ffmpeg \
-    libsndfile1 \
-    # Add other system dependencies if required by your Python packages
+    curl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
 WORKDIR /app
 
-# Copy requirements file first to leverage Docker cache
+# Copy requirements first for better caching
 COPY requirements.txt ./
-
-# Install Python dependencies
-# Consider using --no-cache-dir to reduce image size
-# Ensure PyTorch index URL is handled correctly if needed
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code (only main.py and potentially shared utils if any)
+# Copy application code
 COPY main.py ./
-# COPY any_utils.py ./ # If you have utility files used by main.py
+COPY components ./components/
 
-# Create the directory for shared data within the container image
-# The volume mount will overlay this at runtime
+# Create data directory
 RUN mkdir -p /app/shared/data/audio
 
-# Expose the port the app runs on
 EXPOSE 8000
 
-# Set the command to run the application
+# Health check wrapper
+COPY healthcheck.sh /
+RUN chmod +x /healthcheck.sh
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD ["/healthcheck.sh"]
+
 CMD ["python", "main.py"]

@@ -1,33 +1,72 @@
 import axios from 'axios';
+import { cacheService } from './cacheService';
 
-const MEGA_SERVICE_URL = process.env.REACT_APP_MEGA_SERVICE_URL || 'http://localhost:8000';
-const METRICS_URL = process.env.REACT_APP_METRICS_URL || 'http://localhost:9090';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
 
-// ...existing code...
+// API instance with default config and caching
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
 
-export const submitComprehensionScore = async (score, difficulty) => {
-  try {
-    await axios.post(`${MEGA_SERVICE_URL}/api/metrics/comprehension`, {
-      score,
-      difficulty_level: difficulty
-    });
-  } catch (error) {
-    console.error('Error submitting comprehension score:', error);
+// API interceptors for caching
+api.interceptors.request.use(async config => {
+  if (config.method === 'get') {
+    const cachedResponse = cacheService.get(config.url);
+    if (cachedResponse) {
+      return Promise.reject({
+        response: { data: cachedResponse },
+        cached: true
+      });
+    }
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  response => {
+    if (response.config.method === 'get') {
+      cacheService.set(response.config.url, response.data);
+    }
+    return response;
+  },
+  error => {
+    if (error.cached) {
+      return Promise.resolve({ data: error.response.data });
+    }
+    const customError = {
+      message: error.response?.data?.error || 'An unexpected error occurred',
+      status: error.response?.status,
+      details: error.response?.data?.details
+    };
+    return Promise.reject(customError);
+  }
+);
+
+// Video related APIs
+export const videoAPI = {
+  getAll: () => api.get('/api/videos'),
+  getById: (id) => api.get(`/api/video/${id}`),
+  process: (url, level) => api.post('/api/process', { url, level }),
+  delete: (id) => {
+    cacheService.delete(`/api/video/${id}`);
+    return api.delete(`/api/video/${id}`);
   }
 };
 
-export const getServiceMetrics = async () => {
-  try {
-    const response = await axios.get(`${METRICS_URL}/api/v1/query`, {
-      params: {
-        query: 'korean_questions_total'
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching metrics:', error);
-    return null;
-  }
+// Question related APIs
+export const questionAPI = {
+  getByVideo: (videoId) => api.get(`/api/questions/${videoId}`),
+  submitAnswer: (videoId, questionId, answer) => 
+    api.post(`/api/questions/${videoId}/answer`, { questionId, answer }),
+  getAudio: (audioPath) => `${API_BASE_URL}${audioPath}`
 };
 
-// ...existing code...
+// Metrics and analytics
+export const metricsAPI = {
+  submitScore: (score, difficulty) => 
+    api.post('/api/metrics/comprehension', { score, difficulty_level: difficulty }),
+  getStats: () => api.get('/api/metrics/stats')
+};

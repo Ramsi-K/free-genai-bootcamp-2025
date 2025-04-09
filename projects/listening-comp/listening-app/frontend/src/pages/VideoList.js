@@ -1,22 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import { 
-  Container, 
-  Typography, 
-  Paper, 
-  Box,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  CardActions,
-  Button,
-  CircularProgress,
-  Alert,
-  Divider,
-  IconButton,
-  Tooltip
+  Container, Typography, Paper, Box, Grid, Card, CardContent, 
+  CardMedia, CardActions, Button, CircularProgress, Alert, 
+  Divider, IconButton, Tooltip, Chip
 } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -24,45 +11,44 @@ import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import QuizIcon from '@mui/icons-material/Quiz';
 import { useAppContext } from '../context/AppContext';
-
-// API endpoint configuration
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-const QUESTION_API_URL = process.env.REACT_APP_QUESTION_API_URL || 'http://localhost:5001';
+import { videoAPI } from '../services/api';
 
 const VideoList = () => {
-  const { state, dispatch } = useAppContext();
-  const [videos, setVideos] = useState([]);
-  const [error, setError] = useState(null);
+  const { state, actions } = useAppContext();
+  const { videoList, loading, error } = state;
 
   useEffect(() => {
-    dispatch({ type: 'SET_LOADING', payload: true });
     fetchVideos();
   }, []);
 
   const fetchVideos = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/videos`);
-      setVideos(response.data.videos || []);
+      actions.startLoading();
+      actions.clearError();
+      const response = await videoAPI.getAll();
+      if (response.data.success) {
+        actions.setVideoList(response.data.videos);
+      }
     } catch (err) {
-      console.error('Error fetching videos:', err);
-      setError('Failed to load videos. Please try again later.');
+      actions.setError(err.message || 'Failed to load videos');
     } finally {
-      dispatch({ type: 'SET_LOADING', payload: false });
+      actions.stopLoading();
     }
   };
 
   const handleDeleteVideo = async (videoId, e) => {
-    e.preventDefault(); // Prevent navigating to the link
-    e.stopPropagation(); // Stop event bubbling
+    e.preventDefault();
+    e.stopPropagation();
     
     if (window.confirm('이 비디오를 삭제하시겠습니까?')) {
       try {
-        await axios.delete(`${API_BASE_URL}/api/video/${videoId}`);
-        // Remove the video from the list
-        setVideos(videos.filter(video => video.video_id !== videoId));
+        actions.startLoading();
+        await videoAPI.delete(videoId);
+        actions.setVideoList(videoList.filter(v => v.video_id !== videoId));
       } catch (err) {
-        console.error('Error deleting video:', err);
-        alert('비디오 삭제 중 오류가 발생했습니다.');
+        actions.setError('비디오 삭제 중 오류가 발생했습니다.');
+      } finally {
+        actions.stopLoading();
       }
     }
   };
@@ -72,9 +58,7 @@ const VideoList = () => {
     return new Date(timestamp * 1000).toLocaleDateString('ko-KR', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: 'numeric'
     });
   };
 
@@ -94,13 +78,13 @@ const VideoList = () => {
         </Typography>
       </Box>
 
-      {state.loading ? (
+      {loading ? (
         <Box display="flex" justifyContent="center" my={4}>
           <CircularProgress />
         </Box>
       ) : error ? (
         <Alert severity="error" sx={{ my: 2 }}>{error}</Alert>
-      ) : videos.length === 0 ? (
+      ) : videoList.length === 0 ? (
         <Paper elevation={2} sx={{ p: 3, textAlign: 'center' }}>
           <VideoLibraryIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
           <Typography variant="h6" gutterBottom>
@@ -120,7 +104,7 @@ const VideoList = () => {
         </Paper>
       ) : (
         <Grid container spacing={3}>
-          {videos.map((video) => (
+          {videoList.map((video) => (
             <Grid item xs={12} sm={6} md={4} key={video.video_id}>
               <Card 
                 sx={{ 

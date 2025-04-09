@@ -1,29 +1,20 @@
-# Use Node.js as the base image for building the frontend
-FROM node:18-slim as build
+# Build stage
+FROM node:18.19-slim
 
-# Set the working directory
 WORKDIR /app
 
-# Copy package.json for dependency installation
+# Copy package files
 COPY ./frontend/package.json ./
 
 # Install dependencies
-RUN npm install --quiet
+RUN npm install
 
-# Copy the rest of the frontend source code
+# Copy frontend code
 COPY ./frontend/ ./
 
-# Build the frontend
+# Build React app
 RUN npm run build
 
-# Use Nginx as the base image for serving the frontend
-FROM nginx:stable-alpine
-
-# Copy the built frontend files to the Nginx HTML directory
-COPY --from=build /app/build /usr/share/nginx/html
-
-# Expose port 80 for the frontend
+# Serve with Node
 EXPOSE 80
-
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "start"]
