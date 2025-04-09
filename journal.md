@@ -18,9 +18,18 @@
 
 ## Week 9
 
+### Day 60: April 8, 2025
+
+**T-minus 4 days to submission (April 12)**
+
+Worked extensively on the Listening Learning App. Debugged the microservices and tested them individually. I really tried to implement `OPEA` and `OpenTelemetry` but couldn't get them to work. Encountered persistent `StatusCode.UNAVAILABLE` error from the OTLP exporter. Found a [GitHub issue](https://github.com/open-telemetry/opentelemetry-collector/issues/6363) reporting the same problem. I spent a lot of time trying to resolve this but in the end I removed it entirely. This took me a lot of time.
+I was attempting to build Docker image with MeloTTS but it took too long to build(>50 minutes) and crashed my system once. I removed the unnecessary steps and tried again but building MeloTTS was still taking too long. I then removed MeloTTS and switched to using HF model, so I had to refactor the codebase again.
+
+Spent the rest of the time running services, checking logs, and attempting to cleanly integrate modules. I am still having issues with frontend not connecting to the backend cleanly.
+
 ### Day 59: April 7, 2025
 
-**T-minus 6 days to submission (April 12)**
+**T-minus 5 days to submission (April 12)**
 
 Finalized the transcript service: endpoints for processing, listing, and retrieving transcripts are functional. Integrated SQLite, metrics, OpenTelemetry, and added Korean transcript filtering. Spent most of the day debugging the audio module. Fixed broken imports from `services.metrics.persistence` by adjusting the Docker build context in `docker-compose.yml`. Resolved the pandas/numpy binary mismatch by removing pandas and varying numpy. All module-specific errors are now fixed. The last known issue was an OpenTelemetry warning at runtime, but no critical errors remained. At this point, the modules work and the focus needs to shift to wiring everything together and finishing the app.
 
