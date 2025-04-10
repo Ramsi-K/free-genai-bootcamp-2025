@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL Fingerspelling Practice Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .letter-box {
+            width: 60px;
+            height: 80px;
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .dark .letter-box {
+            background-color: #374151;
+            color: #f3f4f6;
+        }
+        
+        .letter-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .input-field {
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+        
+        .correct {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .dark .correct {
+            background-color: #064e3b;
+            color: #d1fae5;
+        }
+        
+        .incorrect {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+        
+        .dark .incorrect {
+            background-color: #7f1d1d;
+            color: #fee2e2;
+        }
+        
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .timer {
+            font-family: monospace;
+        }
+        
+        .theme-toggle {
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            transform: rotate(30deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col items-center justify-center p-4 transition-colors duration-300">
+    <div class="w-full max-w-md mx-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">ASL Fingerspelling</h1>
+            <button id="theme-toggle" class="theme-toggle p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path id="theme-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+        
+        <div id="game-container" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-colors duration-300">
+            <!-- Game Screen -->
+            <div id="game-screen" class="space-y-6">
+                <div class="flex justify-between items-center">
+                    <div class="text-lg font-medium text-gray-700 dark:text-gray-300">Score: <span id="score" class="font-bold">0</span></div>
+                    <div class="timer bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-lg text-gray-800 dark:text-gray-200 font-bold" id="timer">02:00</div>
+                </div>
+                
+                <div id="letters-container" class="flex justify-center gap-3 mb-6"></div>
+                
+                <div class="relative">
+                    <input type="text" id="user-input" class="input-field w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200" placeholder="Type the word..." autocomplete="off" autocapitalize="off">
+                    <button id="submit-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg transition">Submit</button>
+                </div>
+                
+                <div id="feedback" class="text-center h-6"></div>
+            </div>
+            
+            <!-- Results Screen (initially hidden) -->
+            <div id="results-screen" class="hidden text-center space-y-6">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Game Over!</h2>
+                
+                <div class="bg-gray-100 dark:bg-gray-700 rounded-xl p-6 space-y-4 text-gray-800 dark:text-gray-200">
+                    <div class="flex justify-between">
+                        <span>Total Correct:</span>
+                        <span id="total-correct" class="font-bold">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Words Per Minute:</span>
+                        <span id="wpm" class="font-bold">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Accuracy:</span>
+                        <span id="accuracy" class="font-bold">0%</span>
+                    </div>
+                </div>
+                
+                <button id="play-again-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-105">
+                    Play Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        const wordList = [
+            "cat", "dog", "sun", "hat", "book", "fish", "tree", "bird", "rain", "star",
+            "cake", "ball", "hand", "moon", "duck", "frog", "home", "jump", "kite", "lion",
+            "milk", "nose", "open", "play", "queen", "rose", "ship", "time", "umbrella", "van",
+            "water", "zebra", "apple", "banana", "circle", "dance", "earth", "flower", "guitar", "happy"
+        ];
+        
+        let currentWord = "";
+        let score = 0;
+        let totalAttempts = 0;
+        let correctAttempts = 0;
+        let timeLeft = 120; // 2 minutes in seconds
+        let timerInterval;
+        let gameActive = false;
+        
+        // DOM elements
+        const gameScreen = document.getElementById('game-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const lettersContainer = document.getElementById('letters-container');
+        const userInput = document.getElementById('user-input');
+        const submitBtn = document.getElementById('submit-btn');
+        const feedback = document.getElementById('feedback');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const totalCorrectDisplay = document.getElementById('total-correct');
+        const wpmDisplay = document.getElementById('wpm');
+        const accuracyDisplay = document.getElementById('accuracy');
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const html = document.documentElement;
+        
+        // ASL letter representations (using emojis as placeholders)
+        const aslLetters = {
+            'a': '🤟', 'b': '🤘', 'c': '🤙', 'd': '👆', 'e': '✌️',
+            'f': '🤞', 'g': '👌', 'h': '👍', 'i': '👈', 'j': '👉',
+            'k': '👊', 'l': '✊', 'm': '🤚', 'n': '🖐️', 'o': '✋',
+            'p': '👋', 'q': '🤚', 'r': '✌️', 's': '🤘', 't': '👆',
+            'u': '🤙', 'v': '✌️', 'w': '🤞', 'x': '👌', 'y': '👍',
+            'z': '👈'
+        };
+        
+        // Check for saved theme preference or use system preference
+        function checkThemePreference() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                html.classList.add(savedTheme);
+                updateThemeIcon(savedTheme);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                html.classList.add('dark');
+                updateThemeIcon('dark');
+            }
+        }
+        
+        // Toggle between dark and light theme
+        function toggleTheme() {
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                updateThemeIcon('light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                updateThemeIcon('dark');
+            }
+        }
+        
+        // Update the theme toggle icon
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.setAttribute('d', 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z');
+            } else {
+                themeIcon.setAttribute('d', 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z');
+            }
+        }
+        
+        // Initialize game
+        function initGame() {
+            score = 0;
+            totalAttempts = 0;
+            correctAttempts = 0;
+            timeLeft = 120;
+            gameActive = true;
+            
+            scoreDisplay.textContent = score;
+            updateTimerDisplay();
+            
+            gameScreen.classList.remove('hidden');
+            resultsScreen.classList.add('hidden');
+            
+            userInput.value = '';
+            userInput.focus();
+            
+            generateNewWord();
+            startTimer();
+        }
+        
+        // Start the game timer
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+        
+        // Update the timer display
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Add visual feedback when time is running low
+            if (timeLeft <= 30) {
+                timerDisplay.classList.add('text-red-500', 'pulse');
+            } else {
+                timerDisplay.classList.remove('text-red-500', 'pulse');
+            }
+        }
+        
+        // Generate a new random word and display its ASL letters
+        function generateNewWord() {
+            currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+            lettersContainer.innerHTML = '';
+            
+            for (let letter of currentWord) {
+                const letterBox = document.createElement('div');
+                letterBox.className = 'letter-box';
+                letterBox.textContent = aslLetters[letter.toLowerCase()] || '?';
+                lettersContainer.appendChild(letterBox);
+            }
+        }
+        
+        // Check the user's answer
+        function checkAnswer() {
+            if (!gameActive) return;
+            
+            const userAnswer = userInput.value.trim().toLowerCase();
+            totalAttempts++;
+            
+            if (userAnswer === currentWord.toLowerCase()) {
+                // Correct answer
+                score += currentWord.length;
+                correctAttempts++;
+                scoreDisplay.textContent = score;
+                showFeedback('Correct!', true);
+                
+                // Visual feedback
+                const letterBoxes = document.querySelectorAll('.letter-box');
+                letterBoxes.forEach(box => {
+                    box.classList.add('correct');
+                    setTimeout(() => box.classList.remove('correct'), 1000);
+                });
+            } else {
+                // Incorrect answer
+                showFeedback('Incorrect. Try again!', false);
+                
+                // Visual feedback
+                const letterBoxes = document.querySelectorAll('.letter-box');
+                letterBoxes.forEach(box => {
+                    box.classList.add('incorrect');
+                    setTimeout(() => box.classList.remove('incorrect'), 1000);
+                });
+            }
+            
+            // Prepare for next word
+            userInput.value = '';
+            setTimeout(generateNewWord, 1000);
+        }
+        
+        // Show feedback message
+        function showFeedback(message, isCorrect) {
+            feedback.textContent = message;
+            feedback.className = 'text-center h-6 font-medium ' + (isCorrect ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400');
+            
+            // Clear feedback after delay
+            setTimeout(() => {
+                feedback.textContent = '';
+                feedback.className = 'text-center h-6';
+            }, 1500);
+        }
+        
+        // End the game and show results
+        function endGame() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            
+            // Calculate metrics
+            const wpm = Math.round((correctAttempts / 2) * 10) / 10; // 2 minutes game
+            const accuracy = totalAttempts > 0 ? Math.round((correctAttempts / totalAttempts) * 100) : 0;
+            
+            // Update results screen
+            totalCorrectDisplay.textContent = correctAttempts;
+            wpmDisplay.textContent = wpm;
+            accuracyDisplay.textContent = `${accuracy}%`;
+            
+            // Switch screens
+            gameScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+        }
+        
+        // Event listeners
+        submitBtn.addEventListener('click', checkAnswer);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+        playAgainBtn.addEventListener('click', initGame);
+        themeToggle.addEventListener('click', toggleTheme);
+        
+        // Initialize theme and game when page loads
+        window.addEventListener('load', () => {
+            checkThemePreference();
+            initGame();
+        });
+    </script>
+</body>
+</html>
