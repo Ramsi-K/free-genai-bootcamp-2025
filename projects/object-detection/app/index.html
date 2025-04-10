@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">    
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>Korean Object Scanner</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
+    <style>
+        body {
+            touch-action: none;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        #videoContainer {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #000;
+        }
+        #videoElement, #processedElement {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #processedElement {
+            display: block !important;
+            pointer-events: none;
+        }
+        
+        .detection-box {
+            position: absolute;
+            border: 3px solid #4ADE80;
+            border-radius: 4px;
+            z-index: 10;
+        }
+        
+        .detection-label {
+            position: absolute;
+            background-color: #4ADE80;
+            color: #1F2937;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            transform: translateY(-100%);
+            z-index: 11;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            margin-top: 16px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #4ADE80;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50">
+        <div class="loading-spinner mb-4"></div>
+        <p id="loadingText" class="text-lg font-medium">Loading AI model...</p>
+        <div class="progress-bar">
+            <div id="modelProgress" class="progress-fill"></div>
+        </div>
+        <p id="loadingSubtext" class="text-sm text-gray-400 mt-2">Initializing object detection</p>
+    </div>
+    
+    <!-- Error overlay -->
+    <div id="errorOverlay" class="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50 hidden">
+        <div class="bg-red-500 rounded-full p-4 mb-4">
+            <span class="material-icons text-white text-4xl">error</span>
+        </div>
+        <h2 class="text-xl font-bold mb-2">Model Failed to Load</h2>
+        <p id="errorMessage" class="text-center max-w-xs mb-6">There was an issue loading the AI model.</p>
+        <button id="retryButton" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full flex items-center">
+            <span class="material-icons mr-2">refresh</span>
+            Try Again
+        </button>
+    </div>
+    
+    <!-- Camera permission overlay -->
+    <div id="permissionOverlay" class="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50 hidden">
+        <div class="bg-blue-500 rounded-full p-4 mb-4">
+            <span class="material-icons text-white text-4xl">camera_alt</span>
+        </div>
+        <h2 class="text-xl font-bold mb-2">Camera Access Needed</h2>
+        <p class="text-center max-w-xs mb-6">Please allow camera access to use the object scanner.</p>
+        <button id="startCameraButton" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full flex items-center">
+            <span class="material-icons mr-2">camera</span>
+            Start Camera
+        </button>
+    </div>
+    
+    <!-- Main UI -->
+    <div id="videoContainer">
+        <video id="videoElement" autoplay playsinline muted></video>
+        <canvas id="processedElement"></canvas>
+        
+        <!-- Detection results container -->
+        <div id="detectionsContainer"></div>
+    </div>
+    
+    <!-- Bottom controls -->
+    <div class="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent pb-4 pt-8 px-4 flex justify-center z-40">
+        <div class="flex space-x-4">
+            <button id="toggleDetectionButton" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full flex items-center hidden">
+                <span class="material-icons mr-2">visibility</span>
+                Toggle Detection
+            </button>
+            
+            <button id="switchCameraButton" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-3 rounded-full flex items-center hidden">
+                <span class="material-icons">flip_camera_ios</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Status indicator -->
+    <div id="statusIndicator" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm flex items-center hidden">
+        <span class="material-icons mr-1 text-green-400">circle</span>
+        <span id="statusText">Ready</span>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // DOM elements
+            const videoElement = document.getElementById('videoElement');
+            const processedElement = document.getElementById('processedElement');
+            const detectionsContainer = document.getElementById('detectionsContainer');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const loadingText = document.getElementById('loadingText');
+            const loadingSubtext = document.getElementById('loadingSubtext');
+            const modelProgress = document.getElementById('modelProgress');
+            const errorOverlay = document.getElementById('errorOverlay');
+            const errorMessage = document.getElementById('errorMessage');
+            const retryButton = document.getElementById('retryButton');
+            const permissionOverlay = document.getElementById('permissionOverlay');
+            const startCameraButton = document.getElementById('startCameraButton');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const toggleDetectionButton = document.getElementById('toggleDetectionButton');
+            const switchCameraButton = document.getElementById('switchCameraButton');
+            
+            // App state
+            let objectDetector = null;
+            let isDetecting = true;
+            let lastDetectionTime = 0;
+            const detectionInterval = 300; // ms between detections
+            let currentStream = null;
+            let facingMode = "environment";
+            
+            // Korean labels dictionary (expanded)
+            const koreanLabels = {
+                        "person": "사람",
+                        "bicycle": "자전거",
+                        "car": "자동차",
+                        "motorcycle": "오토바이",
+                        "airplane": "비행기",
+                        "bus": "버스",
+                        "train": "기차",
+                        "truck": "트럭",
+                        "boat": "보트",
+                        "traffic light": "신호등",
+                        "fire hydrant": "소화전",
+                        "stop sign": "정지 표지판",
+                        "parking meter": "주차 요금기",
+                        "bench": "벤치",
+                        "bird": "새",
+                        "cat": "고양이",
+                        "dog": "강아지",
+                        "horse": "말",
+                        "sheep": "양",
+                        "cow": "소",
+                        "elephant": "코끼리",
+                        "bear": "곰",
+                        "zebra": "얼룩말",
+                        "giraffe": "기린",
+                        "backpack": "배낭",
+                        "umbrella": "우산",
+                        "handbag": "핸드백",
+                        "tie": "묶다",
+                        "suitcase": "여행 가방",
+                        "frisbee": "프리스비",
+                        "skis": "스키",
+                        "snowboard": "스노우보드",
+                        "sports ball": "스포츠 공",
+                        "kite": "연",
+                        "baseball bat": "야구방망이",
+                        "baseball glove": "야구 글러브",
+                        "skateboard": "스케이트보드",
+                        "surfboard": "서핑보드",
+                        "tennis racket": "테니스 라켓",
+                        "bottle": "병",
+                        "wine glass": "와인잔",
+                        "cup": "컵",
+                        "fork": "포크",
+                        "knife": "칼",
+                        "spoon": "숟가락",
+                        "bowl": "그릇",
+                        "banana": "바나나",
+                        "apple": "사과",
+                        "sandwich": "샌드위치",
+                        "orange": "오렌지",
+                        "broccoli": "브로콜리",
+                        "carrot": "당근",
+                        "hot dog": "핫도그",
+                        "pizza": "피자",
+                        "donut": "도넛",
+                        "cake": "케이크",
+                        "chair": "의자",
+                        "couch": "소파",
+                        "potted plant": "화분",
+                        "bed": "침대",
+                        "dining table": "식탁",
+                        "toilet": "화장실",
+                        "tv": "텔레비전",
+                        "laptop": "노트북",
+                        "mouse": "마우스",
+                        "remote": "리모컨",
+                        "keyboard": "키보드",
+                        "cell phone": "휴대폰",
+                        "microwave": "전자레인지",
+                        "oven": "오븐",
+                        "toaster": "토스터",
+                        "sink": "싱크대",
+                        "refrigerator": "냉장고",
+                        "book": "책",
+                        "clock": "시계",
+                        "vase": "꽃병",
+                        "scissors": "가위",
+                        "teddy bear": "장난감 곰",
+                        "hair drier": "헤어드라이어",
+                        "toothbrush": "칫솔"
+                        };
+
+            // Initialize COCO-SSD model
+            async function initializeModel() {
+                loadingText.textContent = 'Loading COCO-SSD model...';
+                loadingSubtext.textContent = 'This lightweight model works offline';
+                modelProgress.style.width = '30%';
+                
+                try {
+                    // Load TensorFlow.js backend
+                    await tf.setBackend('webgl');
+                    modelProgress.style.width = '60%';
+                    
+                    // Load COCO-SSD model
+                    objectDetector = await cocoSsd.load({
+                        base: 'lite_mobilenet_v2'
+                    });
+                    
+                    modelProgress.style.width = '100%';
+                    
+                    // Add slight delay to show 100% progress before hiding
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    
+                    loadingOverlay.classList.add('hidden');
+                    return true;
+                } catch (error) {
+                    console.error("Failed to load COCO-SSD:", error);
+                    showError("Failed to load object detection model", error);
+                    return false;
+                }
+            }
+            
+            // Initialize camera with user permission
+            async function initCamera() {
+                try {
+                    if (currentStream) {
+                        currentStream.getTracks().forEach(track => track.stop());
+                    }
+                    
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: { 
+                            facingMode: facingMode,
+                            width: { ideal: 640 },
+                            height: { ideal: 480 }
+                        },
+                        audio: false
+                    });
+                    
+                    currentStream = stream;
+                    videoElement.srcObject = stream;
+                    
+                    return new Promise((resolve) => {
+                        videoElement.onloadedmetadata = () => {
+                            processedElement.width = videoElement.videoWidth;
+                            processedElement.height = videoElement.videoHeight;
+                            permissionOverlay.classList.add('hidden');
+                            toggleDetectionButton.classList.remove('hidden');
+                            switchCameraButton.classList.remove('hidden');
+                            statusIndicator.classList.remove('hidden');
+                            resolve(true);
+                        };
+                    });
+                } catch (err) {
+                    console.error("Camera error:", err);
+                    permissionOverlay.classList.remove('hidden');
+                    return false;
+                }
+            }
+            
+            // Process each video frame
+            async function processFrame(timestamp) {
+                if (!objectDetector || !isDetecting) {
+                    requestAnimationFrame(processFrame);
+                    return;
+                }
+                
+                // Throttle processing
+                if (timestamp - lastDetectionTime < detectionInterval) {
+                    requestAnimationFrame(processFrame);
+                    return;
+                }
+                
+                lastDetectionTime = timestamp;
+                
+                if (videoElement.readyState < videoElement.HAVE_ENOUGH_DATA) {
+                    requestAnimationFrame(processFrame);
+                    return;
+                }
+                
+                try {
+                    statusText.textContent = "Detecting objects...";
+                    
+                    const detections = await objectDetector.detect(videoElement);
+                    drawDetections(detections);
+                    
+                    statusText.textContent = `Detected ${detections.length} objects`;
+                } catch (error) {
+                    console.error("Detection error:", error);
+                    statusText.textContent = "Detection error";
+                }
+                
+                requestAnimationFrame(processFrame);
+            }
+            
+            // Draw bounding boxes and labels
+            function drawDetections(detections) {
+                // Clear previous detections
+                detectionsContainer.innerHTML = '';
+                
+                if (!detections || detections.length === 0) {
+                    return;
+                }
+                
+                for (const detection of detections) {
+                    if (!detection.bbox || !detection.class) continue;
+                    
+                    const [x, y, width, height] = detection.bbox;
+                    const score = detection.score;
+                    const label = detection.class;
+                    const koreanLabel = koreanLabels[label.toLowerCase()] || label;
+                    
+                    // Only show if confidence is high enough
+                    if (score < 0.5) continue;
+                    
+                    // Create detection box element
+                    const boxElement = document.createElement('div');
+                    boxElement.className = 'detection-box';
+                    boxElement.style.left = `${x}px`;
+                    boxElement.style.top = `${y}px`;
+                    boxElement.style.width = `${width}px`;
+                    boxElement.style.height = `${height}px`;
+                    
+                    // Create label element
+                    const labelElement = document.createElement('div');
+                    labelElement.className = 'detection-label';
+                    labelElement.textContent = `${koreanLabel} (${Math.round(score * 100)}%)`;
+                    labelElement.style.left = `${x}px`;
+                    labelElement.style.top = `${y}px`;
+                    
+                    // Add to container
+                    detectionsContainer.appendChild(boxElement);
+                    detectionsContainer.appendChild(labelElement);
+                }
+            }
+            
+            // Toggle detection on/off
+            function toggleDetection() {
+                isDetecting = !isDetecting;
+                if (isDetecting) {
+                    toggleDetectionButton.innerHTML = '<span class="material-icons mr-2">visibility_off</span> Pause Detection';
+                    statusText.textContent = "Detection resumed";
+                } else {
+                    toggleDetectionButton.innerHTML = '<span class="material-icons mr-2">visibility</span> Resume Detection';
+                    statusText.textContent = "Detection paused";
+                    detectionsContainer.innerHTML = '';
+                }
+            }
+            
+            // Switch between front and back camera
+            async function switchCamera() {
+                facingMode = facingMode === "user" ? "environment" : "user";
+                statusText.textContent = "Switching camera...";
+                await initCamera();
+                statusText.textContent = "Camera switched";
+            }
+            
+            // Show error message
+            function showError(message, error) {
+                loadingOverlay.classList.add('hidden');
+                errorOverlay.classList.remove('hidden');
+                errorMessage.textContent = message;
+                if (error) {
+                    console.error(error);
+                }
+            }
+            
+            // Start everything
+            async function startApp() {
+                loadingOverlay.classList.remove('hidden');
+                errorOverlay.classList.add('hidden');
+                
+                const modelLoaded = await initializeModel();
+                if (!modelLoaded) return;
+                
+                // Check camera permissions
+                const cameraPermission = await initCamera();
+                if (!cameraPermission) return;
+                
+                // Start processing frames
+                requestAnimationFrame(processFrame);
+            }
+            
+            // Event listeners
+            retryButton.addEventListener('click', startApp);
+            startCameraButton.addEventListener('click', initCamera);
+            toggleDetectionButton.addEventListener('click', toggleDetection);
+            switchCameraButton.addEventListener('click', switchCamera);
+            
+            // Start the app
+            startApp();
+        });
+    </script>
+</body>
+</html>
