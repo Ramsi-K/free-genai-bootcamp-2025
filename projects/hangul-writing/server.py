@@ -111,4 +111,5 @@ if __name__ == "__main__":
             "templates/Hangul-calligraphy-practice.html",
         )
 
-    app.run(debug=True, port=5000)
+    # Run the app on 0.0.0.0 to make it accessible from outside the container
+    app.run(debug=True, port=5000, host="0.0.0.0")

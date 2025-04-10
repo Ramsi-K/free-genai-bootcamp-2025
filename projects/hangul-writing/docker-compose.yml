@@ -1,10 +1,8 @@
-version: '3'
-
 services:
   ollama:
     image: ollama/ollama:latest
     ports:
-      - "11434:11434"
+      - '11434:11434'
     volumes:
       - ollama_data:/root/.ollama
     restart: unless-stopped
@@ -21,7 +19,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"
+      - '5000:5000'
     volumes:
       - ./:/app
       - ./llava_output:/app/llava_output

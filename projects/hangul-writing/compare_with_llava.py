@@ -16,11 +16,8 @@ else:
     USER_IMG = input("Enter path to user image (handwriting): ").strip()
 
 OUTPUT_DIR = "llava_output"
-PROMPT = (
-    "Compare the two handwriting samples. "
-    "Give honest feedback like a strict Korean teacher. "
-    "Focus on accuracy, stroke style, spacing, and neatness."
-)
+# The prompt will be passed directly to the LLaVA CLI tool after image paths
+PROMPT = "Compare the two handwriting samples. Give honest feedback like a strict Korean teacher. Focus on accuracy, stroke style, spacing, and neatness."
 
 # === Ensure output directory exists ===
 if not os.path.exists(OUTPUT_DIR):
@@ -32,10 +29,10 @@ output_img = os.path.join(OUTPUT_DIR, f"comparison_{timestamp}.png")
 
 # === Find llava-multi-images.py ===
 script_paths = [
-    "./llava-multi-images.py",               # Current directory
-    "/llava/llava-multi-images.py",          # Docker container location
-    "../LLaVA/llava-multi-images.py",        # Relative path if in subdirectory
-    os.path.expanduser("~/LLaVA/llava-multi-images.py")  # Home directory
+    "./llava-multi-images.py",  # Current directory
+    "/llava/llava-multi-images.py",  # Docker container location
+    "../LLaVA/llava-multi-images.py",  # Relative path if in subdirectory
+    os.path.expanduser("~/LLaVA/llava-multi-images.py"),  # Home directory
 ]
 
 llava_script = None
@@ -49,6 +46,7 @@ if not llava_script:
     sys.exit(1)
 
 # === Run LLaVA CLI script ===
+# Format changed: adding the prompt at the end without a flag
 COMMAND = [
     "python",
     llava_script,
@@ -61,12 +59,31 @@ COMMAND = [
     "--concat-strategy",
     "horizontal",
     "--save-image",
-    "--prompt",
-    PROMPT
 ]
 
-print("Running LLaVA CLI comparison...")
-result = subprocess.getoutput(" ".join(COMMAND))
+# For debugging
+print(f"Running command: {' '.join(COMMAND)}")
+print(f"With prompt: {PROMPT}")
+
+# Execute LLaVA with the command and prompt (sending prompt to stdin)
+try:
+    process = subprocess.Popen(
+        COMMAND,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    stdout, stderr = process.communicate(input=PROMPT)
+    result = stdout
+
+    if process.returncode != 0:
+        print(f"Error occurred (code {process.returncode}):")
+        print(f"STDERR: {stderr}")
+        result = f"Error: {stderr}"
+except Exception as e:
+    print(f"Exception running LLaVA: {e}")
+    result = f"Exception: {e}"
 
 # === Save/rename the output image ===
 default_output_img = "concatenated.png"
