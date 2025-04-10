@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">    
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>Korean Object Scanner</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
+    <style>
+        body {
+            touch-action: none;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        #videoContainer {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #000;
+        }
+        #videoElement, #processedElement {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #processedElement {
+            display: block !important;
+            pointer-events: none;
+        }
+        
+        .detection-box {
+            position: absolute;
+            border: 3px solid #4ADE80;
+            border-radius: 4px;
+            z-index: 10;
+        }
+        
+        .detection-label {
+            position: absolute;
+            background-color: #4ADE80;
+            color: #1F2937;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            transform: translateY(-100%);
+            z-index: 11;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            margin-top: 16px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #4ADE80;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50">
+        <div class="loading-spinner mb-4"></div>
+        <p id="loadingText" class="text-lg font-medium">Loading AI model...</p>
+        <div class="progress-bar">
+            <div id="modelProgress" class="progress-fill"></div>
+        </div>
+        <p id="loadingSubtext" class="text-sm text-gray-400 mt-2">Initializing object detection</p>
+    </div>
+    
+    <!-- Model selection overlay -->
+    <div id="modelSelectionOverlay" class="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50 hidden">
+        <div class="bg-blue-500 rounded-full p-4 mb-4">
+            <span class="material-icons text-white text-4xl">model_training</span>
+        </div>
+        <h2 class="text-xl font-bold mb-4">Select Detection Model</h2>
+        <div class="flex flex-col space-y-3 w-64">
+            <button id="cocoModelButton" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg flex items-center justify-between">
+                <span>COCO-SSD</span>
+                <span class="text-xs text-gray-300">(Faster)</span>
+            </button>
+            <button id="mediapipeModelButton" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg flex items-center justify-between">
+                <span>MediaPipe</span>
+                <span class="text-xs text-gray-300">(More accurate)</span>
+            </button>
+        </div>
+        <p class="text-sm text-gray-400 mt-4">MediaPipe may require better internet connection</p>
+    </div>
+    
+    <!-- Error overlay -->
+    <div id="errorOverlay" class="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50 hidden">
+        <div class="bg-red-500 rounded-full p-4 mb-4">
+            <span class="material-icons text-white text-4xl">error</span>
+        </div>
+        <h2 class="text-xl font-bold mb-2">Model Failed to Load</h2>
+        <p id="errorMessage" class="text-center max-w-xs mb-6">There was an issue loading the AI model.</p>
+        <div class="flex space-x-3">
+            <button id="retryButton" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full flex items-center">
+                <span class="material-icons mr-2">refresh</span>
+                Try Again
+            </button>
+            <button id="selectModelButton" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-full flex items-center">
+                <span class="material-icons mr-2">swap_horiz</span>
+                Change Model
+            </button>
+        </div>
+    </div>
+    
+    <!-- Camera permission overlay -->
+    <div id="permissionOverlay" class="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50 hidden">
+        <div class="bg-blue-500 rounded-full p-4 mb-4">
+            <span class="material-icons text-white text-4xl">camera_alt</span>
+        </div>
+        <h2 class="text-xl font-bold mb-2">Camera Access Needed</h2>
+        <p class="text-center max-w-xs mb-6">Please allow camera access to use the object scanner.</p>
+        <button id="startCameraButton" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full flex items-center">
+            <span class="material-icons mr-2">camera</span>
+            Start Camera
+        </button>
+    </div>
+    
+    <!-- Main UI -->
+    <div id="videoContainer">
+        <video id="videoElement" autoplay playsinline muted></video>
+        <canvas id="processedElement"></canvas>
+        
+        <!-- Detection results container -->
+        <div id="detectionsContainer"></div>
+    </div>
+    
+    <!-- Bottom controls -->
+    <div class="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent pb-4 pt-8 px-4 flex justify-center z-40">
+        <div class="flex space-x-4">
+            <button id="toggleDetectionButton" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full flex items-center hidden">
+                <span class="material-icons mr-2">visibility</span>
+                Toggle Detection
+            </button>
+            
+            <button id="switchCameraButton" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-3 rounded-full flex items-center hidden">
+                <span class="material-icons">flip_camera_ios</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Status indicator -->
+    <div id="statusIndicator" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm flex items-center hidden">
+        <span class="material-icons mr-1 text-green-400">circle</span>
+        <span id="statusText">Ready</span>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // DOM elements
+            const videoElement = document.getElementById('videoElement');
+            const processedElement = document.getElementById('processedElement');
+            const detectionsContainer = document.getElementById('detectionsContainer');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const loadingText = document.getElementById('loadingText');
+            const loadingSubtext = document.getElementById('loadingSubtext');
+            const modelProgress = document.getElementById('modelProgress');
+            const errorOverlay = document.getElementById('errorOverlay');
+            const errorMessage = document.getElementById('errorMessage');
+            const retryButton = document.getElementById('retryButton');
+            const selectModelButton = document.getElementById('selectModelButton');
+            const modelSelectionOverlay = document.getElementById('modelSelectionOverlay');
+            const cocoModelButton = document.getElementById('cocoModelButton');
+            const mediapipeModelButton = document.getElementById('mediapipeModelButton');
+            const permissionOverlay = document.getElementById('permissionOverlay');
+            const startCameraButton = document.getElementById('startCameraButton');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const toggleDetectionButton = document.getElementById('toggleDetectionButton');
+            const switchCameraButton = document.getElementById('switchCameraButton');
+            
+            // App state
+            let objectDetector = null;
+            let isDetecting = true;
+            let lastDetectionTime = 0;
+            const detectionInterval = 300; // ms between detections
+            let currentStream = null;
+            let facingMode = "environment";
+            let currentModel = null; // 'coco' or 'mediapipe'
+            
+            // Korean labels dictionary (expanded)
+            const koreanLabels = {
+                "cat": "고양이", "dog": "강아지", "cell phone": "휴대폰","person": "사람",
+                "car": "자동차", "book": "책", "bottle": "병", "cup": "컵",
+                "chair": "의자", "table": "테이블", "phone": "휴대폰",
+                "laptop": "노트북", "keyboard": "키보드", "mouse": "마우스",
+                "clock": "시계", "tv": "텔레비전", "couch": "소파",
+                "bed": "침대", "refrigerator": "냉장고", "microwave": "전자레인지",
+                "oven": "오븐", "toaster": "토스터", "sink": "싱크대",
+                "window": "창문", "door": "문", "plant": "식물",
+                "flower": "꽃", "tree": "나무", "bus": "버스",
+                "truck": "트럭", "bicycle": "자전거", "motorcycle": "오토바이",
+                "airplane": "비행기", "boat": "보트", "traffic light": "신호등",
+                "fire hydrant": "소화전", "stop sign": "정지 표지판"
+            };
+            
+            // Initialize COCO-SSD model
+            async function initializeCocoModel() {
+                loadingText.textContent = 'Loading COCO-SSD model...';
+                loadingSubtext.textContent = 'This lightweight model works offline';
+                modelProgress.style.width = '30%';
+                
+                try {
+                    // Load TensorFlow.js backend
+                    await tf.setBackend('webgl');
+                    modelProgress.style.width = '60%';
+                    
+                    // Load COCO-SSD model
+                    objectDetector = await cocoSsd.load({
+                        base: 'lite_mobilenet_v2'
+                    });
+                    
+                    modelProgress.style.width = '100%';
+                    currentModel = 'coco';
+                    return true;
+                } catch (error) {
+                    console.error("Failed to load COCO-SSD:", error);
+                    showError("Failed to load COCO-SSD model", error);
+                    return false;
+                }
+            }
+            
+            // Initialize MediaPipe model
+            async function initializeMediaPipeModel() {
+                loadingText.textContent = 'Loading MediaPipe model...';
+                loadingSubtext.textContent = 'Downloading model files (about 4MB)';
+                modelProgress.style.width = '10%';
+                
+                try {
+                    // Dynamically load MediaPipe only when needed
+                    const visionTasks = await loadMediaPipe();
+                    if (!visionTasks) return false;
+                    
+                    modelProgress.style.width = '40%';
+                    loadingSubtext.textContent = 'Initializing object detector';
+                    
+                    const vision = await visionTasks.FilesetResolver.forVisionTasks(
+                        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+                    );
+                    
+                    modelProgress.style.width = '70%';
+                    
+                    objectDetector = await visionTasks.ObjectDetector.createFromOptions(vision, {
+                        baseOptions: {
+                            modelAssetPath: "https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/float16/latest/efficientdet_lite0.tflite",
+                            delegate: "GPU"
+                        },
+                        scoreThreshold: 0.5,
+                        runningMode: "VIDEO",
+                        maxResults: 10
+                    });
+                    
+                    modelProgress.style.width = '100%';
+                    currentModel = 'mediapipe';
+                    return true;
+                } catch (error) {
+                    console.error("Failed to load MediaPipe:", error);
+                    showError("Failed to load MediaPipe model", error);
+                    return false;
+                }
+            }
+            
+            // Dynamically load MediaPipe library
+            function loadMediaPipe() {
+                return new Promise((resolve, reject) => {
+                    // Check if already loaded
+                    if (window.visionTasks) {
+                        resolve(window.visionTasks);
+                        return;
+                    }
+                    
+                    loadingSubtext.textContent = 'Loading MediaPipe library';
+                    
+                    // Create script element
+                    const wasmScript = document.createElement('script');
+                    wasmScript.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm';
+                    
+                    const visionScript = document.createElement('script');
+                    visionScript.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/vision_bundle.js';
+                    
+                    visionScript.onload = () => {
+                        if (window.visionTasks) {
+                            resolve(window.visionTasks);
+                        } else {
+                            reject(new Error("MediaPipe library didn't load correctly"));
+                        }
+                    };
+                    
+                    visionScript.onerror = () => {
+                        reject(new Error("Failed to load MediaPipe scripts"));
+                    };
+                    
+                    document.head.appendChild(wasmScript);
+                    document.head.appendChild(visionScript);
+                });
+            }
+            
+            // Initialize camera with user permission
+            async function initCamera() {
+                try {
+                    if (currentStream) {
+                        currentStream.getTracks().forEach(track => track.stop());
+                    }
+                    
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: { 
+                            facingMode: facingMode,
+                            width: { ideal: 1920 },
+                            height: { ideal: 1080 }
+                        },
+                        audio: false
+                    });
+                    
+                    currentStream = stream;
+                    videoElement.srcObject = stream;
+                    
+                    return new Promise((resolve) => {
+                        videoElement.onloadedmetadata = () => {
+                            processedElement.width = videoElement.videoWidth;
+                            processedElement.height = videoElement.videoHeight;
+                            permissionOverlay.classList.add('hidden');
+                            toggleDetectionButton.classList.remove('hidden');
+                            switchCameraButton.classList.remove('hidden');
+                            resolve(true);
+                        };
+                    });
+                } catch (err) {
+                    console.error("Camera error:", err);
+                    permissionOverlay.classList.remove('hidden');
+                    return false;
+                }
+            }
+            
+            // Process each video frame
+            async function processFrame(timestamp) {
+                if (!objectDetector || !isDetecting) {
+                    requestAnimationFrame(processFrame);
+                    return;
+                }
+                
+                // Throttle processing
+                if (timestamp - lastDetectionTime < detectionInterval) {
+                    requestAnimationFrame(processFrame);
+                    return;
+                }
+                
+                lastDetectionTime = timestamp;
+                
+                if (videoElement.readyState < videoElement.HAVE_ENOUGH_DATA) {
+                    requestAnimationFrame(processFrame);
+                    return;
+                }
+                
+                try {
+                    statusText.textContent = "Detecting objects...";
+                    
+                    let detections;
+                    if (currentModel === 'coco') {
+                        detections = await objectDetector.detect(videoElement);
+                        // Convert COCO format to similar structure as MediaPipe
+                        const formattedDetections = {
+                            detections: detections.map(d => ({
+                                boundingBox: {
+                                    originX: d.bbox[0],
+                                    originY: d.bbox[1],
+                                    width: d.bbox[2],
+                                    height: d.bbox[3]
+                                },
+                                categories: [{
+                                    categoryName: d.class,
+                                    score: d.score
+                                }]
+                            }))
+                        };
+                        drawDetections(formattedDetections);
+                    } else {
+                        detections = await objectDetector.detectForVideo(videoElement, timestamp);
+                        drawDetections(detections);
+                    }
+                    
+                    statusText.textContent = `Detected ${detections.detections ? detections.detections.length : 0} objects`;
+                } catch (error) {
+                    console.error("Detection error:", error);
+                    statusText.textContent = "Detection error";
+                }
+                
+                requestAnimationFrame(processFrame);
+            }
+            
+            // Draw bounding boxes and labels
+            function drawDetections(detections) {
+                // Clear previous detections
+                detectionsContainer.innerHTML = '';
+                
+                if (!detections || !detections.detections || detections.detections.length === 0) {
+                    return;
+                }
+                
+                for (const detection of detections.detections) {
+                    if (!detection.boundingBox || !detection.categories[0]) continue;
+                    
+                    const box = detection.boundingBox;
+                    const category = detection.categories[0];
+                    const score = category.score;
+                    const label = category.categoryName;
+                    const koreanLabel = koreanLabels[label.toLowerCase()] || label;
+                    
+                    // Only show if confidence is high enough
+                    if (score < 0.5) continue;
+                    
+                    // Create detection box element
+                    const boxElement = document.createElement('div');
+                    boxElement.className = 'detection-box';
+                    boxElement.style.left = `${box.originX}px`;
+                    boxElement.style.top = `${box.originY}px`;
+                    boxElement.style.width = `${box.width}px`;
+                    boxElement.style.height = `${box.height}px`;
+                    
+                    // Create label element
+                    const labelElement = document.createElement('div');
+                    labelElement.className = 'detection-label';
+                    labelElement.textContent = `${koreanLabel} (${Math.round(score * 100)}%)`;
+                    labelElement.style.left = `${box.originX}px`;
+                    labelElement.style.top = `${box.originY}px`;
+                    
+                    // Add to container
+                    detectionsContainer.appendChild(boxElement);
+                    detectionsContainer.appendChild(labelElement);
+                }
+            }
+            
+            // Toggle detection on/off
+            function toggleDetection() {
+                isDetecting = !isDetecting;
+                if (isDetecting) {
+                    toggleDetectionButton.innerHTML = '<span class="material-icons mr-2">visibility_off</span> Pause Detection';
+                    statusText.textContent = "Detection resumed";
+                } else {
+                    toggleDetectionButton.innerHTML = '<span class="material-icons mr-2">visibility</span> Resume Detection';
+                    statusText.textContent = "Detection paused";
+                    detectionsContainer.innerHTML = '';
+                }
+            }
+            
+            // Switch between front and back camera
+            async function switchCamera() {
+                facingMode = facingMode === "user" ? "environment" : "user";
+                statusText.textContent = "Switching camera...";
+                await initCamera();
+                statusText.textContent = "Camera switched";
+            }
+            
+            // Show error message
+            function showError(message, error) {
+                loadingOverlay.classList.add('hidden');
+                errorOverlay.classList.remove('hidden');
+                errorMessage.textContent = message;
+                if (error) {
+                    console.error(error);
+                }
+            }
+            
+            // Start everything
+            async function startApp(modelType = null) {
+                loadingOverlay.classList.remove('hidden');
+                errorOverlay.classList.add('hidden');
+                modelSelectionOverlay.classList.add('hidden');
+                
+                // If no model specified, show selection
+                if (!modelType) {
+                    loadingOverlay.classList.add('hidden');
+                    modelSelectionOverlay.classList.remove('hidden');
+                    return;
+                }
+                
+                let modelLoaded = false;
+                
+                // Try selected model first
+                if (modelType === 'coco') {
+                    modelLoaded = await initializeCocoModel();
+                } else if (modelType === 'mediapipe') {
+                    modelLoaded = await initializeMediaPipeModel();
+                }
+                
+                // If selected model failed, try the other one
+                if (!modelLoaded) {
+                    const fallbackModel = modelType === 'coco' ? 'mediapipe' : 'coco';
+                    loadingText.textContent = `Trying fallback model (${fallbackModel})...`;
+                    modelProgress.style.width = '30%';
+                    
+                    if (fallbackModel === 'coco') {
+                        modelLoaded = await initializeCocoModel();
+                    } else {
+                        modelLoaded = await initializeMediaPipeModel();
+                    }
+                }
+                
+                if (!modelLoaded) {
+                    showError("All model options failed to load");
+                    return;
+                }
+                
+                // Check camera permissions
+                const cameraPermission = await initCamera();
+                if (!cameraPermission) return;
+                
+                // Start processing frames
+                requestAnimationFrame(processFrame);
+            }
+            
+            // Event listeners
+            retryButton.addEventListener('click', () => startApp(currentModel));
+            selectModelButton.addEventListener('click', () => startApp());
+            cocoModelButton.addEventListener('click', () => startApp('coco'));
+            mediapipeModelButton.addEventListener('click', () => startApp('mediapipe'));
+            startCameraButton.addEventListener('click', initCamera);
+            toggleDetectionButton.addEventListener('click', toggleDetection);
+            switchCameraButton.addEventListener('click', switchCamera);
+            
+            // Start the app with model selection
+            startApp();
+        });
+    </script>
+</body>
+</html>
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">    
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>Real-Time Korean Label Scanner</title>
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/vision_bundle.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            touch-action: none;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        #videoContainer {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #videoElement, #processedElement {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #processedElement {
+            display: block !important;
+            pointer-events: none;
+        }
+
+        #dogEmoji {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 32px;
+            z-index: 100;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        #statusIndicator {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 100;
+            display: none;
+        }
+        .processing #videoElement {
+            display: none;
+        }
+        .processing #processedElement {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-black">
+    <div id="startButton" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-6 py-3 rounded-full z-50">
+        Start Camera
+    </div>
+    <div id="videoContainer">
+        <video id="videoElement" autoplay playsinline muted></video>
+        <canvas id="processedElement"></canvas>
+    </div>
+    
+    <div id="dogEmoji">🐶</div>
+    <div id="statusIndicator">Processing frame...</div>
+
+    <script>
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const videoElement = document.getElementById('videoElement');
+        //     const processedElement = document.getElementById('processedElement');
+        //     const videoContainer = document.getElementById('videoContainer');
+        //     const statusIndicator = document.getElementById('statusIndicator');
+        //     const dogEmoji = document.getElementById('dogEmoji');
+            
+        //     let stream = null;
+        //     // let isProcessing = false;
+        //     // let frameInterval = 500; // ms between frames
+        //     let lastFrameTime = 0;
+        //     let canvasContext = processedElement.getContext('2d');
+
+        //     let objectDetector;
+        //     let lastDetectionTime = 0;
+        //     const detectionInterval = 300; // ms between detections to balance performance
+
+        //     // Initialize MediaPipe Object Detector
+        //     async function initializeObjectDetector() {
+        //         try {
+        //             const vision = await FilesetResolver.forVisionTasks(
+        //                 "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
+        //             );
+                    
+        //             objectDetector = await ObjectDetector.createFromOptions(vision, {
+        //                 baseOptions: {
+        //                     modelAssetPath: "https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/float16/1/efficientdet_lite0.tflite",
+        //                     delegate: "GPU"
+        //                 },
+        //                 scoreThreshold: 0.5,
+        //                 runningMode: "VIDEO",
+        //                 maxResults: 5
+        //             });
+                    
+        //             console.log("Object detector initialized");
+        //             return true;
+        //         } catch (error) {
+        //             console.error("Failed to initialize object detector:", error);
+        //             return false;
+        //         }
+        //     }
+            
+        //     // Add this after your existing variables declaration
+        //     const koreanLabels = {
+        //         "cat": "고양이",
+        //         "dog": "강아지",
+        //         "person": "사람",
+        //         "car": "자동차",
+        //         "book": "책",
+        //         "bottle": "병",
+        //         "cup": "컵"
+        //     };
+
+            
+
+        //     // Modified processFrame function to use object detection
+        //     async function processFrame(timestamp) {
+        //         requestAnimationFrame(processFrame);
+                
+        //         // Throttle detection to maintain performance
+        //         if (timestamp - lastDetectionTime < detectionInterval || !objectDetector) return;
+                
+        //         if (videoElement.readyState < videoElement.HAVE_ENOUGH_DATA) return;
+                
+        //         lastDetectionTime = timestamp;
+                
+        //         try {
+        //             // Perform detection
+        //             const detections = await objectDetector.detectForVideo(videoElement, timestamp);
+                    
+        //             // Clear previous drawings
+        //             canvasContext.clearRect(0, 0, processedElement.width, processedElement.height);
+                    
+        //             // Draw new detections
+        //             drawDetections(detections);
+        //         } catch (error) {
+        //             console.error("Detection error:", error);
+        //         }
+        //     }
+
+        //     // Draw bounding boxes and labels
+        //     function drawDetections(detections) {
+        //         console.log("Detection results:", detections);
+        //         // Check if detections are valid
+        //         if (!detections || !detections.detections) return;
+                
+        //         for (const detection of detections.detections) {
+        //             if (!detection.boundingBox || !detection.categories[0]) continue;
+                    
+        //             const box = detection.boundingBox;
+        //             const category = detection.categories[0];
+        //             const score = category.score;
+        //             const label = category.categoryName;
+                    
+        //             // Skip if label not in our dictionary
+        //             if (!koreanLabels[label]) continue;
+                    
+        //             // Draw bounding box
+        //             canvasContext.strokeStyle = "#00FF00";
+        //             canvasContext.lineWidth = 4;
+        //             canvasContext.strokeRect(box.originX, box.originY, box.width, box.height);
+                    
+        //             // Draw label background
+        //             canvasContext.fillStyle = "#00FF00";
+        //             const textWidth = canvasContext.measureText(koreanLabels[label]).width;
+        //             const textHeight = 20;
+        //             canvasContext.fillRect(
+        //                 box.originX,
+        //                 box.originY - textHeight,
+        //                 textWidth + 10,
+        //                 textHeight
+        //             );
+                    
+        //             // Draw label text
+        //             canvasContext.fillStyle = "#000000";
+        //             canvasContext.font = "16px Arial";
+        //             canvasContext.fillText(
+        //                 koreanLabels[label],
+        //                 box.originX + 5,
+        //                 box.originY - 5
+        //             );
+                    
+        //             // Draw confidence score
+        //             canvasContext.fillText(
+        //                 `${(score * 100).toFixed(1)}%`,
+        //                 box.originX + box.width - 40,
+        //                 box.originY - 5
+        //             );
+        //         }
+        //     }
+        //     // Initialize camera
+        //     async function initCamera() {
+        //         try {
+        //             statusIndicator.textContent = "Requesting camera...";
+        //             statusIndicator.style.display = "block";
+
+        //             stream = await navigator.mediaDevices.getUserMedia({
+        //                 video: {
+        //                     width: { ideal: 1280 },
+        //                     height: { ideal: 720 },
+        //                     facingMode: "environment"
+        //                 }
+        //             });
+
+        //             videoElement.srcObject = stream;
+        //             videoElement.onloadedmetadata = () => {
+        //                 videoElement.play(); // 👈 just in case
+        //                 processedElement.width = videoElement.videoWidth;
+        //                 processedElement.height = videoElement.videoHeight;
+
+        //                 // ✅ Confirm we got video
+        //                 statusIndicator.textContent = "Camera ready!";
+        //                 setTimeout(() => statusIndicator.style.display = "none", 1000);
+        //             };
+
+        //             document.getElementById("startButton").style.display = "none";
+        //         } catch (err) {
+        //             console.error("Camera Error:", err);
+        //             statusIndicator.textContent = err.name === "NotAllowedError" 
+        //                 ? "Please enable camera in browser settings" 
+        //                 : `Camera error: ${err.message}`;
+        //         }
+        //     }
+
+            
+        //     // // Capture current frame and send to server
+        //     // async function captureAndProcessFrame() {
+        //     //     if (isProcessing) return;
+                
+        //     //     isProcessing = true;
+        //     //     statusIndicator.style.display = 'block';
+        //     //     videoContainer.classList.add('processing');
+                
+        //     //     try {
+        //     //         // Create temporary canvas to capture frame
+        //     //         const canvas = document.createElement('canvas');
+        //     //         canvas.width = videoElement.videoWidth;
+        //     //         canvas.height = videoElement.videoHeight;
+        //     //         const context = canvas.getContext('2d');
+        //     //         context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                    
+        //     //         // Convert to JPEG with moderate quality to reduce size
+        //     //         const imageData = canvas.toDataURL('image/jpeg', 0.7);
+                    
+        //     //         // Send to Flask backend
+        //     //         const response = await fetch('/stream', {
+        //     //             method: 'POST',
+        //     //             headers: {
+        //     //                 'Content-Type': 'application/json',
+        //     //             },
+        //     //             body: JSON.stringify({ image: imageData })
+        //     //         });
+                    
+        //     //         const result = await response.json();
+                    
+        //     //         if (result.success && result.processedImage) {
+        //     //             // Display the processed image with labels
+        //     //             const img = new Image();
+        //     //             img.onload = function() {
+        //     //                 canvasContext.clearRect(0, 0, processedElement.width, processedElement.height);
+        //     //                 canvasContext.drawImage(img, 0, 0, processedElement.width, processedElement.height);
+        //     //                 isProcessing = false;
+        //     //                 statusIndicator.style.display = 'none';
+        //     //             };
+        //     //             img.src = result.processedImage;
+        //     //         } else {
+        //     //             throw new Error(result.message || 'Processing failed');
+        //     //         }
+                    
+        //     //     } catch (err) {
+        //     //         console.error('Frame processing error:', err);
+        //     //         isProcessing = false;
+        //     //         videoContainer.classList.remove('processing');
+        //     //         statusIndicator.textContent = 'Processing error';
+        //     //         statusIndicator.style.backgroundColor = 'rgba(255,0,0,0.7)';
+                    
+        //     //         // Retry after a delay
+        //     //         setTimeout(() => {
+        //     //             statusIndicator.style.display = 'none';
+        //     //         }, 2000);
+        //     //     }
+        //     // }
+            
+        //     // Frame processing loop
+        //     // function processFrame(timestamp) {
+        //     //     requestAnimationFrame(processFrame);
+                
+        //     //     // Throttle frame processing to avoid overloading
+        //     //     if (timestamp - lastFrameTime > frameInterval) {
+        //     //         lastFrameTime = timestamp;
+        //     //         if (!isProcessing && videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
+        //     //             captureAndProcessFrame();
+        //     //         }
+        //     //     }
+        //     // }
+            
+        //     // Initialize camera when page loads
+        //     // initCamera();
+
+        //     document.getElementById("startButton").addEventListener("click", initCamera);
+        //     // Clean up when page is closed
+        //     window.addEventListener('beforeunload', function() {
+        //         if (stream) {
+        //             stream.getTracks().forEach(track => track.stop());
+        //         }
+        //     });
+            
+        //     // Handle orientation changes
+        //     window.addEventListener('orientationchange', function() {
+        //         // Reset canvas dimensions on orientation change
+        //         setTimeout(() => {
+        //             processedElement.width = videoElement.videoWidth;
+        //             processedElement.height = videoElement.videoHeight;
+        //         }, 300);
+        //     });
+        // });
+        // // Full startup after everything is ready
+        // initializeObjectDetector().then(success => {
+        //     if (success) {
+        //         console.log("Starting frame processing...");
+        //         requestAnimationFrame(processFrame);
+        //     } else {
+        //         console.error("Object detection not started — failed to initialize.");
+        //         statusIndicator.textContent = "Detection setup failed";
+        //         statusIndicator.style.display = "block";
+        //     }
+        // });
+    // <script>
+        // Copyright 2023 The MediaPipe Authors.
+        // Licensed under the Apache License, Version 2.0 (the "License");
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const videoElement = document.getElementById('videoElement');
+        const processedElement = document.getElementById('processedElement');
+        const canvasContext = processedElement.getContext('2d');
+        const statusIndicator = document.getElementById('statusIndicator');
+        
+        // Korean labels dictionary
+        const koreanLabels = {
+            "cat": "고양이", "dog": "강아지", "person": "사람",
+            "car": "자동차", "book": "책", "bottle": "병", "cup": "컵"
+        };
+
+        let objectDetector;
+        let lastDetectionTime = 0;
+        const detectionInterval = 300; // ms between detections
+
+        // Initialize the object detector
+        async function initializeObjectDetector() {
+            statusIndicator.textContent = 'Loading model...';
+            statusIndicator.style.display = 'block';
+            
+            try {
+            const vision = await FilesetResolver.forVisionTasks(
+                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+            );
+            
+            objectDetector = await ObjectDetector.createFromOptions(vision, {
+                baseOptions: {
+                modelAssetPath: "https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/float16/latest/efficientdet_lite0.tflite",
+                delegate: "GPU"
+                },
+                scoreThreshold: 0.5,
+                runningMode: "VIDEO",
+                maxResults: 5
+            });
+            
+            statusIndicator.style.display = 'none';
+            return true;
+            } catch (error) {
+            console.error("Failed to initialize detector:", error);
+            statusIndicator.textContent = 'Model failed to load';
+            return false;
+            }
+        }
+
+        // Process each video frame
+        async function processFrame(timestamp) {
+            if (!objectDetector) return;
+            
+            requestAnimationFrame(processFrame);
+            
+            // Throttle processing
+            if (timestamp - lastDetectionTime < detectionInterval) return;
+            lastDetectionTime = timestamp;
+            
+            if (videoElement.readyState < videoElement.HAVE_ENOUGH_DATA) return;
+            
+            try {
+            const detections = await objectDetector.detectForVideo(videoElement, timestamp);
+            drawDetections(detections);
+            } catch (error) {
+            console.error("Detection error:", error);
+            }
+        }
+
+        // Draw bounding boxes and labels
+        function drawDetections(detections) {
+            canvasContext.clearRect(0, 0, processedElement.width, processedElement.height);
+            
+            if (!detections || !detections.detections) return;
+            
+            for (const detection of detections.detections) {
+            if (!detection.boundingBox || !detection.categories[0]) continue;
+            
+            const box = detection.boundingBox;
+            const category = detection.categories[0];
+            const score = category.score;
+            const label = category.categoryName;
+            const koreanLabel = koreanLabels[label] || label;
+            
+            // Draw bounding box
+            canvasContext.strokeStyle = "#00FF00";
+            canvasContext.lineWidth = 4;
+            canvasContext.strokeRect(box.originX, box.originY, box.width, box.height);
+            
+            // Draw label background
+            canvasContext.fillStyle = "#00FF00";
+            const textWidth = canvasContext.measureText(koreanLabel).width;
+            canvasContext.fillRect(
+                box.originX,
+                box.originY - 20,
+                textWidth + 10,
+                20
+            );
+            
+            // Draw text
+            canvasContext.fillStyle = "#000000";
+            canvasContext.font = "16px Arial";
+            canvasContext.fillText(
+                koreanLabel, 
+                box.originX + 5, 
+                box.originY - 5
+            );
+            }
+        }
+
+        // Initialize camera with user permission
+        async function initCamera() {
+            try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "environment" },
+                audio: false
+            });
+            
+            videoElement.srcObject = stream;
+            videoElement.onloadedmetadata = () => {
+                processedElement.width = videoElement.videoWidth;
+                processedElement.height = videoElement.videoHeight;
+                requestAnimationFrame(processFrame);
+            };
+            
+            } catch (err) {
+            console.error("Camera error:", err);
+            statusIndicator.textContent = "Please enable camera access";
+            statusIndicator.style.display = "block";
+            }
+        }
+
+        // Start everything
+        async function startApp() {
+            if (!await initializeObjectDetector()) return;
+            await initCamera();
+        }
+
+        // Add start button
+        const startButton = document.createElement('button');
+        startButton.className = 'mdc-button mdc-button--raised';
+        startButton.innerHTML = `
+            <span class="mdc-button__ripple"></span>
+            <span class="mdc-button__label">START DETECTION</span>
+        `;
+        startButton.style.position = 'fixed';
+        startButton.style.bottom = '20px';
+        startButton.style.left = '50%';
+        startButton.style.transform = 'translateX(-50%)';
+        startButton.style.zIndex = '100';
+        document.body.appendChild(startButton);
+        
+        startButton.addEventListener('click', startApp);
+        });
+        
+    </script>
+</body>
+</html> -->
