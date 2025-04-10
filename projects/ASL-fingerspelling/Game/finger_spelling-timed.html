@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL Fingerspelling Practice Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .letter-box {
+            width: 100px;  /* Increased from 70px */
+            height: 130px; /* Increased from 90px */
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px;  /* Slightly increased padding */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            overflow: hidden;
+            position: relative; /* For positioning feedback elements */
+        }
+        
+        .dark .letter-box {
+            background-color: #374151;
+            color: #f3f4f6;
+        }
+        
+        .letter-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .input-field {
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+        
+        .correct {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .dark .correct {
+            background-color: #064e3b;
+            color: #d1fae5;
+        }
+        
+        .incorrect {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+        
+        .dark .incorrect {
+            background-color: #7f1d1d;
+            color: #fee2e2;
+        }
+
+        /* Add a style for showing the correct letter */
+        .incorrect-feedback {
+            position: absolute;
+            bottom: 2px;
+            right: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 1px 5px;
+            border-radius: 4px;
+            border: 1px solid #b91c1c;
+        }
+        
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .timer {
+            font-family: monospace;
+        }
+        
+        .theme-toggle {
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            transform: rotate(30deg);
+        }
+
+        #letters-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 480px) {
+            .letter-box {
+                width: 80px;   /* Increased from 60px */
+                height: 110px; /* Increased from 80px */
+            }
+        }
+
+        .active-difficulty {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .dark .active-difficulty {
+            background-color: #1e3a8a;
+            color: #dbeafe;
+        }
+
+        .letter-box img {
+            max-width: 100%;
+            max-height: 100%;
+            filter: var(--img-filter, none);
+            transform: scale(1.2); /* Make images appear 20% larger */
+        }
+
+        .dark .letter-box img {
+            --img-filter: brightness(0.9) contrast(1.1);
+        }
+
+        body.dark {
+            background-color: #111827;
+            color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-4 transition-colors duration-300">
+    <div class="w-full max-w-md mx-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">ASL Fingerspelling</h1>
+            <button id="theme-toggle" class="theme-toggle p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path id="theme-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+        
+        <div id="game-container" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-colors duration-300">
+            <!-- Game Screen -->
+            <div id="game-screen" class="space-y-6">
+                <div class="flex justify-between items-center">
+                    <div class="text-lg font-medium text-gray-700 dark:text-gray-300">Score: <span id="score" class="font-bold">0</span></div>
+                    <div class="timer bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-lg text-gray-800 dark:text-gray-200 font-bold" id="timer">02:00</div>
+                </div>
+                
+                <div class="flex justify-center mb-4">
+                    <div class="inline-flex rounded-md shadow-sm" role="group">
+                        <button id="all-difficulty" class="px-3 py-2 text-xs font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white active-difficulty">
+                            All
+                        </button>
+                        <button id="easy-difficulty" class="px-3 py-2 text-xs font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+                            Easy
+                        </button>
+                        <button id="medium-difficulty" class="px-3 py-2 text-xs font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+                            Medium
+                        </button>
+                        <button id="hard-difficulty" class="px-3 py-2 text-xs font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+                            Hard
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="letters-container" class="flex justify-center gap-3 mb-6"></div>
+                
+                <div class="relative">
+                    <input type="text" id="user-input" class="input-field w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200" placeholder="Type the word..." autocomplete="off" autocapitalize="off">
+                    <button id="submit-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg transition">Submit</button>
+                </div>
+                
+                <div id="feedback" class="text-center h-6"></div>
+            </div>
+            
+            <!-- Results Screen (initially hidden) -->
+            <div id="results-screen" class="hidden text-center space-y-6">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Game Over!</h2>
+                
+                <div class="bg-gray-100 dark:bg-gray-700 rounded-xl p-6 space-y-4 text-gray-800 dark:text-gray-200">
+                    <div class="flex justify-between">
+                        <span>Total Correct:</span>
+                        <span id="total-correct" class="font-bold">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Words Per Minute:</span>
+                        <span id="wpm" class="font-bold">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Accuracy:</span>
+                        <span id="accuracy" class="font-bold">0%</span>
+                    </div>
+                </div>
+                
+                <button id="play-again-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-105">
+                    Play Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        const wordsByDifficulty = {
+            easy: [
+                "cat", "dog", "sun", "hat", "book", "fish", "tree", "bird", "rain", "star",
+                "cake", "ball", "hand", "moon", "duck", "frog", "home", "jump", "kite", "lion"
+            ],
+            medium: [
+                "apple", "banana", "water", "happy", "smile", "laugh", "beach", "cloud", "dream", "friend",
+                "garden", "light", "magic", "peace", "robot", "tiger", "voice", "watch", "angel", "dolphin"
+            ],
+            hard: [
+                "umbrella", "elephant", "butterfly", "chocolate", "hamburger", "internet", "kangaroo", "mountain",
+                "penguin", "rainbow", "sandwich", "telephone", "vegetable", "journey", "necklace", "octopus",
+                "unicorn", "library", "window", "forest"
+            ]
+        };
+
+        // Combine all words for random selection
+        const wordList = [
+            ...wordsByDifficulty.easy,
+            ...wordsByDifficulty.medium,
+            ...wordsByDifficulty.hard
+        ];
+        
+        let currentWord = "";
+        let score = 0;
+        let totalAttempts = 0;
+        let correctAttempts = 0;
+        let timeLeft = 120; // 2 minutes in seconds
+        let timerInterval;
+        let gameActive = false;
+        let currentDifficulty = "all"; // Default: all difficulties
+        
+        // DOM elements
+        const gameScreen = document.getElementById('game-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const lettersContainer = document.getElementById('letters-container');
+        const userInput = document.getElementById('user-input');
+        const submitBtn = document.getElementById('submit-btn');
+        const feedback = document.getElementById('feedback');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const totalCorrectDisplay = document.getElementById('total-correct');
+        const wpmDisplay = document.getElementById('wpm');
+        const accuracyDisplay = document.getElementById('accuracy');
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const html = document.documentElement;
+        
+        // ASL letter representations (using images from the images folder)
+        const aslLetters = {
+            'a': '<img src="../images/A.png" alt="ASL A" class="w-full h-full object-contain">',
+            'b': '<img src="../images/B.png" alt="ASL B" class="w-full h-full object-contain">',
+            'c': '<img src="../images/C.png" alt="ASL C" class="w-full h-full object-contain">',
+            'd': '<img src="../images/D.png" alt="ASL D" class="w-full h-full object-contain">',
+            'e': '<img src="../images/E.png" alt="ASL E" class="w-full h-full object-contain">',
+            'f': '<img src="../images/F.png" alt="ASL F" class="w-full h-full object-contain">',
+            'g': '<img src="../images/G.png" alt="ASL G" class="w-full h-full object-contain">',
+            'h': '<img src="../images/H.png" alt="ASL H" class="w-full h-full object-contain">',
+            'i': '<img src="../images/I.png" alt="ASL I" class="w-full h-full object-contain">',
+            'j': '<img src="../images/J.png" alt="ASL J" class="w-full h-full object-contain">',
+            'k': '<img src="../images/K.png" alt="ASL K" class="w-full h-full object-contain">',
+            'l': '<img src="../images/L.png" alt="ASL L" class="w-full h-full object-contain">',
+            'm': '<img src="../images/M.png" alt="ASL M" class="w-full h-full object-contain">',
+            'n': '<img src="../images/N.png" alt="ASL N" class="w-full h-full object-contain">',
+            'o': '<img src="../images/O.png" alt="ASL O" class="w-full h-full object-contain">',
+            'p': '<img src="../images/P.png" alt="ASL P" class="w-full h-full object-contain">',
+            'q': '<img src="../images/Q.png" alt="ASL Q" class="w-full h-full object-contain">',
+            'r': '<img src="../images/R.png" alt="ASL R" class="w-full h-full object-contain">',
+            's': '<img src="../images/S.png" alt="ASL S" class="w-full h-full object-contain">',
+            't': '<img src="../images/T.png" alt="ASL T" class="w-full h-full object-contain">',
+            'u': '<img src="../images/U.png" alt="ASL U" class="w-full h-full object-contain">',
+            'v': '<img src="../images/V.png" alt="ASL V" class="w-full h-full object-contain">',
+            'w': '<img src="../images/W.png" alt="ASL W" class="w-full h-full object-contain">',
+            'x': '<img src="../images/X.png" alt="ASL X" class="w-full h-full object-contain">',
+            'y': '<img src="../images/Y.png" alt="ASL Y" class="w-full h-full object-contain">',
+            'z': '<img src="../images/Z.png" alt="ASL Z" class="w-full h-full object-contain">'
+        };
+        
+        // Check for saved theme preference or use system preference
+        function checkThemePreference() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                updateThemeIcon('dark');
+            } else if (savedTheme === 'light') {
+                document.body.classList.remove('dark');
+                updateThemeIcon('light');
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.body.classList.add('dark');
+                updateThemeIcon('dark');
+            }
+        }
+        
+        // Toggle between dark and light theme
+        function toggleTheme() {
+            if (document.body.classList.contains('dark')) {
+                document.body.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                updateThemeIcon('light');
+            } else {
+                document.body.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                updateThemeIcon('dark');
+            }
+        }
+        
+        // Update the theme toggle icon
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.setAttribute('d', 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z');
+            } else {
+                themeIcon.setAttribute('d', 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z');
+            }
+        }
+        
+        // Set difficulty and update active button
+        function setDifficulty(difficulty) {
+            currentDifficulty = difficulty;
+            
+            // Update active button status
+            document.querySelectorAll('[id$="-difficulty"]').forEach(btn => {
+                btn.classList.remove('active-difficulty');
+            });
+            
+            document.getElementById(`${difficulty}-difficulty`).classList.add('active-difficulty');
+            
+            // Generate new word with selected difficulty
+            generateNewWord();
+        }
+        
+        // Initialize game
+        function initGame() {
+            score = 0;
+            totalAttempts = 0;
+            correctAttempts = 0;
+            timeLeft = 120;
+            gameActive = true;
+            
+            scoreDisplay.textContent = score;
+            updateTimerDisplay();
+            
+            gameScreen.classList.remove('hidden');
+            resultsScreen.classList.add('hidden');
+            
+            userInput.value = '';
+            userInput.focus();
+            
+            generateNewWord();
+            startTimer();
+        }
+        
+        // Start the game timer
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+        
+        // Update the timer display
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Add visual feedback when time is running low
+            if (timeLeft <= 30) {
+                timerDisplay.classList.add('text-red-500', 'pulse');
+            } else {
+                timerDisplay.classList.remove('text-red-500', 'pulse');
+            }
+        }
+        
+        // Generate a new random word based on current difficulty
+        function generateNewWord() {
+            let wordPool;
+            
+            switch(currentDifficulty) {
+                case "easy":
+                    wordPool = wordsByDifficulty.easy;
+                    break;
+                case "medium":
+                    wordPool = wordsByDifficulty.medium;
+                    break;
+                case "hard":
+                    wordPool = wordsByDifficulty.hard;
+                    break;
+                default:
+                    wordPool = wordList;
+            }
+            
+            currentWord = wordPool[Math.floor(Math.random() * wordPool.length)];
+            lettersContainer.innerHTML = '';
+            
+            for (let letter of currentWord) {
+                const letterBox = document.createElement('div');
+                letterBox.className = 'letter-box';
+                letterBox.innerHTML = aslLetters[letter.toLowerCase()] || '?';
+                lettersContainer.appendChild(letterBox);
+            }
+        }
+        
+        // Check the user's answer
+        function checkAnswer() {
+            if (!gameActive) return;
+            
+            const userAnswer = userInput.value.trim().toLowerCase();
+            totalAttempts++;
+            
+            if (userAnswer === currentWord.toLowerCase()) {
+                // Correct answer
+                score += currentWord.length;
+                correctAttempts++;
+                scoreDisplay.textContent = score;
+                showFeedback('Correct!', true);
+                
+                // Visual feedback
+                const letterBoxes = document.querySelectorAll('.letter-box');
+                letterBoxes.forEach(box => {
+                    box.classList.add('correct');
+                    setTimeout(() => box.classList.remove('correct'), 1000);
+                });
+            } else {
+                // Incorrect answer
+                showFeedback('Incorrect. Try again!', false);
+                
+                // Visual feedback for incorrect answers
+                const letterBoxes = document.querySelectorAll('.letter-box');
+                letterBoxes.forEach((box, index) => {
+                    box.classList.add('incorrect');
+                    
+                    // Show correct letter feedback
+                    const feedbackElement = document.createElement('div');
+                    feedbackElement.className = 'incorrect-feedback';
+                    feedbackElement.textContent = currentWord[index].toUpperCase();
+                    box.appendChild(feedbackElement);
+                    
+                    // Remove visual feedback after delay
+                    setTimeout(() => {
+                        box.classList.remove('incorrect');
+                        if (feedbackElement.parentNode === box) {
+                            box.removeChild(feedbackElement);
+                        }
+                    }, 2000); // Increased to 2 seconds for better visibility
+                });
+            }
+            
+            // Prepare for next word after delay
+            userInput.value = '';
+            setTimeout(generateNewWord, 2000); // Increased to 2 seconds to match feedback duration
+        }
+        
+        // Show feedback message
+        function showFeedback(message, isCorrect) {
+            feedback.textContent = message;
+            feedback.className = 'text-center h-6 font-medium ' + (isCorrect ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400');
+            
+            // Clear feedback after delay
+            setTimeout(() => {
+                feedback.textContent = '';
+                feedback.className = 'text-center h-6';
+            }, 1500);
+        }
+        
+        // End the game and show results
+        function endGame() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            
+            // Calculate metrics
+            const wpm = Math.round((correctAttempts / 2) * 10) / 10; // 2 minutes game
+            const accuracy = totalAttempts > 0 ? Math.round((correctAttempts / totalAttempts) * 100) : 0;
+            
+            // Update results screen
+            totalCorrectDisplay.textContent = correctAttempts;
+            wpmDisplay.textContent = wpm;
+            accuracyDisplay.textContent = `${accuracy}%`;
+            
+            // Switch screens
+            gameScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+        }
+        
+        // Event listeners
+        submitBtn.addEventListener('click', checkAnswer);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+        playAgainBtn.addEventListener('click', initGame);
+        themeToggle.addEventListener('click', toggleTheme);
+        
+        // Add event listeners for difficulty buttons
+        document.getElementById('all-difficulty').addEventListener('click', () => setDifficulty('all'));
+        document.getElementById('easy-difficulty').addEventListener('click', () => setDifficulty('easy'));
+        document.getElementById('medium-difficulty').addEventListener('click', () => setDifficulty('medium'));
+        document.getElementById('hard-difficulty').addEventListener('click', () => setDifficulty('hard'));
+        
+        // Initialize theme and game when page loads
+        window.addEventListener('load', () => {
+            checkThemePreference();
+            initGame();
+        });
+    </script>
+</body>
+</html>
