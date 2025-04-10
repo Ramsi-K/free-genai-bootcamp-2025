@@ -221,6 +221,11 @@
                     });
                     
                     modelProgress.style.width = '100%';
+                    
+                    // Add slight delay to show 100% progress before hiding
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    
+                    loadingOverlay.classList.add('hidden');
                     return true;
                 } catch (error) {
                     console.error("Failed to load COCO-SSD:", error);
