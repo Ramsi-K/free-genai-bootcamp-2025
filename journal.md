@@ -18,9 +18,27 @@
 
 ## Week 9
 
+### Day 61: April 10, 2025
+
+**T-minus 2 days to submission (April 12)**
+
+I built the Korean Object Detection App using TensorFlow.js and the COCO-SSD model. I wrote the index.html, configured camera input and canvas overlay, and ensured full mobile compatibility, including iPhone Safari. I spent a couple of hours on MediaPipe but had to abandon it due to incompatibility issues and then rebuilt the detection pipeline with COCO-SSD, successfully overlaying bounding boxes and Korean vocabulary labels in real time with no backend. I containerized the project using Docker and deployed it with ngrok for HTTPS access, testing on laptop and mobile devices. I wrote a clean README describing the tech stack, mobile optimization strategies, and language learning purpose of the app.
+
+In parallel, I began and refined the ASL Fingerspelling Game. I manually cropped each letter image for clean spacing and visual consistency. I rewrote the frontend logic to dynamically display letter images for word-matching gameplay, designed for real-time interaction. I implemented logic to match predictions with target letters and structured the game loop for responsive feedback.
+
+I also finalized the HTML interface for the ASL detection app using the TanmayNanda/ishara model. I tried to send it to the Hugging Face inference API, and receive the predicted letter but this isn't working for me very well. I want to use the TanmayNanda/ishara model off of Hugging Face or Media Pipe, but Mediapipe already gave me a lot of issues and HuggingFace models are huge and not downloading properly via Docker. 
+
+While I was waiting for Docker images to build (over and over again), I revisited the Career section of the bootcamp. I finished watching the lecture videos and setup my online profile on Torc. I designed a portfolio website and will probably host it on Github Gists. I still have to revamp my resume and update my LinkedIn. I saw  Andrew's post on LinkedIn about -- 'I would consider OpenCoursing my GenAI Bootcamp Curriculum if CompSci Universities and Colleges wanted to adopt it including Teacher's Guide or Instructor's Manual, Grading Rubric and other material.' and I think my tagline should be 'very open to the idea of getting paid to play with AI', or maybe I'm just sleep deprived.
+
+(I don't like Docker)
+
+I also designed a GenAI-powered Korean Sentence Calligraphy App. The user inputs a word, and an LLM generates a simple Korean sentence (3–5 words max). The sentence is rendered in Hangul calligraphy using a custom font system with a dropdown selector. I implemented webcam upload to capture the user’s handwritten version, and selected LLaVA-CLI-with-multiple-images to compare the uploaded handwriting against the generated sample. I had to rework this a few times because LLaVA is being difficult. This is incomplete because I can't get LLaVA to return visual comparison. I might switch to SSIM or something and just do %match based return. I will give this a few more hours.
+
+I also began development planning for the Norebang karaoke app. The app will support song lookup, synchronized lyrics, and optional instrumental playback. I explored several GitHub repositories related to NomadKaraoke as possible foundations and generated HTML for the “Sing with Andrew” mode. I also began researching Korean speech models for TTS and lyric alignment.
+
 ### Day 61: April 9, 2025
 
-**T-minus 4 days to submission (April 12)**
+**T-minus 3 days to submission (April 12)**
 
 _Listening Learning App Focus_
 
