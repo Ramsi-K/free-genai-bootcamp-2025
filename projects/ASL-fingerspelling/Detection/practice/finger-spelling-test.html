@@ -3,11 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASL Fingerspelling Detection - Browser Mode</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.1.0/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>ASL Fingerspelling Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #3578e5;
+            --secondary: #4285f4;
+            --accent: #34a853;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --success: #34a853;
+            --warning: #fbbc05;
+            --danger: #ea4335;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 1.8rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        
+        nav a:hover {
+            opacity: 0.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .main-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--dark);
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 0.5rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-container canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--gray);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
         .letter-box {
             width: 120px;
             height: 160px;
@@ -22,20 +210,15 @@
             margin: 1rem auto;
         }
         
-        .dark .letter-box {
-            background-color: #374151;
-            color: #f3f4f6;
-        }
-        
         .correct {
-            background-color: #d1fae5;
-            color: #065f46;
+            background-color: rgba(52, 168, 83, 0.2);
+            color: var(--success);
             animation: pulse-green 1s;
         }
         
         .incorrect {
-            background-color: #fee2e2;
-            color: #b91c1c;
+            background-color: rgba(234, 67, 53, 0.2);
+            color: var(--danger);
             animation: shake 0.5s;
         }
         
@@ -47,6 +230,61 @@
             border-radius: 50%;
             border-top-color: #fff;
             animation: spin 1s ease-in-out infinite;
+        }
+        
+        .confidence-bar {
+            height: 8px;
+            background-color: var(--light);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .feedback {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .feedback.success {
+            background-color: rgba(52, 168, 83, 0.2);
+            color: var(--success);
+            display: block;
+        }
+        
+        .feedback.error {
+            background-color: rgba(234, 67, 53, 0.2);
+            color: var(--danger);
+            display: block;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-item.correct {
+            color: var(--success);
+        }
+        
+        .history-item.incorrect {
+            color: var(--danger);
         }
         
         @keyframes spin {
@@ -74,501 +312,171 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-4">
-    <div class="container mx-auto max-w-4xl">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800">ASL Fingerspelling Detection</h1>
-            <div>
-                <button id="theme-toggle" class="p-2 rounded-full bg-gray-200 text-gray-800 focus:outline-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path id="theme-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                </button>
-            </div>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-hands-helping"></i>
+            <h1>ASL Fingerspelling</h1>
         </div>
+        <nav>
+            <ul>
+                <li><a href="finger_spelling-practice.html#learn" id="learn-link">Learn</a></li>
+                <li><a href="finger-spelling-test.html" id="test-link">Test</a></li>
+                <li><a href="finger_spelling-practice.html#about" id="about-link">About ASL</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <h1 class="main-title">ASL Fingerspelling Test</h1>
         
-        <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-            <h2 class="text-2xl font-semibold mb-4 text-gray-700">Practice Mode</h2>
+        <div class="card">
+            <h2 class="card-title">Test Your ASL Knowledge</h2>
+            <p style="margin-bottom: 1rem;">Show your ASL fingerspelling skills and see how accurately the model can recognize your signs.</p>
             
-            <p class="mb-4 text-gray-600">This version uses MediaPipe Hand Landmark detection and a simple CNN model for ASL recognition directly in the browser.</p>
-            
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="space-y-4">
-                    <div class="relative bg-black rounded-lg overflow-hidden" style="height: 300px;">
-                        <video id="webcam" autoplay playsinline class="absolute inset-0 w-full h-full object-cover"></video>
-                        <canvas id="output-canvas" class="absolute inset-0 w-full h-full object-cover"></canvas>
-                        <div id="loading-indicator" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 text-white">
-                            <div class="text-center">
-                                <div class="loading-spinner mb-2"></div>
-                                <p>Loading model...</p>
-                            </div>
+            <div class="grid">
+                <div class="card" style="margin: 0;">
+                    <h3 class="card-title" style="font-size: 1.2rem;">Camera Feed</h3>
+                    <div class="video-container" style="height: 300px; padding-bottom: 0;">
+                        <video id="webcam" autoplay playsinline></video>
+                        <canvas id="output-canvas"></canvas>
+                        <div id="loading-indicator" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); color: white; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                            <div class="loading-spinner"></div>
+                            <p style="margin-top: 1rem;">Loading...</p>
                         </div>
                     </div>
                     
-                    <div class="flex space-x-2">
-                        <button id="start-btn" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
-                            </svg>
-                            Start Camera
+                    <div class="controls">
+                        <button id="start-camera" class="btn btn-primary">
+                            <i class="fas fa-camera"></i> Start Camera
                         </button>
-                        <button id="stop-btn" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md flex items-center justify-center" disabled>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd" />
-                            </svg>
-                            Stop Camera
+                        <button id="stop-camera" class="btn btn-secondary" disabled>
+                            <i class="fas fa-stop"></i> Stop Camera
+                        </button>
+                        <button id="take-photo" class="btn btn-success" disabled>
+                            <i class="fas fa-camera"></i> Check My Sign
                         </button>
                     </div>
                 </div>
                 
-                <div class="space-y-4">
-                    <div>
-                        <h3 class="font-medium text-gray-700 mb-2">Your Letter to Sign:</h3>
-                        <div id="target-letter" class="letter-box">A</div>
-                        <div class="flex justify-center mt-4">
-                            <button id="next-letter-btn" class="bg-green-500 hover:bg-green-600 text-white py-2 px-6 rounded-md flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                                    <path fill-rule="evenodd" d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                                </svg>
-                                Next Letter
-                            </button>
-                        </div>
+                <div class="card" style="margin: 0;">
+                    <h3 class="card-title" style="font-size: 1.2rem;">Target Letter</h3>
+                    <div id="target-letter" class="letter-box">A</div>
+                    
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <button id="next-letter" class="btn btn-primary">
+                            <i class="fas fa-arrow-right"></i> Next Letter
+                        </button>
                     </div>
                     
-                    <div>
-                        <h3 class="font-medium text-gray-700 mb-2">Real-time Detection:</h3>
-                        <div class="bg-gray-100 p-4 rounded-md">
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-600">Detected Letter:</span>
-                                <span id="detected-letter" class="font-bold text-xl">-</span>
-                            </div>
-                            <div id="confidence-bars" class="mt-3 space-y-2">
-                                <!-- Will be filled dynamically -->
-                            </div>
-                        </div>
+                    <h3 style="margin-top: 1.5rem; font-size: 1.2rem;">Detection Result</h3>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin: 1rem 0;">
+                        <span>Detected Letter:</span>
+                        <span id="detected-letter" style="font-size: 1.5rem; font-weight: bold;">-</span>
                     </div>
                     
-                    <div id="feedback" class="hidden rounded-md p-3 text-center font-medium"></div>
+                    <div id="confidence-container">
+                        <!-- Confidence bars will be added dynamically -->
+                    </div>
+                    
+                    <div id="feedback" class="feedback"></div>
                 </div>
             </div>
         </div>
         
-        <div class="bg-white shadow-md rounded-lg p-6">
-            <h2 class="text-2xl font-semibold mb-4 text-gray-700">Recent Practice History</h2>
-            <div id="history-container" class="divide-y divide-gray-200">
-                <p class="text-gray-500 py-4 text-center italic">No practice history yet.</p>
+        <div class="card">
+            <h2 class="card-title">Practice History</h2>
+            <div id="history-list">
+                <p style="text-align: center; color: var(--gray); font-style: italic;">No practice history yet.</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Constants for ASL
+        // Constants and variables
         const ASL_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         let currentLetterIndex = Math.floor(Math.random() * ASL_LETTERS.length);
         let historyItems = [];
-        let isProcessing = false;
-        let handLandmarks = null;
+        let isProcessingAPIRequest = false;
         let stream = null;
-        let animationId = null;
+        const OLLAMA_API_URL = "http://localhost:11434/api/generate";
+        const MODEL_NAME = "ishara";
         
         // DOM elements
-        const targetLetterEl = document.getElementById('target-letter');
-        const detectedLetterEl = document.getElementById('detected-letter');
-        const confidenceBarsEl = document.getElementById('confidence-bars');
-        const feedbackEl = document.getElementById('feedback');
-        const historyContainerEl = document.getElementById('history-container');
-        const loadingIndicatorEl = document.getElementById('loading-indicator');
-        const startBtn = document.getElementById('start-btn');
-        const stopBtn = document.getElementById('stop-btn');
-        const nextLetterBtn = document.getElementById('next-letter-btn');
         const webcamEl = document.getElementById('webcam');
         const outputCanvasEl = document.getElementById('output-canvas');
         const ctx = outputCanvasEl.getContext('2d');
+        const startCameraBtn = document.getElementById('start-camera');
+        const stopCameraBtn = document.getElementById('stop-camera');
+        const takePhotoBtn = document.getElementById('take-photo');
+        const nextLetterBtn = document.getElementById('next-letter');
+        const targetLetterEl = document.getElementById('target-letter');
+        const detectedLetterEl = document.getElementById('detected-letter');
+        const confidenceContainerEl = document.getElementById('confidence-container');
+        const feedbackEl = document.getElementById('feedback');
+        const historyListEl = document.getElementById('history-list');
+        const loadingIndicatorEl = document.getElementById('loading-indicator');
         
-        // Update the target letter
-        function updateTargetLetter() {
-            targetLetterEl.textContent = ASL_LETTERS[currentLetterIndex];
-            targetLetterEl.classList.remove('correct', 'incorrect');
-        }
-        
-        // Initialize MediaPipe Hands
-        let hands;
-        let model;
-        
-        async function setupMediaPipe() {
-            hands = new Hands({
-                locateFile: (file) => {
-                    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-                }
-            });
-            
-            hands.setOptions({
-                maxNumHands: 1,
-                modelComplexity: 1,
-                minDetectionConfidence: 0.5,
-                minTrackingConfidence: 0.5
-            });
-            
-            hands.onResults(onMediaPipeResults);
-            
-            // Load TensorFlow model
-            try {
-                // We'll use a simplified model architecture here
-                model = await createModel();
-                console.log("Model created successfully");
-            } catch (error) {
-                console.error("Error loading model:", error);
-                alert("Failed to load the hand recognition model. Please refresh and try again.");
-            }
-            
-            loadingIndicatorEl.style.display = 'none';
-        }
-        
-        // Create a simplified model for demonstration
-        async function createModel() {
-            // This is a placeholder model that will simulate ASL recognition
-            // In a real implementation, we'd load a pre-trained model or use a more sophisticated approach
-            const model = tf.sequential();
-            
-            // Input shape matches flattened hand landmarks: 21 points x 3 coordinates (x, y, z)
-            model.add(tf.layers.dense({ 
-                inputShape: [63], 
-                units: 128, 
-                activation: 'relu'
-            }));
-            model.add(tf.layers.dropout({ rate: 0.2 }));
-            model.add(tf.layers.dense({ units: 64, activation: 'relu' }));
-            model.add(tf.layers.dense({ units: 26, activation: 'softmax' }));
-            
-            model.compile({ 
-                optimizer: 'adam', 
-                loss: 'categoricalCrossentropy', 
-                metrics: ['accuracy']
-            });
-            
-            return model;
-        }
-        
-        // Process MediaPipe results
-        function onMediaPipeResults(results) {
-            ctx.clearRect(0, 0, outputCanvasEl.width, outputCanvasEl.height);
-            ctx.drawImage(webcamEl, 0, 0, outputCanvasEl.width, outputCanvasEl.height);
-            
-            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-                // We're only using the first hand for simplicity
-                handLandmarks = results.multiHandLandmarks[0];
-                
-                // Draw hand landmarks
-                drawLandmarks(ctx, handLandmarks);
-                
-                if (!isProcessing) {
-                    isProcessing = true;
-                    
-                    // Process hand landmarks for prediction
-                    predictFromLandmarks(handLandmarks)
-                        .then(() => {
-                            isProcessing = false;
-                        })
-                        .catch(error => {
-                            console.error("Prediction error:", error);
-                            isProcessing = false;
-                        });
-                }
-            } else {
-                handLandmarks = null;
-                detectedLetterEl.textContent = "-";
-                confidenceBarsEl.innerHTML = "";
-            }
-        }
-        
-        // Draw hand landmarks on the canvas
-        function drawLandmarks(ctx, landmarks) {
-            // Draw connections between landmarks
-            ctx.strokeStyle = '#00FF00';
-            ctx.lineWidth = 2;
-            
-            // Draw each landmark as a circle
-            ctx.fillStyle = '#FF0000';
-            for (let i = 0; i < landmarks.length; i++) {
-                const landmark = landmarks[i];
-                const x = landmark.x * outputCanvasEl.width;
-                const y = landmark.y * outputCanvasEl.height;
-                
-                ctx.beginPath();
-                ctx.arc(x, y, 5, 0, 2 * Math.PI);
-                ctx.fill();
-            }
-            
-            // Connect specific landmarks to create a hand skeleton
-            const connections = [
-                [0, 1], [1, 2], [2, 3], [3, 4], // Thumb
-                [0, 5], [5, 6], [6, 7], [7, 8], // Index finger
-                [0, 9], [9, 10], [10, 11], [11, 12], // Middle finger
-                [0, 13], [13, 14], [14, 15], [15, 16], // Ring finger
-                [0, 17], [17, 18], [18, 19], [19, 20], // Pinky
-                [5, 9], [9, 13], [13, 17] // Palm
-            ];
-            
-            for (const [i, j] of connections) {
-                const start = landmarks[i];
-                const end = landmarks[j];
-                
-                ctx.beginPath();
-                ctx.moveTo(start.x * outputCanvasEl.width, start.y * outputCanvasEl.height);
-                ctx.lineTo(end.x * outputCanvasEl.width, end.y * outputCanvasEl.height);
-                ctx.stroke();
-            }
-        }
-        
-        // Predict ASL letter from landmarks
-        async function predictFromLandmarks(landmarks) {
-            // Flatten landmarks into a 1D array: 21 landmarks x 3 coordinates
-            const flattenedLandmarks = [];
-            for (const landmark of landmarks) {
-                flattenedLandmarks.push(landmark.x, landmark.y, landmark.z);
-            }
-            
-            // Create tensor and normalize
-            const input = tf.tensor2d([flattenedLandmarks]);
-            
-            // For demonstration purposes, we'll use a simple simulation of predictions
-            // In a real application, we'd use the actual model prediction
-            const simulatedPrediction = simulateASLPrediction(flattenedLandmarks);
-            
-            // Update UI with predicted letter
-            updatePredictionUI(simulatedPrediction);
-            
-            // Check if prediction matches target
-            const predictedLetter = ASL_LETTERS[simulatedPrediction.indexOf(Math.max(...simulatedPrediction))];
-            const targetLetter = ASL_LETTERS[currentLetterIndex];
-            
-            if (predictedLetter === targetLetter && simulatedPrediction[simulatedPrediction.indexOf(Math.max(...simulatedPrediction))] > 0.7) {
-                // Correct prediction with high confidence
-                targetLetterEl.classList.add('correct');
-                feedbackEl.textContent = "Correct! Well done!";
-                feedbackEl.className = "bg-green-100 text-green-800 rounded-md p-3 text-center font-medium";
-                feedbackEl.classList.remove('hidden');
-                
-                // Add to history
-                addToHistory(targetLetter, predictedLetter, true);
-                
-                // Automatically move to next letter after a delay
-                setTimeout(() => {
-                    nextLetter();
-                }, 1500);
-            }
-        }
-        
-        // Simulate ASL predictions 
-        // This is just for demonstration - in a real app, we'd use the actual model output
-        function simulateASLPrediction(landmarkArray) {
-            // Calculate some features from the landmarks
-            const thumbTip = { x: landmarkArray[3*4], y: landmarkArray[3*4+1] };
-            const indexTip = { x: landmarkArray[3*8], y: landmarkArray[3*8+1] };
-            const middleTip = { x: landmarkArray[3*12], y: landmarkArray[3*12+1] };
-            const ringTip = { x: landmarkArray[3*16], y: landmarkArray[3*16+1] };
-            const pinkyTip = { x: landmarkArray[3*20], y: landmarkArray[3*20+1] };
-            
-            // Some very basic heuristics (extremely simplified)
-            const results = Array(26).fill(0.01);  // Small baseline probability for all letters
-            
-            // Detect if fingers are extended or not
-            const wrist = { x: landmarkArray[0], y: landmarkArray[1] };
-            const fingerExtended = [
-                (thumbTip.y < wrist.y), // Thumb
-                (indexTip.y < wrist.y - 0.1), // Index
-                (middleTip.y < wrist.y - 0.1), // Middle
-                (ringTip.y < wrist.y - 0.1),  // Ring
-                (pinkyTip.y < wrist.y - 0.1)   // Pinky
-            ];
-            
-            // Extremely simplified logic for a few letters
-            // For demonstration purposes only!
-            
-            // A: Only the thumb is extended
-            if (!fingerExtended[1] && !fingerExtended[2] && !fingerExtended[3] && !fingerExtended[4]) {
-                results[0] += 0.8; // A
-            }
-            
-            // B: All fingers extended and together
-            if (fingerExtended[1] && fingerExtended[2] && fingerExtended[3] && fingerExtended[4]) {
-                results[1] += 0.7; // B
-            }
-            
-            // C: Fingers curved in C shape
-            const distFingers = Math.sqrt(
-                Math.pow(indexTip.x - pinkyTip.x, 2) + 
-                Math.pow(indexTip.y - pinkyTip.y, 2)
-            );
-            if (distFingers < 0.1) {
-                results[2] += 0.5; // C
-            }
-            
-            // Add random noise to simulate uncertainty 
-            for (let i = 0; i < results.length; i++) {
-                results[i] += Math.random() * 0.1;
-            }
-            
-            // Add high probability for target letter (just to make the demo work without real model)
-            // In a real app, we wouldn't do this - this is just to simulate working predictions
-            if (Math.random() > 0.3) { // 70% chance to get it right
-                results[currentLetterIndex] = 0.8 + Math.random() * 0.2;
-            }
-            
-            // Normalize to sum to 1
-            const sum = results.reduce((a, b) => a + b, 0);
-            return results.map(p => p / sum);
-        }
-        
-        // Update the UI with the prediction results
-        function updatePredictionUI(prediction) {
-            // Find the highest confidence letter
-            const maxIndex = prediction.indexOf(Math.max(...prediction));
-            const predictedLetter = ASL_LETTERS[maxIndex];
-            const confidence = prediction[maxIndex];
-            
-            detectedLetterEl.textContent = predictedLetter;
-            
-            // Create sorted indices of predictions for top 3
-            const indices = prediction.map((_, i) => i)
-                .sort((a, b) => prediction[b] - prediction[a])
-                .slice(0, 3);
-                
-            // Update confidence bars
-            confidenceBarsEl.innerHTML = '';
-            
-            for (const idx of indices) {
-                const letter = ASL_LETTERS[idx];
-                const conf = Math.round(prediction[idx] * 100);
-                
-                const barContainer = document.createElement('div');
-                barContainer.className = 'flex items-center text-sm';
-                
-                barContainer.innerHTML = `
-                    <span class="w-6 font-medium">${letter}</span>
-                    <div class="flex-1 mx-2 h-2 rounded-full bg-gray-200 overflow-hidden">
-                        <div class="h-full ${idx === maxIndex ? 'bg-blue-500' : 'bg-gray-400'}" style="width: ${conf}%"></div>
-                    </div>
-                    <span class="w-8 text-right text-gray-600">${conf}%</span>
-                `;
-                
-                confidenceBarsEl.appendChild(barContainer);
-            }
-        }
-        
-        // Add a practice attempt to history
-        function addToHistory(targetLetter, detectedLetter, correct) {
-            const now = new Date();
-            const timestamp = now.toLocaleTimeString();
-            
-            historyItems.unshift({
-                targetLetter,
-                detectedLetter,
-                timestamp,
-                correct
-            });
-            
-            // Keep only the last 10 items
-            if (historyItems.length > 10) {
-                historyItems.pop();
-            }
-            
-            updateHistoryDisplay();
-        }
-        
-        // Update the history display
-        function updateHistoryDisplay() {
-            if (historyItems.length === 0) {
-                historyContainerEl.innerHTML = '<p class="text-gray-500 py-4 text-center italic">No practice history yet.</p>';
-                return;
-            }
-            
-            historyContainerEl.innerHTML = '';
-            
-            for (const item of historyItems) {
-                const historyItem = document.createElement('div');
-                historyItem.className = 'py-3 flex items-center justify-between';
-                
-                historyItem.innerHTML = `
-                    <div class="flex items-center">
-                        <span class="text-lg font-bold mr-2">${item.targetLetter}</span>
-                        <span class="text-gray-600">→</span>
-                        <span class="ml-2 ${item.correct ? 'text-green-600' : 'text-red-600'} font-bold">${item.detectedLetter}</span>
-                    </div>
-                    <div class="flex items-center">
-                        <span class="${item.correct ? 'text-green-600' : 'text-red-600'} mr-2">
-                            ${item.correct 
-                                ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>' 
-                                : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>'
-                            }
-                        </span>
-                        <span class="text-sm text-gray-500">${item.timestamp}</span>
-                    </div>
-                `;
-                
-                historyContainerEl.appendChild(historyItem);
-            }
-        }
-        
-        // Go to next letter
-        function nextLetter() {
-            feedbackEl.classList.add('hidden');
-            
-            // Choose a new random letter that's different from the current one
-            let newIndex;
-            do {
-                newIndex = Math.floor(Math.random() * ASL_LETTERS.length);
-            } while (newIndex === currentLetterIndex);
-            
-            currentLetterIndex = newIndex;
+        // Initialize the application
+        function init() {
             updateTargetLetter();
+            startCameraBtn.addEventListener('click', startCamera);
+            stopCameraBtn.addEventListener('click', stopCamera);
+            takePhotoBtn.addEventListener('click', checkLetter);
+            nextLetterBtn.addEventListener('click', nextLetter);
+            
+            // Resize the canvas to match video dimensions when video loads
+            webcamEl.addEventListener('loadedmetadata', function() {
+                outputCanvasEl.width = webcamEl.videoWidth;
+                outputCanvasEl.height = webcamEl.videoHeight;
+            });
+            
+            // Hide loading indicator after a short delay (as we don't need to load a model upfront)
+            setTimeout(() => {
+                loadingIndicatorEl.style.display = 'none';
+            }, 1000);
         }
         
         // Start camera
         async function startCamera() {
             try {
                 stream = await navigator.mediaDevices.getUserMedia({
-                    video: { 
+                    video: {
                         width: { ideal: 640 },
                         height: { ideal: 480 },
                         facingMode: 'user'
-                    }
+                    },
+                    audio: false
                 });
                 
                 webcamEl.srcObject = stream;
-                
-                // Set canvas size
-                outputCanvasEl.width = webcamEl.videoWidth || 640;
-                outputCanvasEl.height = webcamEl.videoHeight || 480;
-                
-                // Start MediaPipe processing
                 await webcamEl.play();
-                startMediaPipeProcessing();
                 
-                startBtn.disabled = true;
-                stopBtn.disabled = false;
+                startCameraBtn.disabled = true;
+                stopCameraBtn.disabled = false;
+                takePhotoBtn.disabled = false;
+                
+                // Set canvas dimensions
+                outputCanvasEl.width = webcamEl.videoWidth;
+                outputCanvasEl.height = webcamEl.videoHeight;
+                
+                // Draw video stream to canvas continuously
+                drawToCanvas();
                 
             } catch (error) {
                 console.error("Error accessing camera:", error);
-                alert("Could not access your camera. Please check permissions and try again.");
+                feedbackEl.textContent = "Error accessing camera. Please make sure you've granted permission.";
+                feedbackEl.className = "feedback error";
+                feedbackEl.style.display = "block";
             }
         }
         
-        // Start MediaPipe processing
-        async function startMediaPipeProcessing() {
-            if (!hands) {
-                await setupMediaPipe();
-            }
+        // Draw video stream to canvas
+        function drawToCanvas() {
+            if (webcamEl.paused || webcamEl.ended || !stream) return;
             
-            async function processFrame() {
-                if (webcamEl.paused || webcamEl.ended) return;
-                
-                await hands.send({ image: webcamEl });
-                animationId = requestAnimationFrame(processFrame);
-            }
-            
-            processFrame();
+            ctx.drawImage(webcamEl, 0, 0, outputCanvasEl.width, outputCanvasEl.height);
+            requestAnimationFrame(drawToCanvas);
         }
         
         // Stop camera
@@ -579,47 +487,298 @@
                 stream = null;
             }
             
-            if (animationId) {
-                cancelAnimationFrame(animationId);
-                animationId = null;
-            }
-            
-            // Clear canvas
             ctx.clearRect(0, 0, outputCanvasEl.width, outputCanvasEl.height);
             
-            startBtn.disabled = false;
-            stopBtn.disabled = true;
+            startCameraBtn.disabled = false;
+            stopCameraBtn.disabled = true;
+            takePhotoBtn.disabled = true;
             
             detectedLetterEl.textContent = "-";
-            confidenceBarsEl.innerHTML = "";
+            confidenceContainerEl.innerHTML = "";
+            feedbackEl.style.display = "none";
         }
         
-        // Set up event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Setup initial UI
-            updateTargetLetter();
+        // Update target letter
+        function updateTargetLetter() {
+            targetLetterEl.textContent = ASL_LETTERS[currentLetterIndex];
+            targetLetterEl.classList.remove('correct', 'incorrect');
+        }
+        
+        // Check letter (take photo and analyze)
+        async function checkLetter() {
+            if (!stream || isProcessingAPIRequest) return;
             
-            // Button event listeners
-            startBtn.addEventListener('click', startCamera);
-            stopBtn.addEventListener('click', stopCamera);
-            nextLetterBtn.addEventListener('click', nextLetter);
+            isProcessingAPIRequest = true;
+            takePhotoBtn.disabled = true;
+            feedbackEl.textContent = "Processing your sign...";
+            feedbackEl.className = "feedback";
+            feedbackEl.style.display = "block";
             
-            // Theme toggle
-            const themeToggle = document.getElementById('theme-toggle');
-            const themeIcon = document.getElementById('theme-icon');
-            
-            themeToggle.addEventListener('click', function() {
-                document.body.classList.toggle('dark');
-                if (document.body.classList.contains('dark')) {
-                    themeIcon.setAttribute('d', 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z');
-                } else {
-                    themeIcon.setAttribute('d', 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z');
+            try {
+                // Capture frame from webcam
+                const imageBlob = await captureFrame();
+                
+                // Convert blob to base64 for Ollama API
+                const base64Image = await blobToBase64(imageBlob);
+                
+                // Get prediction from Ollama API
+                const prediction = await getOllamaPrediction(base64Image);
+                
+                // Get the current expected letter
+                const targetLetter = ASL_LETTERS[currentLetterIndex];
+                
+                // Check if prediction matches expected letter
+                const isCorrect = prediction.letter === targetLetter;
+                
+                // Add to history
+                historyItems.unshift({
+                    targetLetter,
+                    predictedLetter: prediction.letter,
+                    correct: isCorrect,
+                    confidence: prediction.confidence,
+                    timestamp: new Date()
+                });
+                
+                // Keep only last 10 items
+                if (historyItems.length > 10) {
+                    historyItems.pop();
                 }
+                
+                // Update UI
+                updatePredictionUI(prediction);
+                updateHistoryDisplay();
+                
+                // Show feedback
+                if (isCorrect) {
+                    feedbackEl.textContent = `Correct! Your sign was recognized as "${prediction.letter}" (${prediction.confidence}% confidence)`;
+                    feedbackEl.className = "feedback success";
+                    targetLetterEl.classList.add('correct');
+                    
+                    // Move to next letter after a delay
+                    setTimeout(() => {
+                        nextLetter();
+                    }, 2000);
+                } else {
+                    feedbackEl.textContent = `Your sign was recognized as "${prediction.letter}" (${prediction.confidence}% confidence)`;
+                    feedbackEl.className = "feedback error";
+                    targetLetterEl.classList.add('incorrect');
+                }
+                
+            } catch (error) {
+                console.error("Error analyzing image:", error);
+                feedbackEl.textContent = `Error: ${error.message}`;
+                feedbackEl.className = "feedback error";
+            } finally {
+                isProcessingAPIRequest = false;
+                takePhotoBtn.disabled = false;
+            }
+        }
+        
+        // Capture a frame from the webcam
+        function captureFrame() {
+            return new Promise((resolve, reject) => {
+                if (!webcamEl || !stream) {
+                    reject(new Error("Camera not available"));
+                    return;
+                }
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = webcamEl.videoWidth;
+                canvas.height = webcamEl.videoHeight;
+                
+                const context = canvas.getContext('2d');
+                context.drawImage(webcamEl, 0, 0, canvas.width, canvas.height);
+                
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        resolve(blob);
+                    } else {
+                        reject(new Error("Failed to capture image"));
+                    }
+                }, 'image/jpeg', 0.95);
             });
+        }
+        
+        // Convert blob to base64
+        function blobToBase64(blob) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    // Extract the base64 data without the prefix
+                    const base64String = reader.result.split(',')[1];
+                    resolve(base64String);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        }
+        
+        // Get prediction from Ollama API
+        async function getOllamaPrediction(base64Image) {
+            try {
+                // Prepare the request data for Ollama
+                const requestData = {
+                    model: MODEL_NAME,
+                    prompt: "Analyze this image and tell me which ASL fingerspelling letter is being shown.",
+                    stream: false,
+                    image_data: base64Image
+                };
+                
+                // Send the request to Ollama
+                const response = await fetch(OLLAMA_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status} ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // Parse the response
+                const responseText = data.response || '';
+                
+                // Extract letter and confidence from the response
+                const result = parseLetterFromResponse(responseText);
+                
+                return result;
+            } catch (error) {
+                console.error("Error calling Ollama API:", error);
+                throw new Error(`Ollama API error: ${error.message}`);
+            }
+        }
+        
+        // Parse the letter and confidence from the model's response
+        function parseLetterFromResponse(responseText) {
+            // Default values
+            let letter = null;
+            let confidence = 0;
             
-            // Begin setup
-            setupMediaPipe();
-        });
+            // Look for letter patterns in the response
+            const letterMatch = responseText.match(/[Ll]etter\s+["']?([A-Z])["']?/i) ||
+                          responseText.match(/["']?([A-Z])["']?\s+letter/i) ||
+                          responseText.match(/ASL\s+letter\s+["']?([A-Z])["']?/i) ||
+                          responseText.match(/sign\s+for\s+["']?([A-Z])["']?/i) ||
+                          responseText.match(/showing\s+the\s+letter\s+["']?([A-Z])["']?/i) ||
+                          responseText.match(/\b([A-Z])\b(?!\w)/);
+            
+            if (letterMatch) {
+                letter = letterMatch[1].toUpperCase();
+            }
+            
+            // Look for confidence patterns
+            const confidenceMatch = responseText.match(/(\d+(?:\.\d+)?)%\s+(?:confidence|certain)/i) ||
+                               responseText.match(/confidence\s+(?:of\s+)?(\d+(?:\.\d+)?)%/i) ||
+                               responseText.match(/(\d+(?:\.\d+)?)\s+percent\s+(?:confidence|certain)/i);
+            
+            if (confidenceMatch) {
+                confidence = parseFloat(confidenceMatch[1]);
+            }
+            
+            // If no confidence value found, assign a default
+            if (!confidence && letter) {
+                confidence = 75; // Default confidence when letter is found but no confidence score
+            }
+            
+            // If no letter is found, try to find standalone letters in the response
+            if (!letter) {
+                const singleLetterMatch = responseText.match(/\b([A-Z])\b/);
+                if (singleLetterMatch) {
+                    letter = singleLetterMatch[1].toUpperCase();
+                    confidence = 60; // Lower confidence for this type of match
+                }
+            }
+            
+            // If still no letter found, return "Unknown"
+            if (!letter) {
+                letter = "Unknown";
+                confidence = 0;
+            }
+            
+            return { letter, confidence };
+        }
+        
+        // Update the UI with prediction results
+        function updatePredictionUI(prediction) {
+            // Update detected letter display
+            detectedLetterEl.textContent = prediction.letter;
+            
+            // Clear previous confidence bars
+            confidenceContainerEl.innerHTML = '';
+            
+            // Create a single confidence bar for the main prediction
+            const barContainer = document.createElement('div');
+            barContainer.innerHTML = `
+                <div class="confidence-bar">
+                    <div class="confidence-fill" style="width: ${prediction.confidence}%;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                    <span>Confidence</span>
+                    <span>${prediction.confidence}%</span>
+                </div>
+            `;
+            
+            confidenceContainerEl.appendChild(barContainer);
+        }
+        
+        // Move to the next letter
+        function nextLetter() {
+            // Reset UI elements
+            feedbackEl.style.display = 'none';
+            targetLetterEl.classList.remove('correct', 'incorrect');
+            
+            // Choose a new random letter
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * ASL_LETTERS.length);
+            } while (newIndex === currentLetterIndex && ASL_LETTERS.length > 1);
+            
+            currentLetterIndex = newIndex;
+            updateTargetLetter();
+        }
+        
+        // Update the history display
+        function updateHistoryDisplay() {
+            if (historyItems.length === 0) {
+                historyListEl.innerHTML = '<p style="text-align: center; color: var(--gray); font-style: italic;">No practice history yet.</p>';
+                return;
+            }
+            
+            historyListEl.innerHTML = '';
+            
+            for (const item of historyItems) {
+                const historyItem = document.createElement('div');
+                historyItem.className = `history-item ${item.correct ? 'correct' : 'incorrect'}`;
+                
+                const timestamp = item.timestamp.toLocaleTimeString();
+                
+                historyItem.innerHTML = `
+                    <div>
+                        <span style="font-size: 1.2rem; font-weight: bold; margin-right: 0.5rem;">${item.targetLetter}</span>
+                        <span style="color: var(--gray);">→</span>
+                        <span style="font-size: 1.2rem; font-weight: bold; margin-left: 0.5rem; color: ${item.correct ? 'var(--success)' : 'var(--danger)'};">${item.predictedLetter}</span>
+                        <span style="margin-left: 1rem; color: var(--gray);">(${item.confidence}%)</span>
+                    </div>
+                    <div>
+                        <span style="color: var(--gray); font-size: 0.9rem;">${timestamp}</span>
+                        <span style="margin-left: 0.5rem;">
+                            ${item.correct 
+                                ? '<i class="fas fa-check-circle" style="color: var(--success);"></i>' 
+                                : '<i class="fas fa-times-circle" style="color: var(--danger);"></i>'}
+                        </span>
+                    </div>
+                `;
+                
+                historyListEl.appendChild(historyItem);
+            }
+        }
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>

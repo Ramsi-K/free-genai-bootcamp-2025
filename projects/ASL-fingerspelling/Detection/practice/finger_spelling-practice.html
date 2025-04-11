@@ -672,19 +672,19 @@
                 e.preventDefault();
                 document.querySelector('.main-title').scrollIntoView({ behavior: 'smooth' });
             });
-            learnLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                document.getElementById('alphabet-grid').scrollIntoView({ behavior: 'smooth' });
-            });
+            
+            // Modal navigation buttons
+            prevLetterBtn.addEventListener('click', showPrevLetterInModal);
+            nextLetterBtnModal.addEventListener('click', showNextLetterInModal);
+            practiceLetterBtn.addEventListener('click', practiceSelectedLetter);
+            closeLetter.addEventListener('click', closeLetterModal);
+            
+            // Close modal when clicking outside
             letterModal.addEventListener('click', (e) => {
                 if (e.target === letterModal) {
                     closeLetterModal();
                 }
             });
-            prevLetterBtn.addEventListener('click', showPrevLetterInModal);
-            nextLetterBtnModal.addEventListener('click', showNextLetterInModal);
-            practiceLetterBtn.addEventListener('click', practiceSelectedLetter);
-            closeLetter.addEventListener('click', closeLetterModal);
             
             // Tab functionality
             tabs.forEach(tab => {
