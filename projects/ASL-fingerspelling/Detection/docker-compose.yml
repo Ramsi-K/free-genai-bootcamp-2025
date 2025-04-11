@@ -1,0 +1,17 @@
+services:
+  asl-web:
+    # Use either build or image, but not both
+    image: ramsik1/asl-fingerspelling:latest
+    container_name: asl-web
+    ports:
+      - '5000:5000'
+    volumes:
+      - videos:/app/videos # Mount videos directory from parent folder
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

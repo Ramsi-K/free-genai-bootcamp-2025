@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL Fingerspelling Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3578e5;
+            --secondary: #4285f4;
+            --accent: #34a853;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --success: #34a853;
+            --warning: #fbbc05;
+            --danger: #ea4335;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 1.8rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        
+        nav a:hover {
+            opacity: 0.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .main-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--dark);
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 0.5rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-container canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--gray);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .letter-box {
+            width: 120px;
+            height: 160px;
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4rem;
+            font-weight: bold;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin: 1rem auto;
+        }
+        
+        .correct {
+            background-color: rgba(52, 168, 83, 0.2);
+            color: var(--success);
+            animation: pulse-green 1s;
+        }
+        
+        .incorrect {
+            background-color: rgba(234, 67, 53, 0.2);
+            color: var(--danger);
+            animation: shake 0.5s;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        .confidence-bar {
+            height: 8px;
+            background-color: var(--light);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .feedback {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .feedback.success {
+            background-color: rgba(52, 168, 83, 0.2);
+            color: var(--success);
+            display: block;
+        }
+        
+        .feedback.error {
+            background-color: rgba(234, 67, 53, 0.2);
+            color: var(--danger);
+            display: block;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-item.correct {
+            color: var(--success);
+        }
+        
+        .history-item.incorrect {
+            color: var(--danger);
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+        }
+        
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        
+        /* Webcam Modal Styles */
+        #webcamModal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            overflow: auto;
+        }
+        
+        #webcamContainer {
+            position: relative;
+            width: 80%;
+            max-width: 800px;
+            margin: 5% auto;
+        }
+        
+        .close-modal-btn {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-hands-helping"></i>
+            <h1>ASL Fingerspelling</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="finger_spelling-practice.html#learn" id="learn-link">Learn</a></li>
+                <li><a href="finger-spelling-test.html" id="test-link">Test</a></li>                
+                <li><a href="finger_spelling-practice.html#about" id="about-link">About ASL</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <h1 class="main-title">ASL Fingerspelling Test</h1>
+        
+        <div class="card">
+            <h2 class="card-title">Test Your ASL Knowledge</h2>
+            <p style="margin-bottom: 1rem;">Show your ASL fingerspelling skills and see how accurately the model can recognize your signs.</p>
+            
+            <div class="grid">
+                <div class="card" style="margin: 0;">
+                    <h3 class="card-title" style="font-size: 1.2rem;">Camera Feed</h3>
+                    <div class="video-container" style="height: 300px; padding-bottom: 0;">
+                        <video id="webcam" autoplay playsinline></video>
+                        <canvas id="output-canvas"></canvas>
+                        <div id="loading-indicator" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); color: white; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                            <div class="loading-spinner"></div>
+                            <p style="margin-top: 1rem;">Loading...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="controls">
+                        <button id="start-camera" class="btn btn-primary">
+                            <i class="fas fa-camera"></i> Start Camera
+                        </button>
+                        <button id="stop-camera" class="btn btn-secondary" disabled>
+                            <i class="fas fa-stop"></i> Stop Camera
+                        </button>
+                        <button id="take-photo" class="btn btn-success" disabled>
+                            <i class="fas fa-camera"></i> Check My Sign
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin: 0;">
+                    <h3 class="card-title" style="font-size: 1.2rem;">Target Letter</h3>
+                    <div id="target-letter" class="letter-box">A</div>
+                    
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <button id="next-letter" class="btn btn-primary">
+                            <i class="fas fa-arrow-right"></i> Next Letter
+                        </button>
+                    </div>
+                    
+                    <h3 style="margin-top: 1.5rem; font-size: 1.2rem;">Detection Result</h3>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin: 1rem 0;">
+                        <span>Detected Letter:</span>
+                        <span id="detected-letter" style="font-size: 1.5rem; font-weight: bold;">-</span>
+                    </div>
+                    
+                    <div id="confidence-container">
+                        <!-- Confidence bars will be added dynamically -->
+                    </div>
+                    
+                    <div id="feedback" class="feedback"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 class="card-title">Practice History</h2>
+            <div id="history-list">
+                <p style="text-align: center; color: var(--gray); font-style: italic;">No practice history yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constants and variables
+        const ASL_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let currentLetterIndex = Math.floor(Math.random() * ASL_LETTERS.length);
+        let historyItems = [];
+        let isProcessingAPIRequest = false;
+        let stream = null;
+        const API_URL = "http://localhost:5000/api/predict";  // TFLite API endpoint
+        
+        // DOM elements
+        const webcamEl = document.getElementById('webcam');
+        const outputCanvasEl = document.getElementById('output-canvas');
+        const ctx = outputCanvasEl.getContext('2d');
+        const startCameraBtn = document.getElementById('start-camera');
+        const stopCameraBtn = document.getElementById('stop-camera');
+        const takePhotoBtn = document.getElementById('take-photo');
+        const nextLetterBtn = document.getElementById('next-letter');
+        const targetLetterEl = document.getElementById('target-letter');
+        const detectedLetterEl = document.getElementById('detected-letter');
+        const confidenceContainerEl = document.getElementById('confidence-container');
+        const feedbackEl = document.getElementById('feedback');
+        const historyListEl = document.getElementById('history-list');
+        const loadingIndicatorEl = document.getElementById('loading-indicator');
+        
+        // Initialize the application
+        function init() {
+            updateTargetLetter();
+            startCameraBtn.addEventListener('click', startCamera);
+            stopCameraBtn.addEventListener('click', stopCamera);
+            takePhotoBtn.addEventListener('click', checkLetter);
+            nextLetterBtn.addEventListener('click', nextLetter);
+            
+            // Resize the canvas to match video dimensions when video loads
+            webcamEl.addEventListener('loadedmetadata', function() {
+                outputCanvasEl.width = webcamEl.videoWidth;
+                outputCanvasEl.height = webcamEl.videoHeight;
+            });
+            
+            // Hide loading indicator after a short delay (as we don't need to load a model upfront)
+            setTimeout(() => {
+                loadingIndicatorEl.style.display = 'none';
+            }, 1000);
+        }
+        
+        // Start camera
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 640 },
+                        height: { ideal: 480 },
+                        facingMode: 'user'
+                    },
+                    audio: false
+                });
+                
+                webcamEl.srcObject = stream;
+                await webcamEl.play();
+                
+                startCameraBtn.disabled = true;
+                stopCameraBtn.disabled = false;
+                takePhotoBtn.disabled = false;
+                
+                // Set canvas dimensions
+                outputCanvasEl.width = webcamEl.videoWidth;
+                outputCanvasEl.height = webcamEl.videoHeight;
+                
+                // Draw video stream to canvas continuously
+                drawToCanvas();
+                
+            } catch (error) {
+                console.error("Error accessing camera:", error);
+                feedbackEl.textContent = "Error accessing camera. Please make sure you've granted permission.";
+                feedbackEl.className = "feedback error";
+                feedbackEl.style.display = "block";
+            }
+        }
+        
+        // Draw video stream to canvas
+        function drawToCanvas() {
+            if (webcamEl.paused || webcamEl.ended || !stream) return;
+            
+            ctx.drawImage(webcamEl, 0, 0, outputCanvasEl.width, outputCanvasEl.height);
+            requestAnimationFrame(drawToCanvas);
+        }
+        
+        // Stop camera
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                webcamEl.srcObject = null;
+                stream = null;
+            }
+            
+            ctx.clearRect(0, 0, outputCanvasEl.width, outputCanvasEl.height);
+            
+            startCameraBtn.disabled = false;
+            stopCameraBtn.disabled = true;
+            takePhotoBtn.disabled = true;
+            
+            detectedLetterEl.textContent = "-";
+            confidenceContainerEl.innerHTML = "";
+            feedbackEl.style.display = "none";
+        }
+        
+        // Update target letter
+        function updateTargetLetter() {
+            targetLetterEl.textContent = ASL_LETTERS[currentLetterIndex];
+            targetLetterEl.classList.remove('correct', 'incorrect');
+        }
+        
+        // Check letter (take photo and analyze)
+        async function checkLetter() {
+            if (!stream || isProcessingAPIRequest) return;
+            
+            isProcessingAPIRequest = true;
+            takePhotoBtn.disabled = true;
+            feedbackEl.textContent = "Processing your sign...";
+            feedbackEl.className = "feedback";
+            feedbackEl.style.display = "block";
+            
+            try {
+                // Capture frame from webcam
+                const imageBlob = await captureFrame();
+                
+                // Convert blob to base64 for Ollama API
+                const base64Image = await blobToBase64(imageBlob);
+                
+                // Get prediction from Ollama API
+                const prediction = await getOllamaPrediction(base64Image);
+                
+                // Get the current expected letter
+                const targetLetter = ASL_LETTERS[currentLetterIndex];
+                
+                // Check if prediction matches expected letter
+                const isCorrect = prediction.letter === targetLetter;
+                
+                // Add to history
+                historyItems.unshift({
+                    targetLetter,
+                    predictedLetter: prediction.letter,
+                    correct: isCorrect,
+                    confidence: prediction.confidence,
+                    timestamp: new Date()
+                });
+                
+                // Keep only last 10 items
+                if (historyItems.length > 10) {
+                    historyItems.pop();
+                }
+                
+                // Update UI
+                updatePredictionUI(prediction);
+                updateHistoryDisplay();
+                
+                // Show feedback
+                if (isCorrect) {
+                    feedbackEl.textContent = `Correct! Your sign was recognized as "${prediction.letter}" (${prediction.confidence}% confidence)`;
+                    feedbackEl.className = "feedback success";
+                    targetLetterEl.classList.add('correct');
+                    
+                    // Move to next letter after a delay
+                    setTimeout(() => {
+                        nextLetter();
+                    }, 2000);
+                } else {
+                    feedbackEl.textContent = `Your sign was recognized as "${prediction.letter}" (${prediction.confidence}% confidence)`;
+                    feedbackEl.className = "feedback error";
+                    targetLetterEl.classList.add('incorrect');
+                }
+                
+            } catch (error) {
+                console.error("Error analyzing image:", error);
+                feedbackEl.textContent = `Error: ${error.message}`;
+                feedbackEl.className = "feedback error";
+            } finally {
+                isProcessingAPIRequest = false;
+                takePhotoBtn.disabled = false;
+            }
+        }
+        
+        // Capture a frame from the webcam
+        function captureFrame() {
+            return new Promise((resolve, reject) => {
+                if (!webcamEl || !stream) {
+                    reject(new Error("Camera not available"));
+                    return;
+                }
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = webcamEl.videoWidth;
+                canvas.height = webcamEl.videoHeight;
+                
+                const context = canvas.getContext('2d');
+                context.drawImage(webcamEl, 0, 0, canvas.width, canvas.height);
+                
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        resolve(blob);
+                    } else {
+                        reject(new Error("Failed to capture image"));
+                    }
+                }, 'image/jpeg', 0.95);
+            });
+        }
+        
+        // Convert blob to base64
+        function blobToBase64(blob) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    // Extract the base64 data without the prefix
+                    const base64String = reader.result.split(',')[1];
+                    resolve(base64String);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        }
+        
+        // Get prediction from TFLite API
+        async function getOllamaPrediction(base64Image) {
+            try {
+                // Prepare the request data for the API
+                const requestData = {
+                    image: base64Image
+                };
+                
+                // Send the request to the API
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status} ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                return {
+                    letter: data.letter,
+                    confidence: data.confidence
+                };
+            } catch (error) {
+                console.error("Error calling API:", error);
+                throw new Error(`API error: ${error.message}`);
+            }
+        }
+        
+        // Parse the letter and confidence from the model's response
+        function parseLetterFromResponse(responseText) {
+            // Default values
+            let letter = null;
+            let confidence = 0;
+            
+            // Look for letter patterns in the response
+            const letterMatch = responseText.match(/[Ll]etter\s+["']?([A-Z])["']?/i) ||
+                          responseText.match(/["']?([A-Z])["']?\s+letter/i) ||
+                          responseText.match(/ASL\s+letter\s+["']?([A-Z])["']?/i) ||
+                          responseText.match(/sign\s+for\s+["']?([A-Z])["']?/i) ||
+                          responseText.match(/showing\s+the\s+letter\s+["']?([A-Z])["']?/i) ||
+                          responseText.match(/\b([A-Z])\b(?!\w)/);
+            
+            if (letterMatch) {
+                letter = letterMatch[1].toUpperCase();
+            }
+            
+            // Look for confidence patterns
+            const confidenceMatch = responseText.match(/(\d+(?:\.\d+)?)%\s+(?:confidence|certain)/i) ||
+                               responseText.match(/confidence\s+(?:of\s+)?(\d+(?:\.\d+)?)%/i) ||
+                               responseText.match(/(\d+(?:\.\d+)?)\s+percent\s+(?:confidence|certain)/i);
+            
+            if (confidenceMatch) {
+                confidence = parseFloat(confidenceMatch[1]);
+            }
+            
+            // If no confidence value found, assign a default
+            if (!confidence && letter) {
+                confidence = 75; // Default confidence when letter is found but no confidence score
+            }
+            
+            // If no letter is found, try to find standalone letters in the response
+            if (!letter) {
+                const singleLetterMatch = responseText.match(/\b([A-Z])\b/);
+                if (singleLetterMatch) {
+                    letter = singleLetterMatch[1].toUpperCase();
+                    confidence = 60; // Lower confidence for this type of match
+                }
+            }
+            
+            // If still no letter found, return "Unknown"
+            if (!letter) {
+                letter = "Unknown";
+                confidence = 0;
+            }
+            
+            return { letter, confidence };
+        }
+        
+        // Update the UI with prediction results
+        function updatePredictionUI(prediction) {
+            // Update detected letter display
+            detectedLetterEl.textContent = prediction.letter;
+            
+            // Clear previous confidence bars
+            confidenceContainerEl.innerHTML = '';
+            
+            // Create a single confidence bar for the main prediction
+            const barContainer = document.createElement('div');
+            barContainer.innerHTML = `
+                <div class="confidence-bar">
+                    <div class="confidence-fill" style="width: ${prediction.confidence}%;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                    <span>Confidence</span>
+                    <span>${prediction.confidence}%</span>
+                </div>
+            `;
+            
+            confidenceContainerEl.appendChild(barContainer);
+        }
+        
+        // Move to the next letter
+        function nextLetter() {
+            // Reset UI elements
+            feedbackEl.style.display = 'none';
+            targetLetterEl.classList.remove('correct', 'incorrect');
+            
+            // Choose a new random letter
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * ASL_LETTERS.length);
+            } while (newIndex === currentLetterIndex && ASL_LETTERS.length > 1);
+            
+            currentLetterIndex = newIndex;
+            updateTargetLetter();
+        }
+        
+        // Update the history display
+        function updateHistoryDisplay() {
+            if (historyItems.length === 0) {
+                historyListEl.innerHTML = '<p style="text-align: center; color: var(--gray); font-style: italic;">No practice history yet.</p>';
+                return;
+            }
+            
+            historyListEl.innerHTML = '';
+            
+            for (const item of historyItems) {
+                const historyItem = document.createElement('div');
+                historyItem.className = `history-item ${item.correct ? 'correct' : 'incorrect'}`;
+                
+                const timestamp = item.timestamp.toLocaleTimeString();
+                
+                historyItem.innerHTML = `
+                    <div>
+                        <span style="font-size: 1.2rem; font-weight: bold; margin-right: 0.5rem;">${item.targetLetter}</span>
+                        <span style="color: var(--gray);">→</span>
+                        <span style="font-size: 1.2rem; font-weight: bold; margin-left: 0.5rem; color: ${item.correct ? 'var(--success)' : 'var(--danger)'};">${item.predictedLetter}</span>
+                        <span style="margin-left: 1rem; color: var(--gray);">(${item.confidence}%)</span>
+                    </div>
+                    <div>
+                        <span style="color: var(--gray); font-size: 0.9rem;">${timestamp}</span>
+                        <span style="margin-left: 0.5rem;">
+                            ${item.correct 
+                                ? '<i class="fas fa-check-circle" style="color: var(--success);"></i>' 
+                                : '<i class="fas fa-times-circle" style="color: var(--danger);"></i>'}
+                        </span>
+                    </div>
+                `;
+                
+                historyListEl.appendChild(historyItem);
+            }
+        }
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
