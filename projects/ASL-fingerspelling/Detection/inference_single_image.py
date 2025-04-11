@@ -6,6 +6,9 @@ import matplotlib.image as mpimg
 from transformers import AutoProcessor, CLIPVisionModel
 from PIL import Image
 from huggingface_hub import hf_hub_download
+import os
+import requests
+from io import BytesIO
 
 # Initialise device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -51,46 +54,42 @@ def load_model(model_id="aalof/clipvision-asl-fingerspelling"):
     return model, processor, device
 
 
-def classify_image(image_path, model, processor, device):
-    """
-    Classify image using the trained model.
-    """
-    class_names = sorted(
-        [
-            "A",
-            "B",
-            "C",
-            "D",
-            "E",
-            "F",
-            "G",
-            "H",
-            "I",
-            "J",
-            "K",
-            "L",
-            "M",
-            "N",
-            "O",
-            "P",
-            "Q",
-            "R",
-            "S",
-            "T",
-            "U",
-            "V",
-            "W",
-            "X",
-            "Y",
-            "Z",
-        ]
+def load_image(image_source):
+    """Load an image from a file path, URL, or PIL Image object."""
+    if isinstance(image_source, Image.Image):
+        return image_source.convert("RGB")
+
+    if isinstance(image_source, str):
+        if image_source.startswith("http://") or image_source.startswith(
+            "https://"
+        ):
+            response = requests.get(image_source)
+            return Image.open(BytesIO(response.content)).convert("RGB")
+        elif os.path.isfile(image_source):
+            return Image.open(image_source).convert("RGB")
+
+    raise ValueError(
+        "Image source must be a PIL Image object, file path, or URL"
     )
-    index2label = {
-        idx: label for idx, label in enumerate(class_names)
-    }  # Recreate the label mapping (A-Z)
+
+
+def predict_class(image_source, model=None, processor=None):
+    """
+    Predict the ASL letter class from an image source (file path, URL, or PIL Image).
+
+    If model and processor are not provided, they will be loaded.
+    Returns the predicted letter and confidence score.
+    """
+    # Load model if not provided
+    if model is None or processor is None:
+        model, processor, _ = load_model()
+
+    # Define the class names (A-Z)
+    class_names = [chr(65 + i) for i in range(26)]  # ASCII values for A-Z
+    index2label = {idx: label for idx, label in enumerate(class_names)}
 
     # Load and preprocess the image
-    image = Image.open(image_path).convert("RGB")
+    image = load_image(image_source)
     inputs = processor(images=image, return_tensors="pt", padding=True)
     pixel_values = inputs["pixel_values"].to(device)
 
@@ -98,13 +97,15 @@ def classify_image(image_path, model, processor, device):
     with torch.no_grad():
         logits = model(pixel_values=pixel_values)
         predicted_idx = torch.argmax(logits, dim=1).item()
-        predicted_class = index2label[predicted_idx]
+        predicted_letter = index2label[predicted_idx]
 
-        # Get probabilities for all classes
+        # Get confidence score
         probabilities = torch.nn.functional.softmax(logits, dim=1)[0]
-        confidence = probabilities[predicted_idx].item()
+        confidence = (
+            probabilities[predicted_idx].item() * 100
+        )  # Convert to percentage
 
-    return predicted_class, confidence
+    return predicted_letter, confidence
 
 
 # Predict image class
@@ -113,15 +114,18 @@ if __name__ == "__main__":
     model, processor, device = load_model()
 
     # Make a prediction
-    image_path = ""
-    predicted_letter, confidence = classify_image(
-        image_path, model, processor, device
-    )
+    image_path = input("Enter the path to an ASL fingerspelling image: ")
+    if not image_path:
+        print("No image path provided. Exiting.")
+        exit(1)
+
+    predicted_letter, confidence = predict_class(image_path, model, processor)
 
     # Display image and predicted class
     image = Image.open(image_path)
     plt.imshow(image)
     plt.axis("off")
+    plt.title(f"Predicted: {predicted_letter} (Confidence: {confidence:.2f}%)")
     plt.show()
-    print(f"Predicted class: {predicted_letter}")
-    print(f"Confidence: {confidence:.2%}")
+    print(f"Predicted letter: {predicted_letter}")
+    print(f"Confidence: {confidence:.2f}%")

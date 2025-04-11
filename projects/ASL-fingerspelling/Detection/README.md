@@ -1,74 +1,86 @@
-# ASL Fingerspelling Practice App
+# ASL Fingerspelling Detection Project
 
-An interactive web application to help users learn and practice American Sign Language (ASL) fingerspelling.
+This project provides a web interface for practicing American Sign Language (ASL) fingerspelling. It uses a machine learning model to detect and recognize hand signs for the letters A-Z.
 
 ## Features
 
-- Learn ASL fingerspelling with detailed descriptions and video demonstrations
-- Practice signing letters with real-time feedback using AI recognition
-- Test your skills with the fingerspelling test mode
-- Track your progress as you learn
+- Interactive practice mode to learn ASL fingerspelling
+- Testing mode to check your skills against the model
+- Video examples of each ASL letter
+- Real-time feedback on your signing
+- Progress tracking as you learn new letters
 
-## Docker Setup
+## Setup and Installation
 
-This project uses Docker to run both the web application and the Ollama service for AI recognition.
+### Quick Start with Docker Hub
+
+For the easiest way to run this project:
+
+```bash
+# Pull the pre-built image
+docker pull ramsik1/asl-fingerspelling:latest
+
+# Run the container
+docker run -p 5000:5000 ramsik1/asl-fingerspelling:latest
+```
+
+Then access the application at http://localhost:5000
+
+> Note: Inference Model used may take a few minutes to load.
 
 ### Prerequisites
 
-- Docker and Docker Compose installed on your system
-- At least 4GB of RAM available for the Ollama service and model
+- Python 3.9+
+- PyTorch
+- Flask
+- Webcam access
 
-### Running the Application
+### Installation
 
-1. Clone this repository
-2. Navigate to the project directory
-3. Start the containers:
+1. Clone this repository:
+
+```bash
+git clone <repository-url>
+cd ASL-fingerspelling/Detection
+```
+
+2. Install the required dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+3. Run the application:
+
+```bash
+python app.py
+```
+
+4. Open your browser and navigate to: http://localhost:5000
+
+### Using Docker
+
+Alternatively, you can run the application using Docker:
 
 ```bash
 docker-compose up -d
 ```
 
-4. Pull the Ishara model for ASL recognition:
-
-```bash
-docker exec -it ollama ollama pull hf.co/TanmayNanda/ishara
-```
-
-5. Open your browser and navigate to:
-   - http://localhost:8000/practice/finger_spelling-practice.html for Practice mode
-   - http://localhost:8000/practice/finger-spelling-test.html for Test mode
-
-### First-Time Setup Notes
-
-The first time you run the application, it may take some time to download the Ishara model (around 2-3 GB). The application will be fully functional once the model download is complete.
-
 ## Usage
 
-1. In Practice mode:
+1. **Practice Mode**: Learn each ASL letter with video examples and practice with your webcam.
 
-   - Click on any letter in the grid to see a detailed video demonstration
-   - Use "Start Camera" to practice with your webcam
-   - "Check My Sign" will use AI to see if your sign is correct
+   - Click on letters in the grid to see detailed demonstrations
+   - Use the "Start Camera" button to enable your webcam
+   - Try forming the letter with your hand and click "Check My Sign" to test recognition
 
-2. In Test mode:
-   - The system will present random letters for you to sign
-   - Follow the prompts and see if your signs are recognized correctly
+2. **Test Mode**: Test your knowledge of multiple letters in sequence.
+   - A random letter will be shown as a target
+   - Form the letter with your hand and click "Check My Sign"
+   - The application will provide feedback on your signing
 
-## Troubleshooting
+## Model Information
 
-- If you get an "API error" when checking signs, make sure the Ollama service is running and the Ishara model has been successfully pulled.
-- Camera not working? Make sure you've granted camera permissions to the application.
+This project uses the [CLIP ASL Fingerspelling](https://huggingface.co/aalof/clipvision-asl-fingerspelling) model from Hugging Face, which has been trained on ASL fingerspelling images for high accuracy recognition.
 
-## Credits
-
-- ASL videos: mirzamlk (https://www.shutterstock.com/g/mirzamlk/about)
-- Ishara model: https://huggingface.co/TanmayNanda/ishara
-
-```
-  @misc{ishara_asl,
-  title={Ishara: ASL Fingerspelling Recognition},
-  author={Niharika Gupta, Tanay Srinivasa, Tanmay Nanda, Zoya Ghoshal},
-  year={2024},
-  howpublished={\url{https://huggingface.co/ishara-asl}}
-  }
-```
+ASL videos: [mirzamlk](https://www.shutterstock.com/g/mirzamlk/about)

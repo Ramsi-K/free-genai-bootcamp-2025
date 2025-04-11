@@ -43,8 +43,29 @@ def test_page():
 @app.route("/videos/<path:filename>", methods=["GET"])
 def serve_video(filename):
     """Serve video files from the videos directory"""
-    videos_dir = os.path.join(current_dir, "..", "videos")
-    return send_from_directory(videos_dir, filename)
+    # Try multiple possible video locations
+    possible_paths = [
+        os.path.join(current_dir, "..", "videos"),  # Parent directory
+        os.path.join(current_dir, "videos"),  # Current directory
+        "/app/videos",  # Docker mounted volume
+    ]
+
+    # Debug information
+    # print(f"Looking for video: {filename}")
+    for path in possible_paths:
+        # print(f"Checking path: {path}")
+        if os.path.exists(path) and os.path.isfile(
+            os.path.join(path, filename)
+        ):
+            # print(f"Found video at: {os.path.join(path, filename)}")
+            return send_from_directory(path, filename)
+
+    # If we get here, the file wasn't found
+    # print(f"Video not found: {filename}")
+    return (
+        f"Video file not found: {filename}. Checked paths: {', '.join(possible_paths)}",
+        404,
+    )
 
 
 @app.route("/api/predict", methods=["POST"])
@@ -106,8 +127,9 @@ def serve_file(path):
     return send_from_directory(".", path)
 
 
+# This is for direct execution (python app.py)
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     print(f"Starting server on port {port}...")
     print(f"Working directory: {os.getcwd()}")
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port, debug=False)
