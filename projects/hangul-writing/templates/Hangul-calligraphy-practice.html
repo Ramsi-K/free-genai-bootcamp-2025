@@ -83,7 +83,7 @@
         
         <!-- Step 1: Word Input -->
         <section class="mb-10 bg-white rounded-xl shadow-md p-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">1. Enter a Korean Word</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">1. Enter a Word</h2>
             <div class="flex flex-col md:flex-row gap-4">
                 <input type="text" id="koreanWord" placeholder="예: 사랑, 학교, 한국..." 
                        class="flex-grow px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none text-xl">
@@ -335,7 +335,7 @@
         generateBtn.addEventListener('click', async () => {
             const word = koreanWordInput.value.trim();
             if (!word) {
-                alert('Please enter a Korean word');
+                alert('Please enter a word');
                 return;
             }
             

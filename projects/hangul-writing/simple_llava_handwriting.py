@@ -11,6 +11,7 @@ import torch
 import requests
 import os
 import json
+import sys
 from PIL import Image
 from io import BytesIO
 from transformers import pipeline, BitsAndBytesConfig
@@ -125,6 +126,77 @@ def load_llava_model(model_id="llava-hf/llava-1.5-7b-hf"):
     )
 
     return pipe
+
+
+def process_feedback_with_ollama(feedback, ollama_host=None):
+    """
+    Process LLaVA feedback through Ollama to get an ahjumma-style response.
+
+    Args:
+        feedback (str): The original feedback from LLaVA
+        ollama_host (str): Host URL for Ollama API
+
+    Returns:
+        str: Ahjumma-style feedback
+    """
+    if not ollama_host:
+        ollama_host = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
+
+    model = "kimjk/llama3.2-korean"  # Default model, good for Korean
+
+    prompt = f"""
+    You're a spicy Korean auntie (AhjummaGPT). Someone just gave the following handwriting feedback to a student:
+
+    {feedback}
+
+    Now, you want to respond like a proper ahjumma:
+    - React to the feedback with sass, like you're gossiping about your neighbor's son who failed calligraphy class
+    - Mix in a few Korean interjections like "aigoo", "mwo ya~", or "ottoke"
+    - Use mostly English but throw in Hangul here and there to add flavor
+    - Add a couple over-the-top emojis like 💅🔥🤦‍♀️
+    - Keep it short (1-3 lines)
+
+    Be funny, a little judgy, but still warm-hearted. Your goal is to roast *with love*.
+    """
+
+    try:
+        # Try using the Ollama API
+        try:
+            print(
+                f"Sending feedback to Ollama at {ollama_host} for ahjumma transformation..."
+            )
+            response = requests.post(
+                f"{ollama_host}/api/generate",
+                json={"model": model, "prompt": prompt, "stream": False},
+                timeout=30,
+            )
+
+            if response.status_code == 200:
+                result = response.json()
+                ahjumma_feedback = result.get("response", "").strip()
+                print("Received ahjumma response from Ollama")
+                return ahjumma_feedback
+            else:
+                print(
+                    f"Error from Ollama API: {response.status_code} - {response.text}"
+                )
+                return feedback  # Return original feedback if Ollama fails
+
+        except (requests.RequestException, json.JSONDecodeError) as e:
+            print(f"API error when calling Ollama: {e}. Falling back to CLI.")
+
+            # Fallback to CLI method (for local development)
+            try:
+                command = f'ollama run {model} "{prompt}"'
+                ahjumma_feedback = subprocess.getoutput(command).strip()
+                return ahjumma_feedback
+            except Exception as cli_error:
+                print(f"CLI error: {cli_error}")
+                return feedback  # Return original feedback if CLI fails
+
+    except Exception as e:
+        print(f"Error processing feedback with Ollama: {e}")
+        return feedback  # Return original feedback on error
 
 
 def compare_with_llava_hf_api(
@@ -253,7 +325,16 @@ def compare_with_llava_hf_api(
                 messages=messages,
                 max_tokens=300,
             )
-            feedback = completion.choices[0].message.content
+            llava_feedback = completion.choices[0].message.content
+
+            # Process the LLaVA feedback through Ollama for ahjumma-style response
+            ollama_host = os.environ.get(
+                "OLLAMA_HOST", "http://localhost:11434"
+            )
+            feedback = process_feedback_with_ollama(
+                llava_feedback, ollama_host
+            )
+
         except Exception as api_error:
             print(f"Error from HuggingFace API: {str(api_error)}")
             print("API response may contain more details about the error")
@@ -377,7 +458,11 @@ def compare_with_llava(
             prompt=prompt,
             generate_kwargs={"max_new_tokens": 300},
         )
-        feedback = outputs[0]["generated_text"]
+        llava_feedback = outputs[0]["generated_text"]
+
+        # Process the LLaVA feedback through Ollama for ahjumma-style response
+        ollama_host = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
+        feedback = process_feedback_with_ollama(llava_feedback, ollama_host)
 
         return feedback, output_image_path
 
@@ -515,7 +600,16 @@ def compare_with_llava_chat(
         )
 
         if isinstance(outputs, list) and len(outputs) > 0:
-            feedback = outputs[0]["generated_text"]
+            llava_feedback = outputs[0]["generated_text"]
+
+            # Process the LLaVA feedback through Ollama for ahjumma-style response
+            ollama_host = os.environ.get(
+                "OLLAMA_HOST", "http://localhost:11434"
+            )
+            feedback = process_feedback_with_ollama(
+                llava_feedback, ollama_host
+            )
+
             return feedback, output_image_path
         else:
             return "Error: Unexpected model output format", output_image_path
