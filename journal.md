@@ -18,6 +18,12 @@
 
 ## Week 9
 
+### Day 62: April 11, 2025
+
+**T-minus 1 days to submission (April 12)**
+
+Finalized the ASL detection app from scratch. Built two separate scripts — one for practice mode with static image word guessing, and one for real-time learning using webcam input. Added short video clips from Shutterstock to guide the user, got both webcam and video playback working cleanly. Initially tried to use the Ishara model, but it wasn’t panning out, so I pivoted to another finger spelling model that reported 99% detection accuracy. Set up the inference logic and finally got the full pipeline working end-to-end. After that, I went back to the Hangul calligraphy app. Yesterday, I was stuck trying to set up local LLaVA inference — today I got it running, but the model was too large to be viable on my system. So I rewired the logic to use Hugging Face-hosted inference instead. That meant setting up a system to dynamically upload images to the web and format them for inference. Once that was working, I realized the LLaVA feedback was too dry, so I rerouted the output through a local Ollama model using prompt tuning to generate spicy, funny AhjummaGPT-style feedback. Now both apps are fully working.
+
 ### Day 61: April 10, 2025
 
 **T-minus 2 days to submission (April 12)**
