@@ -439,6 +439,17 @@
                         </button>
                     </div>
                     <div class="feedback" id="feedback"></div>
+                    
+                    <div style="margin: 1rem 0;">
+                        <label for="hf-token" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">
+                            Hugging Face API Token (optional):
+                        </label>
+                        <input type="password" id="hf-token" placeholder="Enter your HF token for better performance" 
+                            style="width: 100%; padding: 0.5rem; border: 1px solid var(--light); border-radius: 4px;">
+                        <div style="font-size: 0.8rem; color: var(--gray); margin-top: 0.25rem;">
+                            Using your own token improves request limits and performance
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -699,23 +710,7 @@
                 practicedLetters[letter.letter] = false;
             });
             
-            // Add API token input field
-            const apiTokenInput = document.createElement('div');
-            apiTokenInput.className = 'info-text';
-            apiTokenInput.innerHTML = `
-                <div style="margin: 1rem 0;">
-                    <label for="hf-token" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">
-                        Hugging Face API Token (optional):
-                    </label>
-                    <input type="password" id="hf-token" placeholder="Enter your HF token for better performance" 
-                        style="width: 100%; padding: 0.5rem; border: 1px solid var(--light); border-radius: 4px;">
-                    <div style="font-size: 0.8rem; color: var(--gray); margin-top: 0.25rem;">
-                        Using your own token improves request limits and performance
-                    </div>
-                </div>
-            `;
-            document.querySelector('.exercise-container').appendChild(apiTokenInput);
-            
+                     
             // Listen for token changes
             document.getElementById('hf-token').addEventListener('change', (e) => {
                 HF_API_TOKEN = e.target.value.trim();
