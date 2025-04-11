@@ -1,20 +1,18 @@
-# server.py
-
-from flask import Flask, request, jsonify, render_template, send_from_directory
-from flask_cors import CORS
 import os
-import subprocess
-import tempfile
-from werkzeug.utils import secure_filename
-import threading
-from flask_caching import Cache
-import torch
 import time
 import logging
+import threading
 import sys
+import torch
+from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask_cors import CORS
+from flask_caching import Cache
+from transformers import BitsAndBytesConfig, pipeline
 
-# Import our simple comparison function
-from simple_compare import simple_compare
+# Load environment variables
+from load_env import load_environment_variables
+
+load_environment_variables()
 
 # Configure logging
 logging.basicConfig(
@@ -37,43 +35,48 @@ model_loading_thread = None
 model_loading_error = None
 model_loading_complete = False
 
+# Create output directory for LLaVA
+temp_dir = os.path.join(os.getcwd(), "llava_output")
+os.makedirs(temp_dir, exist_ok=True)
+
+# Global variables for LLaVA model loading
+model_id = os.environ.get("MODEL_ID", "llava-hf/llava-1.5-7b-hf")
+
 
 # Function to preload the LLaVA model
 def preload_llava_model():
-    global llava_model, model_loading_error, model_loading_complete
+    global llava_model, model_loading_complete, model_loading_error
+
+    # Check if we have API keys for remote inference
+    imgbb_api_key = os.environ.get("IMGBB_API_KEY")
+    hf_api_key = os.environ.get("HF_API_KEY")
+
+    # If we have the API keys, we don't need to load the model locally
+    if imgbb_api_key and hf_api_key:
+        logger.info(
+            "ImgBB and HuggingFace API keys found. Will use remote inference."
+        )
+        model_loading_complete = True
+        return
+
+    # Otherwise, load the model locally
+    logger.info(f"Starting to load the LLaVA model: {model_id}")
+
     try:
-        from transformers import pipeline, BitsAndBytesConfig
-        import torch
-
-        logger.info("Preloading LLaVA model... this may take a few minutes")
-
-        # Verify GPU is available
+        # Check if CUDA is available
         if torch.cuda.is_available():
-            logger.info(f"GPU detected: {torch.cuda.get_device_name(0)}")
-            logger.info(
-                f"GPU memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.2f} GB"
-            )
+            logger.info(f"CUDA available: {torch.cuda.get_device_name(0)}")
         else:
             logger.warning(
-                "No GPU detected! Using CPU which will be very slow."
+                "CUDA not available. Model loading will use CPU and may be slow."
             )
 
-        # Define model paths from environment or use defaults
-        model_id = os.environ.get("LLAVA_MODEL_ID", "llava-hf/llava-1.5-7b-hf")
-        cache_dir = os.environ.get("MODEL_CACHE_DIR", "cache/models")
-
-        # Check if model exists locally
-        local_model_path = os.path.join(
-            cache_dir, f"{model_id.split('/')[-1]}-model"
-        )
-        if os.path.exists(local_model_path):
-            logger.info(f"Using locally saved model at {local_model_path}")
-            model_id = local_model_path
-
-        # Set up the quantization config for 4-bit loading to reduce memory usage
         logger.info("Setting up 4-bit quantization for memory efficiency")
         quantization_config = BitsAndBytesConfig(
-            load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.float16,
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_quant_type="nf4",
         )
 
         # Load the model
@@ -83,133 +86,100 @@ def preload_llava_model():
                 "image-to-text",
                 model=model_id,
                 device_map="auto",  # Automatically use GPUs if available
-                model_kwargs={"quantization_config": quantization_config},
-                trust_remote_code=True,
+                model_kwargs={
+                    "quantization_config": quantization_config,
+                    "trust_remote_code": True,
+                },
             )
             llava_model = pipe
             logger.info("✅ LLaVA model preloaded successfully")
             model_loading_complete = True
         except Exception as e:
             model_loading_error = str(e)
-            logger.error(f"❌ Error loading model: {e}")
-
-    except ImportError as e:
-        model_loading_error = f"Missing dependencies: {str(e)}"
-        logger.error(f"❌ Error importing dependencies: {e}")
-        logger.error(
-            "Please run 'pip install -r requirements.txt' or use the conda setup script"
-        )
+            logger.error(f"❌ Failed to load LLaVA model: {str(e)}")
     except Exception as e:
         model_loading_error = str(e)
-        logger.error(f"❌ Unexpected error during model loading: {e}")
+        logger.error(f"❌ Error in preload_llava_model: {str(e)}")
 
 
 # Start model loading in a separate thread to avoid blocking the server
 def start_model_loading():
-    global model_loading_thread
-    with model_loading_lock:
-        if model_loading_thread is None or not model_loading_thread.is_alive():
-            model_loading_thread = threading.Thread(target=preload_llava_model)
-            model_loading_thread.daemon = True
-            model_loading_thread.start()
+    thread = threading.Thread(target=preload_llava_model)
+    thread.daemon = True
+    thread.start()
 
 
 # Serve the HTML file
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("Hangul-calligraphy-practice.html")
 
 
 # API endpoint for checking model status
 @app.route("/api/model-status")
 def model_status():
-    global model_loading_error, model_loading_complete
+    global model_loading_complete, model_loading_error, llava_model
 
-    if llava_model is not None:
-        return jsonify({"status": "ready"})
+    # Check if we have API keys for remote inference
+    imgbb_api_key = os.environ.get("IMGBB_API_KEY")
+    hf_api_key = os.environ.get("HF_API_KEY")
+
+    if imgbb_api_key and hf_api_key:
+        return jsonify(
+            {
+                "status": "ready",
+                "message": "Using remote inference via HuggingFace API",
+                "using_api": True,
+            }
+        )
+
+    if model_loading_complete:
+        return jsonify(
+            {
+                "status": "ready",
+                "message": "Model loaded successfully",
+            }
+        )
     elif model_loading_error:
-        return jsonify({"status": "error", "message": model_loading_error})
-    elif model_loading_thread and model_loading_thread.is_alive():
-        return jsonify({"status": "loading"})
+        return jsonify(
+            {
+                "status": "error",
+                "message": f"Error loading model: {model_loading_error}",
+            }
+        )
     else:
-        return jsonify({"status": "not_started"})
+        return jsonify(
+            {
+                "status": "loading",
+                "message": "Model is still loading...",
+            }
+        )
 
 
 # API endpoint for generating sentences
 @cache.cached(timeout=300, query_string=True)
 @app.route("/generate-sentence")
 def generate_sentence():
-    level = request.args.get("level", "beginner")
-    theme = request.args.get("theme", "daily life")
-
-    # Use Ollama for Korean sentence generation
+    word = request.args.get("word", "")
+    
+    if not word:
+        return jsonify({"sentence": "Please provide a Korean word", "error": "No word provided"})
+    
     try:
-        ollama_host = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
-
-        prompt = f"""Generate one simple Korean sentence at {level} level about '{theme}'.
-        Include the sentence in Hangul, its English translation, and romanization.
-        Format your response as JSON like this:
-        {{
-          "korean": "한국어 문장",
-          "english": "English translation",
-          "romanization": "Hangugeo munjang"
-        }}"""
-
-        import requests
-
-        response = requests.post(
-            f"{ollama_host}/api/generate",
-            json={
-                "model": "kimjk/llama3.2-korean",  # or other Korean-capable model
-                "prompt": prompt,
-                "stream": False,
-            },
-            timeout=30,
-        )
-
-        if response.status_code == 200:
-            # Parse JSON from the response
-            import re
-            import json
-
-            result = response.json()
-            text = result.get("response", "")
-
-            # Extract JSON from text if needed
-            json_match = re.search(r"{[\s\S]*}", text)
-            if json_match:
-                try:
-                    sentence_data = json.loads(json_match.group(0))
-                    return jsonify(sentence_data)
-                except:
-                    pass
-
-            # Fallback for failure to parse
-            return jsonify(
-                {
-                    "korean": "안녕하세요",
-                    "english": "Hello",
-                    "romanization": "Annyeonghaseyo",
-                }
-            )
-        else:
-            # If Ollama fails, provide a default response
-            return jsonify(
-                {
-                    "korean": "안녕하세요",
-                    "english": "Hello",
-                    "romanization": "Annyeonghaseyo",
-                }
-            )
-
+        # Import the sentence generation function
+        from generate_sentence import generate_sentence as gen_sent
+        
+        # Generate sentence using the imported function
+        sentence = gen_sent(word)
+        
+        return jsonify({"sentence": sentence})
     except Exception as e:
         logger.error(f"Error generating sentence: {e}")
+        # Fallback response
         return jsonify(
             {
-                "korean": "안녕하세요",
-                "english": "Hello",
-                "romanization": "Annyeonghaseyo",
-                "error": str(e),
+                "sentence": f"{word}은/는 아름다운 한국어 단어입니다.",
+                "error": str(e)
             }
         )
 
@@ -219,77 +189,144 @@ def generate_sentence():
 def compare_handwriting():
     global llava_model, model_loading_error
 
-    if "image" not in request.files:
-        return jsonify({"error": "No image provided"}), 400
+    if (
+        "reference_image" not in request.files
+        or "user_image" not in request.files
+    ):
+        return (
+            jsonify({"error": "Both reference and user images are required"}),
+            400,
+        )
 
     try:
-        # Get the image file and target text
-        image_file = request.files["image"]
-        target_text = request.form.get("target", "안녕하세요")
+        # Get the images
+        reference_image = request.files["reference_image"]
+        user_image = request.files["user_image"]
 
-        # Save the image to a temporary file
+        # Create output directory
         temp_dir = os.path.join(os.getcwd(), "llava_output")
         os.makedirs(temp_dir, exist_ok=True)
 
-        # Create a unique filename
-        filename = secure_filename(
-            f"hangul_{int(time.time())}_{hash(target_text)}.jpg"
-        )
-        image_path = os.path.join(temp_dir, filename)
-        image_file.save(image_path)
+        # Save images to temporary files
+        reference_path = os.path.join(temp_dir, f"ref_{int(time.time())}.jpg")
+        user_path = os.path.join(temp_dir, f"user_{int(time.time())}.jpg")
 
-        # Check if we have LLaVA model loaded
-        if llava_model is None:
-            # If model is not loaded, try using the simple comparison
-            logger.warning("LLaVA model not loaded, using simple comparison")
-            result = simple_compare(image_path, target_text)
-            return jsonify(
-                {
-                    "recognized": target_text,
-                    "score": result["score"],
-                    "feedback": "Using simple comparison (LLaVA model not loaded)",
-                }
+        reference_image.save(reference_path)
+        user_image.save(user_path)
+
+        # Check for API keys for remote inference
+        imgbb_api_key = os.environ.get("IMGBB_API_KEY")
+        hf_api_key = os.environ.get("HF_API_KEY")
+        hf_provider = os.environ.get("HF_PROVIDER", "hf")
+
+        # If we have API keys, prefer remote inference
+        if imgbb_api_key and hf_api_key:
+            logger.info(
+                "Starting handwriting comparison using HuggingFace Inference API"
             )
 
-        # Use LLaVA model for comparison
-        prompt = f"What Korean characters are written in this image? Look carefully at the handwritten text and tell me only the exact Korean characters you see, nothing else."
+            # Import and use the LLaVA handwriting comparison function
+            from simple_llava_handwriting import compare_with_llava_hf_api
 
-        # Run inference
-        result = llava_model(image_path, prompt)
-
-        if isinstance(result, list) and len(result) > 0:
-            recognized_text = result[0].get("generated_text", "")
-
-            # Extract only Korean characters from the response
-            import re
-
-            korean_chars = re.findall(r"[가-힣]+", recognized_text)
-            recognized = (
-                "".join(korean_chars)
-                if korean_chars
-                else "Unable to recognize text"
-            )
-
-            # Compare with target
-            similarity = simple_compare(
-                image_path, target_text, recognized_text=recognized
-            )
-
-            return jsonify(
-                {
-                    "recognized": recognized,
-                    "target": target_text,
-                    "score": similarity["score"],
-                    "feedback": f"Recognized: {recognized}",
-                }
+            feedback, output_path = compare_with_llava_hf_api(
+                reference_path,
+                user_path,
+                model_id=model_id,
+                save_image=True,
+                output_dir=temp_dir,
+                imgbb_api_key=imgbb_api_key,
+                hf_api_key=hf_api_key,
+                hf_provider=hf_provider,
             )
         else:
-            logger.error("Unexpected model output format")
-            return jsonify({"error": "Model returned unexpected format"}), 500
+            # Check if LLaVA model is loaded
+            if llava_model is None:
+                if not model_loading_complete:
+                    logger.warning(
+                        "LLaVA model not loaded yet, starting loading process..."
+                    )
+                    start_model_loading()
+                    return (
+                        jsonify(
+                            {
+                                "feedback": "Model is still loading. Please try again in a few minutes.",
+                                "status": "model_loading",
+                            }
+                        ),
+                        202,
+                    )  # 202 Accepted but processing
+                elif model_loading_error:
+                    logger.error(
+                        f"LLaVA model failed to load: {model_loading_error}"
+                    )
+                    return (
+                        jsonify(
+                            {
+                                "feedback": f"Unable to use LLaVA model. Error: {model_loading_error}",
+                                "status": "error",
+                            }
+                        ),
+                        500,
+                    )
+
+            # Import and use the LLaVA handwriting comparison function
+            from simple_llava_handwriting import (
+                compare_with_llava,
+                compare_with_llava_chat,
+            )
+
+            logger.info(
+                "Starting handwriting comparison using local LLaVA model"
+            )
+
+            # First try the chat format, which works with newer models
+            try:
+                feedback, output_path = compare_with_llava_chat(
+                    reference_path,
+                    user_path,
+                    preloaded_model=llava_model,
+                    save_image=True,
+                    output_dir=temp_dir,
+                )
+            except Exception as e:
+                logger.warning(
+                    f"Chat format failed, trying standard format: {str(e)}"
+                )
+                # Fall back to standard format if chat format fails
+                feedback, output_path = compare_with_llava(
+                    reference_path,
+                    user_path,
+                    preloaded_model=llava_model,
+                    save_image=True,
+                    output_dir=temp_dir,
+                )
+
+        # Clean up temporary files
+        try:
+            os.remove(reference_path)
+            os.remove(user_path)
+        except Exception as e:
+            logger.warning(f"Failed to clean up temporary files: {str(e)}")
+
+        return jsonify(
+            {
+                "feedback": feedback,
+                "image_path": output_path if output_path else None,
+                "status": "success",
+            }
+        )
 
     except Exception as e:
-        logger.error(f"Error processing image: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error in compare_handwriting: {str(e)}")
+        return (
+            jsonify(
+                {
+                    "error": str(e),
+                    "feedback": "An error occurred while analyzing your handwriting. Please try again.",
+                }
+            ),
+            500,
+        )
 
 
 # Serve static files
@@ -304,11 +341,17 @@ def health_check():
     return jsonify(
         {
             "status": "healthy",
-            "model_loaded": llava_model is not None,
+            "model_loaded": llava_model is not None
+            or (
+                os.environ.get("IMGBB_API_KEY")
+                and os.environ.get("HF_API_KEY")
+            ),
+            "using_api": bool(
+                os.environ.get("IMGBB_API_KEY")
+                and os.environ.get("HF_API_KEY")
+            ),
             "gpu_available": (
-                torch.cuda.is_available()
-                if torch.__name__ == "torch"
-                else False
+                torch.cuda.is_available() if hasattr(torch, "cuda") else False
             ),
         }
     )
@@ -317,5 +360,10 @@ def health_check():
 if __name__ == "__main__":
     # Start model loading in a background thread
     start_model_loading()
-    logger.info("Starting Flask server...")
-    app.run(host="0.0.0.0", port=5000, debug=False)
+
+    # Get port from environment variable or use default
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("DEBUG", "False").lower() == "true"
+
+    logger.info(f"Starting Flask server on port {port} (debug={debug})...")
+    app.run(host="0.0.0.0", port=port, debug=debug)

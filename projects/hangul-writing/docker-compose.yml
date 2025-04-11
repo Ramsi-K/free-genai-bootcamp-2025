@@ -25,37 +25,26 @@ services:
     volumes:
       - ./:/app # Mount the entire project directory
       - ./llava_output:/app/llava_output
-      - ./cache:/app/cache # Cache models between restarts
     working_dir: /app # Set the working directory
     environment:
       - OLLAMA_HOST=http://ollama:11434
-      - CUDA_VISIBLE_DEVICES=0
-      - NVIDIA_VISIBLE_DEVICES=all
-      - MODEL_CACHE_DIR=/app/cache/models
-      - TRANSFORMERS_CACHE=/app/cache/transformers
-      - HF_HOME=/app/cache/huggingface
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+      # HuggingFace and ImgBB API credentials (these will be overridden by .env file)
+      - IMGBB_API_KEY=${IMGBB_API_KEY}
+      - HF_API_KEY=${HF_API_KEY}
+      - HF_PROVIDER=${HF_PROVIDER:-hf}
+      # Model configuration
+      - MODEL_ID=${MODEL_ID:-llava-hf/llava-1.5-7b-hf}
+      # Flask configuration
+      - PORT=${PORT:-5000}
+      - DEBUG=${DEBUG:-false}
+    restart: unless-stopped
     depends_on:
       - ollama
-    # First check if the model is downloaded, download if needed, then start the server
     command: >
       bash -c "
-        echo 'Checking if LLaVA model is available...' &&
-        if [ ! -d /app/cache/models/llava-1.5-7b-hf-model ]; then
-          echo 'Model not found, downloading now...' &&
-          python download_model.py;
-        fi &&
-        echo 'Starting server...' &&
+        echo 'Starting server with API-based inference...' &&
         python server.py
       "
-    # Keep the container running even if it crashes
-    restart: unless-stopped
 
 volumes:
   ollama_data:

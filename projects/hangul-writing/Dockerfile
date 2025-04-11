@@ -1,15 +1,12 @@
-FROM python:3.10-slim as base
+FROM python:3.10-slim
 
-# Install system dependencies
+# Install system dependencies (reduced since we don't need as many for API-based approach)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     git \
     wget \
-    build-essential \
-    libsm6 \
-    libxext6 \
-    libxrender-dev \
-    libgl1-mesa-glx && \
+    libgl1-mesa-glx \
+    build-essential && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -19,18 +16,16 @@ WORKDIR /app
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install Python dependencies
+# Install Python dependencies - no need for full torch CUDA since we're using API
 RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu118 && \
-    pip install --no-cache-dir bitsandbytes accelerate
+    pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
-# Create directories
-RUN mkdir -p /app/cache/models /app/llava_output
+# Create output directory for temporary files
+RUN mkdir -p /app/llava_output
 
-# Set environment variables for model and cache locations
+# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    MODEL_CACHE_DIR=/app/cache/models \
     TRANSFORMERS_CACHE=/app/cache/transformers \
     HF_HOME=/app/cache/huggingface
 
