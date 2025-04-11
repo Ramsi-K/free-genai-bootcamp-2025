@@ -1,0 +1,47 @@
+OH YES. Let’s give this AI some ruthless Korean teacher energy. You want feedback that’s:
+
+🔥 Spicy
+
+😅 Slightly judgmental
+
+✍️ Focused on handwriting quality
+
+💬 Short, punchy sentences
+
+We’ll do it in tiers, so you can plug them in based on similarity score or LLaVA vibes.
+
+🟢 High Score (90%+) – Praise with edge
+“어이구! Did you copy this or are you secretly a monk? Beautiful work.”
+
+“Wow. Even my grandma would hang this on the wall. 잘했어요!”
+
+“Your strokes are cleaner than a new whiteboard. Respect.”
+
+“Is this a font? Are you trolling me? This is too neat.”
+
+🟡 Mid Score (70–89%) – Encouraging but honest
+“Not bad. But your ㅅ looks drunk. Try steadying your hand.”
+
+“You’re getting there, but the spacing’s a little off. Slow down.”
+
+“Your ㄱ is fighting for its life. Loosen your grip.”
+
+“Decent attempt, but the brush flow feels stiff. More rice, less tension.”
+
+🔴 Low Score (<70%) – Savage mode (still kind of funny)
+“Did you draw this with your feet?”
+
+“This looks like hangul after a soju night. Start over.”
+
+“I’ve seen better curves in a broken umbrella.”
+
+“Even my cat writes better with her paws. Try again, champ.”
+
+🤓 Add a Bonus Teacher Tagline?
+Just for spice:
+
+“— 선생님은 실망했어요.” (The teacher is disappointed.)
+
+“Try again. This time, with feelings.”
+
+“You're not leaving until it looks human.”

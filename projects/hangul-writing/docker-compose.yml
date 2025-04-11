@@ -1,6 +1,7 @@
 services:
   ollama:
     image: ollama/ollama:latest
+    container_name: hangul-ollama
     ports:
       - '11434:11434'
     volumes:
@@ -18,15 +19,43 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: hangul-web
     ports:
       - '5000:5000'
     volumes:
-      - ./:/app
+      - ./:/app # Mount the entire project directory
       - ./llava_output:/app/llava_output
+      - ./cache:/app/cache # Cache models between restarts
+    working_dir: /app # Set the working directory
     environment:
       - OLLAMA_HOST=http://ollama:11434
+      - CUDA_VISIBLE_DEVICES=0
+      - NVIDIA_VISIBLE_DEVICES=all
+      - MODEL_CACHE_DIR=/app/cache/models
+      - TRANSFORMERS_CACHE=/app/cache/transformers
+      - HF_HOME=/app/cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     depends_on:
       - ollama
+    # First check if the model is downloaded, download if needed, then start the server
+    command: >
+      bash -c "
+        echo 'Checking if LLaVA model is available...' &&
+        if [ ! -d /app/cache/models/llava-1.5-7b-hf-model ]; then
+          echo 'Model not found, downloading now...' &&
+          python download_model.py;
+        fi &&
+        echo 'Starting server...' &&
+        python server.py
+      "
+    # Keep the container running even if it crashes
+    restart: unless-stopped
 
 volumes:
   ollama_data:

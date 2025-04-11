@@ -1,42 +1,44 @@
-FROM python:3.10-slim
+FROM python:3.10-slim as base
 
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git \
+    wget \
+    build-essential \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgl1-mesa-glx && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create app directory
 WORKDIR /app
 
-# Install system dependencies (build-essential for some Python packages)
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    git \
-    && rm -rf /var/lib/apt/lists/*
-
-# Clone LLaVA repositories
-RUN git clone https://github.com/haotian-liu/LLaVA.git /llava && \
-    cd /llava && \
-    git clone https://github.com/mapluisch/LLaVA-CLI-with-multiple-images.git && \
-    cp LLaVA-CLI-with-multiple-images/llava-multi-images.py .
-
-# Install LLaVA dependencies
-RUN cd /llava && \
-    pip install --no-cache-dir -e .
-
-# Copy our application
+# Copy requirements first for better caching
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all application files
-COPY . .
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu118 && \
+    pip install --no-cache-dir bitsandbytes accelerate
 
-# Create required directories
-RUN mkdir -p templates llava_output
+# Create directories
+RUN mkdir -p /app/cache/models /app/llava_output
 
-# Move HTML template if needed
-RUN if [ -f Hangul-calligraphy-practice.html ] && [ ! -f templates/Hangul-calligraphy-practice.html ]; then \
-    cp Hangul-calligraphy-practice.html templates/; \
-    fi
+# Set environment variables for model and cache locations
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    MODEL_CACHE_DIR=/app/cache/models \
+    TRANSFORMERS_CACHE=/app/cache/transformers \
+    HF_HOME=/app/cache/huggingface
 
-# Setup symlink for LLaVA-CLI script in our working directory
-RUN ln -sf /llava/llava-multi-images.py .
+# Copy application files
+COPY . /app/
 
-# Expose the Flask port
+# Expose port
 EXPOSE 5000
 
+# Default command
 CMD ["python", "server.py"]
