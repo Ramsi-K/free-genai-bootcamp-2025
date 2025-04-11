@@ -1,0 +1,12 @@
+[2025-04-10 08:40:32] Starting LLaVA comparison with images: /tmp/tmpn0qawjuq/reference.png and /tmp/tmpn0qawjuq/user.png
+[2025-04-10 08:40:32] Using LLaVA script at: /llava/llava-multi-images.py
+[2025-04-10 08:40:32] Running command: python /llava/llava-multi-images.py --device cpu --save-image --images /tmp/tmpn0qawjuq/reference.png /tmp/tmpn0qawjuq/user.png --dist-images 100 --concat-strategy horizontal
+[2025-04-10 08:40:32] With prompt: Compare the two handwriting samples. Give honest feedback like a strict Korean teacher. Focus on accuracy, stroke style, spacing, and neatness.
+[2025-04-10 08:40:32] LLaVA process started, sending prompt...
+[2025-04-10 14:12:01] Starting LLaVA comparison with images: C:\Users\ramsi\OneDrive\Documents\Github Projects\gen-ai-bootcamp-2025\projects\hangul-writing\llava_output\comparison_20250410_065723.png and C:\Users\ramsi\OneDrive\Documents\Github Projects\gen-ai-bootcamp-2025\projects\hangul-writing\llava_output\comparison_20250410_065723.png
+[2025-04-10 14:12:01] Error: Could not find llava-multi-images.py script
+[2025-04-10 08:51:17] Starting LLaVA comparison with images: /tmp/tmpgdm0z1n1/reference.png and /tmp/tmpgdm0z1n1/user.png
+[2025-04-10 08:51:17] Using LLaVA script at: ./llava-multi-images.py
+[2025-04-10 08:51:17] Running command: python ./llava-multi-images.py --device cpu --save-image --images /tmp/tmpgdm0z1n1/reference.png /tmp/tmpgdm0z1n1/user.png --dist-images 100 --concat-strategy horizontal
+[2025-04-10 08:51:17] With prompt: Compare the two handwriting samples. Give honest feedback like a strict Korean teacher. Focus on accuracy, stroke style, spacing, and neatness.
+[2025-04-10 08:51:17] LLaVA process started, sending prompt...

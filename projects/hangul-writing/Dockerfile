@@ -1,42 +1,39 @@
 FROM python:3.10-slim
 
+# Install system dependencies (reduced since we don't need as many for API-based approach)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git \
+    wget \
+    libgl1-mesa-glx \
+    build-essential && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create app directory
 WORKDIR /app
 
-# Install system dependencies (build-essential for some Python packages)
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    git \
-    && rm -rf /var/lib/apt/lists/*
-
-# Clone LLaVA repositories
-RUN git clone https://github.com/haotian-liu/LLaVA.git /llava && \
-    cd /llava && \
-    git clone https://github.com/mapluisch/LLaVA-CLI-with-multiple-images.git && \
-    cp LLaVA-CLI-with-multiple-images/llava-multi-images.py .
-
-# Install LLaVA dependencies
-RUN cd /llava && \
-    pip install --no-cache-dir -e .
-
-# Copy our application
+# Copy requirements first for better caching
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all application files
-COPY . .
+# Install Python dependencies - no need for full torch CUDA since we're using API
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
-# Create required directories
-RUN mkdir -p templates llava_output
+# Create output directory for temporary files
+RUN mkdir -p /app/llava_output
 
-# Move HTML template if needed
-RUN if [ -f Hangul-calligraphy-practice.html ] && [ ! -f templates/Hangul-calligraphy-practice.html ]; then \
-    cp Hangul-calligraphy-practice.html templates/; \
-    fi
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    TRANSFORMERS_CACHE=/app/cache/transformers \
+    HF_HOME=/app/cache/huggingface
 
-# Setup symlink for LLaVA-CLI script in our working directory
-RUN ln -sf /llava/llava-multi-images.py .
+# Copy application files
+COPY . /app/
 
-# Expose the Flask port
+# Expose port
 EXPOSE 5000
 
+# Default command
 CMD ["python", "server.py"]

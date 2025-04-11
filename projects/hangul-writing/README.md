@@ -1,26 +1,84 @@
-# Korean Handwriting Practice App ✍️🇰🇷
+# Hangul Writing Project
 
-A GenAI-powered web application to improve your Korean handwriting by comparing your handwritten sentences with calligraphy examples using vision-language models.
+This project is part of the Gen AI Bootcamp 2025 and focuses on creating an application for learning and practicing Hangul writing. The project leverages modern AI techniques to provide an interactive and engaging experience for users.
 
 ## Features
 
+- Interactive Hangul writing practice.
+- AI-based feedback on writing accuracy.
+- User-friendly interface for learners of all levels.
 - Generate Korean sentences based on input words using LLaMA 3.2-korean
 - Display sentences in various Korean calligraphy fonts
 - Capture handwriting via webcam
-- Compare user handwriting with reference calligraphy using LLaVA
-- Receive AI-generated feedback on accuracy, stroke style, spacing, and neatness
+- Compare user handwriting with reference calligraphy using LLaVA via HuggingFace Inference API
+- Receive AI-generated feedback with a sassy Korean ahjumma personality
+
+## Prerequisites
+
+- Docker
+- Docker Compose
+- API keys for:
+  - ImgBB (for image hosting)
+  - HuggingFace (for LLaVA inference)
+- Python 3.8+ installed (if running without Docker)
+- Ollama installed ([Ollama installation instructions](https://ollama.ai/)) for local development
+
+## Getting Started
+
+1. Clone the repository:
+
+   ```bash
+   git clone <repository-url>
+   ```
+
+2. Navigate to the project directory:
+
+   ```bash
+   cd hangul-writing
+   ```
+
+3. Create a `.env` file with your API keys:
+
+   ```python
+   #API Keys
+   IMGBB_API_KEY=your_imgbb_api_key_here
+   HF_API_KEY=your_huggingface_api_key_here
+
+   # HuggingFace Provider (optional, defaults to "hf")
+   # Options: "hf-inference", "nebius", etc.
+   HF_PROVIDER=nebius
+
+   # LLaVA Model ID (optional, defaults to "llava-hf/llava-1.5-7b-hf")
+   MODEL_ID=llava-hf/llava-1.5-7b-hf
+
+   # Ollama host for generating Korean sentences (optional)
+   OLLAMA_HOST=http://localhost:11434
+   OLLAMA_MODEL="kimjk/llama3.2-korean"
+
+   # Flask server configuration
+   PORT=5000
+   DEBUG=False
+   ```
+
+4. Build and start the application using Docker Compose:
+
+   ```bash
+   docker-compose up --build
+   ```
+
+   Alternatively, use the prebuilt Docker image:
+
+   ```bash
+   docker pull ramsik1/hangul-writing-web:latest
+   ```
+
+5. Access the application at `http://localhost:5000`.
 
 ## Setup Options
 
 ### Option 1: Docker Setup (Recommended)
 
-The easiest way to run the application is with Docker, which automatically sets up both Ollama and LLaVA.
-
-#### Prerequisites
-
-- [Docker](https://www.docker.com/products/docker-desktop/) and Docker Compose installed
-- NVIDIA GPU with CUDA support (recommended)
-- [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) (for GPU acceleration)
+The easiest way to run the application is with Docker, which automatically sets up both Ollama and the web application.
 
 #### Steps
 
@@ -42,15 +100,11 @@ curl -X POST http://localhost:11434/api/pull -d '{"name": "kimjk/llama3.2-korean
 http://localhost:5000
 ```
 
+> **Note:** Ollama might take a minute to load the model after you click 'Generate Sentence' for the first time. Please be patient during initial sentence generation.
+
 ### Option 2: Manual Setup
 
 If you prefer to set up components manually:
-
-#### Prerequisites
-
-1. Python 3.8+ installed
-2. Ollama installed ([Ollama installation instructions](https://ollama.ai/))
-3. LLaVA setup (see below)
 
 #### Steps
 
@@ -61,22 +115,7 @@ If you prefer to set up components manually:
    ollama pull kimjk/llama3.2-korean
    ```
 
-2. **Set up LLaVA**:
-
-   ```bash
-   # Clone LLaVA repository
-   git clone https://github.com/haotian-liu/LLaVA.git
-   cd LLaVA
-
-   # Install LLaVA dependencies (consider using a virtual environment)
-   pip install -e .
-
-   # Add the multi-image tool
-   git clone https://github.com/mapluisch/LLaVA-CLI-with-multiple-images.git
-   cp LLaVA-CLI-with-multiple-images/llava-multi-images.py .
-   ```
-
-3. **Install this project and its dependencies**:
+2. **Install this project and its dependencies**:
 
    ```bash
    # Clone this repository
@@ -87,34 +126,48 @@ If you prefer to set up components manually:
    pip install -r requirements.txt
    ```
 
-4. **Create symlink to LLaVA script** (replace path with your actual LLaVA directory):
+3. **Set up environment variables**:
 
-   ```bash
-   ln -s /path/to/LLaVA/llava-multi-images.py .
-   ```
+   - Create a `.env` file with your API keys (see example in `.env.example`)
+   - Ensure IMGBB_API_KEY and HF_API_KEY are properly set
 
-5. **Start the Flask server**:
+4. **Start the Flask server**:
 
    ```bash
    python server.py
    ```
 
+## Project Structure
+
+- `docker-compose.yml`: Configuration for Docker Compose to set up the application.
+- `Dockerfile`: Instructions to build the Docker image.
+- `server.py`: Flask server for handling web requests and AI processing.
+- `simple_llava_handwriting.py`: Script for handwriting comparison using the LLaVA model.
+- `generate_sentence.py`: Script for generating Korean sentences using Ollama.
+- `templates/`: Contains HTML templates for the web interface.
+- `llava_output/`: Directory for temporary image storage.
+
 ## Usage
 
-1. **Enter a Korean Word**: Type a Korean word in the input field and click "Generate Practice"
-2. **View Generated Sentence**: A simple sentence using your word will be displayed
+1. **Enter a Word**: Type a word in the input field (English or Korean) and click "Generate Sentence"
+2. **View Generated Sentence**: A simple sentence using your word will be displayed (generated by Ollama)
 3. **Select Font Style**: Choose a Korean calligraphy font to display the reference text
 4. **Practice Writing**: Copy the sentence on paper, trying to match the calligraphy style
 5. **Capture Your Writing**: Click "Open Webcam to Capture" and take a photo of your handwritten sentence
-6. **Receive Feedback**: The AI will compare your handwriting to the reference and provide feedback
+6. **Receive Feedback**: The AI will compare your handwriting to the reference and provide feedback with sass!
 
 ## System Architecture
 
 - **Frontend**: HTML + JavaScript for user interface
 - **Server**: Flask server to handle API requests
 - **Sentence Generation**: Uses `generate_sentence.py` with LLaMA 3.2 Korean via Ollama
-- **Handwriting Comparison**: Uses `compare_with_llava.py` to invoke LLaVA with the reference and user images
-- **Image Processing**: Uses LLaVA-CLI-with-multiple-images for concatenating and analyzing images
+- **Handwriting Analysis**:
+  - Uses LLaVA model via HuggingFace Inference API to analyze handwriting
+  - Images are uploaded to ImgBB for LLaVA to access via URL
+  - Raw feedback from LLaVA is sent to Ollama for transformation into a sassy "Korean ahjumma" style response
+- **Dual AI Approach**:
+  - LLaVA (vision-language model) for handwriting analysis
+  - Local Ollama model for sentence generation and sassy feedback transformation
 
 ## Troubleshooting
 
@@ -122,18 +175,24 @@ If you prefer to set up components manually:
 
 - If using Docker and Ollama is unreachable, make sure the container is running: `docker-compose ps`
 - Check Ollama logs: `docker-compose logs ollama`
+- The first sentence generation might take longer as Ollama loads the model
 
-### LLaVA Issues
+### API Issues
 
-- Ensure the model downloads correctly - check the logs for any errors
-- If using manual setup, verify your paths are correct and the symlink points to the LLaVA script
-- Make sure you have sufficient GPU memory for the LLaVA model
+- Ensure your API keys are correctly set in the `.env` file
+- Check that both ImgBB and HuggingFace APIs are accessible from your network
+- For API errors, check the server logs: `docker-compose logs web`
 
 ### Web App Issues
 
 - Check Flask server logs for any errors
 - For webcam issues, ensure your browser has permission to access the webcam
+- If the application seems slow, check if you have sufficient network bandwidth for the API calls
 
-## License
+## Docker Image
 
-[MIT License](LICENSE)
+A pre-built Docker image is available on Docker Hub:
+
+```bash
+docker pull ramsik1/hangul-writing-web:latest
+```
