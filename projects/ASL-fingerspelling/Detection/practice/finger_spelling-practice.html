@@ -401,8 +401,9 @@
         </div>
         <nav>
             <ul>
-                <li><a href="#" id="practice-link">Practice</a></li>
-                <li><a href="#" id="learn-link">Learn</a></li>
+                <li><a href="#" id="practice-link">Learn</a></li>
+                <li><a href="finger-spelling-test.html" id="test-link">Test</a></li>
+                <!-- <li><a href="#" id="learn-link">Learn</a></li> -->
                 <li><a href="#" id="about-link">About ASL</a></li>
             </ul>
         </nav>
@@ -618,8 +619,9 @@
         let practiceHistory = [];
         let stream = null;
         let isProcessingAPIRequest = false; // Flag to track API request status
-        const HF_API_URL = "https://api-inference.huggingface.co/models/TanmayNanda/ishara";
-        let HF_API_TOKEN = ""; // Will be populated if user provides it
+        const OLLAMA_API_URL = "http://localhost:11434/api/generate"; // Ollama API endpoint
+        // Model name for Ollama - we'll use ishara model
+        const MODEL_NAME = "ishara";
         
         // DOM elements
         const videoElement = document.getElementById('video');
@@ -827,53 +829,6 @@
             });
         }
         
-        // Send frame to Hugging Face API
-        async function predictASLLetter(imageBlob) {
-            // Create form data for the API request
-            const formData = new FormData();
-            formData.append('file', imageBlob);
-            
-            try {
-                const response = await fetch(HF_API_URL, {
-                    method: 'POST',
-                    headers: HF_API_TOKEN ? {
-                        'Authorization': `Bearer ${HF_API_TOKEN}`
-                    } : {},
-                    body: formData
-                });
-                
-                if (!response.ok) {
-                    if (response.status === 429) {
-                        throw new Error("API rate limit exceeded. Try again in a moment or use your own API token.");
-                    } else {
-                        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-                    }
-                }
-                
-                const result = await response.json();
-                
-                // Parse the prediction results
-                // The API returns predictions in format: [{"label": "A", "score": 0.95}, {...}]
-                if (Array.isArray(result)) {
-                    // Sort by score and take the highest confidence prediction
-                    const predictions = result.sort((a, b) => b.score - a.score);
-                    
-                    if (predictions.length > 0) {
-                        return {
-                            letter: predictions[0].label,
-                            confidence: predictions[0].score,
-                            allPredictions: predictions.slice(0, 3) // Get top 3 predictions
-                        };
-                    }
-                }
-                
-                throw new Error("Could not interpret prediction result");
-            } catch (error) {
-                console.error("Prediction error:", error);
-                throw error;
-            }
-        }
-        
         // Check if the signed letter matches
         async function checkLetter() {
             if (!stream || isProcessingAPIRequest) return;
@@ -888,8 +843,11 @@
                 // Capture frame from webcam
                 const imageBlob = await captureFrame();
                 
-                // Send to Hugging Face API
-                const prediction = await predictASLLetter(imageBlob);
+                // Convert blob to base64 for Ollama API
+                const base64Image = await blobToBase64(imageBlob);
+                
+                // Get prediction from Ollama API
+                const prediction = await getOllamaPrediction(base64Image);
                 
                 // Get the current expected letter
                 const currentLetter = aslAlphabet[currentLetterIndex].letter.toUpperCase();
@@ -906,7 +864,7 @@
                     predicted: prediction.letter,
                     correct: isCorrect,
                     timestamp: new Date(),
-                    confidence: Math.round(prediction.confidence * 100)
+                    confidence: prediction.confidence
                 });
                 
                 // Keep only last 5 items in history
@@ -920,10 +878,10 @@
                 
                 // Show feedback
                 if (isCorrect) {
-                    feedbackElement.textContent = `Correct! Your sign was recognized as "${prediction.letter}" (${Math.round(prediction.confidence * 100)}% confidence)`;
+                    feedbackElement.textContent = `Correct! Your sign was recognized as "${prediction.letter}" (${prediction.confidence}% confidence)`;
                     feedbackElement.className = 'feedback success';
                 } else {
-                    feedbackElement.textContent = `Your sign was recognized as "${prediction.letter}", but should be "${currentLetter}"`;
+                    feedbackElement.textContent = `Your sign was recognized as "${prediction.letter}" (${prediction.confidence}% confidence), but should be "${currentLetter}"`;
                     feedbackElement.className = 'feedback error';
                 }
             } catch (error) {
@@ -934,6 +892,111 @@
                 isProcessingAPIRequest = false;
                 checkLetterBtn.disabled = false;
             }
+        }
+        
+        // Convert blob to base64
+        function blobToBase64(blob) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    // Get base64 data without the prefix (e.g., "data:image/jpeg;base64,")
+                    const base64String = reader.result.split(',')[1];
+                    resolve(base64String);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        }
+        
+        // Get prediction from Ollama API
+        async function getOllamaPrediction(base64Image) {
+            try {
+                // Prepare the request data for Ollama
+                const requestData = {
+                    model: MODEL_NAME,
+                    prompt: "Analyze this image and tell me which ASL fingerspelling letter is being shown.",
+                    stream: false,
+                    image_data: base64Image
+                };
+                
+                // Send the request to Ollama
+                const response = await fetch(OLLAMA_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // Parse the response
+                // Expected format is natural language that mentions the letter
+                const responseText = data.response || '';
+                
+                // Extract letter and confidence from the response
+                const result = parseLetterFromResponse(responseText);
+                
+                return result;
+            } catch (error) {
+                console.error("Error calling Ollama API:", error);
+                throw new Error(`Ollama API error: ${error.message}`);
+            }
+        }
+        
+        // Parse the letter and confidence from the model's response
+        function parseLetterFromResponse(responseText) {
+            // Default values
+            let letter = null;
+            let confidence = 0;
+            
+            // Look for letter patterns in the response
+            const letterMatch = responseText.match(/[Ll]etter\s+["']?([A-Z])["']?/i) ||
+                          responseText.match(/["']?([A-Z])["']?\s+letter/i) ||
+                          responseText.match(/ASL\s+letter\s+["']?([A-Z])["']?/i) ||
+                          responseText.match(/sign\s+for\s+["']?([A-Z])["']?/i) ||
+                          responseText.match(/showing\s+the\s+letter\s+["']?([A-Z])["']?/i) ||
+                          responseText.match(/\b([A-Z])\b(?!\w)/);
+            
+            if (letterMatch) {
+                letter = letterMatch[1].toUpperCase();
+            }
+            
+            // Look for confidence patterns
+            const confidenceMatch = responseText.match(/(\d+(?:\.\d+)?)%\s+(?:confidence|certain)/i) ||
+                               responseText.match(/confidence\s+(?:of\s+)?(\d+(?:\.\d+)?)%/i) ||
+                               responseText.match(/(\d+(?:\.\d+)?)\s+percent\s+(?:confidence|certain)/i);
+            
+            if (confidenceMatch) {
+                confidence = parseFloat(confidenceMatch[1]);
+            }
+            
+            // If no confidence value found, assign a default
+            if (!confidence && letter) {
+                confidence = 75; // Default confidence when letter is found but no confidence score
+            }
+            
+            // If no letter is found, try to find standalone letters in the response
+            if (!letter) {
+                // Look for a single letter that might be the answer
+                const singleLetterMatch = responseText.match(/\b([A-Z])\b/);
+                if (singleLetterMatch) {
+                    letter = singleLetterMatch[1].toUpperCase();
+                    confidence = 60; // Lower confidence for this type of match
+                }
+            }
+            
+            // If still no letter found, return "Unknown"
+            if (!letter) {
+                letter = "Unknown";
+                confidence = 0;
+            }
+            
+            return { letter, confidence };
         }
         
         // Move to next letter
