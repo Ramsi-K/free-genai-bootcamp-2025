@@ -28,16 +28,15 @@ This project uses Docker to run both the web application and the Ollama service 
 docker-compose up -d
 ```
 
-4. Initialize Ollama and pull the Ishara model:
+4. Pull the Ishara model for ASL recognition:
 
 ```bash
-chmod +x init-ollama.sh
-docker exec -it asl-web ./init-ollama.sh
+docker exec -it ollama ollama pull hf.co/TanmayNanda/ishara
 ```
 
 5. Open your browser and navigate to:
-   - http://localhost:8000/finger_spelling-practice.html for Practice mode
-   - http://localhost:8000/finger-spelling-test.html for Test mode
+   - http://localhost:8000/practice/finger_spelling-practice.html for Practice mode
+   - http://localhost:8000/practice/finger-spelling-test.html for Test mode
 
 ### First-Time Setup Notes
 
@@ -64,3 +63,12 @@ The first time you run the application, it may take some time to download the Is
 
 - ASL videos: mirzamlk (https://www.shutterstock.com/g/mirzamlk/about)
 - Ishara model: https://huggingface.co/TanmayNanda/ishara
+
+```
+  @misc{ishara_asl,
+  title={Ishara: ASL Fingerspelling Recognition},
+  author={Niharika Gupta, Tanay Srinivasa, Tanmay Nanda, Zoya Ghoshal},
+  year={2024},
+  howpublished={\url{https://huggingface.co/ishara-asl}}
+  }
+```

@@ -391,6 +391,36 @@
             font-size: 0.9rem;
             margin-bottom: 1rem;
         }
+
+        /* Webcam Modal Styles */
+        #webcamModal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            overflow: auto;
+        }
+        
+        #webcamContainer {
+            position: relative;
+            width: 80%;
+            max-width: 800px;
+            margin: 5% auto;
+        }
+        
+        .close-modal-btn {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -440,16 +470,7 @@
                     </div>
                     <div class="feedback" id="feedback"></div>
                     
-                    <div style="margin: 1rem 0;">
-                        <label for="hf-token" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">
-                            Hugging Face API Token (optional):
-                        </label>
-                        <input type="password" id="hf-token" placeholder="Enter your HF token for better performance" 
-                            style="width: 100%; padding: 0.5rem; border: 1px solid var(--light); border-radius: 4px;">
-                        <div style="font-size: 0.8rem; color: var(--gray); margin-top: 0.25rem;">
-                            Using your own token improves request limits and performance
-                        </div>
-                    </div>
+                   
                 </div>
             </div>
             
@@ -630,9 +651,7 @@
         let practiceHistory = [];
         let stream = null;
         let isProcessingAPIRequest = false; // Flag to track API request status
-        const OLLAMA_API_URL = "http://localhost:11434/api/generate"; // Ollama API endpoint
-        // Model name for Ollama - we'll use ishara model
-        const MODEL_NAME = "ishara";
+        const API_URL = "http://localhost:5000/api/predict"; // TFLite API endpoint
         
         // DOM elements
         const videoElement = document.getElementById('video');
@@ -708,26 +727,8 @@
             // Initialize all letters as not practiced
             aslAlphabet.forEach(letter => {
                 practicedLetters[letter.letter] = false;
-            });
-            
-                     
-            // Listen for token changes
-            document.getElementById('hf-token').addEventListener('change', (e) => {
-                HF_API_TOKEN = e.target.value.trim();
-                // Save token to sessionStorage (not localStorage for security reasons)
-                if (HF_API_TOKEN) {
-                    sessionStorage.setItem('hf_token', HF_API_TOKEN);
-                } else {
-                    sessionStorage.removeItem('hf_token');
-                }
-            });
-            
-            // Restore token if available
-            const savedToken = sessionStorage.getItem('hf_token');
-            if (savedToken) {
-                document.getElementById('hf-token').value = savedToken;
-                HF_API_TOKEN = savedToken;
-            }
+            });           
+           
         }
         
         // Render the alphabet grid
@@ -838,11 +839,11 @@
                 // Capture frame from webcam
                 const imageBlob = await captureFrame();
                 
-                // Convert blob to base64 for Ollama API
+                // Convert blob to base64 for TFLite API
                 const base64Image = await blobToBase64(imageBlob);
                 
-                // Get prediction from Ollama API
-                const prediction = await getOllamaPrediction(base64Image);
+                // Get prediction from TFLite API
+                const prediction = await getTFLitePrediction(base64Image);
                 
                 // Get the current expected letter
                 const currentLetter = aslAlphabet[currentLetterIndex].letter.toUpperCase();
@@ -903,19 +904,16 @@
             });
         }
         
-        // Get prediction from Ollama API
-        async function getOllamaPrediction(base64Image) {
+        // Get prediction from TFLite API
+        async function getTFLitePrediction(base64Image) {
             try {
-                // Prepare the request data for Ollama
+                // Prepare the request data for API
                 const requestData = {
-                    model: MODEL_NAME,
-                    prompt: "Analyze this image and tell me which ASL fingerspelling letter is being shown.",
-                    stream: false,
-                    image_data: base64Image
+                    image: base64Image
                 };
                 
-                // Send the request to Ollama
-                const response = await fetch(OLLAMA_API_URL, {
+                // Send the request to the API
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -924,74 +922,23 @@
                 });
                 
                 if (!response.ok) {
-                    throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
+                    throw new Error(`API error: ${response.status} ${response.statusText}`);
                 }
                 
                 const data = await response.json();
                 
-                // Parse the response
-                // Expected format is natural language that mentions the letter
-                const responseText = data.response || '';
-                
-                // Extract letter and confidence from the response
-                const result = parseLetterFromResponse(responseText);
-                
-                return result;
-            } catch (error) {
-                console.error("Error calling Ollama API:", error);
-                throw new Error(`Ollama API error: ${error.message}`);
-            }
-        }
-        
-        // Parse the letter and confidence from the model's response
-        function parseLetterFromResponse(responseText) {
-            // Default values
-            let letter = null;
-            let confidence = 0;
-            
-            // Look for letter patterns in the response
-            const letterMatch = responseText.match(/[Ll]etter\s+["']?([A-Z])["']?/i) ||
-                          responseText.match(/["']?([A-Z])["']?\s+letter/i) ||
-                          responseText.match(/ASL\s+letter\s+["']?([A-Z])["']?/i) ||
-                          responseText.match(/sign\s+for\s+["']?([A-Z])["']?/i) ||
-                          responseText.match(/showing\s+the\s+letter\s+["']?([A-Z])["']?/i) ||
-                          responseText.match(/\b([A-Z])\b(?!\w)/);
-            
-            if (letterMatch) {
-                letter = letterMatch[1].toUpperCase();
-            }
-            
-            // Look for confidence patterns
-            const confidenceMatch = responseText.match(/(\d+(?:\.\d+)?)%\s+(?:confidence|certain)/i) ||
-                               responseText.match(/confidence\s+(?:of\s+)?(\d+(?:\.\d+)?)%/i) ||
-                               responseText.match(/(\d+(?:\.\d+)?)\s+percent\s+(?:confidence|certain)/i);
-            
-            if (confidenceMatch) {
-                confidence = parseFloat(confidenceMatch[1]);
-            }
-            
-            // If no confidence value found, assign a default
-            if (!confidence && letter) {
-                confidence = 75; // Default confidence when letter is found but no confidence score
-            }
-            
-            // If no letter is found, try to find standalone letters in the response
-            if (!letter) {
-                // Look for a single letter that might be the answer
-                const singleLetterMatch = responseText.match(/\b([A-Z])\b/);
-                if (singleLetterMatch) {
-                    letter = singleLetterMatch[1].toUpperCase();
-                    confidence = 60; // Lower confidence for this type of match
+                if (data.error) {
+                    throw new Error(`API returned error: ${data.error}`);
                 }
+                
+                return {
+                    letter: data.letter,
+                    confidence: data.confidence
+                };
+            } catch (error) {
+                console.error("Error calling API:", error);
+                throw new Error(`API error: ${error.message}`);
             }
-            
-            // If still no letter found, return "Unknown"
-            if (!letter) {
-                letter = "Unknown";
-                confidence = 0;
-            }
-            
-            return { letter, confidence };
         }
         
         // Move to next letter
@@ -1055,7 +1002,7 @@
             letterDescription.textContent = letterData.description;
             letterTips.textContent = letterData.tips;
             
-            // Set the video source based on the letter
+            // Set the video source based on the letter - updated for new folder structure
             const videoPath = `../videos/${letterData.letter}.webm`;
             letterVideoSource.src = videoPath;
             

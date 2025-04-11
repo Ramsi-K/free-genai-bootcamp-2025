@@ -1,34 +1,20 @@
-version: '3.8'
-
 services:
   asl-web:
     build: .
     container_name: asl-web
     ports:
-      - '8000:8000'
+      - '5000:5000'
     volumes:
       - ./:/app
-      - ./videos:/app/videos
-    depends_on:
-      - ollama
-    networks:
-      - asl-network
-
-  ollama:
-    image: ollama/ollama:latest
-    container_name: ollama
-    ports:
-      - '11434:11434'
-    volumes:
-      - ollama-data:/root/.ollama
+      - ../videos:/app/videos # Mount videos directory from parent folder
     restart: unless-stopped
-    networks:
-      - asl-network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
 volumes:
-  ollama-data:
-    name: ollama-data
-
-networks:
-  asl-network:
-    name: asl-network
+  videos:
