@@ -18,6 +18,13 @@
 
 ## Week 9
 
+### Day 63: April 12, 2025
+
+**Submission Day**
+
+Today I tried building a multi-persona, multi-tool chatbot using CrewAI, but ran into too many issues. Their documentation was confusing, and I wasn’t able to get it working. I did manage to build a MUD game in Python modeled after Zork, and connected it to local Ollama so it can generate dynamic room descriptions and dialogue.
+I also revisited all the submission forms and watched the submission guideline videos. 
+
 ### Day 62: April 11, 2025
 
 **T-minus 1 days to submission (April 12)**
