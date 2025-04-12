@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>초성 퀴즈 게임</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4A148C;
+            --secondary: #7B1FA2;
+            --correct: #4CAF50;
+            --wrong: #F44336;
+            --text: #333;
+            --light: #f8f9fa;
+            --highlight: #FFD700;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            font-weight: 900;
+        }
+        
+        .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .game-area {
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            background-color: var(--light);
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        
+        .score {
+            color: var(--primary);
+        }
+        
+        .streak {
+            color: var(--secondary);
+        }
+        
+        .timer {
+            color: #E91E63;
+        }
+        
+        .choso-display {
+            font-size: 3rem;
+            margin: 30px 0;
+            letter-spacing: 10px;
+            font-weight: bold;
+            background-color: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .hint-button {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .hint-button:hover {
+            background-color: var(--primary);
+            transform: scale(1.1);
+        }
+        
+        .hint-box {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--light);
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
+            max-width: 90%;
+            display: none;
+        }
+        
+        .hint-box.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        .category {
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        
+        .input-area {
+            margin-bottom: 20px;
+        }
+        
+        .answer-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            text-align: center;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        .submit-btn {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .submit-btn:hover {
+            background-color: #380470;
+        }
+        
+        .skip-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .skip-btn:hover {
+            background-color: #5a6268;
+        }
+        
+        .result-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .correct-message {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--correct);
+            display: block;
+        }
+        
+        .wrong-message {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--wrong);
+            display: block;
+        }
+        
+        .answer-reveal {
+            font-size: 1.2rem;
+            margin-top: 5px;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            height: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .challenge-text {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        
+        .game-settings {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .settings-title {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .difficulty-select {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .difficulty-btn {
+            flex: 1;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        
+        .difficulty-btn.selected {
+            border-color: var(--primary);
+            background-color: var(--primary);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .timer-settings {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .timer-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .start-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--highlight);
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .start-btn:hover {
+            background-color: #e6c200;
+            transform: translateY(-2px);
+        }
+        
+        .final-score {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .final-score span {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+        
+        .restart-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        
+        .restart-btn:hover {
+            background-color: #6a0dad;
+            transform: translateY(-2px);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -10px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .choso-display {
+                font-size: 2rem;
+                min-height: 90px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>초성 퀴즈 게임</h1>
+            <div class="subtitle">초성을 보고 단어를 맞춰보세요!</div>
+        </header>
+        
+        <div class="game-area" id="game-screen">
+            <div class="game-info">
+                <div class="score"><i class="fas fa-star"></i> 점수: <span id="score">0</span></div>
+                <div class="streak"><i class="fas fa-bolt"></i> 연속 정답: <span id="streak">0</span></div>
+                <div class="timer"><i class="fas fa-clock"></i> 남은 시간: <span id="time">60</span>초</div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div class="challenge-text" id="challenge-text">
+                총 10문제 중 <span id="current-question">1</span>번째 문제
+            </div>
+            
+            <div class="category" id="category">카테고리</div>
+            
+            <div class="choso-display" id="choso-display">
+                <button class="hint-button" id="hint-button">
+                    <i class="fas fa-lightbulb"></i>
+                </button>
+                <div class="hint-box" id="hint-box"></div>
+                <span id="choso-text">초성</span>
+            </div>
+            
+            <div class="result-message" id="result-message">
+                <div id="message-text"></div>
+                <div class="answer-reveal" id="answer-reveal"></div>
+            </div>
+            
+            <div class="input-area">
+                <input type="text" class="answer-input" id="answer-input" placeholder="정답을 입력하세요" autocomplete="off">
+            </div>
+            
+            <div class="buttons">
+                <button class="btn submit-btn" id="submit-btn">제출</button>
+                <button class="btn skip-btn" id="skip-btn">넘어가기</button>
+            </div>
+            
+            <div class="game-settings">
+                <div class="settings-title">게임 설정</div>
+                
+                <div class="difficulty-select">
+                    <button class="difficulty-btn selected" data-difficulty="easy">쉬움</button>
+                    <button class="difficulty-btn" data-difficulty="medium">보통</button>
+                    <button class="difficulty-btn" data-difficulty="hard">어려움</button>
+                </div>
+                
+                <div class="timer-settings">
+                    <div class="timer-option">
+                        <input type="radio" name="timer" id="timer-on" checked>
+                        <label for="timer-on">타이머 켜기</label>
+                    </div>
+                    <div class="timer-option">
+                        <input type="radio" name="timer" id="timer-off">
+                        <label for="timer-off">타이머 끄기</label>
+                    </div>
+                </div>
+                
+                <button class="start-btn" id="start-btn">게임 시작</button>
+            </div>
+        </div>
+        
+        <div class="game-area hidden" id="result-screen">
+            <div class="final-score">
+                <h2>게임 종료!</h2>
+                <p>최종 점수: <span id="final-score">0</span></p>
+                <p>맞춘 문제: <span id="correct-answers">0</span>/<span id="total-questions">10</span></p>
+                <p>연속 정답: <span id="final-streak">0</span></p>
+            </div>
+            
+            <button class="restart-btn" id="restart-btn">다시 시작</button>
+        </div>
+    </div>
+
+    <script>
+        // Game data - categorized Korean words with hints
+        const wordData = {
+            easy: [
+                { category: "동물", word: "고양이", hint: "야옹하고 울며 쥐를 잡는 동물" },
+                { category: "과일", word: "사과", hint: "빨갛거나 녹색이며 학교 선생님께 드리는 것" },
+                { category: "음식", word: "김치", hint: "한국의 대표적인 발효 음식" },
+                { category: "가전제품", word: "냉장고", hint: "음식을 신선하게 보관하는 기계" },
+                { category: "학교", word: "교실", hint: "학생들이 수업을 듣는 장소" },
+                { category: "신체", word: "손가락", hint: "손의 끝에 있으며 반지를 끼는 곳" },
+                { category: "교통", word: "자동차", hint: "바퀴가 달려 있고 운전해서 다니는 탈것" },
+                { category: "직업", word: "의사", hint: "병원에서 환자를 치료하는 사람" },
+                { category: "가족", word: "어머니", hint: "자식을 낳아 기르는 여성 가족 구성원" },
+                { category: "계절", word: "겨울", hint: "눈이 오고 가장 추운 계절" }
+            ],
+            medium: [
+                { category: "위인", word: "이순신", hint: "한국의 역사적 해군 영웅, 거북선으로 유명" },
+                { category: "과학", word: "지구과학", hint: "지구와 우주를 연구하는 학문 분야" },
+                { category: "역사", word: "고려시대", hint: "918년부터 1392년까지의 한국 역사 시대" },
+                { category: "문학", word: "시가", hint: "리듬과 운율이 있는 문학 작품 형태" },
+                { category: "문화", word: "한복", hint: "한국의 전통 의상" },
+                { category: "건축", word: "경복궁", hint: "서울에 있는 조선 시대의 대표적인 궁궐" },
+                { category: "지리", word: "한라산", hint: "제주도에 위치한 한국 최고봉" },
+                { category: "경제", word: "주식시장", hint: "주식을 거래하는 시장, 코스피라고도 함" },
+                { category: "스포츠", word: "태권도", hint: "한국의 대표적인 무술, 발차기가 특징" },
+                { category: "음악", word: "판소리", hint: "한국의 전통 음악 장르 중 하나" }
+            ],
+            hard: [
+                { category: "과학", word: "광합성", hint: "식물이 빛 에너지를 이용해 영양분을 만드는 과정" },
+                { category: "법률", word: "헌법재판소", hint: "헌법에 관한 사건을 심판하는 기관" },
+                { category: "의학", word: "심장마비", hint: "심장의 혈액 공급이 중단되어 발생하는 급성 상태" },
+                { category: "철학", word: "형이상학", hint: "존재의 근본적인 본질을 연구하는 철학 분야" },
+                { category: "경제", word: "인플레이션", hint: "물가 상승으로 화폐 가치가 하락하는 경제 현상" },
+                { category: "천문학", word: "블랙홀", hint: "강한 중력으로 빛조차 빠져나올 수 없는 천체" },
+                { category: "정치", word: "의원내각제", hint: "국회의원이 행정부 수반을 선출하는 정치 체제" },
+                { category: "물리학", word: "양자역학", hint: "아원자 입자의 행동을 연구하는 물리학 분야" },
+                { category: "생물학", word: "세포분열", hint: "세포가 분열하여 새로운 세포를 만드는 과정" },
+                { category: "지구과학", word: "판구조론", hint: "지각이 여러 개의 판으로 이루어져 있다는 이론" }
+            ]
+        };
+
+        // Game variables
+        let currentDifficulty = "easy";
+        let timerEnabled = true;
+        let gameActive = false;
+        let score = 0;
+        let streak = 0;
+        let timeLeft = 60;
+        let currentQuestion = 0;
+        const totalQuestions = 10;
+        let timer;
+        let currentWords = [];
+        let currentChoso = "";
+        let currentAnswer = "";
+        let currentHint = "";
+
+        // DOM elements
+        const gameScreen = document.getElementById("game-screen");
+        const resultScreen = document.getElementById("result-screen");
+        const scoreDisplay = document.getElementById("score");
+        const streakDisplay = document.getElementById("streak");
+        const timeDisplay = document.getElementById("time");
+        const currentQuestionDisplay = document.getElementById("current-question");
+        const categoryDisplay = document.getElementById("category");
+        const chosoDisplay = document.getElementById("choso-text");
+        const hintButton = document.getElementById("hint-button");
+        const hintBox = document.getElementById("hint-box");
+        const answerInput = document.getElementById("answer-input");
+        const submitBtn = document.getElementById("submit-btn");
+        const skipBtn = document.getElementById("skip-btn");
+        const resultMessage = document.getElementById("result-message");
+        const messageText = document.getElementById("message-text");
+        const answerReveal = document.getElementById("answer-reveal");
+        const progressBar = document.getElementById("progress-bar");
+        const startBtn = document.getElementById("start-btn");
+        const restartBtn = document.getElementById("restart-btn");
+        const finalScoreDisplay = document.getElementById("final-score");
+        const correctAnswersDisplay = document.getElementById("correct-answers");
+        const totalQuestionsDisplay = document.getElementById("total-questions");
+        const finalStreakDisplay = document.getElementById("final-streak");
+        
+        // Difficulty buttons
+        document.querySelectorAll(".difficulty-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".difficulty-btn").forEach(b => b.classList.remove("selected"));
+                btn.classList.add("selected");
+                currentDifficulty = btn.dataset.difficulty;
+            });
+        });
+        
+        // Timer options
+        document.getElementById("timer-off").addEventListener("change", () => {
+            timerEnabled = false;
+        });
+        
+        document.getElementById("timer-on").addEventListener("change", () => {
+            timerEnabled = true;
+        });
+        
+        // Start game
+        startBtn.addEventListener("click", startGame);
+        
+        // Restart game
+        restartBtn.addEventListener("click", startGame);
+        
+        // Submit answer
+        submitBtn.addEventListener("click", checkAnswer);
+        answerInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") checkAnswer();
+        });
+        
+        // Skip question
+        skipBtn.addEventListener("click", nextQuestion);
+        
+        // Show hint
+        hintButton.addEventListener("click", showHint);
+        
+        function startGame() {
+            // Reset game state
+            gameActive = true;
+            score = 0;
+            streak = 0;
+            currentQuestion = 0;
+            timeLeft = 60;
+            
+            // Set up words based on difficulty
+            currentWords = [...wordData[currentDifficulty]];
+            shuffleArray(currentWords);
+            currentWords = currentWords.slice(0, totalQuestions);
+            
+            // Show game screen
+            gameScreen.classList.remove("hidden");
+            resultScreen.classList.add("hidden");
+            
+            // Reset displays
+            scoreDisplay.textContent = score;
+            streakDisplay.textContent = streak;
+            timeDisplay.textContent = timeLeft;
+            currentQuestionDisplay.textContent = currentQuestion + 1;
+            resultMessage.className = "result-message";
+            
+            // Start timer if enabled
+            if (timerEnabled) {
+                clearInterval(timer);
+                timer = setInterval(updateTimer, 1000);
+            } else {
+                timeDisplay.textContent = "∞";
+            }
+            
+            // Load first question
+            loadQuestion();
+        }
+        
+        function loadQuestion() {
+            if (currentQuestion >= totalQuestions) {
+                endGame();
+                return;
+            }
+            
+            // Reset displays
+            answerInput.value = "";
+            answerInput.focus();
+            resultMessage.className = "result-message";
+            hintBox.classList.remove("show");
+            
+            // Update progress
+            currentQuestionDisplay.textContent = currentQuestion + 1;
+            progressBar.style.width = `${(currentQuestion / totalQuestions) * 100}%`;
+            
+            // Get current word
+            const currentWord = currentWords[currentQuestion];
+            currentAnswer = currentWord.word;
+            currentHint = currentWord.hint;
+            categoryDisplay.textContent = currentWord.category;
+            
+            // Display initial consonants (choso)
+            currentChoso = getInitialConsonants(currentWord.word);
+            chosoDisplay.textContent = currentChoso;
+        }
+        
+        function getInitialConsonants(word) {
+            // Get initial consonants of each syllable in Korean
+            const result = [];
+            for (let i = 0; i < word.length; i++) {
+                const charCode = word.charCodeAt(i);
+                
+                // Check if character is a Hangul syllable
+                if (charCode >= 44032 && charCode <= 55203) {
+                    const index = charCode - 44032;
+                    const initial = Math.floor(index / 588);
+                    result.push(String.fromCharCode(initial + 4352));
+                } else {
+                    result.push(word[i]);
+                }
+            }
+            
+            return result.join(" ");
+        }
+        
+        function checkAnswer() {
+            if (!gameActive) return;
+            
+            const userAnswer = answerInput.value.trim();
+            
+            if (userAnswer === "") {
+                answerInput.classList.add("shake");
+                setTimeout(() => answerInput.classList.remove("shake"), 500);
+                return;
+            }
+            
+            if (userAnswer === currentAnswer) {
+                // Correct answer
+                score += 100;
+                streak++;
+                scoreDisplay.textContent = score;
+                streakDisplay.textContent = streak;
+                
+                resultMessage.className = "result-message correct-message";
+                messageText.textContent = "정답입니다!";
+                answerReveal.textContent = `정답: ${currentAnswer}`;
+            } else {
+                // Wrong answer
+                streak = 0;
+                streakDisplay.textContent = streak;
+                
+                resultMessage.className = "result-message wrong-message";
+                messageText.textContent = "틀렸습니다!";
+                answerReveal.textContent = `정답: ${currentAnswer}`;
+                
+                // Shake animation for wrong answer
+                chosoDisplay.parentElement.classList.add("shake");
+                setTimeout(() => chosoDisplay.parentElement.classList.remove("shake"), 500);
+            }
+            
+            currentQuestion++;
+            setTimeout(nextQuestion, 1500);
+        }
+        
+        function nextQuestion() {
+            if (currentQuestion < totalQuestions) {
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        }
+        
+        function updateTimer() {
+            if (!gameActive) return;
+            
+            timeLeft--;
+            timeDisplay.textContent = timeLeft;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                endGame();
+            }
+        }
+        
+        function endGame() {
+            gameActive = false;
+            clearInterval(timer);
+            
+            // Calculate final score
+            finalScoreDisplay.textContent = score;
+            correctAnswersDisplay.textContent = Math.floor(score / 100);
+            totalQuestionsDisplay.textContent = totalQuestions;
+            finalStreakDisplay.textContent = streak;
+            
+            // Show result screen
+            gameScreen.classList.add("hidden");
+            resultScreen.classList.remove("hidden");
+        }
+        
+        function showHint() {
+            hintBox.textContent = currentHint;
+            hintBox.classList.toggle("show");
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+    </script>
+</body>
+</html>

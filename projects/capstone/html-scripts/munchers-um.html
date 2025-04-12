@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Munchers Deluxe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        .shaking {
+            animation: shake 0.5s ease-in-out infinite;
+        }
+        .pulsing {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        .cell {
+            transition: all 0.2s ease;
+        }
+        .cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        .selected {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        .correct {
+            background-color: rgba(34, 197, 94, 0.3);
+        }
+        .incorrect {
+            background-color: rgba(239, 68, 68, 0.3);
+        }
+        .muncher {
+            transition: all 0.3s ease;
+        }
+        .muncher-attack {
+            animation: shake 0.2s 3;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-purple-900 to-blue-800 py-4 px-6 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-yellow-300 flex items-center">
+                <i class="fas fa-dragon mr-2"></i> Word Munchers Deluxe
+            </h1>
+            <div class="flex items-center space-x-4">
+                <div class="bg-black bg-opacity-50 px-4 py-2 rounded-lg">
+                    <span class="text-yellow-300 font-bold">Score:</span>
+                    <span id="score" class="ml-2">0</span>
+                </div>
+                <div class="bg-black bg-opacity-50 px-4 py-2 rounded-lg">
+                    <span class="text-yellow-300 font-bold">Level:</span>
+                    <span id="level" class="ml-2">1</span>
+                </div>
+                <button id="sound-btn" class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-lg">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="flex-grow flex flex-col items-center justify-center p-4">
+        <!-- Theme Selector (would be populated from backend) -->
+        <div id="theme-selector" class="mb-8 bg-gray-800 p-6 rounded-xl shadow-lg w-full max-w-2xl">
+            <h2 class="text-xl font-bold text-center mb-4 text-yellow-300">Select Theme</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <button class="theme-btn bg-gradient-to-r from-green-600 to-green-800 hover:from-green-500 hover:to-green-700 py-3 px-4 rounded-lg font-bold transition-all">
+                    Animals
+                </button>
+                <button class="theme-btn bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 py-3 px-4 rounded-lg font-bold transition-all">
+                    Science
+                </button>
+                <button class="theme-btn bg-gradient-to-r from-red-600 to-red-800 hover:from-red-500 hover:to-red-700 py-3 px-4 rounded-lg font-bold transition-all">
+                    Geography
+                </button>
+                <button class="theme-btn bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-500 hover:to-purple-700 py-3 px-4 rounded-lg font-bold transition-all">
+                    History
+                </button>
+                <button class="theme-btn bg-gradient-to-r from-yellow-600 to-yellow-800 hover:from-yellow-500 hover:to-yellow-700 py-3 px-4 rounded-lg font-bold transition-all">
+                    Food
+                </button>
+                <button class="theme-btn bg-gradient-to-r from-pink-600 to-pink-800 hover:from-pink-500 hover:to-pink-700 py-3 px-4 rounded-lg font-bold transition-all">
+                    Sports
+                </button>
+            </div>
+        </div>
+
+        <!-- Game Board -->
+        <div id="game-board" class="hidden relative bg-gray-800 p-6 rounded-xl shadow-lg border-2 border-purple-600">
+            <!-- Current Category Display -->
+            <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-purple-700 px-6 py-1 rounded-full shadow-lg">
+                <span id="current-category" class="font-bold text-yellow-300">Animals</span>
+            </div>
+            
+            <!-- Instruction -->
+            <div id="instruction" class="text-center mb-4 text-lg font-semibold text-yellow-300">
+                Munch all the <span id="target-type" class="underline">verbs</span>!
+            </div>
+            
+            <!-- Grid -->
+            <div class="grid grid-cols-5 gap-3 mb-6">
+                <!-- Cells will be generated by JavaScript -->
+            </div>
+            
+            <!-- Munchers -->
+            <div class="flex justify-between items-center">
+                <div id="player" class="muncher floating bg-blue-600 w-16 h-16 rounded-full flex items-center justify-center text-3xl">
+                    <i class="fas fa-smile-beam"></i>
+                </div>
+                <div id="enemies" class="flex space-x-4">
+                    <div class="muncher shaking bg-red-600 w-12 h-12 rounded-full flex items-center justify-center text-2xl">
+                        <i class="fas fa-angry"></i>
+                    </div>
+                    <div class="muncher shaking bg-red-600 w-12 h-12 rounded-full flex items-center justify-center text-2xl">
+                        <i class="fas fa-grin-tongue-squint"></i>
+                    </div>
+                    <div class="muncher shaking bg-red-600 w-12 h-12 rounded-full flex items-center justify-center text-2xl">
+                        <i class="fas fa-grin-tongue-wink"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Modal -->
+        <div id="game-over-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div class="bg-gradient-to-br from-purple-900 to-blue-900 p-8 rounded-xl max-w-md w-full text-center shadow-2xl">
+                <h2 class="text-3xl font-bold text-yellow-300 mb-4">Game Over!</h2>
+                <p class="text-xl mb-2">Your final score:</p>
+                <p id="final-score" class="text-4xl font-bold text-white mb-6">0</p>
+                <div class="flex justify-center space-x-4">
+                    <button id="play-again-btn" class="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-bold transition-all">
+                        Play Again
+                    </button>
+                    <button id="change-theme-btn" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-bold transition-all">
+                        Change Theme
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 py-4 text-center text-gray-400">
+        <p>Word Munchers Deluxe - Ready for backend integration</p>
+    </footer>
+
+    <script>
+        // Game state
+        const gameState = {
+            currentTheme: null,
+            currentLevel: 1,
+            score: 0,
+            lives: 3,
+            targetType: 'verbs', // This would come from backend based on theme
+            gridSize: 5,
+            words: [], // This would be populated from backend
+            playerPosition: { row: 4, col: 2 },
+            enemyPositions: [
+                { row: 0, col: 0 },
+                { row: 0, col: 4 },
+                { row: 0, col: 2 }
+            ],
+            soundEnabled: true
+        };
+
+        // Placeholder words (would come from backend)
+        const wordCategories = {
+            animals: {
+                verbs: ['run', 'jump', 'swim', 'fly', 'climb', 'hunt', 'dig', 'leap', 'crawl', 'sprint'],
+                nouns: ['lion', 'tiger', 'bear', 'eagle', 'shark', 'frog', 'snake', 'zebra', 'monkey', 'giraffe'],
+                adjectives: ['fierce', 'swift', 'huge', 'tiny', 'furry', 'slimy', 'noisy', 'quiet', 'colorful', 'dangerous']
+            },
+            science: {
+                verbs: ['react', 'measure', 'observe', 'calculate', 'experiment', 'analyze', 'hypothesize', 'record', 'compare', 'classify'],
+                nouns: ['atom', 'molecule', 'gravity', 'energy', 'force', 'cell', 'organism', 'element', 'compound', 'electron'],
+                adjectives: ['chemical', 'physical', 'biological', 'atomic', 'molecular', 'organic', 'inorganic', 'synthetic', 'natural', 'theoretical']
+            },
+            geography: {
+                verbs: ['erode', 'flow', 'deposit', 'weather', 'migrate', 'settle', 'navigate', 'explore', 'map', 'survey'],
+                nouns: ['mountain', 'river', 'valley', 'desert', 'ocean', 'plateau', 'canyon', 'glacier', 'volcano', 'island'],
+                adjectives: ['tropical', 'arid', 'temperate', 'polar', 'coastal', 'inland', 'mountainous', 'flat', 'fertile', 'barren']
+            }
+        };
+
+        // DOM elements
+        const themeSelector = document.getElementById('theme-selector');
+        const gameBoard = document.getElementById('game-board');
+        const currentCategory = document.getElementById('current-category');
+        const targetType = document.getElementById('target-type');
+        const scoreElement = document.getElementById('score');
+        const levelElement = document.getElementById('level');
+        const gameOverModal = document.getElementById('game-over-modal');
+        const finalScore = document.getElementById('final-score');
+        const soundBtn = document.getElementById('sound-btn');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const changeThemeBtn = document.getElementById('change-theme-btn');
+
+        // Initialize game
+        function initGame() {
+            // Set up theme buttons
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const theme = btn.textContent.trim().toLowerCase();
+                    startGame(theme);
+                });
+            });
+
+            // Set up sound button
+            soundBtn.addEventListener('click', toggleSound);
+
+            // Set up game over buttons
+            playAgainBtn.addEventListener('click', () => {
+                gameOverModal.classList.add('hidden');
+                startGame(gameState.currentTheme);
+            });
+
+            changeThemeBtn.addEventListener('click', () => {
+                gameOverModal.classList.add('hidden');
+                gameBoard.classList.add('hidden');
+                themeSelector.classList.remove('hidden');
+            });
+        }
+
+        // Start game with selected theme
+        function startGame(theme) {
+            gameState.currentTheme = theme;
+            gameState.currentLevel = 1;
+            gameState.score = 0;
+            gameState.lives = 3;
+            
+            // Set random target type (verb, noun, adjective)
+            const types = ['verbs', 'nouns', 'adjectives'];
+            gameState.targetType = types[Math.floor(Math.random() * types.length)];
+            
+            updateUI();
+            generateBoard();
+            
+            themeSelector.classList.add('hidden');
+            gameBoard.classList.remove('hidden');
+        }
+
+        // Generate game board
+        function generateBoard() {
+            const gridContainer = gameBoard.querySelector('.grid');
+            gridContainer.innerHTML = '';
+            
+            // Get words for current theme
+            const themeWords = wordCategories[gameState.currentTheme];
+            const allWords = [...themeWords.verbs, ...themeWords.nouns, ...themeWords.adjectives];
+            
+            // Shuffle and select words for the grid
+            const shuffledWords = shuffleArray(allWords).slice(0, gameState.gridSize * gameState.gridSize);
+            
+            // Create cells
+            for (let row = 0; row < gameState.gridSize; row++) {
+                for (let col = 0; col < gameState.gridSize; col++) {
+                    const index = row * gameState.gridSize + col;
+                    const word = shuffledWords[index];
+                    const cell = document.createElement('div');
+                    cell.className = 'cell bg-gray-700 rounded-lg flex items-center justify-center text-center p-2 cursor-pointer font-bold text-lg';
+                    cell.textContent = word;
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    cell.dataset.word = word;
+                    
+                    // Determine word type (would be more sophisticated with backend)
+                    let wordType = 'other';
+                    if (themeWords.verbs.includes(word)) wordType = 'verbs';
+                    else if (themeWords.nouns.includes(word)) wordType = 'nouns';
+                    else if (themeWords.adjectives.includes(word)) wordType = 'adjectives';
+                    
+                    cell.dataset.type = wordType;
+                    
+                    cell.addEventListener('click', () => handleCellClick(cell, wordType));
+                    
+                    gridContainer.appendChild(cell);
+                }
+            }
+            
+            // Position player and enemies
+            positionCharacters();
+        }
+
+        // Position player and enemies on the grid
+        function positionCharacters() {
+            const player = document.getElementById('player');
+            const enemies = document.getElementById('enemies').children;
+            
+            // Clear previous positions
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.classList.remove('player-here', 'enemy-here');
+            });
+            
+            // Position player
+            const playerCell = document.querySelector(`.cell[data-row="${gameState.playerPosition.row}"][data-col="${gameState.playerPosition.col}"]`);
+            if (playerCell) {
+                playerCell.classList.add('player-here');
+            }
+            
+            // Position enemies
+            gameState.enemyPositions.forEach((pos, index) => {
+                if (index < enemies.length) {
+                    const enemyCell = document.querySelector(`.cell[data-row="${pos.row}"][data-col="${pos.col}"]`);
+                    if (enemyCell) {
+                        enemyCell.classList.add('enemy-here');
+                    }
+                }
+            });
+        }
+
+        // Handle cell click
+        function handleCellClick(cell, wordType) {
+            if (cell.classList.contains('enemy-here')) {
+                // Hit by enemy
+                gameState.lives--;
+                playSound('error');
+                
+                // Animate enemy attack
+                const enemyIndex = gameState.enemyPositions.findIndex(pos => 
+                    pos.row == cell.dataset.row && pos.col == cell.dataset.col
+                );
+                if (enemyIndex !== -1) {
+                    const enemy = document.getElementById('enemies').children[enemyIndex];
+                    enemy.classList.add('muncher-attack');
+                    setTimeout(() => {
+                        enemy.classList.remove('muncher-attack');
+                    }, 1000);
+                }
+                
+                if (gameState.lives <= 0) {
+                    endGame();
+                }
+                return;
+            }
+            
+            if (wordType === gameState.targetType) {
+                // Correct word
+                cell.classList.add('correct', 'selected');
+                gameState.score += 10 * gameState.currentLevel;
+                playSound('correct');
+                
+                setTimeout(() => {
+                    cell.classList.remove('selected');
+                    // Replace with new word (in a real game, this would come from backend)
+                    const themeWords = wordCategories[gameState.currentTheme];
+                    const allWords = [...themeWords.verbs, ...themeWords.nouns, ...themeWords.adjectives];
+                    const newWord = allWords[Math.floor(Math.random() * allWords.length)];
+                    cell.textContent = newWord;
+                    
+                    // Determine new word type
+                    let newWordType = 'other';
+                    if (themeWords.verbs.includes(newWord)) newWordType = 'verbs';
+                    else if (themeWords.nouns.includes(newWord)) newWordType = 'nouns';
+                    else if (themeWords.adjectives.includes(newWord)) newWordType = 'adjectives';
+                    
+                    cell.dataset.word = newWord;
+                    cell.dataset.type = newWordType;
+                    cell.classList.remove('correct');
+                }, 500);
+            } else {
+                // Incorrect word
+                cell.classList.add('incorrect', 'selected');
+                gameState.score = Math.max(0, gameState.score - 5);
+                playSound('error');
+                
+                setTimeout(() => {
+                    cell.classList.remove('selected', 'incorrect');
+                }, 500);
+            }
+            
+            // Move enemies randomly
+            moveEnemies();
+            
+            // Check for level completion
+            checkLevelCompletion();
+            
+            updateUI();
+        }
+
+        // Move enemies randomly
+        function moveEnemies() {
+            gameState.enemyPositions.forEach((pos, index) => {
+                const directions = [
+                    { row: pos.row - 1, col: pos.col }, // up
+                    { row: pos.row + 1, col: pos.col }, // down
+                    { row: pos.row, col: pos.col - 1 }, // left
+                    { row: pos.row, col: pos.col + 1 }  // right
+                ].filter(dir => 
+                    dir.row >= 0 && dir.row < gameState.gridSize && 
+                    dir.col >= 0 && dir.col < gameState.gridSize
+                );
+                
+                if (directions.length > 0) {
+                    const newPos = directions[Math.floor(Math.random() * directions.length)];
+                    gameState.enemyPositions[index] = newPos;
+                }
+            });
+            
+            positionCharacters();
+        }
+
+        // Check if level is complete
+        function checkLevelCompletion() {
+            // In a real game, this would check if all target words are munched
+            // For demo, we'll just advance level every 5 correct answers
+            if (gameState.score >= gameState.currentLevel * 50) {
+                gameState.currentLevel++;
+                playSound('levelup');
+                
+                // Add more enemies at higher levels
+                if (gameState.currentLevel % 2 === 0 && gameState.enemyPositions.length < 5) {
+                    gameState.enemyPositions.push({
+                        row: Math.floor(Math.random() * 2),
+                        col: Math.floor(Math.random() * gameState.gridSize)
+                    });
+                    
+                    // Add new enemy to DOM
+                    const newEnemy = document.createElement('div');
+                    newEnemy.className = 'muncher shaking bg-red-600 w-12 h-12 rounded-full flex items-center justify-center text-2xl';
+                    newEnemy.innerHTML = '<i class="fas fa-grin-squint-tears"></i>';
+                    document.getElementById('enemies').appendChild(newEnemy);
+                }
+                
+                // Change target type every level
+                const types = ['verbs', 'nouns', 'adjectives'];
+                gameState.targetType = types[Math.floor(Math.random() * types.length)];
+                
+                generateBoard();
+            }
+        }
+
+        // End game
+        function endGame() {
+            playSound('gameover');
+            finalScore.textContent = gameState.score;
+            gameOverModal.classList.remove('hidden');
+        }
+
+        // Update UI elements
+        function updateUI() {
+            scoreElement.textContent = gameState.score;
+            levelElement.textContent = gameState.currentLevel;
+            currentCategory.textContent = gameState.currentTheme.charAt(0).toUpperCase() + gameState.currentTheme.slice(1);
+            targetType.textContent = gameState.targetType;
+        }
+
+        // Toggle sound
+        function toggleSound() {
+            gameState.soundEnabled = !gameState.soundEnabled;
+            soundBtn.innerHTML = gameState.soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+            soundBtn.className = gameState.soundEnabled ? 
+                'bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-lg' : 
+                'bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded-lg';
+        }
+
+        // Play sound
+        function playSound(type) {
+            if (!gameState.soundEnabled) return;
+            
+            // In a real game, you would play actual sound files
+            console.log(`Playing ${type} sound`);
+        }
+
+        // Helper function to shuffle array
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Initialize the game when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

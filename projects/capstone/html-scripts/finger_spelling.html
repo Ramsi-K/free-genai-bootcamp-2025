@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL Fingerspelling Practice</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3578e5;
+            --secondary: #4285f4;
+            --accent: #34a853;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --success: #34a853;
+            --warning: #fbbc05;
+            --danger: #ea4335;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 1.8rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        
+        nav a:hover {
+            opacity: 0.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .main-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--dark);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 0.5rem;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background-color: #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--gray);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .alphabet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 10px;
+            margin: 1rem 0;
+        }
+        
+        .alphabet-card {
+            background-color: var(--light);
+            border-radius: 4px;
+            padding: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .alphabet-card:hover {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .alphabet-card.active {
+            background-color: var(--primary);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .alphabet-letter {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .progress-container {
+            margin-top: 2rem;
+        }
+        
+        .progress-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: var(--light);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--success);
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .progress-text {
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .exercise-container {
+            margin-top: 1rem;
+        }
+        
+        .exercise-letter {
+            font-size: 4rem;
+            text-align: center;
+            margin: 1rem 0;
+            font-weight: bold;
+            color: var(--primary);
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .feedback {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .feedback.success {
+            background-color: rgba(52, 168, 83, 0.2);
+            color: var(--success);
+            display: block;
+        }
+        
+        .feedback.error {
+            background-color: rgba(234, 67, 53, 0.2);
+            color: var(--danger);
+            display: block;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-item.correct {
+            color: var(--success);
+        }
+        
+        .history-item.incorrect {
+            color: var(--danger);
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .modal-title {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .tab-container {
+            margin-top: 1rem;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--light);
+            margin-bottom: 1rem;
+        }
+        
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gray);
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .info-text {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-hands-helping"></i>
+            <h1>ASL Fingerspelling</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#" id="practice-link">Practice</a></li>
+                <li><a href="#" id="learn-link">Learn</a></li>
+                <li><a href="#" id="about-link">About ASL</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <h1 class="main-title">ASL Fingerspelling Practice</h1>
+        
+        <div class="grid">
+            <div class="card">
+                <h2 class="card-title">Practice with Your Camera</h2>
+                <div class="video-container">
+                    <video id="video" autoplay playsinline></video>
+                </div>
+                <div class="controls">
+                    <button id="start-camera" class="btn btn-primary">
+                        <i class="fas fa-camera"></i> Start Camera
+                    </button>
+                    <button id="stop-camera" class="btn btn-secondary" disabled>
+                        <i class="fas fa-stop"></i> Stop Camera
+                    </button>
+                </div>
+                
+                <div class="exercise-container">
+                    <h3>Current Exercise</h3>
+                    <div class="exercise-letter" id="current-letter">A</div>
+                    <div class="controls">
+                        <button id="check-letter" class="btn btn-success" disabled>
+                            <i class="fas fa-check"></i> Check My Sign
+                        </button>
+                        <button id="next-letter" class="btn btn-primary">
+                            <i class="fas fa-arrow-right"></i> Next Letter
+                        </button>
+                    </div>
+                    <div class="feedback" id="feedback"></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">ASL Alphabet Reference</h2>
+                <p class="info-text">Click on any letter to see more details and practice it.</p>
+                <div class="alphabet-grid" id="alphabet-grid">
+                    <!-- Generated by JavaScript -->
+                </div>
+                
+                <div class="progress-container">
+                    <h3 class="progress-title">Your Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text">0/26 letters practiced</div>
+                </div>
+                
+                <div class="exercise-history">
+                    <h3>Recent Practice</h3>
+                    <div id="history-list">
+                        <!-- Generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- About ASL Modal -->
+    <div class="modal" id="about-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-about">&times;</span>
+            <h2 class="modal-title">About American Sign Language</h2>
+            
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab active" data-tab="about">About ASL</div>
+                    <div class="tab" data-tab="culture">Deaf Culture</div>
+                    <div class="tab" data-tab="tips">Learning Tips</div>
+                </div>
+                
+                <div class="tab-content active" id="about-tab">
+                    <p>American Sign Language (ASL) is a complete, natural language that has the same linguistic properties as spoken languages, with grammar that differs from English.</p>
+                    <p>ASL is expressed by movements of the hands and face. It is the primary language of many North Americans who are deaf and hard of hearing and is used by some hearing people as well.</p>
+                    <p>Key facts about ASL:</p>
+                    <ul>
+                        <li>ASL is a distinct language with its own grammar and syntax</li>
+                        <li>It's not a signed version of English</li>
+                        <li>Facial expressions and body movements are important grammatical markers</li>
+                        <li>ASL has regional variations and dialects</li>
+                        <li>There are many different sign languages around the world</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-content" id="culture-tab">
+                    <p>Deaf culture is the set of social beliefs, behaviors, art, literary traditions, history, values, and shared institutions of communities that are influenced by deafness and which use sign languages as the main means of communication.</p>
+                    <p>Important aspects of Deaf culture:</p>
+                    <ul>
+                        <li><strong>Identity:</strong> Many Deaf people consider themselves part of a cultural and linguistic minority rather than disabled</li>
+                        <li><strong>Community:</strong> Strong sense of community and shared experiences</li>
+                        <li><strong>Values:</strong> Eye contact and visual communication are highly valued</li>
+                        <li><strong>Art:</strong> Rich tradition of storytelling, poetry, and theater</li>
+                        <li><strong>History:</strong> Important events and figures in Deaf history</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-content" id="tips-tab">
+                    <p>Learning ASL is a rewarding experience that opens doors to new friendships and cultural understanding. Here are some tips for success:</p>
+                    <ul>
+                        <li><strong>Practice regularly:</strong> Consistency is key when learning any new language</li>
+                        <li><strong>Use facial expressions:</strong> ASL relies heavily on facial grammar</li>
+                        <li><strong>Focus on meaning:</strong> Don't try to translate word-for-word from English</li>
+                        <li><strong>Watch signers:</strong> Observe fluent signers as much as possible</li>
+                        <li><strong>Join the community:</strong> Attend Deaf events when possible</li>
+                        <li><strong>Be patient:</strong> Language learning takes time and effort</li>
+                        <li><strong>Have fun:</strong> Enjoy the process of learning! </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Letter Detail Modal -->
+    <div class="modal" id="letter-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-letter">&times;</span>
+            <h2 class="modal-title">ASL Letter: <span id="modal-letter"></span></h2>
+            
+            <div style="text-align: center; margin: 2rem 0;">
+                <div style="font-size: 5rem; font-weight: bold;" id="letter-display">A</div>
+                <div class="video-container" style="max-width: 500px; margin: 1rem auto;">
+                    <video id="letter-video" autoplay loop muted playsinline style="background-color: #eee;">
+                        <source id="letter-video-source" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+            
+            <h3>Sign Description</h3>
+            <p id="letter-description">Description will appear here...</p>
+            
+            <h3>Tips</h3>
+            <p id="letter-tips">Tips will appear here...</p>
+            
+            <div class="controls" style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                <button id="prev-letter-btn" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Previous Letter
+                </button>
+                <button id="practice-letter-btn" class="btn btn-primary">
+                    <i class="fas fa-hand-paper"></i> Practice This Letter
+                </button>
+                <button id="next-letter-btn" class="btn btn-secondary">
+                    Next Letter <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data for ASL alphabet
+        const aslAlphabet = [
+            { letter: 'A', description: 'Make a fist with your thumb resting against the side of your index finger, not tucked inside.', 
+              tips: 'Keep your fingers relaxed but firm. The thumb should be visible from the front.' },
+            { letter: 'B', description: 'Hold all fingers straight and close together, with thumb folded across palm.', 
+              tips: 'Your palm should face outward, with fingers pointing upward.' },
+            { letter: 'C', description: 'Form a "C" shape with your hand, curving your fingers and thumb.', 
+              tips: 'The opening should be clearly visible to someone looking at your hand.' },
+            { letter: 'D', description: 'Point your index finger upward, with thumb and other fingers folded into your palm.', 
+              tips: 'Make sure only your index finger is extended straight up.' },
+            { letter: 'E', description: 'All fingers are bent and touching the thumb, which is folded across the palm.', 
+              tips: 'It should resemble a claw shape with all fingertips touching the thumb.' },
+            { letter: 'F', description: 'Extend your index finger and thumb to form an "OK" sign, while other fingers are folded down.', 
+              tips: 'The thumb and index finger should nearly form a circle.' },
+            { letter: 'G', description: 'Point index finger forward with thumb folded against palm, other fingers folded down.', 
+              tips: 'Your hand should resemble pointing at something in front of you.' },
+            { letter: 'H', description: 'Extend index and middle fingers together pointing forward, with thumb folded against palm.', 
+              tips: 'Keep the two extended fingers straight and close together.' },
+            { letter: 'I', description: 'Raise pinky finger with all other fingers folded down, thumb folded across palm.', 
+              tips: 'The pinky should be clearly extended upward.' },
+            { letter: 'J', description: 'Start with "I" shape and move hand in a "J" shaped motion in air.', 
+              tips: 'The movement should clearly show the J shape from writing.' },
+            { letter: 'K', description: 'Extend index and middle finger upward and apart (like a "V"), with thumb between them.', 
+              tips: 'The thumb should be visible between the two extended fingers.' },
+            { letter: 'L', description: 'Extend thumb and index finger to form an "L" shape, other fingers folded.', 
+              tips: 'The angle between thumb and index should be approximately 90 degrees.' },
+            { letter: 'M', description: 'Fold all fingers down so tips touch palm, then tuck thumb under first three fingers.', 
+              tips: 'Your hand should resemble holding something small.' },
+            { letter: 'N', description: 'Fold all fingers down so tips touch palm, then tuck thumb under first two fingers.', 
+              tips: 'Similar to "M" but with thumb under fewer fingers.' },
+            { letter: 'O', description: 'Touch all fingertips together with thumb, forming an "O" shape.', 
+              tips: 'The opening should be clearly visible from the front.' },
+            { letter: 'P', description: 'Extend index finger downward while thumb is extended outward, other fingers folded.', 
+              tips: 'Similar to the ASL "K" but rotated downward.' },
+            { letter: 'Q', description: 'Extend thumb and index finger downward to form a "G" rotated downward.', 
+              tips: 'The hand should be positioned as if pouring from a pitcher.' },
+            { letter: 'R', description: 'Cross middle finger over index finger, other fingers folded with thumb touching them.', 
+              tips: 'Be careful not to confuse with offensive gestures in other cultures.' },
+            { letter: 'S', description: 'Make a fist with thumb folded over fingers in front of fingers.', 
+              tips: 'The thumb should cover the fingertips from view in front.' },
+            { letter: 'T', description: 'Make a fist with thumb inserted between index and middle fingers.', 
+              tips: 'The thumb should peek out between the two fingers.' },
+            { letter: 'U', description: 'Extend index and middle fingers upward and close together, other fingers folded.', 
+              tips: 'Keep the two fingers straight and touching each other.' },
+            { letter: 'V', description: 'Extend index and middle fingers upward and apart (like "V" for victory), others folded.', 
+              tips: 'The fingers should form a clear "V" shape.' },
+            { letter: 'W', description: 'Extend index, middle, and ring fingers upward and apart, others folded.', 
+              tips: 'The three extended fingers should form a "W" shape.' },
+            { letter: 'X', description: 'Bend index finger into a hook shape, other fingers folded down with thumb against them.', 
+              tips: 'The hooked finger should be clearly distinguished.' },
+            { letter: 'Y', description: 'Extend thumb and pinky outward while other fingers are folded into palm.', 
+              tips: 'Resembles the "hang loose" gesture in some cultures.' },
+            { letter: 'Z', description: 'Spell out a "Z" in the air with your index finger.', 
+              tips: 'Make the horizontal lines of the Z clearly visible in the motion.' }
+        ];
+
+        // App state
+        let currentLetterIndex = 0;
+        let practicedLetters = {};
+        let practiceHistory = [];
+        let stream = null;
+        
+        // DOM elements
+        const videoElement = document.getElementById('video');
+        const startCameraBtn = document.getElementById('start-camera');
+        const stopCameraBtn = document.getElementById('stop-camera');
+        const checkLetterBtn = document.getElementById('check-letter');
+        const nextLetterBtn = document.getElementById('next-letter');
+        const currentLetterElement = document.getElementById('current-letter');
+        const feedbackElement = document.getElementById('feedback');
+        const alphabetGrid = document.getElementById('alphabet-grid');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        const historyList = document.getElementById('history-list');
+        const aboutModal = document.getElementById('about-modal');
+        const aboutLink = document.getElementById('about-link');
+        const closeAbout = document.getElementById('close-about');
+        const letterModal = document.getElementById('letter-modal');
+        const modalLetter = document.getElementById('modal-letter');
+        const letterDisplay = document.getElementById('letter-display');
+        const letterVideo = document.getElementById('letter-video');
+        const letterVideoSource = document.getElementById('letter-video-source');
+        const letterDescription = document.getElementById('letter-description');
+        const letterTips = document.getElementById('letter-tips');
+        const prevLetterBtn = document.getElementById('prev-letter-btn');
+        const nextLetterBtnModal = document.getElementById('next-letter-btn');
+        const practiceLetterBtn = document.getElementById('practice-letter-btn');
+        const closeLetter = document.getElementById('close-letter');
+        const practiceLink = document.getElementById('practice-link');
+        const learnLink = document.getElementById('learn-link');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        // Initialize the app
+        function init() {
+            renderAlphabetGrid();
+            updateCurrentLetter();
+            updateProgress();
+            renderHistory();
+            
+            // Setup event listeners
+            startCameraBtn.addEventListener('click', startCamera);
+            stopCameraBtn.addEventListener('click', stopCamera);
+            checkLetterBtn.addEventListener('click', checkLetter);
+            nextLetterBtn.addEventListener('click', nextLetter);
+            aboutLink.addEventListener('click', openAboutModal);
+            closeAbout.addEventListener('click', closeAboutModal);
+            practiceLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelector('.main-title').scrollIntoView({ behavior: 'smooth' });
+            });
+            learnLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('alphabet-grid').scrollIntoView({ behavior: 'smooth' });
+            });
+            letterModal.addEventListener('click', (e) => {
+                if (e.target === letterModal) {
+                    closeLetterModal();
+                }
+            });
+            prevLetterBtn.addEventListener('click', showPrevLetterInModal);
+            nextLetterBtnModal.addEventListener('click', showNextLetterInModal);
+            practiceLetterBtn.addEventListener('click', practiceSelectedLetter);
+            closeLetter.addEventListener('click', closeLetterModal);
+            
+            // Tab functionality
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    activateTab(tabId);
+                });
+            });
+            
+            // Initialize all letters as not practiced
+            aslAlphabet.forEach(letter => {
+                practicedLetters[letter.letter] = false;
+            });
+        }
+        
+        // Render the alphabet grid
+        function renderAlphabetGrid() {
+            alphabetGrid.innerHTML = '';
+            
+            aslAlphabet.forEach((letterData, index) => {
+                const letterElement = document.createElement('div');
+                letterElement.className = 'alphabet-card';
+                if (index === currentLetterIndex) {
+                    letterElement.classList.add('active');
+                }
+                
+                letterElement.innerHTML = `
+                    <div class="alphabet-letter">${letterData.letter}</div>
+                `;
+                
+                letterElement.addEventListener('click', () => {
+                    showLetterInModal(index);
+                });
+                
+                alphabetGrid.appendChild(letterElement);
+            });
+        }
+        
+        // Update the current letter display
+        function updateCurrentLetter() {
+            currentLetterElement.textContent = aslAlphabet[currentLetterIndex].letter;
+            
+            // Update active state in alphabet grid
+            document.querySelectorAll('.alphabet-card').forEach((card, index) => {
+                if (index === currentLetterIndex) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+        }
+        
+        // Start camera
+        function startCamera() {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                .then(function(s) {
+                    stream = s;
+                    videoElement.srcObject = stream;
+                    startCameraBtn.disabled = true;
+                    stopCameraBtn.disabled = false;
+                    checkLetterBtn.disabled = false;
+                })
+                .catch(function(err) {
+                    console.error("Error accessing camera: ", err);
+                    feedbackElement.textContent = "Error accessing camera. Please make sure you've granted permission.";
+                    feedbackElement.className = 'feedback error';
+                    feedbackElement.style.display = 'block';
+                });
+        }
+        
+        // Stop camera
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                videoElement.srcObject = null;
+                stream = null;
+            }
+            startCameraBtn.disabled = false;
+            stopCameraBtn.disabled = true;
+            checkLetterBtn.disabled = true;
+        }
+        
+        // Check if the signed letter matches
+        function checkLetter() {
+            // In a real app, this would use machine learning to analyze the video
+            // For this demo, we'll just simulate checking after a delay
+            checkLetterBtn.disabled = true;
+            
+            // Simulate processing time
+            setTimeout(() => {
+                // Random result for demo (80% chance correct)
+                const isCorrect = Math.random() < 0.8;
+                
+                // Update state
+                const currentLetter = aslAlphabet[currentLetterIndex].letter;
+                practicedLetters[currentLetter] = isCorrect;
+                
+                // Add to history
+                practiceHistory.unshift({
+                    letter: currentLetter,
+                    correct: isCorrect,
+                    timestamp: new Date()
+                });
+                
+                // Keep only last 5 items in history
+                if (practiceHistory.length > 5) {
+                    practiceHistory.pop();
+                }
+                
+                // Update UI
+                updateProgress();
+                renderHistory();
+                
+                // Show feedback
+                feedbackElement.textContent = isCorrect ? 
+                    "Correct! Great job signing the letter!" : 
+                    "Not quite right. Try practicing this letter more.";
+                feedbackElement.className = isCorrect ? 'feedback success' : 'feedback error';
+                feedbackElement.style.display = 'block';
+                
+                checkLetterBtn.disabled = false;
+            }, 1500);
+        }
+        
+        // Move to next letter
+        function nextLetter() {
+            feedbackElement.style.display = 'none';
+            currentLetterIndex = (currentLetterIndex + 1) % aslAlphabet.length;
+            updateCurrentLetter();
+        }
+        
+        // Update progress display
+        function updateProgress() {
+            const practicedCount = Object.values(practicedLetters).filter(Boolean).length;
+            const totalLetters = aslAlphabet.length;
+            const percentage = Math.round((practicedCount / totalLetters) * 100);
+            
+            progressFill.style.width = `${percentage}%`;
+            progressText.textContent = `${practicedCount}/${totalLetters} letters practiced (${percentage}%)`;
+        }
+        
+        // Render practice history
+        function renderHistory() {
+            historyList.innerHTML = '';
+            
+            if (practiceHistory.length === 0) {
+                historyList.innerHTML = '<div class="info-text">No practice history yet</div>';
+                return;
+            }
+            
+            practiceHistory.forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = `history-item ${item.correct ? 'correct' : 'incorrect'}`;
+                historyItem.innerHTML = `
+                    <span>${item.letter}</span>
+                    <span>${item.correct ? 
+                        '<i class="fas fa-check-circle"></i> Correct' : 
+                        '<i class="fas fa-times-circle"></i> Needs Practice'}</span>
+                    <span>${item.timestamp.toLocaleTimeString()}</span>
+                `;
+                historyList.appendChild(historyItem);
+            });
+        }
+        
+        // Open about modal
+        function openAboutModal(e) {
+            e.preventDefault();
+            aboutModal.classList.add('active');
+        }
+        
+        // Close about modal
+        function closeAboutModal() {
+            aboutModal.classList.remove('active');
+        }
+        
+        // Show letter in modal
+        function showLetterInModal(index) {
+            currentLetterIndex = index;
+            const letterData = aslAlphabet[index];
+            
+            modalLetter.textContent = letterData.letter;
+            letterDisplay.textContent = letterData.letter;
+            letterDescription.textContent = letterData.description;
+            letterTips.textContent = letterData.tips;
+            
+            // In a real app, we would show an actual video of the sign
+            // For this demo, we'll just show a placeholder
+            letterVideoSource.src = '';
+            letterVideo.load();
+            
+            letterModal.classList.add('active');
+        }
+        
+        // Show previous letter in modal
+        function showPrevLetterInModal() {
+            currentLetterIndex = (currentLetterIndex - 1 + aslAlphabet.length) % aslAlphabet.length;
+            showLetterInModal(currentLetterIndex);
+        }
+        
+        // Show next letter in modal
+        function showNextLetterInModal() {
+            currentLetterIndex = (currentLetterIndex + 1) % aslAlphabet.length;
+            showLetterInModal(currentLetterIndex);
+        }
+        
+        // Practice the selected letter
+        function practiceSelectedLetter() {
+            updateCurrentLetter();
+            closeLetterModal();
+            
+            // Scroll to practice section
+            document.querySelector('.exercise-container').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+        
+        // Close letter modal
+        function closeLetterModal() {
+            letterModal.classList.remove('active');
+        }
+        
+        // Activate tab
+        function activateTab(tabId) {
+            tabs.forEach(tab => {
+                if (tab.getAttribute('data-tab') === tabId) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            tabContents.forEach(content => {
+                if (content.id === `${tabId}-tab`) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+        }
+        
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

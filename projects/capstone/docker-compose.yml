@@ -1,0 +1,80 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./backend:/app
+      - ./data:/app/data
+      - ./backend/assets/data/processed:/app/assets/data/processed:ro # Fixed path to match project structure
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+      - CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+      - ENVIRONMENT=development
+      - SQLITE_DB_PATH=/app/data/hagxwon.db
+    command: bash -c "chmod +x /app/scripts/start.sh && /app/scripts/start.sh"
+    restart: unless-stopped
+    networks:
+      - hagxwon-network
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend/src
+          target: /app/src
+          ignore:
+            - '**/__pycache__/'
+            - '**/*.pyc'
+        - action: rebuild
+          path: ./backend/requirements.txt
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Anonymous volume for node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000/api
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true # Enable hot reload in Docker
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - hagxwon-network
+    command: npm run dev -- --host 0.0.0.0 --port 5173
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5173']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/src
+          target: /app/src
+          ignore:
+            - 'node_modules/'
+            - 'dist/'
+        - action: rebuild
+          path: ./frontend/package.json
+
+networks:
+  hagxwon-network:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
+  processed-data: # Persists the processed Korean word data

@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    
+    --primary-blue: 212 76% 59%;  /* #4A90E2 */
+    --primary-purple: 271 59% 44%; /* #6B2FB3 */
+    
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    
+    --ring: var(--primary-blue);
+    
+    --radius: 1rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-[#0A0A0C] text-foreground;
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(74, 144, 226, 0.1), transparent 50%),
+      radial-gradient(circle at 0% 100%, rgba(107, 47, 179, 0.1), transparent 50%);
+    background-attachment: fixed;
+  }
+}
+
+.glassmorphism {
+  @apply bg-black/20 backdrop-blur-xl border border-white/10;
+  box-shadow: 
+    0 0 20px rgba(74, 144, 226, 0.1),
+    inset 0 0 20px rgba(107, 47, 179, 0.05);
+}
+
+.neon-glow {
+  box-shadow: 
+    0 0 10px rgba(74, 144, 226, 0.3),
+    0 0 20px rgba(107, 47, 179, 0.2);
+}
+
+.neon-text {
+  @apply bg-gradient-to-r from-[#4A90E2] to-[#6B2FB3] bg-clip-text text-transparent;
+}
+
+.neon-border {
+  @apply relative overflow-hidden;
+  border: 1px solid transparent;
+  background: linear-gradient(to right, #4A90E2, #6B2FB3) border-box;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.hover-glow {
+  @apply transition-all duration-300;
+}
+
+.hover-glow:hover {
+  box-shadow: 
+    0 0 15px rgba(74, 144, 226, 0.4),
+    0 0 30px rgba(107, 47, 179, 0.2);
+}
+
+.grid-pattern {
+  background-image: linear-gradient(rgba(74, 144, 226, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 144, 226, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: center center;
+}
+
+/* Futuristic button styles */
+.btn-futuristic {
+  @apply relative overflow-hidden rounded-lg px-6 py-3;
+  background: linear-gradient(45deg, 
+    rgba(74, 144, 226, 0.2),
+    rgba(107, 47, 179, 0.2)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-futuristic::before {
+  content: '';
+  @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+  background: linear-gradient(45deg, 
+    rgba(74, 144, 226, 0.4),
+    rgba(107, 47, 179, 0.4)
+  );
+}
+
+.btn-futuristic:hover::before {
+  @apply opacity-100;
+}
+
+/* Animated progress bar */
+.progress-bar {
+  @apply relative h-2 rounded-full overflow-hidden;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.progress-bar::after {
+  content: '';
+  @apply absolute inset-0 rounded-full;
+  background: linear-gradient(90deg, #4A90E2, #6B2FB3);
+  animation: progress-animation 2s ease-in-out infinite;
+}
+
+@keyframes progress-animation {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* HUD-style elements */
+.hud-element {
+  @apply relative rounded-lg p-4;
+  background: linear-gradient(135deg,
+    rgba(74, 144, 226, 0.1),
+    rgba(107, 47, 179, 0.1)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hud-element::before {
+  content: '';
+  @apply absolute top-0 left-0 w-2 h-2 rounded-full;
+  background: #4A90E2;
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+}

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한국어 듣기 연습 (Korean Listening Practice)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #388E3C;
+            --secondary: #2196F3;
+            --danger: #F44336;
+            --warning: #FFC107;
+            --light-bg: #f8f9fa;
+            --dark-text: #212529;
+            --gray-text: #6c757d;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
+            background-color: var(--light-bg);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        h1 {
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+        
+        .difficulty-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #1976D2;
+        }
+        
+        .active-difficulty {
+            background-color: var(--primary-dark);
+            color: white;
+        }
+        
+        .exercise-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .audio-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .audio-btn:hover {
+            background-color: #1976D2;
+            transform: scale(1.05);
+        }
+        
+        .audio-btn i {
+            font-size: 20px;
+        }
+        
+        .progress-container {
+            flex-grow: 1;
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--secondary);
+            width: 0%;
+        }
+        
+        .time-display {
+            font-size: 14px;
+            color: var(--gray-text);
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .question-container {
+            margin: 25px 0;
+        }
+        
+        .question {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .question-text {
+            margin-bottom: 20px;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        .option {
+            padding: 12px 15px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            background-color: #f8f9fa;
+            border-color: #adb5bd;
+        }
+        
+        .option.selected {
+            border-color: var(--secondary);
+            background-color: #E3F2FD;
+        }
+        
+        .option.correct {
+            border-color: var(--primary);
+            background-color: #E8F5E9;
+        }
+        
+        .option.incorrect {
+            border-color: var(--danger);
+            background-color: #FFEBEE;
+        }
+        
+        .option-input {
+            margin-right: 10px;
+            accent-color: var(--secondary);
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .correct-feedback {
+            background-color: #E8F5E9;
+            border-left: 4px solid var(--primary);
+            color: #2E7D32;
+        }
+        
+        .incorrect-feedback {
+            background-color: #FFEBEE;
+            border-left: 4px solid var(--danger);
+            color: #C62828;
+        }
+        
+        .transcript-container {
+            margin: 30px 0;
+            display: none;
+        }
+        
+        .transcript-toggle {
+            background: none;
+            border: none;
+            color: var(--secondary);
+            font-weight: 500;
+            cursor: pointer;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .transcript {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            line-height: 1.8;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .result-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .score {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+        
+        .result-feedback {
+            margin-bottom: 20px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .exercise-container {
+                padding: 15px;
+            }
+            
+            .audio-controls {
+                flex-wrap: wrap;
+            }
+            
+            .progress-container {
+                order: 3;
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>한국어 듣기 연습</h1>
+            <p>TOPIK II 듣기 시험을 대비한 연습 문제</p>
+        </header>
+        
+        <div class="difficulty-selector">
+            <button class="btn btn-outline active-difficulty" data-level="beginner">초급</button>
+            <button class="btn btn-outline" data-level="intermediate">중급</button>
+            <button class="btn btn-outline" data-level="advanced">고급</button>
+        </div>
+        
+        <div class="exercise-container">
+            <div id="exercise-intro">
+                <h3>듣기 연습 안내</h3>
+                <p>1. 난이도를 선택하세요 (초급, 중급, 고급)</p>
+                <p>2. '연습 시작' 버튼을 클릭하세요</p>
+                <p>3. 오디오를 듣고 질문에 답하세요</p>
+                <p>4. 제출 버튼을 눌러 답을 확인하세요</p>
+                <div class="controls">
+                    <button id="start-practice" class="btn btn-primary">연습 시작</button>
+                </div>
+            </div>
+            
+            <div id="exercise-content" class="hidden">
+                <div class="audio-controls">
+                    <button id="play-btn" class="audio-btn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button id="pause-btn" class="audio-btn" style="display: none;">
+                        <i class="fas fa-pause"></i>
+                    </button>
+                    <div class="progress-container">
+                        <div id="progress-bar" class="progress-bar"></div>
+                    </div>
+                    <div id="time-display" class="time-display">0:00 / 0:00</div>
+                </div>
+                
+                <div id="question-container" class="question-container">
+                    <div class="question">질문:</div>
+                    <div id="question-text" class="question-text"></div>
+                    <div id="options" class="options"></div>
+                </div>
+                
+                <div id="correct-feedback" class="feedback correct-feedback">
+                    <i class="fas fa-check-circle"></i> 정답입니다!
+                </div>
+                
+                <div id="incorrect-feedback" class="feedback incorrect-feedback">
+                    <i class="fas fa-times-circle"></i> 틀렸습니다. 정답은: <span id="correct-answer"></span>
+                </div>
+                
+                <button id="transcript-toggle" class="transcript-toggle">
+                    <i class="fas fa-chevron-down"></i> 대본 보기
+                </button>
+                
+                <div id="transcript-container" class="transcript-container">
+                    <div id="transcript" class="transcript"></div>
+                </div>
+                
+                <div class="controls">
+                    <button id="submit-btn" class="btn btn-primary hidden">제출</button>
+                    <button id="next-btn" class="btn btn-secondary">다음 문제</button>
+                </div>
+            </div>
+            
+            <div id="result-container" class="result-container hidden">
+                <div class="score">점수: <span id="score">0</span>/100</div>
+                <div class="result-feedback" id="result-feedback"></div>
+                <button id="restart-btn" class="btn btn-primary">다시 시작</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Exercise data for different levels
+        const exercises = {
+            beginner: [
+                {
+                    audio: "https://storage.googleapis.com/jaesam-korean-audio/interview-simple.mp3",
+                    question: "여자가 무엇을 하고 싶어합니까?",
+                    options: [
+                        "물을 마시고 싶어요",
+                        "커피를 마시고 싶어요",
+                        "쥬스를 마시고 싶어요",
+                        "맥주를 마시고 싶어요"
+                    ],
+                    answer: 1,
+                    transcript: "여자: 아저씨, 커피 한 잔 주세요. 아, 따뜻한 커피로 해주세요.\n남자: 아, 미안합니다. 지금 뜨거운 커피가 없는데요. 차가운 커피는 어때요?\n여자: 그럼 따뜻한 녹차라도 주세요."
+                },
+                {
+                    audio: "https://storage.googleapis.com/jaesam-korean-audio/directions-simple.mp3",
+                    question: "남자는 지금 어디로 가고 싶어합니까?",
+                    options: [
+                        "서점",
+                        "은행",
+                        "슈퍼마켓",
+                        "역"
+                    ],
+                    answer: 3,
+                    transcript: "여자: 저기요, 지하철역이 어디 있는지 아세요?\n남자: 네, 이 길로 쭉 가면 파란 건물이 보일 거예요. 그 건물 뒤에 지하철역이 있어요.\n여자: 걸어서 얼마나 걸려요?\n남자: 5분 정도 걸어가면 될 거예요."
+                },
+                {
+                    audio: "https://storage.googleapis.com/jaesam-korean-audio/shopping-simple.mp3",
+                    question: "이 사람들은 무엇에 대해 이야기하고 있습니까?",
+                    options: [
+                        "옷 사기",
+                        "음식 주문하기",
+                        "선물 고르기",
+                        "영화 보기"
+                    ],
+                    answer: 2,
+                    transcript: "남자: 이 시계 어때? 아빠 생신 선물로 좋을 것 같아.\n여자: 글쎄, 아버님께서 시계를 좋아하시나요? 저 책이 더 좋을 것 같은데.\n남자: 맞아. 아빠는 책을 정말 좋아하셔. 그럼 이 책으로 정할까?"
+                }
+            ],
+            intermediate: [
+                {
+                    audio: "https://storage.googleapis.com/jaesam-korean-audio/news-intermediate.mp3",
+                    question: "이 뉴스의 주요 내용은 무엇입니까?",
+                    options: [
+                        "새로운 병원 개원",
+                        "교통사고 증가 원인",
+                        "버스 노선 변경 안내",
+                        "도서관 개관 시간 연장"
+                    ],
+                    answer: 3,
+                    transcript: "안녕하세요. 오늘의 지역 뉴스 전해드립니다. 시립도서관이 오는 다음 주부터 평일 저녁 9시까지 개관 시간을 연장합니다. 이 결정은 많은 시민들로부터 저녁 시간에 도서관을 이용하고 싶다는 요청을 받았기 때문입니다. 도서관 관계자는 '직장인과 학생들의 편의를 위해 이번 결정을 내렸다'고 말했습니다."
+                },
+                {
+                    audio: "https://storage.googleapis.com/jaesam-korean-audio/interview-intermediate.mp3",
+                    question: "이 여자가 회사를 그만둔 진짜 이유는 무엇입니까?",
+                    options: [
+                        "월급이 적어서",
+                        "회사가 멀어서",
+                        "윗사람과의 갈등",
+                        "새로운 기회가 생겨서"
+                    ],
+                    answer: 2,
+                    transcript: "남자: 지난 회사는 왜 그만두셨나요?\n여자: 표면적으로는 거리가 멀어서 그만뒀다고 말했지만, 사실은 부장님과의 관계가 좋지 않았어요. 업무 방식에 대한 의견 차이가 컸거든요.\n남자: 그런 상황이 힘드셨겠네요.\n여자: 네, 하지만 지금 생각해보면 그 일로 더 성장할 수 있었던 것 같아요."
+                }
+            ],
+            advanced: [
+                {
+                    audio: "https://storage.googleapis.com/jaesam-korean-audio/lecture-advanced.mp3",
+                    question: "강연자의 주장과 가장 일치하는 것은 무엇입니까?",
+                    options: [
+                        "대중교통 개선이 교통 체증을 완화할 수 있음",
+                        "많은 사람들이 대중교통을 잘 이용하지 않음",
+                        "자동차 생산을 줄여야 함",
+                        "도시 계획이 우선되어야 함"
+                    ],
+                    answer: 0,
+                    transcript: "최근 대도시의 교통 체증 문제가 점점 심각해지고 있습니다. 이 문제를 해결하기 위해서는 대중교통 시스템을 근본적으로 개선해야 합니다. 통계에 따르면 우리나라의 대중교통 이용률은 아직까지 선진국에 비해 낮은 수준입니다. 버스와 지하철의 편의성을 높이고, 환승 시스템을 개선하며, 배차 간격을 줄이는 등의 조치가 시급합니다. 서울시의 경우 이런 정책들을 시행한 후 교통 체증이 15% 감소한 사례가 있습니다. 결론적으로, 자동차 중심의 교통 체계에서 벗어나 대중교통 중심으로 전환해야 합니다."
+                }
+            ]
+        };
+        
+        // DOM elements
+        const startPracticeBtn = document.getElementById('start-practice');
+        const difficultyBtns = document.querySelectorAll('.difficulty-selector .btn');
+        const exerciseIntro = document.getElementById('exercise-intro');
+        const exerciseContent = document.getElementById('exercise-content');
+        const resultContainer = document.getElementById('result-container');
+        const playBtn = document.getElementById('play-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const timeDisplay = document.getElementById('time-display');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options');
+        const submitBtn = document.getElementById('submit-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const correctFeedback = document.getElementById('correct-feedback');
+        const incorrectFeedback = document.getElementById('incorrect-feedback');
+        const correctAnswerSpan = document.getElementById('correct-answer');
+        const transcriptToggle = document.getElementById('transcript-toggle');
+        const transcriptContainer = document.getElementById('transcript-container');
+        const transcriptText = document.getElementById('transcript');
+        const restartBtn = document.getElementById('restart-btn');
+        const scoreSpan = document.getElementById('score');
+        const resultFeedback = document.getElementById('result-feedback');
+        
+        // Game state
+        let currentLevel = 'beginner';
+        let currentExercise = 0;
+        let score = 0;
+        let selectedOption = null;
+        let sound = null;
+        let isPlaying = false;
+        
+        // Set difficulty level
+        difficultyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                difficultyBtns.forEach(b => b.classList.remove('active-difficulty'));
+                btn.classList.add('active-difficulty');
+                currentLevel = btn.dataset.level;
+            });
+        });
+        
+        // Start practice
+        startPracticeBtn.addEventListener('click', startPractice);
+        
+        // Play/pause audio
+        playBtn.addEventListener('click', playAudio);
+        pauseBtn.addEventListener('click', pauseAudio);
+        
+        // Submit answer
+        submitBtn.addEventListener('click', checkAnswer);
+        
+        // Next question
+        nextBtn.addEventListener('click', nextQuestion);
+        
+        // Restart practice
+        restartBtn.addEventListener('click', restartPractice);
+        
+        // Toggle transcript
+        transcriptToggle.addEventListener('click', toggleTranscript);
+        
+        // Start the practice session
+        function startPractice() {
+            exerciseIntro.classList.add('hidden');
+            exerciseContent.classList.remove('hidden');
+            loadExercise(0);
+        }
+        
+        // Load an exercise
+        function loadExercise(index) {
+            const exercisesForLevel = exercises[currentLevel];
+            if (index >= exercisesForLevel.length) {
+                showResults();
+                return;
+            }
+            
+            const exercise = exercisesForLevel[index];
+            currentExercise = index;
+            
+            // Reset UI for new question
+            resetQuestionUI();
+            
+            // Load audio
+            if (sound) {
+                sound.unload();
+            }
+            
+            sound = new Howl({
+                src: [exercise.audio],
+                html5: true,
+                onplay: () => {
+                    isPlaying = true;
+                    playBtn.style.display = 'none';
+                    pauseBtn.style.display = 'flex';
+                    requestAnimationFrame(updateProgress);
+                },
+                onpause: () => {
+                    isPlaying = false;
+                    pauseBtn.style.display = 'none';
+                    playBtn.style.display = 'flex';
+                },
+                onend: () => {
+                    isPlaying = false;
+                    pauseBtn.style.display = 'none';
+                    playBtn.style.display = 'flex';
+                    submitBtn.classList.remove('hidden');
+                },
+                onload: () => {
+                    const duration = sound.duration();
+                    const minutes = Math.floor(duration / 60);
+                    const seconds = Math.floor(duration % 60);
+                    timeDisplay.textContent = `0:00 / ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+            });
+            
+            // Set question and options
+            questionText.textContent = exercise.question;
+            
+            exercise.options.forEach((option, i) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.innerHTML = `
+                    <input type="radio" name="answer" id="option-${i}" class="option-input" value="${i}">
+                    <label for="option-${i}">${option}</label>
+                `;
+                
+                optionElement.addEventListener('click', () => {
+                    document.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    optionElement.classList.add('selected');
+                    selectedOption = i;
+                });
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Set transcript
+            transcriptText.textContent = exercise.transcript;
+        }
+        
+        // Play audio
+        function playAudio() {
+            if (!sound) return;
+            
+            if (sound.playing()) {
+                sound.pause();
+                return;
+            }
+            
+            sound.play();
+        }
+        
+        // Pause audio
+        function pauseAudio() {
+            if (sound) sound.pause();
+        }
+        
+        // Update progress bar and time display
+        function updateProgress() {
+            if (!sound || !isPlaying) return;
+            
+            const seek = sound.seek();
+            const duration = sound.duration();
+            const progressPercent = (seek / duration) * 100;
+            progressBar.style.width = progressPercent + '%';
+            
+            // Update time display
+            const currentMinutes = Math.floor(seek / 60);
+            const currentSeconds = Math.floor(seek % 60);
+            const durationMinutes = Math.floor(duration / 60);
+            const durationSeconds = Math.floor(duration % 60);
+            
+            timeDisplay.textContent = 
+                `${currentMinutes}:${currentSeconds.toString().padStart(2, '0')} ` +
+                `/ ${durationMinutes}:${durationSeconds.toString().padStart(2, '0')}`;
+            
+            if (isPlaying) {
+                requestAnimationFrame(updateProgress);
+            }
+        }
+        
+        // Check answer
+        function checkAnswer() {
+            if (selectedOption === null) {
+                alert('답을 선택하세요!');
+                return;
+            }
+            
+            const exercise = exercises[currentLevel][currentExercise];
+            const optionElements = document.querySelectorAll('.option');
+            
+            // Disable all options
+            optionElements.forEach(option => {
+                option.style.cursor = 'default';
+                const input = option.querySelector('input');
+                if (input) input.disabled = true;
+            });
+            
+            // Highlight correct and incorrect answers
+            optionElements[exercise.answer].classList.add('correct');
+            
+            if (selectedOption !== exercise.answer) {
+                optionElements[selectedOption].classList.add('incorrect');
+                incorrectFeedback.style.display = 'block';
+                correctAnswerSpan.textContent = exercise.options[exercise.answer];
+            } else {
+                correctFeedback.style.display = 'block';
+                score += Math.floor(100 / exercises[currentLevel].length);
+            }
+            
+            submitBtn.classList.add('hidden');
+            nextBtn.classList.remove('hidden');
+            transcriptToggle.style.display = 'block';
+        }
+        
+        // Next question
+        function nextQuestion() {
+            loadExercise(currentExercise + 1);
+        }
+        
+        // Show results
+        function showResults() {
+            exerciseContent.classList.add('hidden');
+            resultContainer.classList.remove('hidden');
+            
+            scoreSpan.textContent = score;
+            
+            let feedback = '';
+            const percentage = Math.floor((score / 100) * 100);
+            
+            if (percentage >= 80) {
+                feedback = '훌륭합니다! 듣기 실력이 아주 좋습니다.';
+            } else if (percentage >= 50) {
+                feedback = '좋은 시도였습니다. 좀 더 연습하면 더 좋은 결과를 얻을 수 있을 거예요.';
+            } else {
+                feedback = '조금 더 연습이 필요합니다. 대본을 보며 듣기를 연습해 보세요.';
+            }
+            
+            resultFeedback.textContent = feedback;
+        }
+        
+        // Restart practice
+        function restartPractice() {
+            score = 0;
+            currentExercise = 0;
+            selectedOption = null;
+            
+            resultContainer.classList.add('hidden');
+            exerciseIntro.classList.remove('hidden');
+            
+            if (sound) {
+                sound.unload();
+            }
+        }
+        
+        // Toggle transcript
+        function toggleTranscript() {
+            if (transcriptContainer.style.display === 'none' || !transcriptContainer.style.display) {
+                transcriptContainer.style.display = 'block';
+                transcriptToggle.innerHTML = '<i class="fas fa-chevron-up"></i> 대본 숨기기';
+            } else {
+                transcriptContainer.style.display = 'none';
+                transcriptToggle.innerHTML = '<i class="fas fa-chevron-down"></i> 대본 보기';
+            }
+        }
+        
+        // Reset question UI
+        function resetQuestionUI() {
+            optionsContainer.innerHTML = '';
+            selectedOption = null;
+            submitBtn.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+            correctFeedback.style.display = 'none';
+            incorrectFeedback.style.display = 'none';
+            transcriptToggle.style.display = 'none';
+            transcriptContainer.style.display = 'none';
+            transcriptToggle.innerHTML = '<i class="fas fa-chevron-down"></i> 대본 보기';
+            progressBar.style.width = '0%';
+            timeDisplay.textContent = '0:00 / 0:00';
+            playBtn.style.display = 'flex';
+            pauseBtn.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Korean-English Memory Match</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFE66D;
+            --background: #1A535C;
+            --text: #F7FFF7;
+            --card-back: #2B7C85;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', 'Noto Sans KR', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--accent);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            background-color: var(--secondary);
+            color: var(--background);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+            background-color: var(--accent);
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 600px;
+            perspective: 1000px;
+        }
+
+        .card {
+            position: relative;
+            height: 120px;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            backface-visibility: hidden;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .card-front {
+            background-color: var(--text);
+            color: var(--background);
+            font-weight: bold;
+            transform: rotateY(180deg);
+            font-size: 1.2rem;
+        }
+
+        .korean {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.5rem;
+        }
+
+        .english {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .card-back {
+            background-color: var(--card-back);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-back i {
+            font-size: 2rem;
+            color: rgba(255,255,255,0.2);
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card.matched .card-front {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .difficulty-select {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .difficulty-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 50px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .difficulty-btn.selected {
+            background-color: var(--accent);
+            color: var(--background);
+            font-weight: bold;
+        }
+
+        .start-screen, .game-over-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .game-over-screen {
+            display: none;
+        }
+
+        .modal-content {
+            background-color: var(--background);
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            border: 3px solid var(--accent);
+        }
+
+        .moves-display {
+            font-size: 1.5rem;
+            margin: 10px 0;
+            color: var(--accent);
+        }
+
+        .timer-display {
+            font-size: 1.5rem;
+            margin: 10px 0;
+            color: var(--secondary);
+        }
+
+        .flip-animation {
+            animation: flip 0.5s;
+        }
+
+        @keyframes flip {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 200;
+            display: none;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent);
+            opacity: 0.8;
+        }
+
+        @media (max-width: 650px) {
+            .game-board {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            
+            .card {
+                height: 100px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card-front {
+                font-size: 1rem;
+            }
+            
+            .korean {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .game-board {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Korean-English Memory Match</h1>
+            <p>Match Korean words with their English meanings!</p>
+        </header>
+
+        <div class="difficulty-select">
+            <div class="difficulty-btn selected" data-difficulty="easy">Easy (6 pairs)</div>
+            <div class="difficulty-btn" data-difficulty="medium">Medium (8 pairs)</div>
+            <div class="difficulty-btn" data-difficulty="hard">Hard (12 pairs)</div>
+        </div>
+
+        <div class="game-info">
+            <div class="moves-display">Moves: <span id="moves">0</span></div>
+            <div class="timer-display">Time: <span id="timer">0</span>s</div>
+        </div>
+
+        <div class="game-board" id="game-board"></div>
+
+        <div class="controls">
+            <button class="btn" id="restart-btn">Restart Game</button>
+        </div>
+    </div>
+
+    <!-- Start Screen -->
+    <div class="start-screen">
+        <div class="modal-content">
+            <h2>Korean-English Memory Match</h2>
+            <p>Match each Korean word with its English translation!</p>
+            <p>Select difficulty level:</p>
+            <div class="difficulty-select">
+                <div class="difficulty-btn selected" data-difficulty="easy">Easy (6 pairs)</div>
+                <div class="difficulty-btn" data-difficulty="medium">Medium (8 pairs)</div>
+                <div class="difficulty-btn" data-difficulty="hard">Hard (12 pairs)</div>
+            </div>
+            <button class="btn" id="start-btn">Start Game</button>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div class="game-over-screen">
+        <div class="modal-content">
+            <h2>Congratulations!</h2>
+            <p>You've matched all the pairs!</p>
+            <div class="stats">
+                <p>Time: <span id="final-time">0</span> seconds</p>
+                <p>Moves: <span id="final-moves">0</span></p>
+                <p>Score: <span id="final-score">0</span></p>
+            </div>
+            <button class="btn" id="play-again-btn">Play Again</button>
+        </div>
+    </div>
+
+    <!-- Celebration Animation -->
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        // Word pairs: Korean - English
+        const wordPairs = [
+            { korean: "사과", english: "Apple" },
+            { korean: "책", english: "Book" },
+            { korean: "고양이", english: "Cat" },
+            { korean: "개", english: "Dog" },
+            { korean: "물", english: "Water" },
+            { korean: "불", english: "Fire" },
+            { korean: "학교", english: "School" },
+            { korean: "나라", english: "Country" },
+            { korean: "행복", english: "Happiness" },
+            { korean: "사랑", english: "Love" },
+            { korean: "가족", english: "Family" },
+            { korean: "친구", english: "Friend" },
+            { korean: "시간", english: "Time" },
+            { korean: "음식", english: "Food" },
+            { korean: "집", english: "House" },
+            { korean: "도시", english: "City" },
+            { korean: "공원", english: "Park" },
+            { korean: "나무", english: "Tree" },
+            { korean: "꽃", english: "Flower" },
+            { korean: "하늘", english: "Sky" },
+            { korean: "바다", english: "Ocean" },
+            { korean: "강", english: "River" },
+            { korean: "동물", english: "Animal" },
+            { korean: "새", english: "Bird" }
+        ];
+
+        // Game state
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let moves = 0;
+        let timer = 0;
+        let timerInterval;
+        let gameStarted = false;
+        let difficulty = "easy";
+        let cards = [];
+
+        // DOM elements
+        const gameBoard = document.getElementById('game-board');
+        const startScreen = document.querySelector('.start-screen');
+        const gameOverScreen = document.querySelector('.game-over-screen');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const movesDisplay = document.getElementById('moves');
+        const timerDisplay = document.getElementById('timer');
+        const finalTimeDisplay = document.getElementById('final-time');
+        const finalMovesDisplay = document.getElementById('final-moves');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const celebration = document.getElementById('celebration');
+        const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+
+        // Event listeners
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', resetGame);
+        playAgainBtn.addEventListener('click', resetGame);
+
+        difficultyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                difficultyBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                difficulty = btn.dataset.difficulty;
+            });
+        });
+
+        // Initialize game
+        function initGame() {
+            // Clear the board
+            gameBoard.innerHTML = '';
+            flippedCards = [];
+            matchedPairs = 0;
+            moves = 0;
+            movesDisplay.textContent = moves;
+            
+            // Select word pairs based on difficulty
+            let numPairs;
+            switch(difficulty) {
+                case 'easy': numPairs = 6; break;
+                case 'medium': numPairs = 8; break;
+                case 'hard': numPairs = 12; break;
+                default: numPairs = 8;
+            }
+            
+            // Shuffle and select word pairs
+            const shuffledPairs = shuffleArray([...wordPairs]).slice(0, numPairs);
+            cards = [];
+            
+            // Create card pairs
+            shuffledPairs.forEach(pair => {
+                cards.push({ 
+                    type: 'korean', 
+                    content: pair.korean, 
+                    match: pair.english,
+                    id: Math.random().toString(36).substring(2, 9)
+                });
+                cards.push({ 
+                    type: 'english', 
+                    content: pair.english, 
+                    match: pair.korean,
+                    id: Math.random().toString(36).substring(2, 9)
+                });
+            });
+            
+            // Shuffle the cards
+            cards = shuffleArray(cards);
+            
+            // Create cards on the board
+            cards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                cardElement.dataset.index = index;
+                cardElement.dataset.id = card.id;
+                cardElement.dataset.match = card.match;
+                
+                cardElement.innerHTML = `
+                    <div class="card-face card-front ${card.type}">
+                        ${card.content}
+                    </div>
+                    <div class="card-face card-back">
+                        <i class="fas fa-question"></i>
+                    </div>
+                `;
+                
+                cardElement.addEventListener('click', () => flipCard(cardElement));
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        // Flip card
+        function flipCard(card) {
+            // Don't allow flipping if game hasn't started, card is already flipped, or 2 cards are already flipped
+            if (!gameStarted || card.classList.contains('flipped') || flippedCards.length >= 2) {
+                return;
+            }
+            
+            // Flip the card
+            card.classList.add('flipped');
+            flippedCards.push(card);
+            
+            // If two cards are flipped, check for a match
+            if (flippedCards.length === 2) {
+                moves++;
+                movesDisplay.textContent = moves;
+                
+                const card1 = flippedCards[0];
+                const card2 = flippedCards[1];
+                
+                // Check if the contents match
+                if (card1.dataset.match === card2.textContent.trim() || 
+                    card2.dataset.match === card1.textContent.trim()) {
+                    // Match found
+                    setTimeout(() => {
+                        card1.classList.add('matched');
+                        card2.classList.add('matched');
+                        flippedCards = [];
+                        matchedPairs++;
+                        
+                        // Check if all pairs are matched
+                        if (matchedPairs === cards.length / 2) {
+                            endGame();
+                        }
+                    }, 500);
+                } else {
+                    // No match - flip cards back after a delay
+                    setTimeout(() => {
+                        card1.classList.remove('flipped');
+                        card2.classList.remove('flipped');
+                        flippedCards = [];
+                    }, 1000);
+                }
+            }
+        }
+
+        // Start game
+        function startGame() {
+            startScreen.style.display = 'none';
+            gameStarted = true;
+            initGame();
+            startTimer();
+        }
+
+        // Reset game
+        function resetGame() {
+            gameOverScreen.style.display = 'none';
+            gameStarted = false;
+            clearInterval(timerInterval);
+            timer = 0;
+            timerDisplay.textContent = timer;
+            initGame();
+        }
+
+        // End game
+        function endGame() {
+            gameStarted = false;
+            clearInterval(timerInterval);
+            
+            // Show game over screen with stats
+            finalTimeDisplay.textContent = timer;
+            finalMovesDisplay.textContent = moves;
+            
+            // Simple scoring - lower moves and time = higher score
+            const score = Math.max(1, Math.floor(10000 / (timer * moves)));
+            finalScoreDisplay.textContent = score;
+            
+            gameOverScreen.style.display = 'flex';
+            showCelebration();
+        }
+
+        // Timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timer++;
+                timerDisplay.textContent = timer;
+            }, 1000);
+        }
+
+        // Celebration animation
+        function showCelebration() {
+            celebration.style.display = 'block';
+            celebration.innerHTML = '';
+            
+            // Create confetti
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.top = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = getRandomColor();
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                confetti.style.width = `${Math.random() * 10 + 5}px`;
+                confetti.style.height = `${Math.random() * 10 + 5}px`;
+                celebration.appendChild(confetti);
+            }
+            
+            // Remove after animation
+            setTimeout(() => {
+                celebration.style.display = 'none';
+            }, 3000);
+        }
+
+        // Helper functions
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function getRandomColor() {
+            const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#FF9F1C', '#2EC4B6', '#E71D36'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+    </script>
+</body>
+</html>
