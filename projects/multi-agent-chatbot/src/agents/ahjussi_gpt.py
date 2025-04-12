@@ -1,85 +1,98 @@
 """
-AhjussiGPT agent implementation for Korean tutoring
+AhjussiGPT - A Korean Uncle (Ahjussi) persona agent
+
+This agent responds with the wisdom and storytelling style of a Korean uncle,
+sharing idioms, proverbs, and cultural context while answering questions.
 """
 
 from src.agents.base import OllamaBaseAgent
-import yaml
-from pathlib import Path
-import os
 
 
 class AhjussiGPT(OllamaBaseAgent):
-    def __init__(self, model: str = "llama3"):
-        # Load agent configuration from YAML file
-        config_path = Path(
-            os.path.join(
-                os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                "config",
-                "agents.yaml",
-            )
-        )
+    """
+    Korean Uncle (Ahjussi) agent with a storytelling teaching style
+    """
 
-        if config_path.exists():
-            with open(config_path, "r", encoding="utf-8") as f:
-                agents_config = yaml.safe_load(f)
-                ahjussi_config = agents_config.get("ahjussi_gpt", {})
-        else:
-            # Fallback configuration if YAML file doesn't exist
-            ahjussi_config = {
-                "role": "Korean Uncle (Ahjussi)",
-                "goal": "Share wisdom, idioms, and cultural context while answering questions",
-                "backstory": "You're a Korean uncle who loves telling stories and teaching language through proverbs and tradition.",
-            }
-
-        # Initialize with Ollama base agent
-        super().__init__(
-            role=ahjussi_config.get("role", "Korean Uncle (Ahjussi)"),
-            goal=ahjussi_config.get(
-                "goal",
-                "Share wisdom, idioms, and cultural context while answering questions",
-            ),
-            backstory=ahjussi_config.get(
-                "backstory",
-                "You're a Korean uncle who loves telling stories and teaching language through proverbs and tradition.",
-            ),
-            model=model,
-            temperature=0.7,  # Standard temperature for balanced wisdom and creativity
-            verbose=True,
-            allow_delegation=ahjussi_config.get("allow_delegation", False),
-        )
-
-    def run(self, query: str, task_description: str = "", **kwargs) -> str:
+    def __init__(
+        self,
+        model: str = "kimjk/llama3.2-korean:latest",
+        temperature: float = 0.75,
+        verbose: bool = True,
+    ):
         """
-        Process a query as AhjussiGPT
+        Initialize the AhjussiGPT agent
 
         Args:
-            query: The user's query
-            task_description: Description of the task to perform
-
-        Returns:
-            AhjussiGPT's response
+            model: The model to use for generation
+            temperature: Controls randomness (0.0-1.0)
+            verbose: Whether to print verbose output
         """
-        # Create a system prompt that reinforces the Ahjussi persona
-        system_prompt = """
-        You are AhjussiGPT, a wise Korean uncle who teaches Korean language and culture.
-        Your personality traits:
-        - Calm and wise demeanor
-        - Love to share proverbs and traditional sayings
-        - Often relate language concepts to stories from the past
-        - Include Korean proverbs with their meanings and cultural context
-        - Patient and encouraging but expect effort from students
-        
-        Always stay in character as a Korean uncle while providing helpful information.
-        """
-
-        # Create a prompt that includes the task and query
-        prompt = (
-            f"{task_description}\n\nUser's question: {query}\n\nAhjussiGPT:"
+        super().__init__(
+            role="Korean Uncle (Ahjussi)",
+            goal="Share wisdom, idioms, and cultural context while answering questions",
+            backstory="""You're a Korean uncle who loves telling stories and teaching 
+            language through proverbs and tradition. You've lived through many changes 
+            in Korea and have a wealth of cultural knowledge to share. Your explanations 
+            often include references to history, philosophy, or personal anecdotes. 
+            You're patient, thoughtful, and enjoy drawing parallels between Korean and 
+            other cultures to help learners understand.""",
+            model=model,
+            temperature=temperature,
+            verbose=verbose,
+            allow_delegation=False,
         )
 
-        # Generate response using Ollama
+    def execute_task(self, task):
+        """
+        Execute the given task with Ahjussi's personality
+
+        Args:
+            task: The task to execute, containing user input and context
+
+        Returns:
+            String response in Ahjussi's distinct personality
+        """
+        query = task.input
+        context = getattr(task, "context", "")
+
+        # Create a strong character system prompt for Ahjussi style
+        system_prompt = """
+        You are 아저씨 (Ahjussi), a wise Korean uncle with decades of life experience.
+        
+        YOUR PERSONALITY TRAITS:
+        - Thoughtful, reflective, and philosophical
+        - Enjoy telling stories and anecdotes to illustrate points
+        - Calm and measured in your responses
+        - Knowledgeable about Korean history, tradition, and culture
+        - Frequently use proverbs and idioms
+        - Slightly nostalgic about "the old days"
+        - Take your time to explain concepts thoroughly
+        - Have a warm, fatherly approach to teaching
+        
+        RESPONSE FORMAT:
+        - Start with a brief greeting or acknowledgment
+        - Include at least one relevant Korean proverb or saying with translation
+        - Connect the answer to cultural or historical context when possible
+        - Use analogies or stories to illustrate complex concepts
+        - End with a reflective question or piece of advice
+        - Format any language examples clearly with Korean text followed by translation
+        
+        IMPORTANT:
+        - Your tone is wise and patient
+        - Occasionally mention your (fictional) experiences or family
+        - Use some simple Korean honorifics and polite language naturally
+        - Make references to both traditional and modern Korean culture
+        - Avoid being overly technical - explain concepts simply but thoroughly
+        """
+
+        # Format prompt with both query and additional context if available
+        prompt = f"User question: {query}"
+        if context:
+            prompt += f"\n\nAdditional context: {context}"
+
         response = self.generate_response(
-            prompt=prompt, system_prompt=system_prompt
+            prompt=prompt,
+            system_prompt=system_prompt,
         )
 
         return response

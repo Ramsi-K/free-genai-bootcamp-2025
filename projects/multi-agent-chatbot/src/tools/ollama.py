@@ -1,112 +1,86 @@
 """
-Ollama Tool for LLM capabilities
+OllamaTool - A tool for interfacing with the Ollama API
+
+This tool provides a simple interface for generating text and conducting
+chat conversations with Ollama-hosted language models.
 """
 
 import os
 import json
 import requests
-from typing import Dict, Any, Optional, List
+from typing import List, Dict, Any, Optional
 
 
 class OllamaTool:
+    """
+    A tool for interacting with Ollama API for text generation and chat
+    """
+
     def __init__(
         self,
-        host: str = None,
-        port: str = None,
-        model: str = "llama3",
+        model: str = "kimjk/llama3.2-korean:latest",
+        host: Optional[str] = None,
+        port: Optional[str] = None,
     ):
-        # Handle Docker environment variables if specified
-        self.host = host or os.getenv("OLLAMA_HOST", "localhost")
-        self.port = port or os.getenv("OLLAMA_PORT", "11434")
+        """
+        Initialize the Ollama tool
+
+        Args:
+            model: The model to use for generation
+            host: Ollama host (defaults to OLLAMA_HOST env var or 'ollama')
+            port: Ollama port (defaults to OLLAMA_PORT env var or '11434')
+        """
         self.model = model
+        self.host = host or os.environ.get("OLLAMA_HOST", "ollama")
+        self.port = port or os.environ.get("OLLAMA_PORT", "11434")
         self.base_url = f"http://{self.host}:{self.port}"
-
-        self._ensure_model_available()
-
-    def _ensure_model_available(self):
-        """Check if the model is available, pulls it if not"""
-        try:
-            # List available models
-            response = requests.get(f"{self.base_url}/api/tags")
-
-            if response.status_code == 200:
-                models = response.json().get("models", [])
-                available_models = [model["name"] for model in models]
-
-                if self.model not in available_models:
-                    print(
-                        f"Model {self.model} not found. Available models: {', '.join(available_models)}"
-                    )
-                    print(
-                        f"You need to pull the model using: docker exec -it korean-ollama ollama pull {self.model}"
-                    )
-            else:
-                print(
-                    f"Failed to check available models: {response.status_code} - {response.text}"
-                )
-
-        except Exception as e:
-            print(f"Error connecting to Ollama service: {e}")
 
     def generate(
         self,
         prompt: str,
-        system_prompt: str = None,
+        system_prompt: Optional[str] = None,
         temperature: float = 0.7,
         max_tokens: int = 2048,
-        stream: bool = False,
     ) -> Dict[str, Any]:
         """
-        Generate text using Ollama
+        Generate a completion using Ollama API
 
         Args:
-            prompt: The user prompt
-            system_prompt: Optional system prompt to guide the model
+            prompt: The prompt to send to the model
+            system_prompt: Optional system prompt to guide the model behavior
             temperature: Controls randomness (0.0-1.0)
-            max_tokens: Maximum tokens to generate
-            stream: Whether to stream the response
+            max_tokens: Maximum number of tokens to generate
 
         Returns:
-            Dictionary containing the model's response
+            Dict with response text and metadata
         """
+        url = f"{self.base_url}/api/generate"
+
+        payload = {
+            "model": self.model,
+            "prompt": prompt,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "stream": False,
+        }
+
+        # Add system prompt if provided
+        if system_prompt:
+            payload["system"] = system_prompt
+
         try:
-            # Prepare the request payload
-            payload = {
-                "model": self.model,
-                "prompt": prompt,
-                "stream": stream,
-                "options": {
-                    "temperature": temperature,
-                    "num_predict": max_tokens,
-                },
-            }
-
-            if system_prompt:
-                payload["system"] = system_prompt
-
-            # Make the API call
-            response = requests.post(
-                f"{self.base_url}/api/generate", json=payload
-            )
-
-            if response.status_code == 200:
-                return response.json()
-            else:
-                error_msg = f"Ollama API error: {response.status_code} - {response.text}"
-                print(error_msg)
-                return {"error": error_msg, "response": None}
-
-        except Exception as e:
-            error_msg = f"Error calling Ollama: {e}"
-            print(error_msg)
-            return {"error": error_msg, "response": None}
+            response = requests.post(url, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            return {"error": f"Error communicating with Ollama: {str(e)}"}
 
     def chat(
         self,
         messages: List[Dict[str, str]],
         temperature: float = 0.7,
         max_tokens: int = 2048,
-        stream: bool = False,
+        system_prompt: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Chat with Ollama using a list of messages
@@ -114,58 +88,29 @@ class OllamaTool:
         Args:
             messages: List of message dictionaries with 'role' and 'content' keys
             temperature: Controls randomness (0.0-1.0)
-            max_tokens: Maximum tokens to generate
-            stream: Whether to stream the response
+            max_tokens: Maximum number of tokens to generate
+            system_prompt: Optional system prompt to guide the model behavior
 
         Returns:
-            Dictionary containing the model's response
+            Dict with the generated message and metadata
         """
+        url = f"{self.base_url}/api/chat"
+
+        payload = {
+            "model": self.model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "stream": False,
+        }
+
+        # Add system prompt if provided
+        if system_prompt:
+            payload["system"] = system_prompt
+
         try:
-            # Prepare the request payload
-            payload = {
-                "model": self.model,
-                "messages": messages,
-                "stream": stream,
-                "options": {
-                    "temperature": temperature,
-                    "num_predict": max_tokens,
-                },
-            }
-
-            # Make the API call
-            response = requests.post(f"{self.base_url}/api/chat", json=payload)
-
-            if response.status_code == 200:
-                return response.json()
-            else:
-                error_msg = f"Ollama API error: {response.status_code} - {response.text}"
-                print(error_msg)
-                return {"error": error_msg, "response": None}
-
-        except Exception as e:
-            error_msg = f"Error calling Ollama: {e}"
-            print(error_msg)
-            return {"error": error_msg, "response": None}
-
-    def list_models(self) -> List[str]:
-        """
-        List available models in Ollama
-
-        Returns:
-            List of model names
-        """
-        try:
-            response = requests.get(f"{self.base_url}/api/tags")
-
-            if response.status_code == 200:
-                models = response.json().get("models", [])
-                return [model["name"] for model in models]
-            else:
-                print(
-                    f"Failed to list models: {response.status_code} - {response.text}"
-                )
-                return []
-
-        except Exception as e:
-            print(f"Error listing models: {e}")
-            return []
+            response = requests.post(url, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            return {"error": f"Error communicating with Ollama: {str(e)}"}

@@ -2,6 +2,9 @@ from crewai import Crew, Task
 from crew import KoreanTutoringCrew
 import re
 import random
+import crewai
+
+print(crewai.__version__)
 
 
 def detect_task_type(user_input):
@@ -51,6 +54,20 @@ def detect_task_type(user_input):
     ]
     if any(keyword in input_lower for keyword in idiom_keywords):
         return "idiom_lookup"
+
+    # Check for lyrics keywords
+    lyrics_keywords = [
+        "song",
+        "lyrics",
+        "music",
+        "k-pop",
+        "kpop",
+        "sing",
+        "가사",
+        "노래",
+    ]
+    if any(keyword in input_lower for keyword in lyrics_keywords):
+        return "lyrics"
 
     # If asking about Korean content without specific request type identifiers, use grammar
     korean_pattern = re.compile(r"[\uac00-\ud7a3]")  # Korean Unicode range
@@ -137,6 +154,7 @@ def print_welcome():
     print("  • Korean proverbs, idioms, and cultural sayings")
     print("  • Finding relevant examples from my knowledge database")
     print("  • Web searches for Korean language topics")
+    print("  • Korean song lyrics and their meanings")
     print("\nI have two personas:")
     print("  • 아줌마 (Ahjumma) - A direct, no-nonsense Korean auntie")
     print("  • 아저씨 (Ahjussi) - A wise, story-telling Korean uncle")
@@ -179,41 +197,15 @@ def main():
             # Detect which task type is most appropriate
             task_type = detect_task_type(user_input)
 
-            # Create the appropriate task
-            if task_type == "grammar_question":
-                task = korean_crew.grammar_question()
-            elif task_type == "idiom_lookup":
-                task = korean_crew.idiom_lookup()
-            elif task_type == "web_search":
-                task = korean_crew.web_search_task()
-            elif task_type == "vector_db_query":
-                task = korean_crew.vector_db_task()
+            # Create inputs dictionary for the crew kickoff
+            inputs = {"query": user_input, "task_type": task_type}
 
-            # Set the input for the task
-            task.input = user_input
-
-            # Create a list of tasks to process
-            tasks = [task]
-
-            # If we're using the vector database, always add it as a supporting task
-            # to provide examples from our knowledge base
-            if task_type != "vector_db_query":
-                support_task = korean_crew.vector_db_task()
-                support_task.input = (
-                    f"Find relevant examples for: {user_input}"
-                )
-                support_task.context = f"The user asked: {user_input}"
-                tasks.append(support_task)
-
-            # Execute the tasks
+            # Execute the crew with inputs - this matches the documentation pattern
             print("\nThinking... (this may take a moment)")
-            response = crew.process(tasks)
+            response = crew.kickoff(inputs=inputs)
 
             # Determine which character to use for the response display
-            if (
-                task.agent.role == "Korean Auntie (Ahjumma)"
-                or task_type == "grammar_question"
-            ):
+            if task_type == "grammar_question":
                 print("\n아줌마 (Ahjumma):", response)
             else:
                 print("\n아저씨 (Ahjussi):", response)

@@ -16,26 +16,27 @@ class OllamaBaseAgent(Agent):
         role: str,
         goal: str,
         backstory: str,
-        model: str = "llama3",
+        model: str = "kimjk/llama3.2-korean:latest",
         temperature: float = 0.7,
         verbose: bool = True,
         allow_delegation: bool = False,
     ):
-        # Initialize Ollama Tool
-        self.ollama_tool = OllamaTool(model=model)
-
-        # Initialize agent
+        # Initialize agent first (this is the key change)
         super().__init__(
             role=role,
             goal=goal,
             backstory=backstory,
             verbose=verbose,
             allow_delegation=allow_delegation,
+            llm=None,  # Don't set LLM, we're using our custom Ollama integration
         )
 
-        # Set agent configuration
-        self.temperature = temperature
-        self.model = model
+        # Store these as private attributes (with _prefix) to avoid Pydantic validation
+        self._temperature = temperature
+        self._model = model
+
+        # Initialize Ollama Tool after parent initialization
+        self._ollama_tool = OllamaTool(model=model)
 
     def generate_response(self, prompt: str, system_prompt: str = None) -> str:
         """
@@ -48,10 +49,10 @@ class OllamaBaseAgent(Agent):
         Returns:
             The generated response
         """
-        result = self.ollama_tool.generate(
+        result = self._ollama_tool.generate(
             prompt=prompt,
             system_prompt=system_prompt,
-            temperature=self.temperature,
+            temperature=self._temperature,
         )
 
         if result.get("error"):
@@ -69,9 +70,9 @@ class OllamaBaseAgent(Agent):
         Returns:
             The generated response
         """
-        result = self.ollama_tool.chat(
+        result = self._ollama_tool.chat(
             messages=messages,
-            temperature=self.temperature,
+            temperature=self._temperature,
         )
 
         if result.get("error"):
