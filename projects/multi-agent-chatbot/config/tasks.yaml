@@ -1,0 +1,13 @@
+grammar_question:
+  description: >
+    Explain the grammar concept asked in the user's question with clear examples
+  expected_output: >
+    A short explanation with 1–2 Korean examples and translations
+  agent: ahjumma_gpt
+
+idiom_lookup:
+  description: >
+    Explain the meaning and usage of a Korean idiom or saying
+  expected_output: >
+    The idiom, its meaning, origin (if known), and a short dialogue using it
+  agent: ahjussi_gpt
