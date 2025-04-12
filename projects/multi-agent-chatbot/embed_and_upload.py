@@ -8,7 +8,7 @@ import torch  # To check for GPU availability
 # --- Configuration ---
 SCRIPT_DIR = Path(__file__).parent
 PROCESSED_JSONL_FILE = (
-    SCRIPT_DIR / "processed_chunks" / "processed_chunks.jsonl"
+    SCRIPT_DIR / "data" / "processed" / "chunks" / "processed_chunks.jsonl"
 )
 QDRANT_URL = "http://localhost:6333"  # Or your Qdrant Cloud URL / other host
 # QDRANT_API_KEY = "YOUR_API_KEY" # Uncomment and set if using Qdrant Cloud with API key

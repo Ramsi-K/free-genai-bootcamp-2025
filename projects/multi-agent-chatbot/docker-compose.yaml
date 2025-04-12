@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # Qdrant vector database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: korean-qdrant
+    ports:
+      - '6333:6333'
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - chatbot-network
+    restart: unless-stopped
+
+  # Ollama LLM service
+  ollama:
+    image: ollama/ollama:latest
+    container_name: korean-ollama
+    ports:
+      - '11434:11434'
+    volumes:
+      - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - chatbot-network
+    restart: unless-stopped
+
+  # Multi-agent chatbot application
+  chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: korean-chatbot
+    depends_on:
+      - qdrant
+      - ollama
+    environment:
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - OLLAMA_HOST=ollama
+      - OLLAMA_PORT=11434
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./:/app
+    networks:
+      - chatbot-network
+    restart: unless-stopped
+
+networks:
+  chatbot-network:
+    driver: bridge
+
+volumes:
+  qdrant_data:
+  ollama_data:

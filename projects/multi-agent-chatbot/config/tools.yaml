@@ -14,7 +14,7 @@ tools:
       A tool that interacts with the Qdrant vector database for storing and retrieving vector embeddings.
     class: VectorDBTool
     parameters:
-      db_url: "http://localhost:6333"
+      db_url: "http://qdrant:6333"  # Updated to use container name
       collection_name: "korean_language_learning"
       embedding_dimension: 300
       max_results: 10
