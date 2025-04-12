@@ -321,7 +321,7 @@ class KoreanAdventure:
         self.discovered_words.add(word["hangul"])
         return word
 
-    def display_korean_word(self, korean_word):
+    def display_korean_word(self, korean_word, include_practice=False):
         """Format and display a Korean vocabulary word with additional information."""
         print("\n┌─────────── New Korean Word ───────────┐")
         print(f"│  {Colors.BOLD}{korean_word['hangul']}{Colors.RESET}")
@@ -336,17 +336,20 @@ class KoreanAdventure:
         
         print("└─────────────────────────────────────────┘")
         self.discovered_words.add(korean_word['hangul'])
+        
+        if include_practice:
+            print(f"\n{Colors.YELLOW}Practice saying: {Colors.BOLD}{korean_word['hangul']}{Colors.RESET} ({korean_word['meaning']}){Colors.RESET}")
 
     def display_room(self):
-        """Display the current room information with improved visual formatting."""
+        """Display the current room information with improved visual formatting and vocabulary focus."""
         if self.current_room not in self.rooms:
             print(f"Error: Room '{self.current_room}' not found!")
             return
             
         room = self.rooms[self.current_room]
         
-        # Get Korean word for this room
-        korean_word = self.get_next_korean_word()
+        # Get Korean word for this room and ensure it has full details
+        korean_word = self.get_enriched_korean_word()
         
         self.clear_screen()
         
@@ -362,8 +365,8 @@ class KoreanAdventure:
         )
         print(f"\n{description}\n")
         
-        # Display the Korean word information in a styled box
-        self.display_korean_word(korean_word)
+        # Display the Korean word information in a styled box with practice prompt
+        self.display_korean_word(korean_word, include_practice=True)
         
         # Create a visually distinct section for navigation
         print(f"\n{Colors.BRIGHT_BLUE}╔════════ NAVIGATION ════════╗{Colors.RESET}")
@@ -376,22 +379,53 @@ class KoreanAdventure:
         
         print(f"{Colors.BRIGHT_BLUE}╚═══════════════════════════╝{Colors.RESET}")
         
-        # Show items in the room with emoji indicators
+        # Show available actions in this room for clearer gameplay
+        print(f"\n{Colors.BRIGHT_GREEN}╔════════ ACTIONS ═══════════╗{Colors.RESET}")
+        
+        # Display context-specific actions
+        actions = []
+        
+        # Show items in the room with emoji indicators and action hints
         if room.get("items"):
-            print(f"\n{Colors.BRIGHT_YELLOW}✨ Items in this area:{Colors.RESET}")
+            print(f"{Colors.BRIGHT_GREEN}║{Colors.RESET} {Colors.BRIGHT_YELLOW}✨ Items you can interact with:{Colors.RESET}")
             for item_id in room["items"]:
                 if item_id in self.items:
-                    print(f"  {Colors.YELLOW}• {self.items[item_id]['name']}{Colors.RESET}")
+                    print(f"{Colors.BRIGHT_GREEN}║{Colors.RESET}  {Colors.YELLOW}• {self.items[item_id]['name']}{Colors.RESET}")
+                    actions.append(f"take {item_id}")
+                    actions.append(f"examine {item_id}")
         
-        # Show characters in the room with emoji indicators
+        # Show characters in the room with emoji indicators and action hints
         if room.get("characters"):
-            print(f"\n{Colors.BRIGHT_MAGENTA}👤 Characters here:{Colors.RESET}")
+            print(f"{Colors.BRIGHT_GREEN}║{Colors.RESET} {Colors.BRIGHT_MAGENTA}👤 Characters you can talk to:{Colors.RESET}")
             for char_id in room["characters"]:
                 if char_id in self.characters:
-                    print(f"  {Colors.MAGENTA}• {self.characters[char_id]['name']}{Colors.RESET}")
-                    
+                    print(f"{Colors.BRIGHT_GREEN}║{Colors.RESET}  {Colors.MAGENTA}• {self.characters[char_id]['name']}{Colors.RESET}")
+                    actions.append(f"talk to {char_id}")
+        
+        # Show inventory-based actions if applicable
+        if self.inventory:
+            inventory_actions = []
+            for item_id in self.inventory:
+                if item_id in self.items:
+                    inventory_actions.append(f"use {item_id}")
+                    if room.get("characters"):
+                        for char_id in room["characters"]:
+                            inventory_actions.append(f"give {item_id} to {char_id}")
+            
+            if inventory_actions:
+                print(f"{Colors.BRIGHT_GREEN}║{Colors.RESET} {Colors.BRIGHT_WHITE}📦 Actions with your items:{Colors.RESET}")
+                for action in inventory_actions[:3]:  # Limit to 3 suggestions
+                    print(f"{Colors.BRIGHT_GREEN}║{Colors.RESET}  {Colors.WHITE}• {action}{Colors.RESET}")
+        
+        print(f"{Colors.BRIGHT_GREEN}╚═══════════════════════════╝{Colors.RESET}")
+        
+        # Show vocabulary learning prompt
+        vocab_count = len(self.discovered_words)
+        print(f"\n{Colors.YELLOW}You've learned {vocab_count} Korean words so far.{Colors.RESET}")
+        print(f"{Colors.YELLOW}Try repeating them as you play to remember them better!{Colors.RESET}")
+        
         # Show command prompt with styling
-        print(f"\n{Colors.BRIGHT_GREEN}┌─ Enter command{Colors.RESET}")
+        print(f"\n{Colors.BRIGHT_GREEN}┌─ What would you like to do? (type 'help' for commands){Colors.RESET}")
         print(f"{Colors.BRIGHT_GREEN}└─╼{Colors.RESET} ", end="")
 
     def handle_command(self, command):
@@ -547,81 +581,156 @@ class KoreanAdventure:
             print(f"{Colors.BRIGHT_CYAN}Thinking...{Colors.RESET}")
             
             response = self.query_llm(prompt)
-            result = json.loads(response)
             
-            if result["action_type"] == "standard":
-                # Handle standard commands by calling the appropriate method
-                if result["command"] == "look":
-                    if "parameters" in result and result["parameters"]:
-                        self.examine_target(result["parameters"])
-                    else:
-                        # Will redisplay the room naturally on next loop
-                        pass
-                elif result["command"] == "move":
-                    self.move_player(result["parameters"])
-                elif result["command"] == "take":
-                    self.take_item(result["parameters"])
-                elif result["command"] == "talk":
-                    self.talk_to_character(result["parameters"])
-                elif result["command"] == "use":
-                    self.use_item(result["parameters"])
-                elif result["command"] == "give":
-                    # Parse parameters (expected format: "item_name to character_name")
-                    if "to" in result["parameters"]:
-                        parts = result["parameters"].split(" to ")
-                        if len(parts) == 2:
-                            self.give_item(parts[0], parts[1])
+            try:
+                result = json.loads(response)
+                
+                if result["action_type"] == "standard":
+                    # Handle standard commands by calling the appropriate method
+                    if result["command"] == "look":
+                        if "parameters" in result and result["parameters"]:
+                            # Check if parameters is a string or dict
+                            params = result["parameters"]
+                            target = params if isinstance(params, str) else params.get("item") or params.get("target") or params.get("object")
+                            self.examine_target(target)
                         else:
-                            print("Please specify what to give and to whom.")
+                            # Will redisplay the room naturally on next loop
+                            pass
+                    elif result["command"] == "move":
+                        # Handle both string and dict parameters
+                        direction = result["parameters"]
+                        if isinstance(direction, dict):
+                            direction = direction.get("direction") or next(iter(direction.values()), None)
+                        self.move_player(direction)
+                    elif result["command"] == "take":
+                        # Handle both string and dict parameters
+                        item = result["parameters"]
+                        if isinstance(item, dict):
+                            item = item.get("item") or next(iter(item.values()), None)
+                        self.take_item(item)
+                    elif result["command"] == "talk":
+                        # Handle both string and dict parameters for character
+                        character = result["parameters"]
+                        if isinstance(character, dict):
+                            character = character.get("character") or character.get("to") or next(iter(character.values()), None)
+                        
+                        # If character is not specified or ambiguous
+                        if not character or character == "":
+                            # If there's only one character in the room, talk to them
+                            chars_in_room = self.rooms[self.current_room].get("characters", [])
+                            if len(chars_in_room) == 1:
+                                self.talk_to_character(chars_in_room[0])
+                            else:
+                                chars_names = [self.characters[c]['name'] for c in chars_in_room]
+                                print(f"\n{Colors.YELLOW}Who would you like to talk to? Options: {', '.join(chars_names)}{Colors.RESET}")
+                        else:
+                            self.talk_to_character(character)
+                    elif result["command"] == "use":
+                        # Handle both string and dict parameters
+                        item = result["parameters"]
+                        if isinstance(item, dict):
+                            item = item.get("item") or next(iter(item.values()), None)
+                        self.use_item(item)
+                    elif result["command"] == "give":
+                        # Parse parameters (different possible formats)
+                        if isinstance(result["parameters"], dict):
+                            item = result["parameters"].get("item")
+                            character = result["parameters"].get("character") or result["parameters"].get("to")
+                            self.give_item(item, character)
+                        else:
+                            # Parse string format "item to character"
+                            params = result["parameters"]
+                            if "to" in params:
+                                parts = params.split(" to ")
+                                if len(parts) == 2:
+                                    self.give_item(parts[0], parts[1])
+                                else:
+                                    print(f"{Colors.YELLOW}Please specify what to give and to whom.{Colors.RESET}")
+                            else:
+                                print(f"{Colors.YELLOW}Please use format: give [item] to [character]{Colors.RESET}")
+                    elif result["command"] == "inventory":
+                        self.show_inventory()
+                    elif result["command"] == "help":
+                        self.show_help()
+                    elif result["command"] == "open":
+                        # Handle both string and dict parameters
+                        target = result["parameters"]
+                        if isinstance(target, dict):
+                            target = target.get("target") or target.get("item") or next(iter(target.values()), None)
+                        self.open_target(target)
+                    elif result["command"] == "close":
+                        # Handle both string and dict parameters
+                        target = result["parameters"]
+                        if isinstance(target, dict):
+                            target = target.get("target") or target.get("item") or next(iter(target.values()), None)
+                        self.close_target(target)
+                    elif result["command"] == "eat":
+                        # Handle both string and dict parameters
+                        food = result["parameters"]
+                        if isinstance(food, dict):
+                            food = food.get("food") or food.get("item") or next(iter(food.values()), None)
+                        self.consume_item(food, "eat")
+                    elif result["command"] == "drink":
+                        # Handle both string and dict parameters
+                        beverage = result["parameters"]
+                        if isinstance(beverage, dict):
+                            beverage = beverage.get("beverage") or beverage.get("drink") or next(iter(beverage.values()), None)
+                        self.consume_item(beverage, "drink")
                     else:
-                        print("Please use format: give [item] to [character]")
-                elif result["command"] == "inventory":
-                    self.show_inventory()
-                elif result["command"] == "help":
-                    self.show_help()
-                elif result["command"] == "open":
-                    self.open_target(result["parameters"])
-                elif result["command"] == "close":
-                    self.close_target(result["parameters"])
-                elif result["command"] == "eat":
-                    self.consume_item(result["parameters"], "eat")
-                elif result["command"] == "drink":
-                    self.consume_item(result["parameters"], "drink")
+                        print(f"{Colors.YELLOW}I don't understand how to '{result['command']}'. Type 'help' for commands.{Colors.RESET}")
+                        
+                elif result["action_type"] == "custom":
+                    # Handle custom responses directly from the LLM
+                    print("\n" + result["response"])
+                    
+                    # If the response includes a Korean word to teach
+                    if result.get("teach_korean", False) and "korean_word" in result and "meaning" in result:
+                        korean_word = {
+                            "hangul": result["korean_word"], 
+                            "meaning": result["meaning"],
+                        }
+                        
+                        # Add romanization if available
+                        if "romanization" in result:
+                            korean_word["romanization"] = result["romanization"]
+                        
+                        # Display the Korean word
+                        self.display_korean_word(korean_word)
+                        
+                        # Add to discovered words
+                        self.discovered_words.add(korean_word["hangul"])
+                    
+                    input(f"\n{Colors.GREEN}Press Enter to continue...{Colors.RESET}")
+                        
+            except json.JSONDecodeError:
+                # If the response isn't valid JSON, handle it as natural language
+                
+                # Check if it looks like a raw JSON with quotes
+                if response.strip().startswith("{") and "action_type" in response:
+                    # It's probably an improperly formatted JSON, so give a helpful message
+                    chars_in_room = self.rooms[self.current_room].get("characters", [])
+                    if command.lower() == "talk" and chars_in_room:
+                        chars_names = [self.characters[c]['name'] for c in chars_in_room]
+                        print(f"\n{Colors.YELLOW}Who would you like to talk to? Options: {', '.join(chars_names)}{Colors.RESET}")
+                        print(f"Try: 'talk to {chars_in_room[0]}'{Colors.RESET}")
+                    else:
+                        print(f"\n{Colors.YELLOW}I'm not sure what you want to do. Try being more specific.{Colors.RESET}")
+                        print(f"{Colors.YELLOW}For example: 'look at flower' or 'talk to cat'{Colors.RESET}")
                 else:
-                    print(f"I don't understand how to '{result['command']}'. Type 'help' for commands.")
-                    
-            elif result["action_type"] == "custom":
-                # Handle custom responses directly from the LLM
-                print("\n" + result["response"])
-                
-                # If the response includes a Korean word to teach
-                if result.get("teach_korean", False) and "korean_word" in result and "meaning" in result:
-                    korean_word = {
-                        "hangul": result["korean_word"], 
-                        "meaning": result["meaning"],
-                    }
-                    
-                    # Add romanization if available
-                    if "romanization" in result:
-                        korean_word["romanization"] = result["romanization"]
-                    
-                    # Display the Korean word
-                    self.display_korean_word(korean_word)
-                    
-                    # Add to discovered words
-                    self.discovered_words.add(korean_word["hangul"])
-                
-                input(f"\n{Colors.GREEN}Press Enter to continue...{Colors.RESET}")
+                    # It's probably just a normal text response
+                    print("\n" + response)
+                    input(f"\n{Colors.GREEN}Press Enter to continue...{Colors.RESET}")
                     
         except Exception as e:
-            # If JSON parsing fails, the response wasn't properly formatted
-            # In this case, just show what the LLM returned directly
-            try:
-                print("\n" + str(response))
-                input(f"\n{Colors.GREEN}Press Enter to continue...{Colors.RESET}")
-            except:
-                print("I didn't understand that command. Type 'help' for a list of commands.")
-                time.sleep(1.5)
+            # Generic error handling
+            print(f"{Colors.YELLOW}I didn't understand that command. Type 'help' for a list of commands.{Colors.RESET}")
+            
+            # If in debug mode, show the error
+            # import traceback
+            # print(f"Debug error: {e}")
+            # traceback.print_exc()
+            
+            time.sleep(1.5)
 
     def move_player(self, direction):
         """Move the player in the specified direction."""
@@ -1105,6 +1214,50 @@ class KoreanAdventure:
         else:
             print(f"\nYou don't have a '{item_name}' to {action_type}.")
             time.sleep(1.5)
+
+    def get_enriched_korean_word(self):
+        """Get a Korean word with enhanced information for better learning."""
+        # Get a basic word
+        word = self.get_next_korean_word()
+        
+        # If it doesn't have romanization, try to add it using the LLM
+        if 'romanization' not in word:
+            try:
+                prompt = f"""
+                For the Korean word "{word['hangul']}" meaning "{word['meaning']}",
+                provide only the romanization (how to pronounce it) in standard romanization format.
+                Return just the romanization, nothing else.
+                """
+                romanization = self.query_llm(prompt)
+                if romanization and len(romanization) < 30:  # Simple check to make sure it's valid
+                    word['romanization'] = romanization.strip()
+            except Exception:
+                # If it fails, continue without romanization
+                pass
+        
+        # If it doesn't have an example, try to add one using the LLM
+        if 'usage_example' not in word:
+            try:
+                prompt = f"""
+                Create a simple example sentence using the Korean word "{word['hangul']}" ({word['meaning']}).
+                
+                The sentence should be:
+                1. In Korean with English translation in parentheses
+                2. Very simple - suitable for absolute beginners
+                3. Show practical usage of the word
+                
+                For example: "안녕하세요 (Hello)"
+                
+                Return only the example sentence, nothing else.
+                """
+                example = self.query_llm(prompt)
+                if example and len(example) < 100:  # Simple check to make sure it's valid
+                    word['usage_example'] = example.strip()
+            except Exception:
+                # If it fails, continue without an example
+                pass
+        
+        return word
 
 def test_ollama_connection(url="http://localhost:11434", model=MODEL):
     """Test connection to Ollama before starting the game."""
