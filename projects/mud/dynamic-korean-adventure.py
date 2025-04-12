@@ -3,6 +3,7 @@ import time
 import json
 import requests
 
+MODEL = "kimjk/llama3.2-korean:latest"
 class Colors:
     """ANSI color codes for terminal formatting."""
     RESET = "\033[0m"
@@ -41,7 +42,7 @@ class Colors:
 class KoreanAdventure:
     def __init__(self, ollama_url="http://localhost:11434"):
         self.ollama_url = ollama_url
-        self.model = "kimjk/llama3.2-korean:latest" # preferred model
+        self.model = MODEL # preferred model
         self.current_room = "start"
         self.inventory = []
         self.discovered_words = set()
@@ -402,113 +403,225 @@ class KoreanAdventure:
             
         action = parts[0]
         
-        if action == "look":
-            # Just redisplay the room
-            pass
+        # Basic directional movement shortcuts
+        if action in ["north", "south", "east", "west", "up", "down", "left", "right"]:
+            # Map left/right to west/east
+            if action == "left": action = "west"
+            if action == "right": action = "east"
+            self.move_player(action)
+            return
             
-        elif action == "move" and len(parts) > 1:
-            direction = parts[1]
-            self.move_player(direction)
+        # Standard commands
+        if action == "look" or action == "examine":
+            if len(parts) > 1:
+                # Looking at a specific item or character
+                target = parts[1]
+                self.examine_target(target)
+            else:
+                # Just redisplay the room
+                pass
             
-        elif action == "take" and len(parts) > 1:
-            item = parts[1]
+        elif action == "move" or action == "go":
+            if len(parts) > 1:
+                direction = parts[1]
+                self.move_player(direction)
+            else:
+                print(f"{Colors.YELLOW}Which direction do you want to move?{Colors.RESET}")
+                time.sleep(1)
+            
+        elif action in ["take", "grab", "pick", "get"] and len(parts) > 1:
+            item = " ".join(parts[1:]) if len(parts) > 2 else parts[1]
             self.take_item(item)
             
-        elif action == "talk" and len(parts) > 1:
-            character = parts[1]
+        elif action == "drop" and len(parts) > 1:
+            item = " ".join(parts[1:]) if len(parts) > 2 else parts[1]
+            self.drop_item(item)
+        
+        elif action in ["talk", "say", "speak"] and len(parts) > 1:
+            character = " ".join(parts[1:]) if len(parts) > 2 else parts[1]
+            if action == "say" and "to" in parts:
+                # Handle "say hello to character" format
+                to_index = parts.index("to")
+                character = " ".join(parts[to_index+1:])
             self.talk_to_character(character)
             
-        elif action == "inventory":
+        elif action == "use" and len(parts) > 1:
+            item = " ".join(parts[1:]) if len(parts) > 2 else parts[1]
+            self.use_item(item)
+            
+        elif action == "give" and len(parts) > 1:
+            # Parse "give item to character"
+            if "to" in parts:
+                to_index = parts.index("to")
+                item = " ".join(parts[1:to_index])
+                character = " ".join(parts[to_index+1:])
+                self.give_item(item, character)
+            else:
+                print(f"{Colors.YELLOW}Specify who to give the item to. Example: give flower to woman{Colors.RESET}")
+                time.sleep(1.5)
+            
+        elif action in ["open", "unlock"]:
+            if len(parts) > 1:
+                target = " ".join(parts[1:])
+                self.open_target(target)
+            else:
+                print(f"{Colors.YELLOW}What would you like to open?{Colors.RESET}")
+            
+        elif action == "close":
+            if len(parts) > 1:
+                target = " ".join(parts[1:])
+                self.close_target(target)
+            else:
+                print(f"{Colors.YELLOW}What would you like to close?{Colors.RESET}")
+            
+        elif action == "eat":
+            if len(parts) > 1:
+                food = " ".join(parts[1:])
+                self.consume_item(food, "eat")
+            else:
+                print(f"{Colors.YELLOW}What would you like to eat?{Colors.RESET}")
+            
+        elif action == "drink":
+            if len(parts) > 1:
+                beverage = " ".join(parts[1:])
+                self.consume_item(beverage, "drink")
+            else:
+                print(f"{Colors.YELLOW}What would you like to drink?{Colors.RESET}")
+            
+        elif action == "inventory" or action == "i" or action == "items":
             self.show_inventory()
             
-        elif action == "help":
+        elif action == "help" or action == "?":
             self.show_help()
             
         elif action == "exit" or action == "quit":
             self.game_running = False
-            print("Thank you for playing! 안녕히 가세요 (Goodbye)!")
+            print(f"{Colors.BRIGHT_GREEN}Thank you for playing! 안녕히 가세요 (Goodbye)!{Colors.RESET}")
             
         else:
             # Use LLM to understand unusual commands
             self.handle_custom_command(command)
 
     def handle_custom_command(self, command):
-        """Handle custom commands using the LLM."""
+        """Handle custom commands using the LLM for more dynamic gameplay."""
+        # More flexible and open-ended prompt that allows creative responses
         prompt = f"""
-        In our Korean learning text adventure game, the player has entered this command:
-        "{command}"
+        In our Korean language learning adventure game, the player has entered: "{command}"
         
-        The standard commands are:
-        - look: Look around the current room
-        - move [direction]: Move in a direction
-        - take [item]: Pick up an item
-        - talk [character]: Talk to a character
-        - inventory: Check inventory
-        - help: Show help menu
+        Current situation:
+        - The player is in: "{self.rooms[self.current_room]['name']}"
+        - Room description: "{self.rooms[self.current_room]['description_template'].replace('<KOREAN>', '[Korean word]')}"
+        - Available exits: {list(self.rooms[self.current_room]['exits'].keys())}
+        - Items in room: {[self.items[i]['name'] for i in self.rooms[self.current_room].get('items', [])]}
+        - Characters in room: {[self.characters[c]['name'] for c in self.rooms[self.current_room].get('characters', [])]}
+        - Items in inventory: {[self.items[i]['name'] for i in self.inventory if i in self.items]}
         
-        The player is currently in a room called "{self.rooms[self.current_room]['name']}".
+        You are a helpful game master, and you can:
+        1. Interpret the player's command and translate it to a standard game action
+        2. OR provide a direct response if it's a conversation or question
+        3. OR create a custom reaction to their unique action
         
-        If this command seems like it might be a valid action in an adventure game, 
-        respond with a JSON object in this format:
+        For standard commands, respond in this JSON format:
         {{
-          "command_type": "[standard_command]",
-          "parameters": "[relevant_parameters]",
-          "fallback_message": "A response if this can't be mapped to a standard command"
+          "action_type": "standard",
+          "command": "[look/move/take/talk/etc.]",
+          "parameters": "[relevant parameters]"
         }}
         
-        For example, if they typed "grab flower", respond with:
+        For conversations, questions, or unique actions, respond in this format:
         {{
-          "command_type": "take",
-          "parameters": "flower",
-          "fallback_message": ""
+          "action_type": "custom",
+          "response": "Your creative response that answers the question or reacts to their action",
+          "teach_korean": true,
+          "korean_word": "{{hangul}}",
+          "meaning": "English meaning"
         }}
         
-        Or if they typed "what's in my bag?", respond with:
-        {{
-          "command_type": "inventory",
-          "parameters": "",
-          "fallback_message": ""
-        }}
-        
-        If it can't be mapped to a standard command, provide a helpful, brief message:
-        {{
-          "command_type": "unknown",
-          "parameters": "",
-          "fallback_message": "I don't understand that. Try 'help' to see available commands."
-        }}
+        Include a Korean word in custom responses when appropriate. Make the game fun, responsive and educational!
         
         Return only the JSON, nothing else.
         """
         
         try:
+            # Display a shorter loading message for better UX
+            print(f"{Colors.BRIGHT_CYAN}Thinking...{Colors.RESET}")
+            
             response = self.query_llm(prompt)
             result = json.loads(response)
             
-            if result["command_type"] == "unknown":
-                print(result["fallback_message"])
-                time.sleep(1.5)
-                return
+            if result["action_type"] == "standard":
+                # Handle standard commands by calling the appropriate method
+                if result["command"] == "look":
+                    if "parameters" in result and result["parameters"]:
+                        self.examine_target(result["parameters"])
+                    else:
+                        # Will redisplay the room naturally on next loop
+                        pass
+                elif result["command"] == "move":
+                    self.move_player(result["parameters"])
+                elif result["command"] == "take":
+                    self.take_item(result["parameters"])
+                elif result["command"] == "talk":
+                    self.talk_to_character(result["parameters"])
+                elif result["command"] == "use":
+                    self.use_item(result["parameters"])
+                elif result["command"] == "give":
+                    # Parse parameters (expected format: "item_name to character_name")
+                    if "to" in result["parameters"]:
+                        parts = result["parameters"].split(" to ")
+                        if len(parts) == 2:
+                            self.give_item(parts[0], parts[1])
+                        else:
+                            print("Please specify what to give and to whom.")
+                    else:
+                        print("Please use format: give [item] to [character]")
+                elif result["command"] == "inventory":
+                    self.show_inventory()
+                elif result["command"] == "help":
+                    self.show_help()
+                elif result["command"] == "open":
+                    self.open_target(result["parameters"])
+                elif result["command"] == "close":
+                    self.close_target(result["parameters"])
+                elif result["command"] == "eat":
+                    self.consume_item(result["parameters"], "eat")
+                elif result["command"] == "drink":
+                    self.consume_item(result["parameters"], "drink")
+                else:
+                    print(f"I don't understand how to '{result['command']}'. Type 'help' for commands.")
+                    
+            elif result["action_type"] == "custom":
+                # Handle custom responses directly from the LLM
+                print("\n" + result["response"])
                 
-            # Map the interpreted command to a standard command
-            if result["command_type"] == "take":
-                self.take_item(result["parameters"])
-            elif result["command_type"] == "move":
-                self.move_player(result["parameters"])
-            elif result["command_type"] == "talk":
-                self.talk_to_character(result["parameters"])
-            elif result["command_type"] == "inventory":
-                self.show_inventory()
-            elif result["command_type"] == "look":
-                pass  # Will redisplay the room naturally
-            elif result["command_type"] == "help":
-                self.show_help()
-            else:
-                print("I don't understand that command. Type 'help' for a list of commands.")
-                time.sleep(1.5)
+                # If the response includes a Korean word to teach
+                if result.get("teach_korean", False) and "korean_word" in result and "meaning" in result:
+                    korean_word = {
+                        "hangul": result["korean_word"], 
+                        "meaning": result["meaning"],
+                    }
+                    
+                    # Add romanization if available
+                    if "romanization" in result:
+                        korean_word["romanization"] = result["romanization"]
+                    
+                    # Display the Korean word
+                    self.display_korean_word(korean_word)
+                    
+                    # Add to discovered words
+                    self.discovered_words.add(korean_word["hangul"])
                 
+                input(f"\n{Colors.GREEN}Press Enter to continue...{Colors.RESET}")
+                    
         except Exception as e:
-            print("I don't understand that command. Type 'help' for a list of commands.")
-            time.sleep(1.5)
+            # If JSON parsing fails, the response wasn't properly formatted
+            # In this case, just show what the LLM returned directly
+            try:
+                print("\n" + str(response))
+                input(f"\n{Colors.GREEN}Press Enter to continue...{Colors.RESET}")
+            except:
+                print("I didn't understand that command. Type 'help' for a list of commands.")
+                time.sleep(1.5)
 
     def move_player(self, direction):
         """Move the player in the specified direction."""
@@ -757,7 +870,243 @@ class KoreanAdventure:
             if word["hangul"] in self.discovered_words:
                 print(f"- {word['hangul']}: {word['meaning']}")
 
-def test_ollama_connection(url="http://localhost:11434", model="kimjk/llama3.2-korean:latest"):
+    def examine_target(self, target_name):
+        """Examine an item, character, or feature in the room."""
+        room = self.rooms[self.current_room]
+        
+        # Check if it's an item in the room
+        matching_room_items = [i for i in room.get("items", []) if target_name.lower() in i.lower()]
+        if matching_room_items:
+            item_id = matching_room_items[0]
+            item = self.items[item_id]
+            
+            # Get Korean word for this examination
+            korean_word = self.get_next_korean_word()
+            
+            print(f"\n{Colors.YELLOW}【 {item['name']} 】{Colors.RESET}")
+            description = item["description"].replace("<KOREAN>", f"{Colors.YELLOW}{Colors.BOLD}{korean_word['hangul']}{Colors.RESET}")
+            print(description)
+            
+            # Display the Korean word information
+            self.display_korean_word(korean_word)
+            
+            input(f"\n{Colors.GREEN}Press Enter to continue...{Colors.RESET}")
+            return
+        
+        # Check if it's an item in inventory
+        matching_inventory = [i for i in self.inventory if target_name.lower() in i.lower()]
+        if matching_inventory:
+            item_id = matching_inventory[0]
+            item = self.items[item_id]
+            
+            print(f"\n{Colors.YELLOW}【 {item['name']} 】{Colors.RESET}")
+            print(f"{item['description'].replace('<KOREAN>', '')}")
+            
+            if "use_hint" in item:
+                print(f"\nHint: {item['use_hint']}")
+                
+            input(f"\n{Colors.GREEN}Press Enter to continue...{Colors.RESET}")
+            return
+        
+        # Check if it's a character
+        for char_id in room.get("characters", []):
+            char = self.characters[char_id]
+            if target_name.lower() in char_id.lower() or target_name.lower() in char["name"].lower():
+                print(f"\n{Colors.MAGENTA}【 {char['name']} 】{Colors.RESET}")
+                print(char["description"])
+                print(f"\nYou can talk to this character by typing: talk {char_id}")
+                
+                input(f"\n{Colors.GREEN}Press Enter to continue...{Colors.RESET}")
+                return
+        
+        # If nothing matched
+        print(f"\nYou don't see any '{target_name}' here to examine.")
+        time.sleep(1.5)
+
+    def drop_item(self, item_name):
+        """Drop an item from the inventory into the current room."""
+        # Find the item in inventory
+        matching_items = [i for i in self.inventory if item_name.lower() in i.lower() or 
+                         (i in self.items and item_name.lower() in self.items[i]["name"].lower())]
+        
+        if matching_items:
+            item_id = matching_items[0]
+            
+            # Add to room
+            room = self.rooms[self.current_room]
+            if "items" not in room:
+                room["items"] = []
+            room["items"].append(item_id)
+            
+            # Remove from inventory
+            self.inventory.remove(item_id)
+            
+            print(f"\nYou dropped the {self.items[item_id]['name']}.")
+            input(f"\n{Colors.GREEN}Press Enter to continue...{Colors.RESET}")
+        else:
+            print(f"\nYou don't have a '{item_name}' to drop.")
+            time.sleep(1.5)
+
+    def use_item(self, item_name):
+        """Use an item from the inventory."""
+        # Find the item in inventory
+        matching_items = [i for i in self.inventory if item_name.lower() in i.lower() or 
+                         (i in self.items and item_name.lower() in self.items[i]["name"].lower())]
+        
+        if matching_items:
+            item_id = matching_items[0]
+            item = self.items[item_id]
+            
+            # Get Korean word for this usage
+            korean_word = self.get_next_korean_word()
+            
+            # General response for using items
+            print(f"\nYou use the {item['name']}...")
+            
+            # Create a custom response using the LLM
+            prompt = f"""
+            In our Korean learning adventure game, the player is using the '{item['name']}' item.
+            
+            Create a brief, interesting description of what happens when they use this item.
+            Incorporate the Korean word '{korean_word['hangul']}' ({korean_word['meaning']}) into the description.
+            
+            Keep it concise (1-3 sentences) and magical/whimsical in tone.
+            """
+            
+            try:
+                response = self.query_llm(prompt)
+                print(response)
+                
+                # Display the Korean word information
+                self.display_korean_word(korean_word)
+                
+            except Exception as e:
+                # Fallback response if LLM fails
+                print(f"You use the {item['name']} and notice the word {korean_word['hangul']} glowing on it briefly.")
+                print(f"You've learned a new Korean word!")
+                
+                # Display the Korean word information
+                self.display_korean_word(korean_word)
+            
+            input(f"\n{Colors.GREEN}Press Enter to continue...{Colors.RESET}")
+        else:
+            print(f"\nYou don't have a '{item_name}' to use.")
+            time.sleep(1.5)
+
+    def give_item(self, item_name, character_name):
+        """Give an item to a character."""
+        # Check if the item is in inventory
+        matching_items = [i for i in self.inventory if item_name.lower() in i.lower() or 
+                         (i in self.items and item_name.lower() in self.items[i]["name"].lower())]
+        
+        if not matching_items:
+            print(f"\nYou don't have a '{item_name}' to give.")
+            time.sleep(1.5)
+            return
+            
+        item_id = matching_items[0]
+        
+        # Check if the character is in the room
+        room = self.rooms[self.current_room]
+        matching_chars = []
+        for char_id in room.get("characters", []):
+            char = self.characters[char_id]
+            if character_name.lower() in char_id.lower() or character_name.lower() in char["name"].lower():
+                matching_chars.append(char_id)
+        
+        if not matching_chars:
+            print(f"\nThere's no '{character_name}' here to give anything to.")
+            time.sleep(1.5)
+            return
+            
+        char_id = matching_chars[0]
+        character = self.characters[char_id]
+        
+        # Get Korean word for this interaction
+        korean_word = self.get_next_korean_word()
+        
+        # Create a custom response using the LLM
+        prompt = f"""
+        In our Korean learning adventure game, the player is giving the '{self.items[item_id]['name']}' 
+        to character '{character['name']}'.
+        
+        Create a brief, interesting description of the character's reaction.
+        Incorporate the Korean word '{korean_word['hangul']}' ({korean_word['meaning']}) into the dialogue.
+        
+        Keep it concise (2-3 sentences) and magical/whimsical in tone.
+        """
+        
+        try:
+            # Remove from inventory
+            self.inventory.remove(item_id)
+            
+            print(f"\nYou give the {self.items[item_id]['name']} to {character['name']}.")
+            
+            response = self.query_llm(prompt)
+            print(response)
+            
+            # Display the Korean word information
+            self.display_korean_word(korean_word)
+            
+        except Exception as e:
+            # Fallback response if LLM fails
+            print(f"\nYou give the {self.items[item_id]['name']} to {character['name']}.")
+            print(f"{character['name']} smiles and thanks you, mentioning the word '{korean_word['hangul']}'.")
+            print("You've learned a new Korean word!")
+            
+            # Display the Korean word information
+            self.display_korean_word(korean_word)
+        
+        input(f"\n{Colors.GREEN}Press Enter to continue...{Colors.RESET}")
+
+    def open_target(self, target_name):
+        """Open a container or door."""
+        # Get Korean word for this interaction
+        korean_word = self.get_next_korean_word()
+        
+        print(f"\nYou try to open the {target_name}...")
+        print(f"As you do, you notice the word {Colors.YELLOW}{Colors.BOLD}{korean_word['hangul']}{Colors.RESET} written on it.")
+        
+        # Display the Korean word information
+        self.display_korean_word(korean_word)
+        
+        # Add logic for actually opening things here, if the game design needs it
+        print(f"The {target_name} opens, revealing nothing special inside.")
+        
+        input(f"\n{Colors.GREEN}Press Enter to continue...{Colors.RESET}")
+
+    def close_target(self, target_name):
+        """Close a container or door."""
+        print(f"\nYou close the {target_name}.")
+        time.sleep(1.5)
+
+    def consume_item(self, item_name, action_type):
+        """Eat or drink an item."""
+        # Check if the item is in inventory
+        matching_items = [i for i in self.inventory if item_name.lower() in i.lower() or 
+                         (i in self.items and item_name.lower() in self.items[i]["name"].lower())]
+        
+        if matching_items:
+            item_id = matching_items[0]
+            
+            # Get Korean word for this interaction
+            korean_word = self.get_next_korean_word()
+            
+            print(f"\nYou {action_type} the {self.items[item_id]['name']}.")
+            print(f"It tastes like {Colors.YELLOW}{Colors.BOLD}{korean_word['hangul']}{Colors.RESET}.")
+            
+            # Remove from inventory
+            self.inventory.remove(item_id)
+            
+            # Display the Korean word information
+            self.display_korean_word(korean_word)
+            
+            input(f"\n{Colors.GREEN}Press Enter to continue...{Colors.RESET}")
+        else:
+            print(f"\nYou don't have a '{item_name}' to {action_type}.")
+            time.sleep(1.5)
+
+def test_ollama_connection(url="http://localhost:11434", model=MODEL):
     """Test connection to Ollama before starting the game."""
     print("Testing connection to Ollama...")
     try:
@@ -786,7 +1135,7 @@ def test_ollama_connection(url="http://localhost:11434", model="kimjk/llama3.2-k
 def main():
     # Test connection to Ollama
     ollama_url = "http://localhost:11434"  # Default Ollama URL
-    model = "kimjk/llama3.2-korean:latest"  # Default model to match the one used in KoreanAdventure
+    model = MODEL  # Default model to match the one used in KoreanAdventure
     
     # Allow custom URL and model from command line arguments
     import sys
