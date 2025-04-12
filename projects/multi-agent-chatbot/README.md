@@ -56,16 +56,10 @@ Manual Loading:
 docker exec -it korean-ollama ollama pull kimjk/llama3.2-korean
 ```
 
-2. Process text files and create chunks:
+2. Populate the vector database:
 
 ```bash
-python process_text_data.py
-```
-
-3. Populate the vector database:
-
-```bash
-python populate_qdrant.py
+python embed_and_upload.py
 ```
 
 ## Usage
