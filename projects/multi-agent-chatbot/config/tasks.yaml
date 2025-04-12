@@ -1,0 +1,34 @@
+grammar_question:
+  description: >
+    Explain the grammar concept asked in the user's question with clear examples.
+  expected_output: >
+    A short explanation with 1-2 Korean examples and translations.
+  agent: ahjumma_gpt
+
+idiom_lookup:
+  description: >
+    Explain the meaning and usage of a Korean idiom or saying.
+  expected_output: >
+    The idiom, its meaning, origin (if known), and a short dialogue using it.
+  agent: ahjussi_gpt
+
+web_search:
+  description: >
+    Perform a web search to find additional information related to the user's query.
+  expected_output: >
+    A summary of relevant search results, including titles and snippets.
+  agent: web_search_agent
+
+vector_db_query:
+  description: >
+    Query the Qdrant vector database for relevant language learning materials or examples.
+  expected_output: >
+    A list of relevant materials or examples retrieved from the vector database.
+  agent: vector_db_agent
+
+lyrics:
+  description: >
+    Find and explain Korean song lyrics, helping users understand vocabulary and cultural references.
+  expected_output: >
+    The song lyrics in Korean with translation, vocabulary notes, and cultural context.
+  agent: lyrics_agent
