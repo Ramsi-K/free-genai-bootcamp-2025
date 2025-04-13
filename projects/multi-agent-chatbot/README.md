@@ -1,3 +1,5 @@
+> Note: WIP
+
 # Korean Language Learning Chatbot
 
 A multi-agent chatbot system built with CrewAI that helps users learn Korean language through interactive personas (AhjummaGPT and AhjussiGPT) with Retrieval-Augmented Generation (RAG) capabilities.
