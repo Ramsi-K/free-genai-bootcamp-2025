@@ -1,3 +1,5 @@
+> Note: WIP
+
 # Capstone Project - HagXwon
 
 ## 📦 Project Overview
